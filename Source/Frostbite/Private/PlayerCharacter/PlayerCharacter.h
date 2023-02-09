@@ -23,42 +23,42 @@ protected:
 private:
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = Default, Meta = (DisplayName = "Player Character Controller"))
-	class APlayerCharacterController* PlayerCharacterController {nullptr};
+	class APlayerCharacterController* PlayerCharacterController;
 	
 	/** The camera for the player. */
-	UPROPERTY(BlueprintGetter = GetCamera, VisibleAnywhere, Category = Camera, Meta = (DisplayName = "Camera"))
-	class UCameraComponent* Camera {nullptr};
+	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera"))
+	class UCameraComponent* Camera;
 
 	/** The flashlight for the player. */
-	UPROPERTY(BlueprintGetter = GetFlashlight, VisibleAnywhere, Category = Flashlight, Meta = (DisplayName = "Flashlight", AllowPrivateAccess = "true"))
-	class USpotLightComponent* Flashlight {nullptr};
+	UPROPERTY(BlueprintGetter = GetFlashlight, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Flashlight"))
+	class USpotLightComponent* Flashlight;
 
 	/** The SpringArmComponent the flashlight is attached to. */
-	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm)
-	class USpringArmComponent* FlashlightSpringArm {nullptr};
+	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Flashlight Arm"))
+	class USpringArmComponent* FlashlightSpringArm;
 
 	/** The PlayerAudioController that handles player audio. */
-	UPROPERTY(BlueprintGetter = GetAudioController, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
-	class UPlayerAudioController* AudioController {nullptr};
+	UPROPERTY(BlueprintGetter = GetAudioController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
+	class UPlayerAudioController* AudioController;
 
 	/** The PlayerVFXController that handles player VFX. */
-	UPROPERTY(BlueprintGetter = GetVFXController, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
-	class UPlayerVFXController* VFXController {nullptr};
+	UPROPERTY(BlueprintGetter = GetVFXController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
+	class UPlayerVFXController* VFXController;
 
 	/** The CameraController that handles first person camera behavior. */
-	UPROPERTY(BlueprintGetter = GetCameraController, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
-	class UPlayerCameraController* CameraController {nullptr};
+	UPROPERTY(BlueprintGetter = GetCameraController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
+	class UPlayerCameraController* CameraController;
 
 	/** The FlashlightController that handles the flashlight behavior. */
-	UPROPERTY(BlueprintGetter = GetFlashlightController, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
-	class UPlayerFlashlightController* FlashlightController {nullptr};
+	UPROPERTY(BlueprintGetter = GetFlashlightController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
+	class UPlayerFlashlightController* FlashlightController;
 
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
-	class UPlayerCharacterMovementComponent* PlayerCharacterMovement {nullptr};
+	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
+	class UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 
 	/** If true, the character is currently turning in place. */
-	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, VisibleAnywhere, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
+	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
 	bool IsTurningInPlace {false};
 
 	/** The yaw delta value used for turn-in-place rotation. */
@@ -143,6 +143,7 @@ private:
 	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
 
 	/** Handles a controller change for the pawn. */
+	UFUNCTION()
 	void HandleControllerChange(APawn* Pawn, AController* OldController, AController* NewController);
 
 #if WITH_EDITOR

@@ -170,7 +170,8 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 {
 	if(CanToggleFlashlight())
 	{
-		
+		UE_LOG(LogPlayerCharacterController, Error, TEXT("ToggleFlashlight"))
+		PlayerCharacter->GetFlashlightController()->SetFlashlightEnabled(!PlayerCharacter->GetFlashlightController()->IsFlashlightEnabled());
 	}
 }
 
@@ -265,11 +266,15 @@ bool APlayerCharacterController::CanInteract()
 }
 
 bool APlayerCharacterController::CanToggleFlashlight()
-{	const UActorComponent* Component {PlayerCharacter->GetComponentByClass(UPlayerFlashlightController::StaticClass())};
-	if(Component != nullptr)
+{
+	if(PlayerCharacter && PlayerCharacter->GetFlashlightController())
 	{
 		return true;
-	};
+	}
+	if(!PlayerCharacter->GetFlashlightController())
+	{
+		UE_LOG(LogPlayerCharacterController, Error, TEXT("Couldn't find flashlight controller"))
+	}
 	return false;
 }
 

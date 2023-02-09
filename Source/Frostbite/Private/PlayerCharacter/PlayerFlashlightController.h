@@ -14,7 +14,11 @@ UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComp
 class UPlayerFlashlightController : public UActorComponent
 {
 	GENERATED_BODY()
-
+	
+private:
+	/** Pointer to the PlayerCharacter this component is part of. */
+	class APlayerCharacter* PlayerCharacter {nullptr};
+	
 public:	
 	// Sets default values for this component's properties
 	UPlayerFlashlightController();
@@ -27,5 +31,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	/** Enables or disables the flashlight. */
+	UFUNCTION(BlueprintCallable, Category = Default, Meta = (DisplayName = "Set Flashlight Enabled"))
+	void SetFlashlightEnabled(const bool Value);
+
+	/** Returns whether the flashlight is enabled or not. */
+	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Is Flashlight Enabled"))
+	bool IsFlashlightEnabled();
 };
