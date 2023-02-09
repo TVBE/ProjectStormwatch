@@ -7,12 +7,11 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/Components/BPC_PlayerAudioController.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/Components/BPC_PlayerCameraController.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/Components/BPC_PlayerFlashlightController.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/Components/BPC_PlayerVFXController.uasset" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,6 +166,7 @@
       <workItem from="1675937982420" duration="339000" />
       <workItem from="1675938354485" duration="12667000" />
       <workItem from="1675959364599" duration="3229000" />
+      <workItem from="1675962652061" duration="1115000" />
     </task>
     <servers />
   </component>
