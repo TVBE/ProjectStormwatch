@@ -38,25 +38,37 @@ private:
 	class USpringArmComponent* FlashlightSpringArm;
 
 	/** The PlayerAudioController that handles player audio. */
-	UPROPERTY(BlueprintGetter = GetAudioController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
+	UPROPERTY(BlueprintGetter = GetAudioController, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
 	class UPlayerAudioController* AudioController;
 
 	/** The PlayerVFXController that handles player VFX. */
-	UPROPERTY(BlueprintGetter = GetVFXController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
+	UPROPERTY(BlueprintGetter = GetVFXController, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
 	class UPlayerVFXController* VFXController;
 
 	/** The CameraController that handles first person camera behavior. */
-	UPROPERTY(BlueprintGetter = GetCameraController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
+	UPROPERTY(BlueprintGetter = GetCameraController, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
 	class UPlayerCameraController* CameraController;
 
 	/** The FlashlightController that handles the flashlight behavior. */
-	UPROPERTY(BlueprintGetter = GetFlashlightController, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
+	UPROPERTY(BlueprintGetter = GetFlashlightController, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
 	class UPlayerFlashlightController* FlashlightController;
 
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
 	class UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 
+	/** The AudioComponent for general player audio. */
+	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Body Audio Component"))
+	class UAudioComponent* BodyAudioComponent;
+
+	/** The AudioComponent for the player's left foot. */
+	UPROPERTY(BlueprintGetter = GetLeftFootAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
+	class UAudioComponent* LeftFootAudioComponent;
+
+	/** The AudioComponent for the player's right foot.*/
+	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
+	class UAudioComponent* RightFootAudioComponent;
+	
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
 	bool IsTurningInPlace {false};
@@ -116,6 +128,18 @@ public:
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const {return PlayerCharacterMovement; }
 
+	/** Returns the Body AudioComponent. */
+	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Body Audio Component"))
+	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
+
+	/** Returns the Body AudioComponent. */
+	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
+	FORCEINLINE UAudioComponent* GetLeftFootAudioComponent() const {return LeftFootAudioComponent; }
+
+	/** Returns the Body AudioComponent. */
+	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
+	FORCEINLINE UAudioComponent* GetRightFootAudioComponent() const {return RightFootAudioComponent; }
+
 	/** Returns if the character is currently turning in place. */
 	UFUNCTION(BlueprintGetter, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
 	FORCEINLINE bool GetIsTurningInPlace() const {return IsTurningInPlace; }
@@ -137,6 +161,7 @@ protected:
 
 private:
 	/** Updates the character's yaw delta. */
+	UFUNCTION()
 	void UpdateYawDelta();
 	
 	/** Returns a scaled yaw delta value that is used for turn-in-place rotation. */
@@ -149,10 +174,6 @@ private:
 #if WITH_EDITOR
 	/** Checks whether a component is properly initialized. */
 	static void ValidateObject(const UObject* Object, const FString ObjectName);
-	
-	/** Checks whether an object is a blueprint derived class or not. */
-	static bool IsBlueprintClass(const UObject* Object)
-	{return static_cast<bool>(Object->GetClass()->ClassFlags & CLASS_CompiledFromBlueprint);}
 #endif
 	
 };
