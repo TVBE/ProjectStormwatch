@@ -11,6 +11,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/AudioComponent.h"
+#include "MetasoundSource.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 
@@ -57,14 +58,30 @@ APlayerCharacter::APlayerCharacter()
 	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"));
 	BodyAudioComponent->SetupAttachment(GetMesh(), "spine_04");
 	BodyAudioComponent->bAutoActivate = false;
+	BodyAudioComponent->bEditableWhenInherited = false;
+	
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> MainSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Main/MSS_Player_Main.MSS_Player_Main'"));
+	if(MainSourceMetasound.Succeeded())
+	{
+		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
+	}
 	
 	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"));
 	LeftFootAudioComponent->SetupAttachment(GetMesh(), "foot_l_Socket");
 	LeftFootAudioComponent->bAutoActivate = false;
-
+	LeftFootAudioComponent->bEditableWhenInherited = false;
+	
 	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"));
 	RightFootAudioComponent->SetupAttachment(GetMesh(), "foot_r_Socket");
 	RightFootAudioComponent->bAutoActivate = false;
+	RightFootAudioComponent->bEditableWhenInherited = false;
+
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> FootstepSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Footsteps/MSS_Player_Footstep.MSS_Player_Footstep'"));
+	if(FootstepSourceMetasound.Succeeded())
+	{
+		LeftFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
+		RightFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
+	}
 	
 	// Construct Camera Controller
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Player Camera Controller"));

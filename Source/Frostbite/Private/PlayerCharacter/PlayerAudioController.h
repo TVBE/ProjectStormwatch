@@ -15,6 +15,9 @@ class UPlayerAudioController : public UActorComponent
 {
 	GENERATED_BODY()
 
+private:
+	
+	
 public:	
 	// Sets default values for this component's properties
 	UPlayerAudioController();
@@ -26,6 +29,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+
+	
 
 		
 };

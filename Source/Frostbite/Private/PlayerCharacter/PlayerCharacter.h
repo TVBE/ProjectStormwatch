@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "LandingIntensity.h"
 #include "PlayerVFXController.h"
 #include "PlayerCharacter.generated.h"
+
+enum class EFoot : uint8;
+struct FFootstepData;
 
 UCLASS(Abstract, Blueprintable, BlueprintType)
 class APlayerCharacter : public ACharacter
@@ -58,15 +60,15 @@ private:
 	class UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 
 	/** The AudioComponent for general player audio. */
-	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Body Audio Component"))
+	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Body Audio Component"))
 	class UAudioComponent* BodyAudioComponent;
 
 	/** The AudioComponent for the player's left foot. */
-	UPROPERTY(BlueprintGetter = GetLeftFootAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
+	UPROPERTY(BlueprintGetter = GetLeftFootAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
 	class UAudioComponent* LeftFootAudioComponent;
 
 	/** The AudioComponent for the player's right foot.*/
-	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, EditAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
+	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
 	class UAudioComponent* RightFootAudioComponent;
 	
 	/** If true, the character is currently turning in place. */
@@ -175,8 +177,8 @@ private:
 	/** Checks whether a component is properly initialized. */
 	static void ValidateObject(const UObject* Object, const FString ObjectName);
 #endif
-	
 };
+
 
 
 
