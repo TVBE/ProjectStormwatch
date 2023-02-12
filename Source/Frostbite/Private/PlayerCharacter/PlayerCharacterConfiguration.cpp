@@ -42,6 +42,4 @@ void FPlayerCharacterConfigurationData::ApplyToPlayerCharacterInstance(APlayerCh
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
 	}
-	
-	
 }

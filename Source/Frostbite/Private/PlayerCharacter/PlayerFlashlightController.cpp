@@ -82,11 +82,12 @@ FRotator UPlayerFlashlightController::GetFlashlightFocusRotation()
 
 FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
 {
+	FRotator Rotation {FRotator()};
 	if(PlayerCharacter->GetPlayerCharacterMovement())
 	{
 		EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
-		float MappedVelocity {static_cast<float>(FMath::Clamp(PlayerCharacter->GetVelocity().Length() * 0.0325, 0.2f, 1.f))};
-		constexpr float GlobalIntensityMultiplier {0.5};
+		const float MappedVelocity {static_cast<float>(FMath::Clamp(PlayerCharacter->GetVelocity().Length() * 0.0325, 0.2f, 1.f))};
+		constexpr float IntensityMultiplier {0.5};
 
 		float PitchSwaySpeed {0.f};
 		float YawSwaySpeed {0.f};
@@ -100,16 +101,16 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
 		{
 		case 0: PitchSwaySpeed = 1.65f;
 			PitchSwayIntensity = 1.7f;
-			YawSwaySpeed = 1.2f;
+			YawSwaySpeed = 1.23f;
 			YawSwayIntensity = 1.25f;
 			RollSwaySpeed = 0.675f;
 			RollSwayIntensity = 1.5f;
 			break;
-		case 1: PitchSwaySpeed = 1.65f;
+		case 1: PitchSwaySpeed = 3.12f * MappedVelocity;
 			PitchSwayIntensity = 1.7f;
-			YawSwaySpeed = 1.2f;
+			YawSwaySpeed = 4.65 * MappedVelocity;
 			YawSwayIntensity = 1.25f;
-			RollSwaySpeed = 0.675f;
+			RollSwaySpeed = 2.55f * MappedVelocity;
 			RollSwayIntensity = 1.5f; ;
 			break;
 		case 2: PitchSwaySpeed = 9.55f;
@@ -120,6 +121,20 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
 			RollSwayIntensity = 1.56f;
 			break;
 		}
+		
+		if(const UWorld* World {GetWorld()})
+		{
+			const double GameTime {World->GetTimeSeconds()};
+			const float PitchIntensityMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(0.75, 1.5),FMath::Cos(GameTime * 2.13f)))};
+			const float YawIntensityMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(0.75, 1.5),FMath::Cos(GameTime * 3.02f)))};
+			PitchSwayIntensity = PitchSwayIntensity * PitchIntensityMultiplier;
+			YawSwayIntensity = YawSwayIntensity * YawIntensityMultiplier;
+
+			Rotation.Pitch = FMath::Cos(GameTime * PitchSwaySpeed) * PitchSwayIntensity * IntensityMultiplier;
+			Rotation.Yaw = FMath::Cos(GameTime * YawSwaySpeed) * YawSwayIntensity * IntensityMultiplier;
+			Rotation.Roll = FMath::Cos(GameTime * RollSwaySpeed) * RollSwayIntensity * IntensityMultiplier;
+		}
+		return Rotation;
 	}
 	return FRotator(); // TODO: Finish function implementation.
 }

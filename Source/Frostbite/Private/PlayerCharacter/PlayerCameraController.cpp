@@ -62,7 +62,6 @@ void UPlayerCameraController::BeginPlay()
 			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfigurationData.DefaultFOV);
 		}
 	}
-	
 }
 
 
@@ -71,7 +70,7 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if(PlayerCharacter != nullptr && PlayerCharacterController != nullptr)
+	if(PlayerCharacter && PlayerCharacterController)
 	{
 		UpdateCameraRotation(); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
 		UpdateCameraLocation();
@@ -79,9 +78,11 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 		{
 			UpdateCameraFieldOfView();
 		}
-		
+		if(CameraConfigurationData.IsDynamicDOFEnabled)
+		{
+			UpdateCameraDepthOfField(DeltaTime);
+		}
 	}
-	
 }
 
 // Called by TickComponent.
@@ -131,7 +132,7 @@ void UPlayerCameraController::UpdateCameraRotation()
 	const FRotator Sway {CameraConfigurationData.IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
 	const FRotator CentripetalRotation {CameraConfigurationData.IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
 	FRotator SocketRotation {FRotator()};
-	if(PlayerCharacter && !PlayerCharacter->GetIsTurningInPlace())
+	if(!PlayerCharacter->GetIsTurningInPlace())
 	{
 		SocketRotation = GetScaledHeadSocketDeltaRotation();
 	}
@@ -249,6 +250,53 @@ void UPlayerCameraController::UpdateCameraFieldOfView()
 	} 
 
 	PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );
+}
+
+void UPlayerCameraController::UpdateCameraDepthOfField(float DeltaTime)
+{
+	float FocalDistance {GetFocalDistance()};
+	FocalDistance = FMath::Clamp(FocalDistance, CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance);
+	
+	const float BlurFocus {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(FVector2D(CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance),
+			FVector2D(CameraConfigurationData.MacroBlurFocus,CameraConfigurationData.LongShotBlurFocus),FocalDistance))};
+	
+	const float BlurAmount {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(FVector2D(CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance),
+			FVector2D(CameraConfigurationData.MacroBlurAmount,CameraConfigurationData.LongShotBlurAmount),FocalDistance))};
+
+	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance =
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance, FocalDistance, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+	
+	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount = 
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+	
+	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius =
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+}
+
+float UPlayerCameraController::GetFocalDistance()
+{
+	
+	if (!PlayerCharacter || !PlayerCharacter->GetCamera())
+	{
+		return 0.0f;
+	}
+
+	UCameraComponent* Camera {PlayerCharacter->GetCamera()};
+	FVector CameraLocation = Camera->GetComponentLocation();
+	FVector ForwardVector = Camera->GetForwardVector();
+
+	constexpr float TraceLength {50000.0f};
+	ForwardVector *= TraceLength;
+	FVector End = CameraLocation + ForwardVector;
+
+	FHitResult HitResult;
+	if (Camera->GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, End, ECollisionChannel::ECC_Visibility))
+	{
+		return (HitResult.Location - CameraLocation).Size();
+	}
+	return TraceLength;
 }
 
 

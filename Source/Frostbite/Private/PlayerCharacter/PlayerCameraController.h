@@ -74,7 +74,6 @@ private:
 	void HandleCharacterControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	/** Updates the camera relative location. */
-	UFUNCTION()
 	void UpdateCameraLocation();
 
 	/** Updates the camera world rotation*/
@@ -90,6 +89,11 @@ private:
 	FRotator GetScaledHeadSocketDeltaRotation();
 	
 	/** Updates the camera's field of view according to the Players movement. */
-	UFUNCTION()
 	void UpdateCameraFieldOfView();
+
+	/** Updates the camera's depth of field according to whatever the player is looking at.*/
+	void UpdateCameraDepthOfField(float DeltaTime);
+
+	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
+	float GetFocalDistance();
 };
