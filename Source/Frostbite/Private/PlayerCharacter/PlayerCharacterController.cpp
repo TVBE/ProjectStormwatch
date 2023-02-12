@@ -170,7 +170,6 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 {
 	if(CanToggleFlashlight())
 	{
-		UE_LOG(LogPlayerCharacterController, Error, TEXT("ToggleFlashlight"))
 		PlayerCharacter->GetFlashlightController()->SetFlashlightEnabled(!PlayerCharacter->GetFlashlightController()->IsFlashlightEnabled());
 	}
 }

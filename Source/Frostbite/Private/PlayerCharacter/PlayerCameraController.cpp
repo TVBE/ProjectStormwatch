@@ -103,7 +103,7 @@ void UPlayerCameraController::UpdateCameraLocation()
 		- FVector(0, 0, (PlayerCharacter->GetVelocity().X * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
 		
 		// Interpolate between the two target locations depending on PitchAlpha.
-		Result = FMath::Lerp(UprightCameraLocation, DownwardCameraLocation, PitchAlpha); //NOTE: In UE 5.1 using FMath::Lerp with two FVectors can cause semantic errors, but the code will compile just fine.
+		Result = FMath::Lerp(UprightCameraLocation, DownwardCameraLocation, PitchAlpha); //NOTE: In UE 5.1 using FMath::Lerp() with two FVectors can cause semantic errors, but the code will compile and run just fine.
 	}
 	// Rotate the result with the base aim rotation.
 	const FRotator ControlRotation {FRotator(0, PlayerCharacterController->GetControlRotation().Yaw, 0)};

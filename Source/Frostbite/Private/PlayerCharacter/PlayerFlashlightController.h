@@ -18,6 +18,9 @@ class UPlayerFlashlightController : public UActorComponent
 private:
 	/** Pointer to the PlayerCharacter this component is part of. */
 	class APlayerCharacter* PlayerCharacter {nullptr};
+
+	/** Alpha value for blending the flashlight rotation based on movement. */
+	float MovementAlpha {0.f};
 	
 public:	
 	// Sets default values for this component's properties
@@ -38,4 +41,16 @@ public:
 	/** Returns whether the flashlight is enabled or not. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Is Flashlight Enabled"))
 	bool IsFlashlightEnabled();
+
+	/** Updates the movement alpha value. */
+	UFUNCTION()
+	void UpdateMovementAlpha(const float DeltaTime);
+
+	/** Calculates the flashlight focus rotation. */
+	UFUNCTION()
+	FRotator GetFlashlightFocusRotation();
+
+	/** Calculates the flashlight */
+	UFUNCTION()
+	FRotator GetFlashlightSwayRotation();
 };
