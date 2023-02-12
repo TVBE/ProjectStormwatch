@@ -10,6 +10,8 @@
 #include "PlayerFlashlightController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
+#include "Components/AudioComponent.h"
+#include "MetasoundSource.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 
@@ -49,41 +51,74 @@ APlayerCharacter::APlayerCharacter()
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetupAttachment(FlashlightSpringArm);
 	Flashlight->Intensity = 5000.0;
+	Flashlight->AttenuationRadius = 3000.0;
 	Flashlight->SetVisibility(false); // We don't want the flashlight to be enabled on startup.
+
+	// Construct Audio Components
+	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"));
+	BodyAudioComponent->SetupAttachment(GetMesh(), "spine_04");
+	BodyAudioComponent->bAutoActivate = false;
+	BodyAudioComponent->bEditableWhenInherited = false;
 	
-	// Construct CameraController
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> MainSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Main/MSS_Player_Main.MSS_Player_Main'"));
+	if(MainSourceMetasound.Succeeded())
+	{
+		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
+	}
+	
+	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"));
+	LeftFootAudioComponent->SetupAttachment(GetMesh(), "foot_l_Socket");
+	LeftFootAudioComponent->bAutoActivate = false;
+	LeftFootAudioComponent->bEditableWhenInherited = false;
+	
+	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"));
+	RightFootAudioComponent->SetupAttachment(GetMesh(), "foot_r_Socket");
+	RightFootAudioComponent->bAutoActivate = false;
+	RightFootAudioComponent->bEditableWhenInherited = false;
+
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> FootstepSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Footsteps/MSS_Player_Footstep.MSS_Player_Footstep'"));
+	if(FootstepSourceMetasound.Succeeded())
+	{
+		LeftFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
+		RightFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
+	}
+	
+	// Construct Camera Controller
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Player Camera Controller"));
 	CameraController->bWantsInitializeComponent = true;
+	CameraController->bEditableWhenInherited = false;
 	
-	// Construct FlashlightController
+	// Construct Flashlight Controller
 	FlashlightController = CreateDefaultSubobject<UPlayerFlashlightController>(TEXT("Player Flashlight Controller"));
 	FlashlightController->bWantsInitializeComponent = true;
+	FlashlightController->bEditableWhenInherited = false;
 
 	// Construct Audio Controller
 	AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Player Audio Controller"));
 	AudioController->bWantsInitializeComponent = true;
+	AudioController->bEditableWhenInherited = false;
 
 	// Construct VFX Controller
 	VFXController = CreateDefaultSubobject<UPlayerVFXController>(TEXT("Player VFX Controller"));
 	VFXController->bWantsInitializeComponent = true;
+	VFXController->bEditableWhenInherited = false;
 }
 
 void APlayerCharacter::PostInitProperties()
 {
 	Super::PostInitProperties();
-	
-	if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
-	{
-		PlayerCharacterMovement = PlayerCharacterMovementComponent;
-	}
-	else
-	{
-		UE_LOG(LogPlayerCharacter, Error, TEXT("PlayerCharacter does not have PlayerCharacterMovementComponent set as its CharacterMovementComponent."))
-	}
 
 #if WITH_EDITOR
 	if(!(IsRunningCommandlet() && UE::IsSavingPackage()) && IsRunningGame())
 	{
+		if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
+		{
+			PlayerCharacterMovement = PlayerCharacterMovementComponent;
+		}
+		else
+		{
+			UE_LOG(LogPlayerCharacter, Error, TEXT("PlayerCharacter does not have PlayerCharacterMovementComponent set as its CharacterMovementComponent."))
+		}
 		/** Check if this instance of a PlayerCharacter is a blueprint derived class or not. */
 		ValidateObject(this, "PlayerCharacter");
 		/** Check if all components have been succesfully initialized. */
@@ -194,11 +229,6 @@ void APlayerCharacter::ValidateObject(const UObject* Object, const FString Objec
 	{
 		UE_LOG(LogPlayerCharacter, Error, TEXT("%s was not properly initialized during the construction of the PlayerCharacter."), *ObjectName); \
 	}
-	else if (!IsBlueprintClass(Object))
-	{
-		UE_LOG(LogPlayerCharacter, Warning, TEXT("%s is not a blueprint derived class. Please implement a blueprint derived class to allow designers to extend functionality."), *ObjectName);
-	}
-	
 }
 #endif
 
