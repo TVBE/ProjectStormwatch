@@ -123,6 +123,18 @@ struct FPlayerCameraConfigurationData
 	/** The interpolation speed for the dynamic depth of field algorithm*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Dynamic Depth Of Field Speed", ClampMin = "0.0", ClampMax = "10.0", UIMin = "0.0", UIMax = "10.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
 	float DynamicDofSpeed {2};
+
+	/** When enabled, the vignette effect on the camera will be increased when sprinting, adding a bit of perceived intensity to the movement. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Vignette, Meta = (DisplayName = "Enabled Dynamic Vignette"))
+	bool IsDynamicVignetteEnabled {false};
+
+	/** The default vignette intensity for the camera. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Vignette, Meta = (DisplayName = "Default Vignette", ClampMin = "0.0", CLampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float DefaultVignetteIntensity {0.325};
+
+	/** The intensity for the camera while sprinting. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Vignette, Meta = (DisplayName = "Sprint Vignette", ClampMin = "0.0", CLampMax = "1.0", UIMin = "0.0", UIMax = "1.0", EditCondition = "IsDynamicVignetteEnabled", EditConditionHides))
+	float SprintVignetteIntensity {0.45};
 	
 	/** When enabled, the camera will shake according to the movement op the player. Turn this off to reduce the potential of motion sickness for the user. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CameraSway, Meta = (DisplayName = "Enable Camera Sway"))

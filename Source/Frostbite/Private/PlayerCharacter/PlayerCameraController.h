@@ -88,8 +88,11 @@ private:
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	FRotator GetScaledHeadSocketDeltaRotation();
 	
-	/** Updates the camera's field of view according to the Players movement. */
+	/** Updates the camera's field of view according to the Player's movement. */
 	void UpdateCameraFieldOfView();
+
+	/** Updates the camera's vignette intensity according to the Player's movement.*/
+	void UpdateCameraVignetteIntensity(float DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
 	void UpdateCameraDepthOfField(float DeltaTime);

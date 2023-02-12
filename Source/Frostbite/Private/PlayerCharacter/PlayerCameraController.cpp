@@ -60,6 +60,7 @@ void UPlayerCameraController::BeginPlay()
 		if(PlayerCharacter->GetCamera())
 		{
 			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfigurationData.DefaultFOV);
+			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfigurationData.DefaultVignetteIntensity;
 		}
 	}
 }
@@ -70,13 +71,17 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if(PlayerCharacter && PlayerCharacterController)
+	if(PlayerCharacter && PlayerCharacter->GetCamera() && PlayerCharacterController)
 	{
 		UpdateCameraRotation(); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
 		UpdateCameraLocation();
 		if(CameraConfigurationData.IsDynamicFOVEnabled)
 		{
 			UpdateCameraFieldOfView();
+		}
+		if(CameraConfigurationData.IsDynamicVignetteEnabled)
+		{
+			UpdateCameraVignetteIntensity(DeltaTime);
 		}
 		if(CameraConfigurationData.IsDynamicDOFEnabled)
 		{
@@ -250,6 +255,22 @@ void UPlayerCameraController::UpdateCameraFieldOfView()
 	} 
 
 	PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );
+}
+
+void UPlayerCameraController::UpdateCameraVignetteIntensity(float DeltaTime)
+{
+	if(PlayerCharacter->GetPlayerCharacterMovement())
+	{
+		const float TargetVignetteIntensity {PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting()
+			? CameraConfigurationData.SprintVignetteIntensity : CameraConfigurationData.DefaultVignetteIntensity};
+		
+		if(PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)
+		{
+			constexpr float InterpolationSpeed {3};
+			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity =
+				FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity, TargetVignetteIntensity, DeltaTime, InterpolationSpeed);
+		}
+	}
 }
 
 void UPlayerCameraController::UpdateCameraDepthOfField(float DeltaTime)
