@@ -31,14 +31,15 @@ void APlayerCharacterController::BeginPlay()
 	PlayerCharacter = Cast<APlayerCharacter>(this->GetPawn());
 	if(PlayerCharacter)
 	{
-		CharacterConfiguration.ApplyToPlayerCharacterInstance(PlayerCharacter, this);
+		if(PlayerCharacter->GetCharacterConfiguration()){}
+		CharacterConfigurationData = PlayerCharacter->GetCharacterConfiguration()->PlayerCharacterConfigurationData;
 	}
 	else
 	{
 		const FString PawnName {UKismetSystemLibrary::GetDisplayName(GetPawn())};
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController expected a Pawn of type PlayerCharacter, but got assigned to an instance of %s instead"), *PawnName);
 	}
-
+	
 	
 }
 
@@ -72,7 +73,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if(CanRotate())
 	{
-		AddYawInput(Value * CharacterConfiguration.RotationRate * 0.015);
+		AddYawInput(Value * CharacterConfigurationData.RotationRate * 0.015);
 	}
 }
 
@@ -80,7 +81,7 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if(CanRotate())
 	{
-		AddPitchInput(Value * CharacterConfiguration.RotationRate * 0.015);
+		AddPitchInput(Value * CharacterConfigurationData.RotationRate * 0.015);
 	}
 }
 
@@ -114,7 +115,7 @@ void APlayerCharacterController::HandleJumpActionPressed()
 		}
 		else
 		{
-			GetCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfiguration.JumpVelocity;
+			GetCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfigurationData.JumpVelocity;
 		}
 		GetCharacter()->Jump();
 	}
@@ -143,7 +144,7 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	IsCrouchPending = true;
 
-	if(CharacterConfiguration.EnableCrouchToggle)
+	if(CharacterConfigurationData.EnableCrouchToggle)
 	{
 		if(!GetCharacter()->GetMovementComponent()->IsCrouching() && CanCrouch())
 		{
@@ -245,18 +246,18 @@ bool APlayerCharacterController::CanJump()
 {
 	constexpr float RequiredClearance {60};
 	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration.IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling());
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfigurationData.IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling());
 }
 
 bool APlayerCharacterController::CanSprint()
 {
-	return CharacterConfiguration.IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
+	return CharacterConfigurationData.IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
 bool APlayerCharacterController::CanCrouch()
 {
-	return CharacterConfiguration.IsCrouchingEnabled;
+	return CharacterConfigurationData.IsCrouchingEnabled;
 }
 
 bool APlayerCharacterController::CanInteract()
@@ -287,7 +288,7 @@ bool APlayerCharacterController::CanStandUp()
 
 void APlayerCharacterController::StartSprinting()
 {
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration.SprintSpeed;
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfigurationData.SprintSpeed;
 	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(true, this);	
@@ -296,7 +297,7 @@ void APlayerCharacterController::StartSprinting()
 
 void APlayerCharacterController::StopSprinting()
 {
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration.WalkSpeed;
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfigurationData.WalkSpeed;
 	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(false, this);	

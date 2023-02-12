@@ -8,7 +8,7 @@
 /** Structure that defines the player characters configuration and behavior.
  *	This class provides a convenient way for designers to tweak the player settings, and can be stored inside a data asset.*/
 USTRUCT(BlueprintType)
-struct FPlayerCharacterConfiguration
+struct FPlayerCharacterConfigurationData
 {
 	GENERATED_USTRUCT_BODY()
 	
@@ -58,7 +58,7 @@ struct FPlayerCharacterConfiguration
 	float MinimumViewPitch {-75.f};
 	
 	/** Constructor with default values. */
-	FPlayerCharacterConfiguration()
+	FPlayerCharacterConfigurationData()
 	{
 		ValidateData();
 	}
@@ -67,6 +67,84 @@ struct FPlayerCharacterConfiguration
 	void ValidateData();
 
 	/** Applies the character configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacterInstance(class APlayerCharacter* PlayerCharacter, class APlayerCharacterController* PlayerController);
-	
+	void ApplyToPlayerCharacterInstance(class APlayerCharacter* PlayerCharacter);
 };
+
+/** Struct that defines the player's camera settings. */
+USTRUCT(BlueprintType)
+struct FPlayerCameraConfigurationData
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** The default camera offset in relation to the Pawn's RootComponent. Use this to set the general camera position of the player in relation to their body. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera Offset"))
+	FVector CameraOffset {FVector(22, 0, 75)};
+
+	/** When enabled, the camera's field of view will scale according to the velocity of the player. This makes higher speeds seem more intense. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = FieldOfView, Meta = (DisplayName = "Enable Dynamic FOV"))
+	bool IsDynamicFOVEnabled {true};
+	
+	/** The default FoV for the camera. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = FieldOfView, Meta = (DisplayName = "Default Field Of View"))
+	float DefaultFOV {90.f};
+
+	/** The FoV for the camera when the player is sprinting. Set this higher than the default FoV to get some perceived increase in speed for the player. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = FieldOfView, Meta = (DisplayName = "Sprint Field Of View", EditCondition = "IsDynamicFOVEnabled"))
+	float SprintFOV {96.f};
+
+	/** When enabled, the camera will shake according to the movement op the player. Turn this off to reduce the potential of motion sickness for the user. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CameraSway, Meta = (DisplayName = "Enable Camera Sway"))
+	bool IsCameraSwayEnabled {true};
+
+	/** The intensity of camera shake effects when moving. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CameraSway, Meta = (DisplayName = "Camera Shake Intensity"))
+	float CameraShakeIntensity {0.22};
+
+	/** When enabled, the camera will lean into the direction of movement and rotation when the character is moving at high speeds.
+	 *	This simulates the character leaning into the direction they're moving to balance out the centrifugal force when taking corners. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CentripetalRotation, Meta = (DisplayName = "Enable Camera Centripetal Rotation"))
+	bool IsCentripetalRotationEnabled {true};
+
+	/** The maximum allowed centripetal rotation. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CentripetalRotation, Meta = (DisplayName = "Max Centripetal Rotation Angle", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float MaxCentripetalRotation {14.f};
+
+	/** The intensity of the lean effect when the player is rotating their camera while sprinting. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CentripetalRotation, Meta = (DisplayName = "Centripetal Rotation Intensity", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float CentripetalRotationIntensity {2.f};
+
+	/** Multiplier for the centripetal rotation caused by lateral velocity of the player. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CentripetalRotation, Meta = (DisplayName = "Velocity Based Centripetal Rotation", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float VelocityCentripetalRotation {1.f};
+
+	/** Multiplier for the centripetal rotation caused by rotation of the player. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = CentripetalRotation, Meta = (DisplayName = "Rotation Based Centripetal Rotation", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float RotationCentripetalRotation {2.f};	
+ 
+	/** Constructor with default values. */
+	FPlayerCameraConfigurationData()
+	{
+	}
+ 
+};
+
+UCLASS(BlueprintType)
+class UPlayerCharacterConfiguration : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = PlayerCharacterConfiguration, Meta = (DisplayName = "Player Character Configuration"))
+	FPlayerCharacterConfigurationData PlayerCharacterConfigurationData {FPlayerCharacterConfigurationData()};
+};
+
+UCLASS(BlueprintType)
+class UPlayerCameraConfiguration : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = PlayerCameraConfiguration, Meta = (DisplayName = "Player Camera Configuration"))
+	FPlayerCameraConfigurationData PlayerCameraConfigurationData {FPlayerCameraConfigurationData()};
+};
+

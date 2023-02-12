@@ -15,10 +15,6 @@ class APlayerCharacterController : public APlayerController
 	GENERATED_BODY()
 
 protected:
-	/** The configuration to use for this player character. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterConfiguration, EditAnywhere, Category = Configuration, Meta = (DisplayName = "Configuration"))
-	FPlayerCharacterConfiguration CharacterConfiguration;
-
 	/** Reference to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = Actors, Meta = (DisplayName = "Player Character"))
 	class APlayerCharacter* PlayerCharacter {nullptr};
@@ -31,6 +27,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = Intention, Meta = (DisplayName = "Is Crouch Pending"))
 	bool IsCrouchPending {false};
 
+private:
+	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
+	UPROPERTY()
+	FPlayerCharacterConfigurationData CharacterConfigurationData;
+	
 public:
 	APlayerCharacterController();
 
@@ -42,11 +43,6 @@ public:
 	/** Returns the current horizontal rotation input value from the PlayerController. */
 	UFUNCTION(BlueprintPure, Category = Input, Meta = (DisplayName = "Get Horizontal Rotation Input"))
 	float GetHorizontalRotationInput();
-	
-	/** Returns the character configuration. */
-	UFUNCTION(BlueprintGetter, Category = Configuration, Meta = (DisplayName = "Get Player Character Configuration"))
-	FORCEINLINE FPlayerCharacterConfiguration GetPlayerCharacterConfiguration() const {return CharacterConfiguration;}
-	
 
 protected:
 	/** Checks whether the player can currently rotate. */

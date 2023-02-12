@@ -37,14 +37,15 @@ void UPlayerFlashlightController::TickComponent(float DeltaTime, ELevelTick Tick
 	if(PlayerCharacter && PlayerCharacter->GetCharacterMovement())
 	{
 		UpdateMovementAlpha(DeltaTime);
-		Frotator Rotation {}
+		//Frotator Rotation {}
 	}
 }
+
 
 void UPlayerFlashlightController::UpdateMovementAlpha(const float DeltaTime)
 {
 	const bool IsMoving {PlayerCharacter->GetCharacterMovement()->IsMovingOnGround() && PlayerCharacter->GetCharacterMovement()->Velocity.Length() > 1};
-	if(MovementAlpha != IsMoving)
+	if(MovementAlpha != static_cast<int8>(IsMoving))
 	{
 			constexpr float InterpolationSpeed {6};
 			MovementAlpha = FMath::FInterpTo(MovementAlpha, IsMoving, DeltaTime, InterpolationSpeed);
@@ -53,7 +54,7 @@ void UPlayerFlashlightController::UpdateMovementAlpha(const float DeltaTime)
 
 FRotator UPlayerFlashlightController::GetFlashlightFocusRotation()
 {
-	const float Pitch {PlayerCharacter->GetControlRotation().Pitch};
+	const float Pitch {static_cast<float>(PlayerCharacter->GetControlRotation().Pitch)};
 	if (UCameraComponent* Camera {PlayerCharacter->GetCamera()})
 	{
 		FVector Target {FVector()};
@@ -76,7 +77,7 @@ FRotator UPlayerFlashlightController::GetFlashlightFocusRotation()
 		Rotation = FRotator(FMath::Clamp(Rotation.Pitch, -PitchRange, PitchRange), Rotation.Yaw, Rotation.Roll);
 		return Rotation;
 	}
-	
+	return FRotator();
 }
 
 FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
@@ -85,7 +86,7 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
 	{
 		EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
 		float MappedVelocity {static_cast<float>(FMath::Clamp(PlayerCharacter->GetVelocity().Length() * 0.0325, 0.2f, 1.f))};
-		constexpr float GlobalIntensityMultiplier {0.5}
+		constexpr float GlobalIntensityMultiplier {0.5};
 
 		float PitchSwaySpeed {0.f};
 		float YawSwaySpeed {0.f};
@@ -98,32 +99,32 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation()
 		switch(MovementType)
 		{
 		case 0: PitchSwaySpeed = 1.65f;
-				PitchSwayIntensity = 1.7f;
-				YawSwaySpeed = 1.2f;
-				YawSwayIntensity = 1.25f;
-				RollSwaySpeed = 0.675f;
-				RollSwayIntensity = 1.5f;
+			PitchSwayIntensity = 1.7f;
+			YawSwaySpeed = 1.2f;
+			YawSwayIntensity = 1.25f;
+			RollSwaySpeed = 0.675f;
+			RollSwayIntensity = 1.5f;
 			break;
 		case 1: PitchSwaySpeed = 1.65f;
-				PitchSwayIntensity = 1.7f;
-				YawSwaySpeed = 1.2f;
-				YawSwayIntensity = 1.25f;
-				RollSwaySpeed = 0.675f;
-				RollSwayIntensity = 1.5f; ;
+			PitchSwayIntensity = 1.7f;
+			YawSwaySpeed = 1.2f;
+			YawSwayIntensity = 1.25f;
+			RollSwaySpeed = 0.675f;
+			RollSwayIntensity = 1.5f; ;
 			break;
 		case 2: PitchSwaySpeed = 9.55f;
-				PitchSwayIntensity = 3.21f;
-				YawSwaySpeed = 5.0f;
-				YawSwayIntensity = 1.5f;
-				RollSwaySpeed = 3.54f;
-				RollSwayIntensity = 1.56f;
+			PitchSwayIntensity = 3.21f;
+			YawSwaySpeed = 5.0f;
+			YawSwayIntensity = 1.5f;
+			RollSwaySpeed = 3.54f;
+			RollSwayIntensity = 1.56f;
 			break;
-			
-		
+		}
 	}
+	return FRotator(); // TODO: Finish function implementation.
 }
 
-void UPlayerFlashlightController::SetFlashlightEnabled(const bool Value)
+void UPlayerFlashlightController::SetFlashlightEnabled(bool Value)
 {
 	if(PlayerCharacter && PlayerCharacter->GetFlashlight() && PlayerCharacter->GetFlashlightSpringArm())
 	{
@@ -132,6 +133,7 @@ void UPlayerFlashlightController::SetFlashlightEnabled(const bool Value)
 		PlayerCharacter->GetFlashlight()->SetVisibility(Value);
 	}
 }
+	
 
 bool UPlayerFlashlightController::IsFlashlightEnabled()
 {

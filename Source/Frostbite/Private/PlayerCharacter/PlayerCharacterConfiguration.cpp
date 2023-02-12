@@ -5,7 +5,7 @@
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 
-void FPlayerCharacterConfiguration::ValidateData()
+void FPlayerCharacterConfigurationData::ValidateData()
 {
 	if(IsSprintingEnabled && WalkSpeed >= SprintSpeed)
 	{
@@ -18,18 +18,24 @@ void FPlayerCharacterConfiguration::ValidateData()
 	} */
 }
 
-void FPlayerCharacterConfiguration::ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter, APlayerCharacterController* PlayerControler)
+void FPlayerCharacterConfigurationData::ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter)
 {
 	if(!PlayerCharacter)
 	{
 		return;
 	}
-	// Restrict the CameraManager view pitch.
-	if(PlayerControler && PlayerControler->PlayerCameraManager)
+	if(PlayerCharacter->GetController())
 	{
-		PlayerControler->PlayerCameraManager->ViewPitchMax = MaximumViewPitch;
-		PlayerControler->PlayerCameraManager->ViewPitchMin = MinimumViewPitch;
+		if(const APlayerController* PlayerController {Cast<APlayerController>(PlayerCharacter->GetController())})
+		{
+			if(PlayerController->PlayerCameraManager)
+			{
+				PlayerController->PlayerCameraManager->ViewPitchMax = MaximumViewPitch;
+				PlayerController->PlayerCameraManager->ViewPitchMin = MinimumViewPitch;
+			}
+		}
 	}
+	
 	// Set character's movement component properties.
 	if(UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
 	{

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerCameraConfiguration.h"
+#include "PlayerCharacterConfiguration.h"
 #include "Components/ActorComponent.h"
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
@@ -31,9 +31,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = Animation, Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
 	bool IsCameraLockedToAnimation {false};
 
-	/** The camera configuration. */
-	UPROPERTY(BlueprintReadOnly, Category = Configuration, Meta = (DisplayName = "Camera Configuration", AllowPrivateAccess = "true"))
-	FPlayerCameraConfiguration CameraConfiguration;
+	/** The camera configuration. This data is copied from the PlayerCharacter. */
+	UPROPERTY()
+	FPlayerCameraConfigurationData CameraConfigurationData {FPlayerCameraConfigurationData()};
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	UPROPERTY()

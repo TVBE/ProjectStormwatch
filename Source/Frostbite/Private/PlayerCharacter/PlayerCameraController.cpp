@@ -25,16 +25,14 @@ void UPlayerCameraController::InitializeComponent()
 	{
 		HeadSocketTransform = PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor);
 		PlayerCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCameraController::HandleCharacterControllerChanged);
-
-		// Set the default camera properties for the PlayerCharacter's camera.
-		PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfiguration.DefaultFOV);
+		
 	}
 	else
 	{
-		FString Class {GetOwner()->GetClass()->GetDisplayNameText().ToString()};
+		const FString Class {GetOwner()->GetClass()->GetDisplayNameText().ToString()};
 		UE_LOG(LogPlayerCameraController, Error, TEXT("PlayerCameraController expected pawn of type APlayerCharacter, is attached to Actor of type %s instead"), *Class);
 	}
-	FString PawnInstance {GetOwner()->GetActorNameOrLabel()};
+	const FString PawnInstance {GetOwner()->GetActorNameOrLabel()};
 	UE_LOG(LogPlayerCameraController, VeryVerbose, TEXT("CameraController initialized for %s."), *PawnInstance);
 	Super::InitializeComponent();
 }
@@ -53,6 +51,18 @@ void UPlayerCameraController::HandleCharacterControllerChanged(APawn* Pawn, ACon
 void UPlayerCameraController::BeginPlay()
 {
 	Super::BeginPlay();
+	if(PlayerCharacter)
+	{
+		if(PlayerCharacter->GetCameraConfiguration())
+		{
+			CameraConfigurationData = PlayerCharacter->GetCameraConfiguration()->PlayerCameraConfigurationData;
+		}
+		if(PlayerCharacter->GetCamera())
+		{
+			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfigurationData.DefaultFOV);
+		}
+	}
+	
 }
 
 
@@ -65,7 +75,7 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		UpdateCameraRotation(); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
 		UpdateCameraLocation();
-		if(CameraConfiguration.EnableDynamicFOV)
+		if(CameraConfigurationData.IsDynamicFOVEnabled)
 		{
 			UpdateCameraFieldOfView();
 		}
@@ -90,16 +100,16 @@ void UPlayerCameraController::UpdateCameraLocation()
 	// If the player is looking forward or up, we don't need to perform any additional calculations and can set the relative location to the CameraConfiguration's default value.
 	if(PitchAlpha == 0.0)
 	{
-		Result = CameraConfiguration.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace());
+		Result = CameraConfigurationData.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace());
 		
 	}
 	else
 	{
 		// Get the target location if the player is not looking down.
-		const FVector UprightCameraLocation {CameraConfiguration.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace())};
+		const FVector UprightCameraLocation {CameraConfigurationData.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace())};
 		
 		// Calculate the target location if the player is looking down.
-		const FVector DownwardCameraLocation {PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(CameraConfiguration.CameraOffset.X * 0.625, 0, 0)
+		const FVector DownwardCameraLocation {PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(CameraConfigurationData.CameraOffset.X * 0.625, 0, 0)
 		- FVector(0, 0, (PlayerCharacter->GetVelocity().X * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
 		
 		// Interpolate between the two target locations depending on PitchAlpha.
@@ -118,8 +128,8 @@ void UPlayerCameraController::UpdateCameraLocation()
 // Called by TickComponent.
 void UPlayerCameraController::UpdateCameraRotation()
 {
-	const FRotator Sway {CameraConfiguration.EnableCameraSway ? GetCameraSwayRotation() : FRotator()};
-	const FRotator CentripetalRotation {CameraConfiguration.EnableCentripetalRotation ? GetCameraCentripetalRotation() : FRotator()};
+	const FRotator Sway {CameraConfigurationData.IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
+	const FRotator CentripetalRotation {CameraConfigurationData.IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
 	FRotator SocketRotation {FRotator()};
 	if(PlayerCharacter && !PlayerCharacter->GetIsTurningInPlace())
 	{
@@ -132,7 +142,8 @@ void UPlayerCameraController::UpdateCameraRotation()
 FRotator UPlayerCameraController::GetCameraSwayRotation()
 {
 	// Get the current ground movement type from the PlayerController.
-	if(!PlayerCharacter->GetPlayerCharacterMovement()) {return FRotator();};
+	if(!PlayerCharacter->GetPlayerCharacterMovement()) {return FRotator();}
+	
 	const EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
 	// Get a oscillation multiplier value according to the ground movement type.
 	float IntensityMultiplier {0.0};
@@ -152,8 +163,8 @@ FRotator UPlayerCameraController::GetCameraSwayRotation()
 					UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * 2.4))};
 	
 	// Calculate the target shake rotation.
-	float Intensity {CameraConfiguration.CameraShakeIntensity};
-	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * CameraConfiguration.CameraShakeIntensity};
+	float Intensity {CameraConfigurationData.CameraShakeIntensity};
+	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * CameraConfigurationData.CameraShakeIntensity};
 	
 	// Interpolate between the current camera roll and the target camera roll.
 	CameraShakeRoll = FMath::FInterpTo(CameraShakeRoll, TargetRollOffset, GetWorld()->GetDeltaSeconds(), 3.0);
@@ -170,14 +181,14 @@ FRotator UPlayerCameraController::GetCameraCentripetalRotation()
 	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
 	{
 		// When the player is moving laterally while sprinting, we want the camera to lean into that direction.
-		const float LateralVelocityMultiplier {0.002353f * CameraConfiguration.VelocityCentripetalRotation};
+		const float LateralVelocityMultiplier {0.002353f * CameraConfigurationData.VelocityCentripetalRotation};
 		const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
 		const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
 		const double LateralVelocityRoll {LocalVelocity.Y * LateralVelocityMultiplier};
 		
 		// When the player is rotating horizontally while sprinting, we want the camera to lean into that direction.
-		const float HorizontalRotationRoll{FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * CameraConfiguration.RotationCentripetalRotation,
-					-CameraConfiguration.MaxCentripetalRotation, CameraConfiguration.MaxCentripetalRotation)};
+		const float HorizontalRotationRoll{FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * CameraConfigurationData.RotationCentripetalRotation,
+					-CameraConfigurationData.MaxCentripetalRotation, CameraConfigurationData.MaxCentripetalRotation)};
 
 		TargetRoll = LateralVelocityRoll + HorizontalRotationRoll;
 	}
@@ -222,14 +233,19 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation()
 // Called by TickComponent.
 void UPlayerCameraController::UpdateCameraFieldOfView()
 {
-	FPlayerCharacterConfiguration Configuration {PlayerCharacterController->GetPlayerCharacterConfiguration()};
-	float TargetFOV {CameraConfiguration.DefaultFOV};
+	FPlayerCharacterConfigurationData Configuration {FPlayerCharacterConfigurationData()};
+	if(PlayerCharacter->GetCharacterConfiguration())
+	{
+		Configuration = PlayerCharacter->GetCharacterConfiguration()->PlayerCharacterConfigurationData;
+	}
+
+	float TargetFOV {CameraConfigurationData.DefaultFOV};
 	const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
 	const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
 	if (LocalVelocity.X > Configuration.WalkSpeed * 1.1)
 	{
 		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Configuration.WalkSpeed * 1.1, Configuration.SprintSpeed),
-					FVector2D(CameraConfiguration.DefaultFOV, CameraConfiguration.SprintFOV), LocalVelocity.X);
+					FVector2D(CameraConfigurationData.DefaultFOV, CameraConfigurationData.SprintFOV), LocalVelocity.X);
 	} 
 
 	PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );

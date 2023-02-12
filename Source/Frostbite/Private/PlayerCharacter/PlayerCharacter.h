@@ -3,9 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacterConfiguration.h"
 #include "GameFramework/Character.h"
-#include "PlayerVFXController.h"
 #include "PlayerCharacter.generated.h"
+
+class UPlayerCharacterConfiguration;
+class APlayerCharacterController;
+class UCameraComponent;
+class USpotLightComponent;
+class USpringArmComponent;
+class UPlayerAudioController;
+class UPlayerVfxController;
+class UPlayerCameraController;
+class UPlayerFlashlightController;
+class UPlayerCharacterMovementComponent;
 
 enum class EFoot : uint8;
 struct FFootstepData;
@@ -22,54 +33,62 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = Locomotion, Meta = (DisplayName = "Is Jumping"))
 	bool IsJumping;
 
+	/** The character configuration for the PlayerCharacter. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Configuration, Meta = (DisplayName = "Character Configuration"))
+	UPlayerCharacterConfiguration* CharacterConfiguration;
+
+	/** The camera configuration for the PlayerCharacter. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Configuration, Meta = (DisplayName = "Camera Configuration"))
+	UPlayerCameraConfiguration* CameraConfiguration;
+
 private:
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = Default, Meta = (DisplayName = "Player Character Controller"))
-	class APlayerCharacterController* PlayerCharacterController;
+	APlayerCharacterController* PlayerCharacterController;
 	
 	/** The camera for the player. */
 	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera"))
-	class UCameraComponent* Camera;
+	UCameraComponent* Camera;
 
 	/** The flashlight for the player. */
 	UPROPERTY(BlueprintGetter = GetFlashlight, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Flashlight"))
-	class USpotLightComponent* Flashlight;
+	USpotLightComponent* Flashlight;
 
 	/** The SpringArmComponent the flashlight is attached to. */
 	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Flashlight Arm"))
-	class USpringArmComponent* FlashlightSpringArm;
+	USpringArmComponent* FlashlightSpringArm;
 
 	/** The PlayerAudioController that handles player audio. */
 	UPROPERTY(BlueprintGetter = GetAudioController, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
-	class UPlayerAudioController* AudioController;
+	UPlayerAudioController* AudioController;
 
-	/** The PlayerVFXController that handles player VFX. */
-	UPROPERTY(BlueprintGetter = GetVFXController, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
-	class UPlayerVFXController* VFXController;
+	/** The PlayerVfxController that handles player VFX. */
+	UPROPERTY(BlueprintGetter = GetVfxController, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
+	UPlayerVfxController* VfxController;
 
 	/** The CameraController that handles first person camera behavior. */
 	UPROPERTY(BlueprintGetter = GetCameraController, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
-	class UPlayerCameraController* CameraController;
+	UPlayerCameraController* CameraController;
 
 	/** The FlashlightController that handles the flashlight behavior. */
 	UPROPERTY(BlueprintGetter = GetFlashlightController, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
-	class UPlayerFlashlightController* FlashlightController;
+	UPlayerFlashlightController* FlashlightController;
 
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
-	class UPlayerCharacterMovementComponent* PlayerCharacterMovement;
+	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 
 	/** The AudioComponent for general player audio. */
 	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Body Audio Component"))
-	class UAudioComponent* BodyAudioComponent;
+	UAudioComponent* BodyAudioComponent;
 
 	/** The AudioComponent for the player's left foot. */
 	UPROPERTY(BlueprintGetter = GetLeftFootAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
-	class UAudioComponent* LeftFootAudioComponent;
+	UAudioComponent* LeftFootAudioComponent;
 
 	/** The AudioComponent for the player's right foot.*/
 	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
-	class UAudioComponent* RightFootAudioComponent;
+	UAudioComponent* RightFootAudioComponent;
 	
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
@@ -89,11 +108,18 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	// Called after the constructor but before BeginPlay().
 	virtual void PostInitProperties() override;
 
+	/** Returns the Character configuration. */
+	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Character Configuration"))
+	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const {return CharacterConfiguration; }
 
-public:
+	/** Returns the Camera configuration. */
+	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Character Configuration"))
+	FORCEINLINE UPlayerCameraConfiguration* GetCameraConfiguration() const {return CameraConfiguration; }
+	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
 	UFUNCTION(BlueprintGetter, Category = Locomotion, Meta = (DisplayName = "PlayerCharacterController"))
 	FORCEINLINE APlayerCharacterController* GetPlayerCharacterController() const {return PlayerCharacterController; }
@@ -124,7 +150,7 @@ public:
 
 	/** Returns the Player VFX Controller*/
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
-	FORCEINLINE UPlayerVFXController* GetVFXController() const {return VFXController; }
+	FORCEINLINE UPlayerVfxController* GetVfxController() const {return VfxController; }
 
 	/** Returns the PlayerCharacterMovementComponent. */
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))

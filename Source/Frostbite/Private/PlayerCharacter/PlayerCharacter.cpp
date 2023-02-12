@@ -12,6 +12,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
+#include "PlayerVfxController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 
@@ -99,33 +100,45 @@ APlayerCharacter::APlayerCharacter()
 	AudioController->bEditableWhenInherited = false;
 
 	// Construct VFX Controller
-	VFXController = CreateDefaultSubobject<UPlayerVFXController>(TEXT("Player VFX Controller"));
-	VFXController->bWantsInitializeComponent = true;
-	VFXController->bEditableWhenInherited = false;
+	VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("Player VFX Controller"));
+	VfxController->bWantsInitializeComponent = true;
+	VfxController->bEditableWhenInherited = false;
 }
 
 void APlayerCharacter::PostInitProperties()
 {
 	Super::PostInitProperties();
 
+	/** If the configuration properties are not properly serialized, construct a default data asset object instead. */
+	if(!CharacterConfiguration)
+	{
+		CharacterConfiguration = NewObject<UPlayerCharacterConfiguration>();
+		//UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerCharacterConfiguration asset was specified for PlayerCharacter, using default settings instead."))
+	}
+	if(!CameraConfiguration)
+	{
+		CameraConfiguration = NewObject<UPlayerCameraConfiguration>();
+		//UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerCameraConfiguration asset was specified for PlayerCharacter, using default settings instead."))
+	}
+	if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
+	{
+		PlayerCharacterMovement = PlayerCharacterMovementComponent;
+	}
+	else if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, -1.0f, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
+	}
+
 #if WITH_EDITOR
 	if(!(IsRunningCommandlet() && UE::IsSavingPackage()) && IsRunningGame())
 	{
-		if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
-		{
-			PlayerCharacterMovement = PlayerCharacterMovementComponent;
-		}
-		else
-		{
-			UE_LOG(LogPlayerCharacter, Error, TEXT("PlayerCharacter does not have PlayerCharacterMovementComponent set as its CharacterMovementComponent."))
-		}
 		/** Check if this instance of a PlayerCharacter is a blueprint derived class or not. */
 		ValidateObject(this, "PlayerCharacter");
 		/** Check if all components have been succesfully initialized. */
 		ValidateObject(CameraController, "CameraController");
 		ValidateObject(FlashlightController, "FlashlightController");
 		ValidateObject(AudioController, "AudioController");
-		ValidateObject(VFXController, "VFXController");
+		ValidateObject(VfxController, "VfxController");
 	}
 #endif
 }
@@ -139,6 +152,10 @@ void APlayerCharacter::BeginPlay()
 		PlayerCharacterController = PlayerController;
 	}
 	ReceiveControllerChangedDelegate.AddDynamic(this, &APlayerCharacter::HandleControllerChange);
+	if(CharacterConfiguration && PlayerCharacterController)
+	{
+		CharacterConfiguration->PlayerCharacterConfigurationData.ApplyToPlayerCharacterInstance(this);
+	}
 }
 
 // Called when the controller is changed

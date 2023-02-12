@@ -36,7 +36,7 @@ public:
 
 	/** Enables or disables the flashlight. */
 	UFUNCTION(BlueprintCallable, Category = Default, Meta = (DisplayName = "Set Flashlight Enabled"))
-	void SetFlashlightEnabled(const bool Value);
+	void SetFlashlightEnabled(bool Value);
 
 	/** Returns whether the flashlight is enabled or not. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Is Flashlight Enabled"))
