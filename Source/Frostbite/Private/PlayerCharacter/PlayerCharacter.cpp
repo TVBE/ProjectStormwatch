@@ -13,6 +13,7 @@
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
 #include "PlayerVfxController.h"
+#include "Core/PlayerSubsystem.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 
@@ -126,7 +127,7 @@ void APlayerCharacter::PostInitProperties()
 	}
 	else if(GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, -1.0f, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
+		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
 
 #if WITH_EDITOR
@@ -155,6 +156,15 @@ void APlayerCharacter::BeginPlay()
 	if(CharacterConfiguration && PlayerCharacterController)
 	{
 		CharacterConfiguration->ApplyToPlayerCharacterInstance(this);
+	}
+
+	// Registers this player character to the player character subsystem.
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			PlayerSubsystem->RegisterPlayerCharacter(this);
+		}
 	}
 }
 

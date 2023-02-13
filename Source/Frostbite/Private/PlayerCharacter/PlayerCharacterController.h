@@ -14,7 +14,11 @@ UCLASS(Blueprintable, ClassGroup=(PlayerCharacter))
 class APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
-
+public:
+	/** When true, the player can receive user input. */
+	UPROPERTY()
+	bool CanProcessMovementInput {false};
+	
 protected:
 	/** Reference to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = Actors, Meta = (DisplayName = "Player Character"))

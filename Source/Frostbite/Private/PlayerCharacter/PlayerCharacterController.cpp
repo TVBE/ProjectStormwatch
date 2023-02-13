@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "GameFramework/PawnMovementComponent.h"
+
 // Called on construction
 APlayerCharacterController::APlayerCharacterController()
 {
@@ -73,6 +74,7 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanRotate())
 	{
 		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
@@ -81,6 +83,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanRotate())
 	{
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
@@ -89,6 +92,7 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanMove())
 	{
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw, 0)};
@@ -98,6 +102,7 @@ void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 
 void APlayerCharacterController::HandleLateralMovementInput(float Value)
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanMove())
 	{
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
@@ -107,6 +112,7 @@ void APlayerCharacterController::HandleLateralMovementInput(float Value)
 
 void APlayerCharacterController::HandleJumpActionPressed()
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanJump())
 	{
 		const float Clearance = GetClearanceAbovePawn();
@@ -125,6 +131,7 @@ void APlayerCharacterController::HandleJumpActionPressed()
 
 void APlayerCharacterController::HandleSprintActionPressed()
 {
+	if(!CanProcessMovementInput) {return;}
 	IsSprintPending = true;
 	if(CanSprint())
 	{
@@ -135,6 +142,7 @@ void APlayerCharacterController::HandleSprintActionPressed()
 
 void APlayerCharacterController::HandleSprintActionReleased()
 {
+	if(!CanProcessMovementInput) {return;}
 	IsSprintPending = false;
 	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
 	{
@@ -144,6 +152,7 @@ void APlayerCharacterController::HandleSprintActionReleased()
 
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
+	if(!CanProcessMovementInput) {return;}
 	IsCrouchPending = true;
 
 	if(CharacterConfiguration->EnableCrouchToggle)
@@ -166,11 +175,13 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 
 void APlayerCharacterController::HandleCrouchActionReleased()
 {
+	if(!CanProcessMovementInput) {return;}
 	IsCrouchPending = false;
 }
 
 void APlayerCharacterController::HandleFlashlightActionPressed()
 {
+	if(!CanProcessMovementInput) {return;}
 	if(CanToggleFlashlight())
 	{
 		PlayerCharacter->GetFlashlightController()->SetFlashlightEnabled(!PlayerCharacter->GetFlashlightController()->IsFlashlightEnabled());
@@ -179,6 +190,7 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 
 void APlayerCharacterController::UpdateCurrentActions()
 {
+	if(!CanProcessMovementInput) {return;}
 	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting() && !CanSprint())
 	{
 		StopSprinting();

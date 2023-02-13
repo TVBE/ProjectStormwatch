@@ -59,6 +59,12 @@ void UPlayerCameraController::BeginPlay()
 			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfiguration->DefaultVignetteIntensity;
 		}
 	}
+	// Sets the starting color to black so that we can fade in the camera when the player is fully initialized.
+	if(const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		const FLinearColor Color(0.0f, 0.0f, 0.0f, 1.0f);
+		PlayerController->PlayerCameraManager->SetManualCameraFade(1.0f, Color, false);
+	}
 }
 
 
@@ -311,6 +317,14 @@ float UPlayerCameraController::GetFocalDistance() const
 		return (HitResult.Location - CameraLocation).Size();
 	}
 	return TraceLength;
+}
+
+void UPlayerCameraController::FadeFromBlack(const float Duration)
+{
+	if(const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()){
+		const FLinearColor FadeColor(0.0f, 0.0f, 0.0f, 1.0f);
+		PlayerController->PlayerCameraManager->StartCameraFade(1.0f, 0.0f, Duration, FadeColor);
+	}
 }
 
 

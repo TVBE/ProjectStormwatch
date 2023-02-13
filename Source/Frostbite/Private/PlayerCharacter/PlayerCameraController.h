@@ -71,6 +71,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void FadeFromBlack(const float Duration);
+
 private:
 	/** Tries to get the owning pawn's player controller as PlayerCharacterController. */
 	UFUNCTION()
