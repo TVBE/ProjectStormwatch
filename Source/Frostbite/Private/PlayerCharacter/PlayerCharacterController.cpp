@@ -31,8 +31,10 @@ void APlayerCharacterController::BeginPlay()
 	PlayerCharacter = Cast<APlayerCharacter>(this->GetPawn());
 	if(PlayerCharacter)
 	{
-		if(PlayerCharacter->GetCharacterConfiguration()){}
-		CharacterConfigurationData = PlayerCharacter->GetCharacterConfiguration()->PlayerCharacterConfigurationData;
+		if(PlayerCharacter->GetCharacterConfiguration())
+		{
+			CharacterConfiguration = PlayerCharacter->GetCharacterConfiguration();	
+		}
 	}
 	else
 	{
@@ -73,7 +75,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if(CanRotate())
 	{
-		AddYawInput(Value * CharacterConfigurationData.RotationRate * 0.015);
+		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
 	}
 }
 
@@ -81,7 +83,7 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if(CanRotate())
 	{
-		AddPitchInput(Value * CharacterConfigurationData.RotationRate * 0.015);
+		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
 	}
 }
 
@@ -107,7 +109,7 @@ void APlayerCharacterController::HandleJumpActionPressed()
 {
 	if(CanJump())
 	{
-		float Clearance = GetClearanceAbovePawn();
+		const float Clearance = GetClearanceAbovePawn();
 		if(Clearance <= 175 && Clearance != -1.f)
 		{
 			// We limit the JumpZVelocity of the player under a certain clearance to prevent the character from bumping its head into the object above.
@@ -115,7 +117,7 @@ void APlayerCharacterController::HandleJumpActionPressed()
 		}
 		else
 		{
-			GetCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfigurationData.JumpVelocity;
+			GetCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfiguration->JumpVelocity;
 		}
 		GetCharacter()->Jump();
 	}
@@ -144,7 +146,7 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	IsCrouchPending = true;
 
-	if(CharacterConfigurationData.EnableCrouchToggle)
+	if(CharacterConfiguration->EnableCrouchToggle)
 	{
 		if(!GetCharacter()->GetMovementComponent()->IsCrouching() && CanCrouch())
 		{
@@ -214,7 +216,7 @@ void APlayerCharacterController::UpdatePendingActions()
 	}
 }
 
-bool APlayerCharacterController::GetHasMovementInput()
+bool APlayerCharacterController::GetHasMovementInput() const
 {
 	if(InputComponent != nullptr)
 	{
@@ -223,7 +225,7 @@ bool APlayerCharacterController::GetHasMovementInput()
 	return 0.0;
 }
 
-float APlayerCharacterController::GetHorizontalRotationInput()
+float APlayerCharacterController::GetHorizontalRotationInput() const
 {
 	if(InputComponent != nullptr)
 	{
@@ -232,40 +234,40 @@ float APlayerCharacterController::GetHorizontalRotationInput()
 	return 0.0;
 }
 
-bool APlayerCharacterController::CanRotate()
+bool APlayerCharacterController::CanRotate() const
 {
 	return true;
 }
 
-bool APlayerCharacterController::CanMove()
+bool APlayerCharacterController::CanMove() const
 {
 	return true; // Temp
 }
 
-bool APlayerCharacterController::CanJump()
+bool APlayerCharacterController::CanJump() const
 {
 	constexpr float RequiredClearance {60};
 	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfigurationData.IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling());
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling());
 }
 
-bool APlayerCharacterController::CanSprint()
+bool APlayerCharacterController::CanSprint() const
 {
-	return CharacterConfigurationData.IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
+	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
-bool APlayerCharacterController::CanCrouch()
+bool APlayerCharacterController::CanCrouch() const
 {
-	return CharacterConfigurationData.IsCrouchingEnabled;
+	return CharacterConfiguration->IsCrouchingEnabled;
 }
 
-bool APlayerCharacterController::CanInteract()
+bool APlayerCharacterController::CanInteract() const
 {
 	return false; // Temp
 }
 
-bool APlayerCharacterController::CanToggleFlashlight()
+bool APlayerCharacterController::CanToggleFlashlight() const
 {
 	if(PlayerCharacter && PlayerCharacter->GetFlashlightController())
 	{
@@ -279,7 +281,7 @@ bool APlayerCharacterController::CanToggleFlashlight()
 }
 
 
-bool APlayerCharacterController::CanStandUp()
+bool APlayerCharacterController::CanStandUp() const
 {
 	constexpr float RequiredClearance {100};
 	const float Clearance {GetClearanceAbovePawn()};
@@ -288,7 +290,7 @@ bool APlayerCharacterController::CanStandUp()
 
 void APlayerCharacterController::StartSprinting()
 {
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfigurationData.SprintSpeed;
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->SprintSpeed;
 	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(true, this);	
@@ -297,7 +299,7 @@ void APlayerCharacterController::StartSprinting()
 
 void APlayerCharacterController::StopSprinting()
 {
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfigurationData.WalkSpeed;
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->WalkSpeed;
 	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(false, this);	

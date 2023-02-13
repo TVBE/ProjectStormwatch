@@ -21,11 +21,12 @@ UPlayerCameraController::UPlayerCameraController()
 void UPlayerCameraController::InitializeComponent()
 {
 	PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	if(PlayerCharacter != nullptr)
+	if(PlayerCharacter)
 	{
 		HeadSocketTransform = PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor);
 		PlayerCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCameraController::HandleCharacterControllerChanged);
-		
+
+		CameraConfiguration = PlayerCharacter->GetCameraConfiguration();
 	}
 	else
 	{
@@ -40,8 +41,7 @@ void UPlayerCameraController::InitializeComponent()
 // Called after the pawn's controller has changed.
 void UPlayerCameraController::HandleCharacterControllerChanged(APawn* Pawn, AController* OldController, AController* NewController)
 {
-	APlayerCharacterController* Controller {Cast<APlayerCharacterController>(NewController)};
-	if(Controller != nullptr)
+	if(APlayerCharacterController* Controller {Cast<APlayerCharacterController>(NewController)})
 	{
 		PlayerCharacterController = Controller;
 	}
@@ -53,14 +53,10 @@ void UPlayerCameraController::BeginPlay()
 	Super::BeginPlay();
 	if(PlayerCharacter)
 	{
-		if(PlayerCharacter->GetCameraConfiguration())
-		{
-			CameraConfigurationData = PlayerCharacter->GetCameraConfiguration()->PlayerCameraConfigurationData;
-		}
 		if(PlayerCharacter->GetCamera())
 		{
-			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfigurationData.DefaultFOV);
-			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfigurationData.DefaultVignetteIntensity;
+			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfiguration->DefaultFOV);
+			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfiguration->DefaultVignetteIntensity;
 		}
 	}
 }
@@ -75,15 +71,15 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		UpdateCameraRotation(); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
 		UpdateCameraLocation();
-		if(CameraConfigurationData.IsDynamicFOVEnabled)
+		if(CameraConfiguration->IsDynamicFOVEnabled)
 		{
 			UpdateCameraFieldOfView();
 		}
-		if(CameraConfigurationData.IsDynamicVignetteEnabled)
+		if(CameraConfiguration->IsDynamicVignetteEnabled)
 		{
 			UpdateCameraVignetteIntensity(DeltaTime);
 		}
-		if(CameraConfigurationData.IsDynamicDOFEnabled)
+		if(CameraConfiguration->IsDynamicDOFEnabled)
 		{
 			UpdateCameraDepthOfField(DeltaTime);
 		}
@@ -106,16 +102,16 @@ void UPlayerCameraController::UpdateCameraLocation()
 	// If the player is looking forward or up, we don't need to perform any additional calculations and can set the relative location to the CameraConfiguration's default value.
 	if(PitchAlpha == 0.0)
 	{
-		Result = CameraConfigurationData.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace());
+		Result = CameraConfiguration->CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace());
 		
 	}
 	else
 	{
 		// Get the target location if the player is not looking down.
-		const FVector UprightCameraLocation {CameraConfigurationData.CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace())};
+		const FVector UprightCameraLocation {CameraConfiguration->CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace())};
 		
 		// Calculate the target location if the player is looking down.
-		const FVector DownwardCameraLocation {PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(CameraConfigurationData.CameraOffset.X * 0.625, 0, 0)
+		const FVector DownwardCameraLocation {PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(CameraConfiguration->CameraOffset.X * 0.625, 0, 0)
 		- FVector(0, 0, (PlayerCharacter->GetVelocity().X * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
 		
 		// Interpolate between the two target locations depending on PitchAlpha.
@@ -134,8 +130,8 @@ void UPlayerCameraController::UpdateCameraLocation()
 // Called by TickComponent.
 void UPlayerCameraController::UpdateCameraRotation()
 {
-	const FRotator Sway {CameraConfigurationData.IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
-	const FRotator CentripetalRotation {CameraConfigurationData.IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
+	const FRotator Sway {CameraConfiguration->IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
+	const FRotator CentripetalRotation {CameraConfiguration->IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
 	FRotator SocketRotation {FRotator()};
 	if(!PlayerCharacter->GetIsTurningInPlace())
 	{
@@ -169,8 +165,8 @@ FRotator UPlayerCameraController::GetCameraSwayRotation()
 					UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * 2.4))};
 	
 	// Calculate the target shake rotation.
-	float Intensity {CameraConfigurationData.CameraShakeIntensity};
-	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * CameraConfigurationData.CameraShakeIntensity};
+	float Intensity {CameraConfiguration->CameraShakeIntensity};
+	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * CameraConfiguration->CameraShakeIntensity};
 	
 	// Interpolate between the current camera roll and the target camera roll.
 	CameraShakeRoll = FMath::FInterpTo(CameraShakeRoll, TargetRollOffset, GetWorld()->GetDeltaSeconds(), 3.0);
@@ -187,14 +183,14 @@ FRotator UPlayerCameraController::GetCameraCentripetalRotation()
 	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
 	{
 		// When the player is moving laterally while sprinting, we want the camera to lean into that direction.
-		const float LateralVelocityMultiplier {0.002353f * CameraConfigurationData.VelocityCentripetalRotation};
+		const float LateralVelocityMultiplier {0.002353f * CameraConfiguration->VelocityCentripetalRotation};
 		const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
 		const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
 		const double LateralVelocityRoll {LocalVelocity.Y * LateralVelocityMultiplier};
 		
 		// When the player is rotating horizontally while sprinting, we want the camera to lean into that direction.
-		const float HorizontalRotationRoll{FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * CameraConfigurationData.RotationCentripetalRotation,
-					-CameraConfigurationData.MaxCentripetalRotation, CameraConfigurationData.MaxCentripetalRotation)};
+		const float HorizontalRotationRoll{FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * CameraConfiguration->RotationCentripetalRotation,
+					-CameraConfiguration->MaxCentripetalRotation, CameraConfiguration->MaxCentripetalRotation)};
 
 		TargetRoll = LateralVelocityRoll + HorizontalRotationRoll;
 	}
@@ -239,30 +235,27 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation()
 // Called by TickComponent.
 void UPlayerCameraController::UpdateCameraFieldOfView()
 {
-	FPlayerCharacterConfigurationData Configuration {FPlayerCharacterConfigurationData()};
-	if(PlayerCharacter->GetCharacterConfiguration())
+	if(const UPlayerCharacterConfiguration* Configuration {PlayerCharacter->GetCharacterConfiguration()})
 	{
-		Configuration = PlayerCharacter->GetCharacterConfiguration()->PlayerCharacterConfigurationData;
+		float TargetFOV {CameraConfiguration->DefaultFOV};
+		const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
+		const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
+		if (LocalVelocity.X > Configuration->WalkSpeed * 1.1)
+		{
+			TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Configuration->WalkSpeed * 1.1, Configuration->SprintSpeed),
+						FVector2D(CameraConfiguration->DefaultFOV, CameraConfiguration->SprintFOV), LocalVelocity.X);
+		} 
+
+		PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );
 	}
-
-	float TargetFOV {CameraConfigurationData.DefaultFOV};
-	const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
-	const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
-	if (LocalVelocity.X > Configuration.WalkSpeed * 1.1)
-	{
-		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Configuration.WalkSpeed * 1.1, Configuration.SprintSpeed),
-					FVector2D(CameraConfigurationData.DefaultFOV, CameraConfigurationData.SprintFOV), LocalVelocity.X);
-	} 
-
-	PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );
 }
 
-void UPlayerCameraController::UpdateCameraVignetteIntensity(float DeltaTime)
+void UPlayerCameraController::UpdateCameraVignetteIntensity(const float DeltaTime)
 {
 	if(PlayerCharacter->GetPlayerCharacterMovement())
 	{
 		const float TargetVignetteIntensity {PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting()
-			? CameraConfigurationData.SprintVignetteIntensity : CameraConfigurationData.DefaultVignetteIntensity};
+			? CameraConfiguration->SprintVignetteIntensity : CameraConfiguration->DefaultVignetteIntensity};
 		
 		if(PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)
 		{
@@ -273,30 +266,30 @@ void UPlayerCameraController::UpdateCameraVignetteIntensity(float DeltaTime)
 	}
 }
 
-void UPlayerCameraController::UpdateCameraDepthOfField(float DeltaTime)
+void UPlayerCameraController::UpdateCameraDepthOfField(const float DeltaTime)
 {
 	float FocalDistance {GetFocalDistance()};
-	FocalDistance = FMath::Clamp(FocalDistance, CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance);
+	FocalDistance = FMath::Clamp(FocalDistance, CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance);
 	
 	const float BlurFocus {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(FVector2D(CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance),
-			FVector2D(CameraConfigurationData.MacroBlurFocus,CameraConfigurationData.LongShotBlurFocus),FocalDistance))};
+		(FVector2D(CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance),
+			FVector2D(CameraConfiguration->MacroBlurFocus,CameraConfiguration->LongShotBlurFocus),FocalDistance))};
 	
 	const float BlurAmount {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(FVector2D(CameraConfigurationData.MinimumFocalDistance, CameraConfigurationData.MaximumFocalDistance),
-			FVector2D(CameraConfigurationData.MacroBlurAmount,CameraConfigurationData.LongShotBlurAmount),FocalDistance))};
+		(FVector2D(CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance),
+			FVector2D(CameraConfiguration->MacroBlurAmount,CameraConfiguration->LongShotBlurAmount),FocalDistance))};
 
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance =
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance, FocalDistance, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance, FocalDistance, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 	
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount = 
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 	
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius =
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, CameraConfigurationData.DynamicDofSpeed);
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 }
 
-float UPlayerCameraController::GetFocalDistance()
+float UPlayerCameraController::GetFocalDistance() const
 {
 	
 	if (!PlayerCharacter || !PlayerCharacter->GetCamera())

@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PlayerCharacterMovementComponent.h"
 #include "PlayerCharacterConfiguration.h"
 #include "PlayerCharacterController.generated.h"
+
+class APlayerCharacter;
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, ClassGroup=(PlayerCharacter))
@@ -17,7 +18,7 @@ class APlayerCharacterController : public APlayerController
 protected:
 	/** Reference to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = Actors, Meta = (DisplayName = "Player Character"))
-	class APlayerCharacter* PlayerCharacter {nullptr};
+	APlayerCharacter* PlayerCharacter {nullptr};
 
 	/** If true, the player is currently pressing the sprint button. */
 	UPROPERTY(BlueprintReadOnly, Category = Intention, Meta = (DisplayName = "Is Sprint Pending"))
@@ -30,7 +31,7 @@ protected:
 private:
 	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
 	UPROPERTY()
-	FPlayerCharacterConfigurationData CharacterConfigurationData;
+	UPlayerCharacterConfiguration* CharacterConfiguration {nullptr};
 	
 public:
 	APlayerCharacterController();
@@ -38,44 +39,44 @@ public:
 public:
 	/** Returns whether the PlayerController has any movement input or not. */
 	UFUNCTION(BlueprintPure, Category = Input, Meta = (DisplayName = "Has Any Movement Input"))
-	bool GetHasMovementInput();
+	bool GetHasMovementInput() const;
 
 	/** Returns the current horizontal rotation input value from the PlayerController. */
 	UFUNCTION(BlueprintPure, Category = Input, Meta = (DisplayName = "Get Horizontal Rotation Input"))
-	float GetHorizontalRotationInput();
+	float GetHorizontalRotationInput() const;
 
 protected:
 	/** Checks whether the player can currently rotate. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Rotate"))
-	bool CanRotate();
+	bool CanRotate() const;
 	
 	/** Checks whether the player can currently move. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Move"))
-	bool CanMove();
+	bool CanMove() const;
 	
 	/** Checks whether the player can currently jump. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Jump"))
-	bool CanJump();
+	bool CanJump() const;
 	
 	/** Checks whether the player can currently sprint. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Sprint"))
-	bool CanSprint();
+	bool CanSprint() const;
 	
 	/** Checks whether the player can currently enter crouch. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Crouch"))
-	bool CanCrouch();
+	bool CanCrouch() const;
 	
 	/** Checks whether the player can stand up and stop crouching. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Stand Up"))
-	bool CanStandUp();
+	bool CanStandUp() const;
 	
 	/** Checks whether the player is currently looking at an interactable object. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Interact"))
-	bool CanInteract();
+	bool CanInteract() const;
 	
 	/** Checks whether the player can toggle the flashlight. */
 	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Can Toggle Flashlight"))
-	bool CanToggleFlashlight();
+	bool CanToggleFlashlight() const;
 	
 	/** Increases the PlayerMovementComponent maximum forward speed. */
 	UFUNCTION(BlueprintCallable, Category = Locomotion, Meta = (DisplayName = "Start Sprinting"))

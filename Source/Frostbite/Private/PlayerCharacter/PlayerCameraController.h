@@ -8,6 +8,9 @@
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
 
+class APlayerCharacter;
+class APlayerCharacterController;
+
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.
  *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view.
  *	@Brief ActorComponent for managing player camera behavior.
@@ -21,11 +24,11 @@ class UPlayerCameraController : public UActorComponent
 private:
 	/** Reference to the PlayerCharacter. */
 	UPROPERTY()
-	class APlayerCharacter* PlayerCharacter;
+	APlayerCharacter* PlayerCharacter;
 
 	/** Reference to PlayerCharacterController. */
 	UPROPERTY()
-	class APlayerCharacterController* PlayerCharacterController;
+	APlayerCharacterController* PlayerCharacterController;
 	
 	/** When set to true, the player does not have full rotational control over the camera's orientation. */
 	UPROPERTY(BlueprintReadOnly, Category = Animation, Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
@@ -33,7 +36,7 @@ private:
 
 	/** The camera configuration. This data is copied from the PlayerCharacter. */
 	UPROPERTY()
-	FPlayerCameraConfigurationData CameraConfigurationData {FPlayerCameraConfigurationData()};
+	UPlayerCameraConfiguration* CameraConfiguration {nullptr};
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	UPROPERTY()
@@ -92,11 +95,11 @@ private:
 	void UpdateCameraFieldOfView();
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(float DeltaTime);
+	void UpdateCameraVignetteIntensity(const float DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(float DeltaTime);
+	void UpdateCameraDepthOfField(const float DeltaTime);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
-	float GetFocalDistance();
+	float GetFocalDistance() const;
 };

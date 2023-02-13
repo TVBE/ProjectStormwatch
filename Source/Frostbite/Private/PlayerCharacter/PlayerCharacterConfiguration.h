@@ -5,13 +5,12 @@
 #include "CoreMinimal.h"
 #include "PlayerCharacterConfiguration.generated.h"
 
-/** Structure that defines the player characters configuration and behavior.
- *	This class provides a convenient way for designers to tweak the player settings, and can be stored inside a data asset.*/
-USTRUCT(BlueprintType)
-struct FPlayerCharacterConfigurationData
+UCLASS(BlueprintType)
+class UPlayerCharacterConfiguration : public UDataAsset
 {
-	GENERATED_USTRUCT_BODY()
-	
+	GENERATED_BODY()
+
+public:
 	/** Defines the default movement speed.*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = General, Meta = (DisplayName = "Default Movement Speed", ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
 	float WalkSpeed {300.f};
@@ -58,7 +57,7 @@ struct FPlayerCharacterConfigurationData
 	float MinimumViewPitch {-75.f};
 	
 	/** Constructor with default values. */
-	FPlayerCharacterConfigurationData()
+	UPlayerCharacterConfiguration()
 	{
 		ValidateData();
 	}
@@ -70,12 +69,12 @@ struct FPlayerCharacterConfigurationData
 	void ApplyToPlayerCharacterInstance(class APlayerCharacter* PlayerCharacter);
 };
 
-/** Struct that defines the player's camera settings. */
-USTRUCT(BlueprintType)
-struct FPlayerCameraConfigurationData
+UCLASS(BlueprintType)
+class UPlayerCameraConfiguration : public UDataAsset
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
+public:
 	/** The default camera offset in relation to the Pawn's RootComponent. Use this to set the general camera position of the player in relation to their body. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera Offset"))
 	FVector CameraOffset {FVector(22, 0, 75)};
@@ -98,31 +97,31 @@ struct FPlayerCameraConfigurationData
 	
 	/** The minimum focus distance that the dynamic depth of field algorithm should enforce, in Unreal Units (cm). */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Minimum Focal Distance", ClampMin = "0", ClampMax = "50000", UIMin = "0", UIMax = "50000", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	int MinimumFocalDistance {0};
+	int MinimumFocalDistance {100};
 	
 	/** The maximum focus distance that the dynamic depth of field algorithm should enforce. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Maximum Focal Distance", ClampMin = "0", ClampMax = "50000", UIMin = "0", UIMax = "50000", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	int MaximumFocalDistance {25000};
+	int MaximumFocalDistance {10000};
 	
 	/** The depth blur Focus at the smallest focal distance. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Macro Blur Focus", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	float MacroBlurFocus {0.65};
+	float MacroBlurFocus {0.05};
 	
 	/** The depth blur focus at the largest focal distance. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Long Shot Blur Focus", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	float LongShotBlurFocus {0.2};
+	float LongShotBlurFocus {0.365};
 
 	/** The depth blur Amount at the smallest focal distance. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Macro Blur Intensity", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	float MacroBlurAmount {0.65};
+	float MacroBlurAmount {1.4};
 	
 	/** The depth blur Amount at the largest focal distance. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Long Shot Blur Intensity", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	float LongShotBlurAmount {0.2};
+	float LongShotBlurAmount {1.1};
 	
 	/** The interpolation speed for the dynamic depth of field algorithm*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = DepthOfField, Meta = (DisplayName = "Dynamic Depth Of Field Speed", ClampMin = "0.0", ClampMax = "10.0", UIMin = "0.0", UIMax = "10.0", EditCondition = "IsDynamicDOFEnabled", EditConditionHides))
-	float DynamicDofSpeed {2};
+	float DynamicDofSpeed {6.75};
 
 	/** When enabled, the vignette effect on the camera will be increased when sprinting, adding a bit of perceived intensity to the movement. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Vignette, Meta = (DisplayName = "Enabled Dynamic Vignette"))
@@ -166,32 +165,8 @@ struct FPlayerCameraConfigurationData
 	float RotationCentripetalRotation {2.f};	
  
 	/** Constructor with default values. */
-	FPlayerCameraConfigurationData()
+	UPlayerCameraConfiguration()
 	{
 	}
- 
-};
-
-UCLASS(BlueprintType)
-class UPlayerCharacterConfiguration : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = PlayerCharacterConfiguration, Meta = (DisplayName = "Player Character Configuration"))
-	FPlayerCharacterConfigurationData PlayerCharacterConfigurationData {FPlayerCharacterConfigurationData()};
-};
-
-UCLASS(BlueprintType)
-class UPlayerCameraConfiguration : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = PlayerCameraConfiguration, Meta = (DisplayName = "Player Camera Configuration"))
-	FPlayerCameraConfigurationData PlayerCameraConfigurationData {FPlayerCameraConfigurationData()};
-
-	/** The original data on construction. Is used to be able to reset the configuration to its default values. */
-	//UPROPERTY()
 };
 

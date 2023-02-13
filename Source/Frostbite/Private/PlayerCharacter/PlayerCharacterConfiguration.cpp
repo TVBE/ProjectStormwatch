@@ -4,8 +4,9 @@
 
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
-void FPlayerCharacterConfigurationData::ValidateData()
+void UPlayerCharacterConfiguration::ValidateData()
 {
 	if(IsSprintingEnabled && WalkSpeed >= SprintSpeed)
 	{
@@ -18,7 +19,7 @@ void FPlayerCharacterConfigurationData::ValidateData()
 	} */
 }
 
-void FPlayerCharacterConfigurationData::ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter)
+void UPlayerCharacterConfiguration::ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter)
 {
 	if(!PlayerCharacter)
 	{

@@ -154,7 +154,7 @@ void APlayerCharacter::BeginPlay()
 	ReceiveControllerChangedDelegate.AddDynamic(this, &APlayerCharacter::HandleControllerChange);
 	if(CharacterConfiguration && PlayerCharacterController)
 	{
-		CharacterConfiguration->PlayerCharacterConfigurationData.ApplyToPlayerCharacterInstance(this);
+		CharacterConfiguration->ApplyToPlayerCharacterInstance(this);
 	}
 }
 
