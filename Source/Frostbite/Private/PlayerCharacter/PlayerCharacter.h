@@ -17,7 +17,6 @@ class UPlayerVfxController;
 class UPlayerCameraController;
 class UPlayerFlashlightController;
 class UPlayerCharacterMovementComponent;
-
 enum class EFoot : uint8;
 struct FFootstepData;
 
@@ -192,15 +191,28 @@ private:
 	UFUNCTION()
 	void UpdateYawDelta();
 	
-	/** Returns a scaled yaw delta value that is used for turn-in-place rotation. */
+	/** Returns a scaled yaw delta value that is used for turn-in-place rotation.
+	 *	@YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
+	 *	@DeltaTime The frame time in seconds.
+	 *	@Factor A multiplier that affects the rotation speed.
+	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
+	 *	@Return A float value representing a rotator's yaw axis.
+	 */
 	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
 
-	/** Handles a controller change for the pawn. */
+	/** Handles a controller change for the pawn.
+	 *	@Pawn The pawn that received the new controller.
+	 *	@OldController The old controller that was previously assigned to the pawn.
+	 *	@NewController The new controller that is assigned to the pawn. 
+	 */
 	UFUNCTION()
 	void HandleControllerChange(APawn* Pawn, AController* OldController, AController* NewController);
 
 #if WITH_EDITOR
-	/** Checks whether a component is properly initialized. */
+	/** Checks whether an object is properly initialized.
+	 *	@Object The object to validate.
+	 *	@Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
+	 */
 	static void ValidateObject(const UObject* Object, const FString ObjectName);
 #endif
 };

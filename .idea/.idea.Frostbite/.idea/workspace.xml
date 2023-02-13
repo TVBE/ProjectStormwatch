@@ -7,14 +7,264 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/DA_PlayerCameraConfiguration_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/DA_PlayerCameraConfiguration_Default.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/BlendSpaces/ABS_Locomotion_Crouching_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/BlendSpaces/ABS_Locomotion_StandingUp_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Climb_High_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_CrouchArms_Walk_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Idle_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Idle_02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Backward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Backward_DiagonalLeft_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Backward_DiagonalRight_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Forward_02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Forward_DiagonalLeft_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Forward_DiagonalRight_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Left_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Crouch_Walk_Right_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Falling_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_HardLanding_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_HeavyLanding_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_IdleToJog_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_JogToIdle_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_JogToIdle_02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Jog_Backwards_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Jog_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Jog_Left_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Jog_Right_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_JumpToHanging_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Jump_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Backward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Backward_DiagonalLeft_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Backward_DiagonalRight_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Forward_DiagonalLeft_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Forward_DiagonalRight_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Left_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SlowJog_Right_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_SoftLanding_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Sprint_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Sprint_Left_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Sprint_Right_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Walk_Backward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Walk_Forward_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Walk_Left_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/AS_Walk_Right_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Beta_HighLimbsGeoSG3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Beta_Joints_MAT1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_Anim_Take_001.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_Anim_mixamo_com.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_IKRetargeter_UE4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_IKRetargeter_UE5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_IKRetargeter_UE5_ALT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_IKRig.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_PhysicsAsset.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_RetargetPose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_Skeleton.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_Skeleton_PoseAsset.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Base/Mixamo_Skeleton_PoseAsset01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Mixamo/Climbing.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Climb_High_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_CrouchArms_Walk_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Idle_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Idle_02_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Backward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Backward_DiagonalLeft_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Backward_DiagonalRight_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_02_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_DiagonalLeft_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_DiagonalRight_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Left_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Right_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Falling_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Falling_02_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_HardLanding_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_HeavyLanding_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_IdleToJog_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Idle_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Idle_02_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Idle_LeftTurn_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Idle_RightTurn_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_JogToIdle_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_JogToIdle_02_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Jog_Backwards_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Jog_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Jog_Left_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Jog_Right_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_JumpToHanging_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_JumpToHanging_01_RTX01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Jump_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Backward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Backward_DiagonalLeft_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Backward_DiagonalRight_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Forward_DiagonalLeft_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Forward_DiagonalRight_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Left_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SlowJog_Right_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_SoftLanding_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Sprint_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Sprint_Left_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Sprint_Right_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Walk_Backward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Walk_Forward_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Walk_Left_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/AS_Walk_Right_01_RT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_Idle_02_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_SlowJog_Backward_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_SlowJog_Forward_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_SlowJog_Left_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_SlowJog_Right_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_Walk_Backwards_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_Walk_Forwards_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_Walk_Left_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Animations/Retargeted/Old/AS_Walk_Right_01_RT02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/ABP_PlayerAnimationBlueprint.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_GameMode.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_Player.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_Falling.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_HardLanding.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_HeavyLanding.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_Jump.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_SoftLanding.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/CS_Player_Walking.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/DA_PlayerCameraConfiguration_Default.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Data/DA_PlayerCharacterConfiguration_Default.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/ABP_Manny.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/ABP_Quinn.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/BS_MM_WalkRun.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Fall_Loop.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Idle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Jump.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Land.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Run_Fwd.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Walk_Fwd.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Manny/MM_Walk_InPlace.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Quinn/BS_MF_Unarmed_WalkRun.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Quinn/MF_Idle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Quinn/MF_Run_Fwd.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Animations/Quinn/MF_Walk_Fwd.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Functions/CA_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Functions/ChromaticCurve.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Functions/MF_Diffraction.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Functions/MF_logo3layers.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Functions/ML_BaseColorFallOff.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Instances/Manny/MI_Manny_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Instances/Manny/MI_Manny_02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Materials/M_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/Mannequin_LODSettings.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/SKM_Manny.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/SKM_Manny_Simple.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/SKM_Quinn.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/SKM_Quinn_Simple.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Meshes/SK_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/ABP_Manny_PostProcess.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/ABP_Quinn_PostProcess.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/CR_Mannequin_BasicFootIK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/CR_Mannequin_Body.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/CR_Mannequin_Procedural.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/IK_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/PA_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_calf_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_calf_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_calf_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_calf_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_clavicle_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_clavicle_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_clavicle_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_clavicle_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_foot_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_foot_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_foot_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_foot_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_hand_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_hand_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_hand_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_hand_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_lowerarm_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_lowerarm_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_lowerarm_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_lowerarm_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_thigh_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_thigh_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_thigh_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_thigh_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_upperarm_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_upperarm_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_upperarm_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Manny/Manny_upperarm_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_calf_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_calf_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_calf_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_calf_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_clavicle_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_clavicle_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_clavicle_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_clavicle_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_foot_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_foot_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_foot_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_foot_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_hand_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_hand_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_hand_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_hand_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_lowerarm_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_lowerarm_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_lowerarm_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_lowerarm_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_thigh_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_thigh_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_thigh_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_thigh_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_upperarm_l_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_upperarm_l_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_upperarm_r_anim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/Poses/Quinn/Quinn_upperarm_r_pose.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Rigs/RTG_Mannequin.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/ShadowMask.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/ShadowMaskB.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/ShadowMaskC.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_ASAOPMASK_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_BN.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_CCRCCPlastic_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_MSR_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_01_Tan.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_ASAOPMASK_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_BN.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_CCRCCPlastic_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_MSR_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Manny/T_Manny_02_Tan.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01ID_BN.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01ID_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01ID_MSR_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01ID_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01ID_Tan.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01_ASAOMASK_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_01_CCRCCPlastic_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02ID_BN.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02ID_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02ID_MSR_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02ID_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02ID_Tan.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02_ASAOMASK_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Quinn/T_Quinn_02_CCRCCPlastic_MSK.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Mannequins/Textures/Shared/T_UE_Logo_M.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ColdHeatLandscape/Maps/ColdHeat.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPartyContent/ColdHeatLandscape/Maps/ColdHeat.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -181,6 +431,9 @@
       <workItem from="1676234118633" duration="4071000" />
       <workItem from="1676242946649" duration="2374000" />
       <workItem from="1676282522987" duration="2242000" />
+      <workItem from="1676287188376" duration="85000" />
+      <workItem from="1676287610473" duration="1680000" />
+      <workItem from="1676289376903" duration="11606000" />
     </task>
     <servers />
   </component>
