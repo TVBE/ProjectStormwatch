@@ -25,17 +25,6 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacterInstance(APlayerCharac
 	{
 		return;
 	}
-	if(PlayerCharacter->GetController())
-	{
-		if(const APlayerController* PlayerController {Cast<APlayerController>(PlayerCharacter->GetController())})
-		{
-			if(PlayerController->PlayerCameraManager)
-			{
-				PlayerController->PlayerCameraManager->ViewPitchMax = MaximumViewPitch;
-				PlayerController->PlayerCameraManager->ViewPitchMin = MinimumViewPitch;
-			}
-		}
-	}
 	
 	// Set character's movement component properties.
 	if(UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})

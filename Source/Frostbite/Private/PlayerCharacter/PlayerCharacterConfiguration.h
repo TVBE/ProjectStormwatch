@@ -47,14 +47,6 @@ public:
 	/** Defines the rotation rate when using a gamepad.*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (Displayname = "Gamepad Rotation Rate"))
 	float RotationRate {150.f};
-
-	/** Defines the maximum allowed camera angle. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (Displayname = "Maximum View Pitch", ClampMin = "0", ClampMax = "90", UiMin = "0", UIMax = "90"))
-	float MaximumViewPitch {80.f};
-
-	/** Defines the minimum allowed camera angle. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (Displayname = "Minimum View Pitch", ClampMin = "-90", ClampMax = "0", UiMin = "-90", UIMax = "0"))
-	float MinimumViewPitch {-75.f};
 	
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()
@@ -78,6 +70,14 @@ public:
 	/** The default camera offset in relation to the Pawn's RootComponent. Use this to set the general camera position of the player in relation to their body. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera Offset"))
 	FVector CameraOffset {FVector(22, 0, 75)};
+
+	/** Defines the maximum allowed camera angle. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (Displayname = "Maximum View Pitch", ClampMin = "0", ClampMax = "90", UiMin = "0", UIMax = "90"))
+	float MaximumViewPitch {80.f};
+
+	/** Defines the minimum allowed camera angle. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Camera, Meta = (Displayname = "Minimum View Pitch", ClampMin = "-90", ClampMax = "0", UiMin = "-90", UIMax = "0"))
+	float MinimumViewPitch {-75.f};
 
 	/** When enabled, the camera's field of view will scale according to the velocity of the player. This makes higher speeds seem more intense. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = FieldOfView, Meta = (DisplayName = "Enable Dynamic Field Of View"))

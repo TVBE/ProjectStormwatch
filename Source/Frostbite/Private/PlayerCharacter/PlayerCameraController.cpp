@@ -59,6 +59,17 @@ void UPlayerCameraController::BeginPlay()
 			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfiguration->DefaultVignetteIntensity;
 		}
 	}
+	if(PlayerCharacter->GetController())
+	{
+		if(const APlayerController* PlayerController {Cast<APlayerController>(PlayerCharacter->GetController())})
+		{
+			if(PlayerController->PlayerCameraManager)
+			{
+				PlayerController->PlayerCameraManager->ViewPitchMax = CameraConfiguration->MaximumViewPitch;
+				PlayerController->PlayerCameraManager->ViewPitchMin = CameraConfiguration->MinimumViewPitch;
+			}
+		}
+	}
 	// Sets the starting color to black so that we can fade in the camera when the player is fully initialized.
 	if(const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
