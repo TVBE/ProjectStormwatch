@@ -17,6 +17,7 @@ class UPlayerVfxController;
 class UPlayerCameraController;
 class UPlayerFlashlightController;
 class UPlayerCharacterMovementComponent;
+class UNiagaraComponent;
 enum class EFoot : uint8;
 struct FFootstepData;
 
@@ -88,6 +89,14 @@ private:
 	/** The AudioComponent for the player's right foot.*/
 	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
 	UAudioComponent* RightFootAudioComponent;
+
+	/** The particle emitter for the player's left foot. */
+	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Left Foot Particle Emitter"))
+	UNiagaraComponent* LeftFootParticleEmitter;
+	
+	/** The particle emitter for the player's right foot. */
+	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Particle Emitter"))
+	UNiagaraComponent* RightFootParticleEmitter;
 	
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
@@ -155,17 +164,25 @@ public:
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Player Character Movement Component"))
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const {return PlayerCharacterMovement; }
 
-	/** Returns the Body AudioComponent. */
+	/** Returns the body AudioComponent. */
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Body Audio Component"))
 	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
 
-	/** Returns the Body AudioComponent. */
+	/** Returns the left foot AudioComponent. */
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Left Foot Audio Component"))
 	FORCEINLINE UAudioComponent* GetLeftFootAudioComponent() const {return LeftFootAudioComponent; }
 
-	/** Returns the Body AudioComponent. */
+	/** Returns the right foot AudioComponent. */
 	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Right Foot Audio Component"))
 	FORCEINLINE UAudioComponent* GetRightFootAudioComponent() const {return RightFootAudioComponent; }
+
+	/** Returns the left foot ParticleSystem. */
+	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Left Foot Particle Emitter"))
+	FORCEINLINE UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootParticleEmitter; }
+
+	/** Returns the right foot ParticleSystem. */
+	UFUNCTION(BlueprintGetter, Category = Components, Meta = (DisplayName = "Right Foot Particle Emitter"))
+	FORCEINLINE UNiagaraComponent* GetRightFootParticleEmitter() const {return RightFootParticleEmitter; }
 
 	/** Returns if the character is currently turning in place. */
 	UFUNCTION(BlueprintGetter, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))

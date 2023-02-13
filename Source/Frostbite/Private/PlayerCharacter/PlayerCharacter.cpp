@@ -11,12 +11,12 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/AudioComponent.h"
+#include "NiagaraComponent.h"
 #include "MetasoundSource.h"
 #include "PlayerVfxController.h"
 #include "Core/PlayerSubsystem.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
-
 #include "Frostbite/Frostbite.h"
 // Define macros
 
@@ -52,12 +52,22 @@ APlayerCharacter::APlayerCharacter()
 	// Construct Flashlight.
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetupAttachment(FlashlightSpringArm);
-	Flashlight->Intensity = 5000.0;
-	Flashlight->AttenuationRadius = 3000.0;
 	Flashlight->SetVisibility(false); // We don't want the flashlight to be enabled on startup.
-
+	
+	// Default settings that generally work well for the flashlight.
+	Flashlight->Intensity = 0.75;
+	Flashlight->AttenuationRadius = 4000.0;
+	Flashlight->LightColor = FColor(233,255,254,255);
+	Flashlight->OuterConeAngle = 34.0f;
+	Flashlight->InnerConeAngle = 22.0f;
+	Flashlight->bAffectsWorld = true;
+	Flashlight->CastShadows = false;
+	Flashlight->bUseInverseSquaredFalloff = false;
+	Flashlight->LightFalloffExponent = 4.0f;
+	Flashlight->VolumetricScatteringIntensity = 0.0f;
+	
 	// Construct Audio Components
-	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"));
+	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);
 	BodyAudioComponent->SetupAttachment(GetMesh(), "spine_04");
 	BodyAudioComponent->bAutoActivate = false;
 	BodyAudioComponent->bEditableWhenInherited = false;
@@ -68,12 +78,12 @@ APlayerCharacter::APlayerCharacter()
 		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
 	}
 	
-	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"));
+	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"), true);
 	LeftFootAudioComponent->SetupAttachment(GetMesh(), "foot_l_Socket");
 	LeftFootAudioComponent->bAutoActivate = false;
 	LeftFootAudioComponent->bEditableWhenInherited = false;
 	
-	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"));
+	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"), true);
 	RightFootAudioComponent->SetupAttachment(GetMesh(), "foot_r_Socket");
 	RightFootAudioComponent->bAutoActivate = false;
 	RightFootAudioComponent->bEditableWhenInherited = false;
@@ -84,24 +94,53 @@ APlayerCharacter::APlayerCharacter()
 		LeftFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
 		RightFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
 	}
+
+	// Construct Particle System Components
+	LeftFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Left Foot Particle Emitter"), true);
+	LeftFootParticleEmitter->SetupAttachment(GetMesh(), "foot_l_Socket");
+	LeftFootParticleEmitter->bAutoActivate = false;
+	LeftFootParticleEmitter->bEditableWhenInherited = false;
+
+	RightFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Right Foot Particle Emitter"),true);
+	RightFootParticleEmitter->SetupAttachment(GetMesh(), "foot_r_Socket");
+	RightFootParticleEmitter->bAutoActivate = false;
+	RightFootParticleEmitter->bEditableWhenInherited = false;
 	
 	// Construct Camera Controller
-	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Player Camera Controller"));
+	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bWantsInitializeComponent = true;
 	CameraController->bEditableWhenInherited = false;
 	
 	// Construct Flashlight Controller
-	FlashlightController = CreateDefaultSubobject<UPlayerFlashlightController>(TEXT("Player Flashlight Controller"));
+	FlashlightController = CreateDefaultSubobject<UPlayerFlashlightController>(TEXT("Flashlight Controller"));
 	FlashlightController->bWantsInitializeComponent = true;
 	FlashlightController->bEditableWhenInherited = false;
 
-	// Construct Audio Controller
-	AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Player Audio Controller"));
+	// Construct Audio Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the audio controller.
+	static ConstructorHelpers::FClassFinder<UPlayerAudioController> AudioControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerAudioController.BPC_PlayerAudioController_C'"));
+	if(AudioControllerClass.Succeeded())
+	{
+		AudioController = Cast<UPlayerAudioController>(CreateDefaultSubobject(TEXT("Audio Controller"), AudioControllerClass.Class, AudioControllerClass.Class, true, true ));
+	}
+	else
+	{
+		// Construct the base class if the Blueprint derived class cannot be found.
+		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller Fallback")); 
+	}
 	AudioController->bWantsInitializeComponent = true;
 	AudioController->bEditableWhenInherited = false;
-
-	// Construct VFX Controller
-	VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("Player VFX Controller"));
+	
+	// Construct VFX Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the VFX controller.
+	static ConstructorHelpers::FClassFinder<UPlayerVfxController> VfxControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerVfxController.BPC_PlayerVfxController_C'"));
+	if(VfxControllerClass.Succeeded())
+	{
+		VfxController = Cast<UPlayerVfxController>(CreateDefaultSubobject(TEXT("VFX Controller"), VfxControllerClass.Class, VfxControllerClass.Class, true, true ));
+	}
+	else
+	{
+		// Construct the base class if the Blueprint derived class cannot be found.
+		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller Fallback"));
+	}
 	VfxController->bWantsInitializeComponent = true;
 	VfxController->bEditableWhenInherited = false;
 }
@@ -133,13 +172,14 @@ void APlayerCharacter::PostInitProperties()
 #if WITH_EDITOR
 	if(!(IsRunningCommandlet() && UE::IsSavingPackage()) && IsRunningGame())
 	{
-		/** Check if this instance of a PlayerCharacter is a blueprint derived class or not. */
-		ValidateObject(this, "PlayerCharacter");
 		/** Check if all components have been succesfully initialized. */
 		ValidateObject(CameraController, "CameraController");
 		ValidateObject(FlashlightController, "FlashlightController");
 		ValidateObject(AudioController, "AudioController");
 		ValidateObject(VfxController, "VfxController");
+		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
+		ValidateObject(LeftFootAudioComponent, "LeftFootAudioComponent");
+		ValidateObject(RightFootAudioComponent, "RightFootAudioComponent");
 	}
 #endif
 }
