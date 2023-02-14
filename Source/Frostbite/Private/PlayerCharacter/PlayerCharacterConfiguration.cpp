@@ -4,22 +4,10 @@
 
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-void UPlayerCharacterConfiguration::ValidateData()
-{
-	if(IsSprintingEnabled && WalkSpeed >= SprintSpeed)
-	{
-		IsSprintingEnabled = false;
-		UE_LOG(LogTemp, Warning, TEXT("Character SprintSpeed is set lower than WalkSpeed. Sprinting is disabled."))
-	}
-	/** if(MaximumViewPitch < MinimumViewPitch)
-	{
-		
-	} */
-}
-
-void UPlayerCharacterConfiguration::ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter)
+void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter)
 {
 	if(!PlayerCharacter)
 	{
@@ -32,4 +20,36 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacterInstance(APlayerCharac
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
 	}
+}
+
+void UPlayerCameraConfiguration::ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter)
+{
+	if(!PlayerCharacter)
+	{
+		return;
+	}
+
+	if(PlayerCharacter->GetCamera())
+	{
+		PlayerCharacter->GetCamera()->SetFieldOfView(DefaultFOV);
+		PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = DefaultVignetteIntensity;
+	}
+}
+
+void UPlayerCameraConfiguration::ApplyToPlayerController(APlayerController* PlayerController)
+{
+	if(!PlayerController)
+	{
+		return;
+	}
+	if(PlayerController->PlayerCameraManager)
+	{
+		PlayerController->PlayerCameraManager->ViewPitchMax = MaximumViewPitch;
+		PlayerController->PlayerCameraManager->ViewPitchMin = MinimumViewPitch;
+	}
+		
+}
+
+void UPlayerFlashlightConfiguration::ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter)
+{
 }

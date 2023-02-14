@@ -52,12 +52,9 @@ public:
 	UPlayerCharacterConfiguration()
 	{
 	}
-
-	/** Checks some values to make sure that the character configuration is correct. */
-	void ValidateData();
-
+	
 	/** Applies the character configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacterInstance(class APlayerCharacter* PlayerCharacter);
+	void ApplyToPlayerCharacter(class APlayerCharacter* PlayerCharacter);
 };
 
 UCLASS(BlueprintType)
@@ -167,10 +164,12 @@ public:
 	UPlayerCameraConfiguration()
 	{
 	}
+	
+	/** Applies the camera configuration to a PlayerCharacter instance. */
+	void ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter);
 
-	bool ValidateData();
-
-	void ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter);
+	/** Applies some values of the camera configuration to the player controller and it's corresponding camera manager. */
+	void ApplyToPlayerController(APlayerController* PlayerController);
 };
 
 
@@ -180,13 +179,13 @@ class UPlayerFlashlightConfiguration : public UDataAsset
 	GENERATED_BODY()
 
 public:
-
+	
 	/** Constructor with default values. */
 	UPlayerFlashlightConfiguration()
 	{
 	}
-	bool ValidateData();
-
-	void ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter);
+	
+	/** Applies the flashlight configuration to a PlayerCharacter instance. */
+	void ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter);
 	
 };
