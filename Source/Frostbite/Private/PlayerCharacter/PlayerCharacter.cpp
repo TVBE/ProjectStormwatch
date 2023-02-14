@@ -14,13 +14,20 @@
 #include "NiagaraComponent.h"
 #include "MetasoundSource.h"
 #include "PlayerVfxController.h"
+#include "Core/FrostbiteGameMode.h"
 #include "Core/PlayerSubsystem.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 #include "Frostbite/Frostbite.h"
-// Define macros
 
-// Sets default values
+/** The PlayerCharacter's initialization follows these stages:
+ *	Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
+ *	PostInitProperties(): Called after construction to perform additional initialization that requires access to default property values.
+ *	OnConstruction(): Called after all default property values have been fully initialized, but before any of the components are initialized.
+ *	PostInitializeComponents(): Called after initializing the components, which allows them to register with other systems and set up data structures.
+ *	BeginPlay(): Called when the actor is ready to be used in the game world.
+ */
+
 APlayerCharacter::APlayerCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -145,21 +152,11 @@ APlayerCharacter::APlayerCharacter()
 	VfxController->bEditableWhenInherited = false;
 }
 
+// Called after the constructor but before InitializeComponents.
 void APlayerCharacter::PostInitProperties()
 {
-	Super::PostInitProperties();
-
-	/** If the configuration properties are not properly serialized, construct a default data asset object instead. */
-	if(!CharacterConfiguration)
-	{
-		CharacterConfiguration = NewObject<UPlayerCharacterConfiguration>();
-		//UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerCharacterConfiguration asset was specified for PlayerCharacter, using default settings instead."))
-	}
-	if(!CameraConfiguration)
-	{
-		CameraConfiguration = NewObject<UPlayerCameraConfiguration>();
-		//UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerCameraConfiguration asset was specified for PlayerCharacter, using default settings instead."))
-	}
+	ValidateConfigurationAssets();
+	
 	if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
 	{
 		PlayerCharacterMovement = PlayerCharacterMovementComponent;
@@ -168,28 +165,44 @@ void APlayerCharacter::PostInitProperties()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
+
+	Super::PostInitProperties();
 }
 
-// Called when the game starts or when spawned
-void APlayerCharacter::BeginPlay()
+// Called after all default property values have been fully initialized, but before any of the components are initialized.
+void APlayerCharacter::OnConstruction(const FTransform& Transform)
 {
-	Super::BeginPlay();
-	if(APlayerCharacterController* PlayerController {Cast<APlayerCharacterController>(GetController())})
-	{
-		PlayerCharacterController = PlayerController;
-	}
-	ReceiveControllerChangedDelegate.AddDynamic(this, &APlayerCharacter::HandleControllerChange);
-	if(CharacterConfiguration && PlayerCharacterController)
-	{
-		CharacterConfiguration->ApplyToPlayerCharacterInstance(this);
-	}
-
 	// Registers this player character to the player character subsystem.
 	if(const UWorld* World {GetWorld()})
 	{
 		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerCharacter(this);
+		}
+	}
+	
+	Super::OnConstruction(Transform);
+}
+
+// Called after InitializeComponents.
+void APlayerCharacter::PostInitializeComponents()
+{
+	ApplyConfigurationAssets();
+	
+	Super::PostInitializeComponents();
+}
+
+// Called when the game starts or when spawned
+void APlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Notify the GameMode that the character has Begun Play.
+	if(GetWorld() && GetWorld()->GetAuthGameMode())
+	{
+		if(AFrostbiteGameMode* GameMode {Cast<AFrostbiteGameMode>(GetWorld()->GetAuthGameMode())})
+		{
+			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
 	}
 
@@ -203,22 +216,30 @@ void APlayerCharacter::BeginPlay()
 		ValidateObject(LeftFootAudioComponent, "LeftFootAudioComponent");
 		ValidateObject(RightFootAudioComponent, "RightFootAudioComponent");
 #endif
-	
 }
 
 // Called when the controller is changed
-void APlayerCharacter::HandleControllerChange(APawn* Pawn, AController* OldController, AController* NewController)
+void APlayerCharacter::PossessedBy(AController* NewController)
 {
-	if(NewController && NewController != OldController)
+	Super::PossessedBy(NewController);
+	if(NewController)
 	{
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
-		if(!PlayerCharacterController)
+		if(PlayerCharacterController)
 		{
-			UE_LOG(LogPlayerCharacter, Warning, TEXT("PlayerCharacter was possesed by a controller that is not a PlayerCharacterController."))
+			
 		}
+		// Registers the new controller to the player character subsystem.
+		if(const UWorld* World {GetWorld()})
+		{
+			if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+			{
+				PlayerSubsystem->RegisterPlayerController(Cast<APlayerCharacterController>(NewController));
+			}
+		}
+		CameraConfiguration->ApplyToPlayerController(Cast<APlayerController>(NewController));
 	}
 }
-
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
@@ -296,6 +317,53 @@ void APlayerCharacter::ValidateObject(const UObject* Object, const FString Objec
 	}
 }
 #endif
+
+void APlayerCharacter::ValidateConfigurationAssets()
+{
+	/** If the configuration properties are not properly serialized, construct a default instance instead. */
+	if(!CharacterConfiguration)
+	{
+		CharacterConfiguration = NewObject<UPlayerCharacterConfiguration>();
+		if(GIsEditor && FApp::IsGame())
+		{
+			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
+		}
+	}
+	if(!CameraConfiguration)
+	{
+		CameraConfiguration = NewObject<UPlayerCameraConfiguration>();
+		if(GIsEditor && FApp::IsGame())
+		{
+			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Camera Configuration was selected for player character. Using default settings instead."))
+		}
+	}
+	if(!FlashlightConfiguration)
+	{
+		FlashlightConfiguration = NewObject<UPlayerFlashlightConfiguration>();
+		if(GIsEditor && FApp::IsGame())
+		{
+			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Flashlight Configuration was selected for player character. Using default settings instead."))
+		}
+	}
+}
+
+void APlayerCharacter::ApplyConfigurationAssets()
+{
+	if(CharacterConfiguration)
+	{
+		CharacterConfiguration->ApplyToPlayerCharacter(this);
+	}
+	if(CameraConfiguration)
+	{
+		CameraConfiguration->ApplyToPlayerCharacter(this);
+	}
+	if(FlashlightConfiguration)
+	{
+		FlashlightConfiguration->ApplyToPlayerCharacter(this);
+	}
+}
+
+
 
 
 

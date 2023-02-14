@@ -18,21 +18,27 @@ void UPlayerSubsystem::RegisterPlayerCharacter(APlayerCharacter* Character)
 			return;
 		}
 		PlayerCharacter = Character;
-		if(!Character->GetController())
-		{
-			
-			UE_LOG(LogPlayerSubsystem, Error, TEXT("Could not get reference to the player character controller."));
-			return;
-		}
-		if(APlayerCharacterController* CharacterController {Cast<APlayerCharacterController>(Character->GetController())})
-		{
-			PlayerController = CharacterController;
-			UE_LOG(LogPlayerSubsystem, Log, TEXT("Successfully registered player character"));
-		}
 	}
 	else
 	{
 		UE_LOG(LogPlayerSubsystem, Error, TEXT("Could not register player character."));
+	}
+}
+
+void UPlayerSubsystem::RegisterPlayerController(APlayerCharacterController* Controller)
+{
+	if(Controller)
+	{
+		if(PlayerController)
+		{
+			UE_LOG(LogPlayerSubsystem, Warning, TEXT("Tried to register a player controller while a player character is already registered to the subsystem."));
+			return;
+		}
+		PlayerController = Controller;
+	}
+	else
+	{
+		UE_LOG(LogPlayerSubsystem, Error, TEXT("Could not register player controller."));
 	}
 }
 

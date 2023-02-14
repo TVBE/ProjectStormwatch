@@ -7,7 +7,7 @@
 #include "PlayerSubsystem.generated.h"
 
 class APlayerCharacter;
-class APlayerController;
+class APlayerCharacterController;
 
 /** World Subsystem that provides access to the Player Character and its subobjects.
  *	Provides high level functions for changing the PlayerCharacter's behavior. */
@@ -31,6 +31,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = Player, Meta = (DisplayName = "Register Player Character"))
 	void RegisterPlayerCharacter(APlayerCharacter* Character);
+
+	/** Registers a Player Controller to the subsystem.
+	*	@Controller The PlayerController to register.
+	*/
+	UFUNCTION(BlueprintCallable, Category = Player, Meta = (DisplayName = "Register Player Controller"))
+	void RegisterPlayerController(APlayerCharacterController* Controller);
 
 	/** Enables or disables movement input for the player. */
 	UFUNCTION(BlueprintCallable, Category = Player, Meta = (DisplayName = "Set Player Movement Input Enabled"))

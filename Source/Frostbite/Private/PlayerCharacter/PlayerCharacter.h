@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerCharacterConfiguration.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
 class UPlayerCharacterConfiguration;
+class UPlayerCameraConfiguration;
+class UPlayerFlashlightConfiguration;
 class APlayerCharacterController;
 class UCameraComponent;
 class USpotLightComponent;
@@ -27,25 +28,25 @@ class APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 public:
-
-protected:
 	/** If true, the character is currently jumping. We assume the character is jumping if the character has not left the ground yet, but the jump action is triggered. */
 	UPROPERTY(BlueprintReadOnly, Category = Locomotion, Meta = (DisplayName = "Is Jumping"))
 	bool IsJumping;
 
-	/** The character configuration for the PlayerCharacter. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Configuration, Meta = (DisplayName = "Character Configuration"))
+private:
+	// CONFIGURATION
+	/** The character configuration data asset. */
+	UPROPERTY(EditAnywhere, Category = Configuration, Meta = (DisplayName = "Character Configuration"))
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
-	/** The camera configuration for the PlayerCharacter. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Configuration, Meta = (DisplayName = "Camera Configuration"))
+	/** The camera configuration data asset */
+	UPROPERTY(EditAnywhere, Category = Configuration, Meta = (DisplayName = "Camera Configuration"))
 	UPlayerCameraConfiguration* CameraConfiguration;
 
-private:
-	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = Default, Meta = (DisplayName = "Player Character Controller"))
-	APlayerCharacterController* PlayerCharacterController;
+	/** The flashlight configuration data asset*/
+	UPROPERTY(EditAnywhere, Category = Configuration, Meta = (DisplayName = "Flashlight Configuration"))
+	UPlayerFlashlightConfiguration* FlashlightConfiguration;
 	
+	// COMPONENTS
 	/** The camera for the player. */
 	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = Camera, Meta = (DisplayName = "Camera"))
 	UCameraComponent* Camera;
@@ -97,7 +98,12 @@ private:
 	/** The particle emitter for the player's right foot. */
 	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, VisibleAnywhere, Category = Components, Meta = (DisplayName = "Right Foot Particle Emitter"))
 	UNiagaraComponent* RightFootParticleEmitter;
-	
+
+	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
+	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = Default, Meta = (DisplayName = "Player Character Controller"))
+	APlayerCharacterController* PlayerCharacterController;
+
+	// VARIABLES
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = Locomotion, Meta = (DisplayName = "Is Turning In Place"))
 	bool IsTurningInPlace {false};
@@ -120,13 +126,65 @@ public:
 	// Called after the constructor but before BeginPlay().
 	virtual void PostInitProperties() override;
 
-	/** Returns the Character configuration. */
+	virtual void PostInitializeComponents() override;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	/** Called after all default properties have been initialized. */
+	virtual void OnConstruction(const FTransform& Transform) override;
+	
+	/** Called when the pawn is possessed by a controller. */
+	virtual void PossessedBy(AController* NewController) override;
+	
+	/** Updates the character's rotation. */
+	void UpdateRotation(float DeltaTime);
+
+	/** Validates the configuration data assets. */
+	void ValidateConfigurationAssets();
+
+	/** Applies the configuration data assets to the character. */
+	void ApplyConfigurationAssets();
+	
+	/** Specify whether the character is currently jumping. */
+	UFUNCTION(BlueprintCallable, Category = Locomotion, Meta = (DisplayName = "Set IsJumping", CompactNodeTitle = "Is Jumping"))
+	void SetIsJumping(bool Value);
+
+private:
+	/** Updates the character's yaw delta. */
+	UFUNCTION()
+	void UpdateYawDelta();
+	
+	/** Returns a scaled yaw delta value that is used for turn-in-place rotation.
+	 *	@YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
+	 *	@DeltaTime The frame time in seconds.
+	 *	@Factor A multiplier that affects the rotation speed.
+	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
+	 *	@Return A float value representing a rotator's yaw axis.
+	 */
+	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
+
+#if WITH_EDITOR
+	/** Checks whether an object is properly initialized.
+	 *	@Object The object to validate.
+	 *	@Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
+	 */
+	static void ValidateObject(const UObject* Object, const FString ObjectName);
+#endif
+
+public:
+		/** Returns the Character configuration. */
 	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Character Configuration"))
 	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const {return CharacterConfiguration; }
 
 	/** Returns the Camera configuration. */
-	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Character Configuration"))
+	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Camera Configuration"))
 	FORCEINLINE UPlayerCameraConfiguration* GetCameraConfiguration() const {return CameraConfiguration; }
+
+	/** Returns the Flashlight configuration. */
+	UFUNCTION(BlueprintPure, Category = Configuration, Meta = (DisplayName = "Get Flashlight Configuration"))
+	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return FlashlightConfiguration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
 	UFUNCTION(BlueprintGetter, Category = Locomotion, Meta = (DisplayName = "PlayerCharacterController"))
@@ -191,47 +249,7 @@ public:
 	/** Returns the character yaw delta between the facing direction of the character and the camera. */
 	UFUNCTION(BlueprintGetter, Category = Locomotion, Meta = (DisplayName = "Yaw Delta"))
 	FORCEINLINE float GetYawDelta() const {return YawDelta; }
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	/** Updates the character's rotation. */
-	void UpdateRotation(float DeltaTime);
 	
-	/** Specify whether the character is currently jumping. */
-	UFUNCTION(BlueprintCallable, Category = Locomotion, Meta = (DisplayName = "Set IsJumping", CompactNodeTitle = "Is Jumping"))
-	void SetIsJumping(bool Value);
-
-private:
-	/** Updates the character's yaw delta. */
-	UFUNCTION()
-	void UpdateYawDelta();
-	
-	/** Returns a scaled yaw delta value that is used for turn-in-place rotation.
-	 *	@YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
-	 *	@DeltaTime The frame time in seconds.
-	 *	@Factor A multiplier that affects the rotation speed.
-	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
-	 *	@Return A float value representing a rotator's yaw axis.
-	 */
-	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
-
-	/** Handles a controller change for the pawn.
-	 *	@Pawn The pawn that received the new controller.
-	 *	@OldController The old controller that was previously assigned to the pawn.
-	 *	@NewController The new controller that is assigned to the pawn. 
-	 */
-	UFUNCTION()
-	void HandleControllerChange(APawn* Pawn, AController* OldController, AController* NewController);
-
-#if WITH_EDITOR
-	/** Checks whether an object is properly initialized.
-	 *	@Object The object to validate.
-	 *	@Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
-	 */
-	static void ValidateObject(const UObject* Object, const FString ObjectName);
-#endif
 };
 
 

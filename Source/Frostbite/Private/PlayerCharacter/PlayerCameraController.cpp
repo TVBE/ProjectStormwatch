@@ -51,25 +51,6 @@ void UPlayerCameraController::HandleCharacterControllerChanged(APawn* Pawn, ACon
 void UPlayerCameraController::BeginPlay()
 {
 	Super::BeginPlay();
-	if(PlayerCharacter)
-	{
-		if(PlayerCharacter->GetCamera())
-		{
-			PlayerCharacter->GetCamera()->SetFieldOfView(CameraConfiguration->DefaultFOV);
-			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = CameraConfiguration->DefaultVignetteIntensity;
-		}
-	}
-	if(PlayerCharacter->GetController())
-	{
-		if(const APlayerController* PlayerController {Cast<APlayerController>(PlayerCharacter->GetController())})
-		{
-			if(PlayerController->PlayerCameraManager)
-			{
-				PlayerController->PlayerCameraManager->ViewPitchMax = CameraConfiguration->MaximumViewPitch;
-				PlayerController->PlayerCameraManager->ViewPitchMin = CameraConfiguration->MinimumViewPitch;
-			}
-		}
-	}
 	// Sets the starting color to black so that we can fade in the camera when the player is fully initialized.
 	if(const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
@@ -296,8 +277,8 @@ void UPlayerCameraController::UpdateCameraDepthOfField(const float DeltaTime)
 		(FVector2D(CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance),
 			FVector2D(CameraConfiguration->MacroBlurAmount,CameraConfiguration->LongShotBlurAmount),FocalDistance))};
 
-	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance =
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldSkyFocusDistance, FocalDistance, DeltaTime, CameraConfiguration->DynamicDofSpeed);
+	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldFocalDistance =
+		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldFocalDistance, FocalDistance, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 	
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount = 
 		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfiguration->DynamicDofSpeed);
