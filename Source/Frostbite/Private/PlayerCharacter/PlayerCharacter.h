@@ -59,19 +59,19 @@ private:
 	USpringArmComponent* FlashlightSpringArm;
 
 	/** The PlayerAudioController that handles player audio. */
-	UPROPERTY(BlueprintGetter = GetAudioController, Category = Components, Meta = (DisplayName = "Player Audio Controller"))
+	UPROPERTY(BlueprintGetter = GetAudioController, Category = Components, Meta = (DisplayName = "Audio Controller"))
 	UPlayerAudioController* AudioController;
 
 	/** The PlayerVfxController that handles player VFX. */
-	UPROPERTY(BlueprintGetter = GetVfxController, Category = Components, Meta = (DisplayName = "Player VFX Controller"))
+	UPROPERTY(BlueprintGetter = GetVfxController, Category = Components, Meta = (DisplayName = "VFX Controller"))
 	UPlayerVfxController* VfxController;
 
 	/** The CameraController that handles first person camera behavior. */
-	UPROPERTY(BlueprintGetter = GetCameraController, Category = Components, Meta = (DisplayName = "Player Camera Controller"))
+	UPROPERTY(BlueprintGetter = GetCameraController, Category = Components, Meta = (DisplayName = "Camera Controller"))
 	UPlayerCameraController* CameraController;
 
 	/** The FlashlightController that handles the flashlight behavior. */
-	UPROPERTY(BlueprintGetter = GetFlashlightController, Category = Components, Meta = (DisplayName = "Player Flashlight Controller"))
+	UPROPERTY(BlueprintGetter = GetFlashlightController, Category = Components, Meta = (DisplayName = "Flashlight Controller"))
 	UPlayerFlashlightController* FlashlightController;
 
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */

@@ -51,7 +51,6 @@ public:
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()
 	{
-		ValidateData();
 	}
 
 	/** Checks some values to make sure that the character configuration is correct. */
@@ -168,5 +167,26 @@ public:
 	UPlayerCameraConfiguration()
 	{
 	}
+
+	bool ValidateData();
+
+	void ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter);
 };
 
+
+UCLASS(BlueprintType)
+class UPlayerFlashlightConfiguration : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	/** Constructor with default values. */
+	UPlayerFlashlightConfiguration()
+	{
+	}
+	bool ValidateData();
+
+	void ApplyToPlayerCharacterInstance(APlayerCharacter* PlayerCharacter);
+	
+};

@@ -125,7 +125,7 @@ APlayerCharacter::APlayerCharacter()
 	else
 	{
 		// Construct the base class if the Blueprint derived class cannot be found.
-		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller Fallback")); 
+		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller")); 
 	}
 	AudioController->bWantsInitializeComponent = true;
 	AudioController->bEditableWhenInherited = false;
@@ -139,7 +139,7 @@ APlayerCharacter::APlayerCharacter()
 	else
 	{
 		// Construct the base class if the Blueprint derived class cannot be found.
-		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller Fallback"));
+		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller"));
 	}
 	VfxController->bWantsInitializeComponent = true;
 	VfxController->bEditableWhenInherited = false;
@@ -168,20 +168,6 @@ void APlayerCharacter::PostInitProperties()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
-
-#if WITH_EDITOR
-	if(!(IsRunningCommandlet() && UE::IsSavingPackage()) && IsRunningGame())
-	{
-		/** Check if all components have been succesfully initialized. */
-		ValidateObject(CameraController, "CameraController");
-		ValidateObject(FlashlightController, "FlashlightController");
-		ValidateObject(AudioController, "AudioController");
-		ValidateObject(VfxController, "VfxController");
-		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
-		ValidateObject(LeftFootAudioComponent, "LeftFootAudioComponent");
-		ValidateObject(RightFootAudioComponent, "RightFootAudioComponent");
-	}
-#endif
 }
 
 // Called when the game starts or when spawned
@@ -206,6 +192,18 @@ void APlayerCharacter::BeginPlay()
 			PlayerSubsystem->RegisterPlayerCharacter(this);
 		}
 	}
+
+#if WITH_EDITOR
+		/** Check if all components have been succesfully initialized. */
+		ValidateObject(CameraController, "CameraController");
+		ValidateObject(FlashlightController, "FlashlightController");
+		ValidateObject(AudioController, "AudioController");
+		ValidateObject(VfxController, "VfxController");
+		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
+		ValidateObject(LeftFootAudioComponent, "LeftFootAudioComponent");
+		ValidateObject(RightFootAudioComponent, "RightFootAudioComponent");
+#endif
+	
 }
 
 // Called when the controller is changed
