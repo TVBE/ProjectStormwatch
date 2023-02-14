@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "PlayerVfxController.generated.h"
 
+class APlayerCharacter;
+
 /** UPlayerAudioController is an Actor Component responsible for managing all VFX specific to the player character. 
  *	This class provides a simple and convenient way for designers to customize the player's VFX implementation.
  *	@Brief ActorComponent for managing player visual effects.
@@ -22,6 +24,12 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	virtual void InitializeComponent() override;
+
+	/** Pointer to the PlayerCharacter that owns this component. */
+	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Player Character"))
+	APlayerCharacter* PlayerCharacter;
 
 public:	
 	// Called every frame

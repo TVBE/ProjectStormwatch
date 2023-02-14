@@ -2,6 +2,7 @@
 
 
 #include "PlayerAudioController.h"
+#include "PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UPlayerAudioController::UPlayerAudioController()
@@ -13,6 +14,17 @@ UPlayerAudioController::UPlayerAudioController()
 	// ...
 }
 
+// Initializes the component. Occurs at level startup or actor spawn. This is before BeginPlay.
+void UPlayerAudioController::InitializeComponent()
+{
+	PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
+	if(!PlayerCharacter)
+	{
+		return;
+	}
+	Super::InitializeComponent();
+	
+}
 
 // Called when the game starts
 void UPlayerAudioController::BeginPlay()
@@ -22,7 +34,6 @@ void UPlayerAudioController::BeginPlay()
 	// ...
 	
 }
-
 
 // Called every frame
 void UPlayerAudioController::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

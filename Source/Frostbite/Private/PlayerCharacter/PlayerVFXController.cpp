@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerVfxController.h"
+#include "PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UPlayerVfxController::UPlayerVfxController()
@@ -12,6 +13,16 @@ UPlayerVfxController::UPlayerVfxController()
 	// ...
 }
 
+// Initializes the component. Occurs at level startup or actor spawn. This is before BeginPlay.
+void UPlayerVfxController::InitializeComponent()
+{
+	PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
+	if(!PlayerCharacter)
+	{
+		return;
+	}
+	Super::InitializeComponent();
+}
 
 // Called when the game starts
 void UPlayerVfxController::BeginPlay()
@@ -21,6 +32,8 @@ void UPlayerVfxController::BeginPlay()
 	// ...
 	
 }
+
+
 
 
 // Called every frame
