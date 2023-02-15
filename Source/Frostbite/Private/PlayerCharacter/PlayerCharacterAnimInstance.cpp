@@ -12,6 +12,7 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 	{
 		FVector Location {GetSkelMeshComponent()->GetSocketLocation(Socket)};
 		FootstepData.Location = Location;
+		FootstepData.Velocity = GetSkelMeshComponent()->ComponentVelocity.Length();
 		FHitResult HitResult;
 		FVector TraceStart = Location;
 		FVector TraceEnd = Location + FVector(0, 0, -30);
