@@ -15,12 +15,16 @@ class APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
+	UPROPERTY()
+	UPlayerCharacterConfiguration* CharacterConfiguration;
+	
 	/** When true, the player can receive user input. */
 	UPROPERTY()
 	bool CanProcessMovementInput {false};
 	
 protected:
-	/** Reference to the controlled pawn as a PlayerCharacter instance.*/
+	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = Actors, Meta = (DisplayName = "Player Character"))
 	APlayerCharacter* PlayerCharacter {nullptr};
 
@@ -32,11 +36,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = Intention, Meta = (DisplayName = "Is Crouch Pending"))
 	bool IsCrouchPending {false};
 
-private:
-	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
-	UPROPERTY()
-	UPlayerCharacterConfiguration* CharacterConfiguration {nullptr};
-	
 public:
 	APlayerCharacterController();
 

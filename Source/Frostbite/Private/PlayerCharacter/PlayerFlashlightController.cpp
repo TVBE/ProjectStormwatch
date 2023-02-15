@@ -97,9 +97,6 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation() const
 		const EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
 		const float MappedVelocity {static_cast<float>(FMath::Clamp(PlayerCharacter->GetVelocity().Length() * 0.0325, 0.2f, 1.f))};
 		
-		// General intensity multiplier.
-		constexpr float IntensityMultiplier {0.675};
-
 		// Variables to store the sway speed and intensity for each axis.
 		float PitchSwaySpeed {0.f};
 		float YawSwaySpeed {0.f};
@@ -147,9 +144,9 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation() const
 			PitchSwayIntensity = PitchSwayIntensity * PitchIntensityMultiplier;
 			YawSwayIntensity = YawSwayIntensity * YawIntensityMultiplier;
 
-			Rotation.Pitch = FMath::Cos(GameTime * PitchSwaySpeed) * PitchSwayIntensity * IntensityMultiplier;
-			Rotation.Yaw = FMath::Cos(GameTime * YawSwaySpeed) * YawSwayIntensity * IntensityMultiplier;
-			Rotation.Roll = FMath::Cos(GameTime * RollSwaySpeed) * RollSwayIntensity * IntensityMultiplier;
+			Rotation.Pitch = FMath::Cos(GameTime * PitchSwaySpeed) * PitchSwayIntensity * FlashlightConfiguration->SwayIntensity;
+			Rotation.Yaw = FMath::Cos(GameTime * YawSwaySpeed) * YawSwayIntensity * FlashlightConfiguration->SwayIntensity;
+			Rotation.Roll = FMath::Cos(GameTime * RollSwaySpeed) * RollSwayIntensity * FlashlightConfiguration->SwayIntensity;
 		}
 	}
 	return Rotation;
@@ -171,8 +168,8 @@ FRotator UPlayerFlashlightController::GetSocketRotationWithOffset(FName Socket, 
 		const float YawMultiplier {MovementType == EPlayerGroundMovementType::Sprinting ? 0.175f : 0.075f};
 		
 		// Offset adjustments.
-		Pitch = ((Pitch - PitchOffset) * PitchMultiplier - 1.5f) * 0.4;
-		Yaw = Yaw * YawMultiplier - 2.4f;
+		Pitch = ((Pitch - PitchOffset) * PitchMultiplier * FlashlightConfiguration->SocketRotationIntensity - 1.5f) * 0.4;
+		Yaw = Yaw * YawMultiplier * FlashlightConfiguration->SocketRotationIntensity - 2.4f;
 
 		return FRotator(Pitch, Yaw, 0);
 	}
@@ -188,7 +185,6 @@ void UPlayerFlashlightController::SetFlashlightEnabled(const bool Value)
 		PlayerCharacter->GetFlashlight()->SetVisibility(Value);
 	}
 }
-	
 
 bool UPlayerFlashlightController::IsFlashlightEnabled() const
 {

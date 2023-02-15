@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "PlayerCharacterConfiguration.generated.h"
 
+class APlayerCharacter;
+
 UCLASS(BlueprintType)
 class UPlayerCharacterConfiguration : public UDataAsset
 {
@@ -54,7 +56,11 @@ public:
 	}
 	
 	/** Applies the character configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacter(class APlayerCharacter* PlayerCharacter);
+	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
+
+	/** Applies some values of the character configuration to the player controller and it's corresponding camera manager. */
+	void ApplyToPlayerController(APlayerController* PlayerController);
+	
 };
 
 UCLASS(BlueprintType)
@@ -166,10 +172,10 @@ public:
 	}
 	
 	/** Applies the camera configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter);
+	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
 
 	/** Applies some values of the camera configuration to the player controller and it's corresponding camera manager. */
-	void ApplyToPlayerController(APlayerController* PlayerController);
+	void ApplyToPlayerController(const APlayerController* PlayerController);
 };
 
 
@@ -179,6 +185,66 @@ class UPlayerFlashlightConfiguration : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	/** The intensity of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Light, Meta = (DisplayName = "Intensity", ClampMin = "0.0"))
+	float Intensity {1.25f};
+
+	/** The color of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Light, Meta = (DisplayName = "Light Color"))
+	FColor LightColor {FColor(240,255,255,255)};
+
+	/** The attenuation radius of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Light, Meta = (DisplayName = "Attenuation Radius", ClampMin = "0.0"))
+	float AttenuationRadius {4000.0f};
+
+	/** The inner cone angle of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Light, Meta = (DisplayName = "Inner Cone Angle", ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0"))
+	float InnerConeAngle {22.0f};
+
+	/** The outer cone angle of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Light, Meta = (DisplayName = "Outer Cone Angle", ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0"))
+	float OuterConeAngle {34.0f};
+
+	/** When true, the flashlight will casts shadows. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Shadows, Meta = (DisplayName = "Casts Shadows"))
+	bool CastsShadows {false};
+
+	/** The volumetric scattering intensity of the flashlight. It is recommended to keep this low to prevent blown out scenes. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = VolumetricScattering, Meta = (DisplayName = "Volumetric Scattering", ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float VolumetricScatteringIntensity {0.0f};
+
+	/** Whether the flashlight should use the inverse squared falloff formula for calculating light attenuation. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Fallof, Meta = (DisplayName = "Use Inverse Squared Falloff"))
+	bool UseInverseSquaredFalloff {false};
+
+	/** The light falloff exponent of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Fallof, Meta = (DisplayName = "Light Falloff Exponent", ClampMin = "0.0", ClampMax = "8.0", UIMin = "0.0", UIMax = "8.0"))
+	float LightFalloffExponent {4.0f};
+
+	/** The light function material for the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = LightFunction, Meta = (DisplayName = "Light Function Material"))
+	UMaterialInterface* LightFunctionMaterial;
+
+	/** The light profile for the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = LightProfile, Meta = (DisplayName = "IES Texture"))
+	UTextureLightProfile* IESTexture;
+
+	/** The rotation lag of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Rotation Lag", ClampMin = "0.0", ClampMax = "20.0", UIMin = "0.0", UIMax = "20.0"))
+	float RotationLag {8.5f};
+
+	/** The sway intensity of the flashlight. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Sway Intensity", ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0"))
+	float SwayIntensity {0.75f};
+
+	/** Determines how much the flashlight orientation is affected by the skeletal mesh of the player character. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Socket Rotation Intensity", ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0"))
+	float SocketRotationIntensity {1.25f};
+
+	/** Determines how much the flashlight is allowed to orient up or down. Value is measures from the player character's forward vector. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Flashlight, Meta = (DisplayName = "Pitch Range", ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0"))
+	float PitchRange {60.0f};
+	
 	
 	/** Constructor with default values. */
 	UPlayerFlashlightConfiguration()
@@ -186,6 +252,6 @@ public:
 	}
 	
 	/** Applies the flashlight configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacter(APlayerCharacter* PlayerCharacter);
+	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
 	
 };

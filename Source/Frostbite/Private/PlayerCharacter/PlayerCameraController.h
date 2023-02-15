@@ -21,22 +21,23 @@ class UPlayerCameraController : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	/** Pointer to the camera configuration of the player character this component is part of */
+	UPROPERTY()
+	UPlayerCameraConfiguration* CameraConfiguration;
+	
 private:
-	/** Reference to the PlayerCharacter. */
+	/** Pointer to the PlayerCharacter. */
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
 
-	/** Reference to PlayerCharacterController. */
+	/** Pointer to PlayerCharacterController. */
 	UPROPERTY()
 	APlayerCharacterController* PlayerCharacterController;
 	
 	/** When set to true, the player does not have full rotational control over the camera's orientation. */
 	UPROPERTY(BlueprintReadOnly, Category = Animation, Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
 	bool IsCameraLockedToAnimation {false};
-
-	/** The camera configuration. This data is copied from the PlayerCharacter. */
-	UPROPERTY()
-	UPlayerCameraConfiguration* CameraConfiguration {nullptr};
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	UPROPERTY()

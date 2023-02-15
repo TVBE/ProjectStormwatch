@@ -54,24 +54,11 @@ APlayerCharacter::APlayerCharacter()
 	FlashlightSpringArm->bUsePawnControlRotation = false;
 	FlashlightSpringArm->bEnableCameraLag = false;
 	FlashlightSpringArm->bEnableCameraRotationLag = true;
-	FlashlightSpringArm->CameraRotationLagSpeed = 8.5;
 	
 	// Construct Flashlight.
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetupAttachment(FlashlightSpringArm);
 	Flashlight->SetVisibility(false); // We don't want the flashlight to be enabled on startup.
-	
-	// Default settings that generally work well for the flashlight.
-	Flashlight->Intensity = 0.75;
-	Flashlight->AttenuationRadius = 4000.0;
-	Flashlight->LightColor = FColor(233,255,254,255);
-	Flashlight->OuterConeAngle = 34.0f;
-	Flashlight->InnerConeAngle = 22.0f;
-	Flashlight->bAffectsWorld = true;
-	Flashlight->CastShadows = false;
-	Flashlight->bUseInverseSquaredFalloff = false;
-	Flashlight->LightFalloffExponent = 4.0f;
-	Flashlight->VolumetricScatteringIntensity = 0.0f;
 	
 	// Construct Audio Components
 	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);

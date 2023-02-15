@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "PlayerFlashlightController.generated.h"
 
+class APlayerCharacter;
+class UPlayerFlashlightConfiguration;
 enum class EPlayerGroundMovementType : uint8;
 
 /** UPlayerFlashlightController is an Actor Component responsible for controlling the player's flashlight. 
@@ -16,12 +18,17 @@ UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComp
 class UPlayerFlashlightController : public UActorComponent
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	/** Pointer to the flashlight configuration of the player character this component is part of. */
+	UPlayerFlashlightConfiguration* FlashlightConfiguration;
 	
 private:
 	/** Pointer to the PlayerCharacter this component is part of. */
-	class APlayerCharacter* PlayerCharacter {nullptr};
+	UPROPERTY()
+	APlayerCharacter* PlayerCharacter;
 	
-
 	/** Alpha value for blending the flashlight rotation based on movement. */
 	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Movement Alpha", AllowPrivateAccess = "true"))
 	float MovementAlpha {0.f};
@@ -47,19 +54,16 @@ public:
 	bool IsFlashlightEnabled() const;
 
 	/** Updates the movement alpha value. */
-	UFUNCTION()
 	void UpdateMovementAlpha(const float DeltaTime);
 
 	/** Calculates the flashlight focus rotation.
 	 *	@Return The target rotation for the flashlight to focus on whatever surface the player is looking at.
 	 */
-	UFUNCTION()
 	FRotator GetFlashlightFocusRotation() const;
 
 	/** Calculates the flashlight sway rotation.
 	 *	@Return A rotator that can be added to the world rotation of the flashlight to introduce flashlight sway.
 	 */
-	UFUNCTION()
 	FRotator GetFlashlightSwayRotation() const;
 
 	/** Returns the flashlight socket rotation with an offset depending on the movement type of the PlayerCharacter.
@@ -67,6 +71,5 @@ public:
 	 *	@MovementType The current ground movement type of the player.
 	 *	@Return The rotation of the socket with an offset depending on the ground movement type.
 	 */
-	UFUNCTION()
-	FRotator GetSocketRotationWithOffset(const FName Socket, const EPlayerGroundMovementType MovementType) const;
+	FRotator GetSocketRotationWithOffset(FName Socket, EPlayerGroundMovementType MovementType) const;
 };

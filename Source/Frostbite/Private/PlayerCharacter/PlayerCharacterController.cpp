@@ -346,7 +346,7 @@ float APlayerCharacterController::GetClearanceAbovePawn() const
 
 FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
 {
-	const float TraceLength {250.f};
+	constexpr float TraceLength {250.f};
 	const FVector Start {this->PlayerCameraManager->GetCameraLocation()};
 	const FVector End {Start + this->PlayerCameraManager->GetActorForwardVector() * TraceLength};
 	FHitResult HitResult;
