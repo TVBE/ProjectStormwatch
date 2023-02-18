@@ -14,7 +14,7 @@ enum class EPlayerGroundMovementType : uint8;
  *	This class provides a simple and convenient way for designers to customize the player's flashlight behavior.
  *	@Brief ActorComponent for controlling the player's flashlight.
  */
-UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent))
 class UPlayerFlashlightController : public UActorComponent
 {
 	GENERATED_BODY()
@@ -30,7 +30,7 @@ private:
 	APlayerCharacter* PlayerCharacter;
 	
 	/** Alpha value for blending the flashlight rotation based on movement. */
-	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Movement Alpha", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerFlashlightController", Meta = (DisplayName = "Movement Alpha", AllowPrivateAccess = "true"))
 	float MovementAlpha {0.f};
 	
 public:	
@@ -46,11 +46,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Enables or disables the flashlight. */
-	UFUNCTION(BlueprintCallable, Category = Default, Meta = (DisplayName = "Set Flashlight Enabled"))
+	UFUNCTION(BlueprintCallable, Category = "PlayerFlashlightController", Meta = (DisplayName = "Set Flashlight Enabled"))
 	void SetFlashlightEnabled(const bool Value);
 
 	/** Returns whether the flashlight is enabled or not. */
-	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Is Flashlight Enabled"))
+	UFUNCTION(BlueprintPure, Category = "PlayerFlashlightController", Meta = (DisplayName = "Is Flashlight Enabled"))
 	bool IsFlashlightEnabled() const;
 
 	/** Updates the movement alpha value. */

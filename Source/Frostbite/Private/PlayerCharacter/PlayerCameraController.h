@@ -16,7 +16,7 @@ class APlayerCharacterController;
  *	@Brief ActorComponent for managing player camera behavior.
  */
 class APlayerCharacterController;
-UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent) )
 class UPlayerCameraController : public UActorComponent
 {
 	GENERATED_BODY()
@@ -36,7 +36,7 @@ private:
 	APlayerCharacterController* PlayerCharacterController;
 	
 	/** When set to true, the player does not have full rotational control over the camera's orientation. */
-	UPROPERTY(BlueprintReadOnly, Category = Animation, Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerController|Animation", Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
 	bool IsCameraLockedToAnimation {false};
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */

@@ -29,7 +29,7 @@ protected:
 	virtual void InitializeComponent() override;
 
 	/** Pointer to the PlayerCharacter that owns this component. */
-	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Player Character"))
+	UPROPERTY(BlueprintReadOnly, Category = "AudioController", Meta = (DisplayName = "Player Character"))
 	APlayerCharacter* PlayerCharacter;
 
 public:	

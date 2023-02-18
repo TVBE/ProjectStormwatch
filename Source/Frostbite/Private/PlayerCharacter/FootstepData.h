@@ -22,23 +22,23 @@ struct FFootstepData
 	GENERATED_USTRUCT_BODY()
 
 	/** Which foot performed the footstep. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Foot"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Foot"))
 	EFoot Foot;
 
 	/** Location of the footstep in world space. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Location"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Location"))
 	FVector Location;
 
 	/** The velocity of the character when the footstep was made. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Velocity"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Velocity"))
 	float Velocity;
 
 	/** The PhysicalMaterial underneath the foot. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Physical Material"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Physical Material"))
 	UPhysicalMaterial* PhysicalMaterial;
 	
 	/** The object underneath the foot. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Object Underneath Foot"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Object Underneath Foot"))
 	UObject* Object;
 	
 	/** Constructor with default values. */

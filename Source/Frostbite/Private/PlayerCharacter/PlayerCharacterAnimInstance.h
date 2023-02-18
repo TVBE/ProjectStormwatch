@@ -23,6 +23,6 @@ public:
 	FFootstepDelegate OnFootstep;
 
 protected:
-	UFUNCTION(BlueprintPure, Category = Default, Meta = (DisplayName = "Get Footstep Data"))
+	UFUNCTION(BlueprintPure, Category = "PlayerCharacterAnimInstance", Meta = (DisplayName = "Get Footstep Data"))
 	FFootstepData GetFootstepData(EFoot Foot);
 };
