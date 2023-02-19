@@ -20,6 +20,7 @@
 #include "Math/Vector.h"
 #include "Frostbite/Frostbite.h"
 
+
 /** The PlayerCharacter's initialization follows these stages:
  *	Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
  *	PostInitProperties(): Called after construction to perform additional initialization that requires access to default property values.
@@ -102,12 +103,10 @@ APlayerCharacter::APlayerCharacter()
 	
 	// Construct Camera Controller
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
-	CameraController->bWantsInitializeComponent = true;
 	CameraController->bEditableWhenInherited = false;
 	
 	// Construct Flashlight Controller
 	FlashlightController = CreateDefaultSubobject<UPlayerFlashlightController>(TEXT("Flashlight Controller"));
-	FlashlightController->bWantsInitializeComponent = true;
 	FlashlightController->bEditableWhenInherited = false;
 
 	// Construct Audio Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the audio controller.
@@ -121,7 +120,6 @@ APlayerCharacter::APlayerCharacter()
 		// Construct the base class if the Blueprint derived class cannot be found.
 		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller")); 
 	}
-	AudioController->bWantsInitializeComponent = true;
 	AudioController->bEditableWhenInherited = false;
 	
 	// Construct VFX Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the VFX controller.
@@ -135,7 +133,6 @@ APlayerCharacter::APlayerCharacter()
 		// Construct the base class if the Blueprint derived class cannot be found.
 		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller"));
 	}
-	VfxController->bWantsInitializeComponent = true;
 	VfxController->bEditableWhenInherited = false;
 }
 
@@ -153,6 +150,12 @@ void APlayerCharacter::PostInitProperties()
 		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
 
+	// Set components to call their virtual InitializeComponent functions.
+	CameraController->bWantsInitializeComponent = true;
+	FlashlightController->bWantsInitializeComponent = true;
+	AudioController->bWantsInitializeComponent = true;
+	VfxController->bWantsInitializeComponent = true;
+	
 	Super::PostInitProperties();
 }
 
