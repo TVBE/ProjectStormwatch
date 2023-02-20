@@ -358,7 +358,8 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 	{
 		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
-			Subsystem->SetPlayerMovementInputLock(false);
+			Subsystem->SetPlayerMovementInputLock(true);
+			Subsystem->SetPlayerRotationInputLock(true);
 		}
 	}
 	GetCharacterMovement()->StopMovementImmediately();
@@ -374,7 +375,8 @@ void APlayerCharacter::HandleLandingEnd()
 		{
 			if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 			{
-				Subsystem->SetPlayerMovementInputLock(true);
+				Subsystem->SetPlayerMovementInputLock(false);
+				Subsystem->SetPlayerRotationInputLock(false);
 			}
 		}
 	}
