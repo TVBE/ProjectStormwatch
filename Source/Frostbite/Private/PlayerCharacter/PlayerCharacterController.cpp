@@ -74,7 +74,7 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
-	if(!CanProcessMovementInput) {return;}
+	if(!CanProcessRotationInput) {return;}
 	if(CanRotate())
 	{
 		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
@@ -83,7 +83,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
-	if(!CanProcessMovementInput) {return;}
+	if(!CanProcessRotationInput) {return;}
 	if(CanRotate())
 	{
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
@@ -244,6 +244,22 @@ float APlayerCharacterController::GetHorizontalRotationInput() const
 		return InputComponent->GetAxisValue("Horizontal Rotation");
 	}
 	return 0.0;
+}
+
+void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value)
+{
+	if(Subsystem)
+	{
+		CanProcessMovementInput = Value;
+	}
+}
+
+void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value)
+{
+	if(Subsystem)
+	{
+		CanProcessRotationInput = Value;
+	}
 }
 
 bool APlayerCharacterController::CanRotate() const

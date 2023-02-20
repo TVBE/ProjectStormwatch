@@ -42,12 +42,36 @@ void UPlayerSubsystem::RegisterPlayerController(APlayerCharacterController* Cont
 	}
 }
 
-void UPlayerSubsystem::SetPlayerInputEnabled(const bool Value)
+bool UPlayerSubsystem::SetPlayerMovementInputLock(const bool Value)
 {
+	MovementInputLockCount += Value ? 1 : -1;
 	if(PlayerController)
 	{
-		PlayerController->CanProcessMovementInput = Value;
+		const bool CanProcessInput {!MovementInputLockCount};
+		if(PlayerController->GetCanProcessMovementInput() != CanProcessInput)
+		{
+			PlayerController->SetCanProcessMovementInput(this, CanProcessInput);
+			OnMovementInputLockChanged.Broadcast(CanProcessInput);
+		}
+		return CanProcessInput;
 	}
+	return false;
+}
+
+bool UPlayerSubsystem::SetPlayerRotationInputLock(const bool Value)
+{
+	RotationInputLockCount += Value ? 1 : -1;
+	if(PlayerController)
+	{
+		const bool CanProcessInput {!RotationInputLockCount};
+		if(PlayerController->GetCanProcessRotationInput() != CanProcessInput)
+		{
+			PlayerController->SetCanProcessRotationInput(this, CanProcessInput);
+			OnRotationInputLockChanged.Broadcast(CanProcessInput);
+		}
+		return CanProcessInput;
+	}
+	return false;
 }
 
 void UPlayerSubsystem::FadePlayerCameraFromBlack(const float Duration)

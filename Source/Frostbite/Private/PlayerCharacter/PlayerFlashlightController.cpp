@@ -109,21 +109,24 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation() const
 		// Set the sway speed and intensity based on the player's movement type.
 		switch(MovementType)
 		{
-		case 0: PitchSwaySpeed = 1.65f;
+		case EPlayerGroundMovementType::Idle:
+			PitchSwaySpeed = 1.65f;
 			PitchSwayIntensity = 1.7f;
 			YawSwaySpeed = 1.23f;
 			YawSwayIntensity = 1.25f;
 			RollSwaySpeed = 0.675f;
 			RollSwayIntensity = 1.5f;
 			break;
-		case 1: PitchSwaySpeed = 3.12f * MappedVelocity;
+		case EPlayerGroundMovementType::Walking:
+			PitchSwaySpeed = 3.12f * MappedVelocity;
 			PitchSwayIntensity = 1.7f;
 			YawSwaySpeed = 4.65 * MappedVelocity;
 			YawSwayIntensity = 1.25f;
 			RollSwaySpeed = 2.55f * MappedVelocity;
 			RollSwayIntensity = 1.5f; ;
 			break;
-		case 2: PitchSwaySpeed = 9.55f;
+		case EPlayerGroundMovementType::Sprinting:
+			PitchSwaySpeed = 9.55f;
 			PitchSwayIntensity = 3.21f;
 			YawSwaySpeed = 5.0f;
 			YawSwayIntensity = 1.5f;

@@ -15,20 +15,26 @@ enum class EPlayerGroundMovementType : uint8
 };
 
 UENUM(BlueprintType)
-enum EPlayerLocomotionEvent
+enum class EPlayerLandingType : uint8
 {
-	JUMP				UMETA(DisplayName = "Jump"),
-	FALL				UMETA(DisplayName = "Fall"),
-	LANDINGSOFT			UMETA(DisplayName = "Soft Landing"),
-	LANDINGHARD			UMETA(DisplayName = "Hard Landing"),
-	LANDINGHEAVY		UMETA(DisplayName = "Heavy Landing"),
-	CROUCHSTART			UMETA(DisplayName = "Start Crouching"),
-	CHROUCHEND			UMETA(DisplayName = "Stop Crouching"),
-	SPRINTSTART			UMETA(DisplayName = "Start Sprinting"),
-	SPRINTEND			UMETA(DisplayName = "Stop Sprinting")
+	Soft				UMETA(DisplayName = "Soft Landing"),
+	Hard				UMETA(DisplayName = "Hard Landing"),
+	Heavy				UMETA(DisplayName = "Heavy Landing"),
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEvent, EPlayerLocomotionEvent, Value);
+UENUM(BlueprintType)
+enum class EPlayerLocomotionEvent : uint8
+{
+	Jump				UMETA(DisplayName = "Jump"),
+	Fall				UMETA(DisplayName = "Fall"),
+	CrouchStart			UMETA(DisplayName = "Start Crouching"),
+	CrouchEnd			UMETA(DisplayName = "Stop Crouching"),
+	SprintStart			UMETA(DisplayName = "Start Sprinting"),
+	SprintEnd			UMETA(DisplayName = "Stop Sprinting")
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEventDelegate, EPlayerLocomotionEvent, Value);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EPlayerLandingType, Value);
 
 UCLASS()
 class UPlayerCharacterMovementComponent : public UCharacterMovementComponent
@@ -37,7 +43,10 @@ class UPlayerCharacterMovementComponent : public UCharacterMovementComponent
 
 public:
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Locomotion Event"))
-	FLocomotionEvent LocomotionEventDelegate;
+	FLocomotionEventDelegate OnLocomotionEvent;
+	
+	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Landing Event"))
+	FLandingDelegate OnLanding;
 
 private:
 	/** When true, the player is currently sprinting. */

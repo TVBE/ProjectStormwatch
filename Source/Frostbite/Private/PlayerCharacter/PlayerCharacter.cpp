@@ -178,6 +178,12 @@ void APlayerCharacter::OnConstruction(const FTransform& Transform)
 void APlayerCharacter::PostInitializeComponents()
 {
 	ApplyConfigurationAssets();
+
+	// Subscribe to the OnLanding event of the player character movement component.
+	if(PlayerCharacterMovement)
+	{
+		PlayerCharacterMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
+	}
 	
 	Super::PostInitializeComponents();
 }
@@ -217,15 +223,14 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
 		if(PlayerCharacterController)
 		{
-			
-		}
-		// Registers the new controller to the player character subsystem.
-		if(const UWorld* World {GetWorld()})
-		{
-			if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+			// Registers the new controller to the player character subsystem.
+			if(const UWorld* World {GetWorld()})
 			{
-				PlayerSubsystem->RegisterPlayerController(Cast<APlayerCharacterController>(NewController));
-			}
+				if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+				{
+					PlayerSubsystem->RegisterPlayerController(Cast<APlayerCharacterController>(PlayerCharacterController));
+				}
+			}	
 		}
 		CameraConfiguration->ApplyToPlayerController(Cast<APlayerController>(NewController));
 	}
@@ -289,13 +294,6 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const
 	return Rotation;
 }
 
-// Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 void APlayerCharacter::SetIsJumping(bool Value)
 {
 	IsJumping = Value;
@@ -336,6 +334,48 @@ void APlayerCharacter::ValidateConfigurationAssets()
 		if(GIsEditor && FApp::IsGame())
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Flashlight Configuration was selected for player character. Using default settings instead."))
+		}
+	}
+}
+
+void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
+{
+	float StunDuration {0.0f};
+	switch(Value)
+	{
+	case EPlayerLandingType::Soft:
+		return;
+		
+	case EPlayerLandingType::Hard:
+		StunDuration = 1.85f;
+		break;
+	case EPlayerLandingType::Heavy:
+		StunDuration = 4.5f;
+		break;
+	}
+
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			Subsystem->SetPlayerMovementInputLock(false);
+		}
+	}
+	GetCharacterMovement()->StopMovementImmediately();
+	
+	GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
+}
+
+void APlayerCharacter::HandleLandingEnd()
+{
+	if(PlayerCharacterController)
+	{
+		if(const UWorld* World {GetWorld()})
+		{
+			if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+			{
+				Subsystem->SetPlayerMovementInputLock(true);
+			}
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "PlayerCharacterConfiguration.h"
 #include "PlayerCharacterController.generated.h"
 
+class UPlayerSubsystem;
 class APlayerCharacter;
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
@@ -18,11 +19,7 @@ public:
 	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
 	UPROPERTY()
 	UPlayerCharacterConfiguration* CharacterConfiguration;
-	
-	/** When true, the player can receive user input. */
-	UPROPERTY()
-	bool CanProcessMovementInput {false};
-	
+
 protected:
 	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Actors", Meta = (DisplayName = "Player Character"))
@@ -36,6 +33,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Intention", Meta = (DisplayName = "Is Crouch Pending"))
 	bool IsCrouchPending {false};
 
+private:
+	/** When true, the player can receive user input for movement. */
+	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
+	bool CanProcessMovementInput {false};
+
+	/** When true, the player can receive user input for camera rotation. */
+	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
+	bool CanProcessRotationInput {false};
+
 public:
 	APlayerCharacterController();
 
@@ -47,6 +53,12 @@ public:
 	/** Returns the current horizontal rotation input value from the PlayerController. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController|Input", Meta = (DisplayName = "Get Horizontal Rotation Input"))
 	float GetHorizontalRotationInput() const;
+
+	/** Sets CanProcessMovementInput. This function can only be called by a PlayerSubsystem. */
+	void SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value);
+
+	/** Sets CanProcessRotationInput. This function can only be called by a PlayerSubsystem. */
+	void SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value);
 
 protected:
 	/** Checks whether the player can currently rotate. */
@@ -158,4 +170,13 @@ private:
 	/** Checks if the player can continue with any actions they are currently performing. */
 	UFUNCTION()
 	void UpdateCurrentActions();
+
+public:
+	/** Returns whether the player controller can process movement input. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
+	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+
+	/** Returns whether the player controller can process rotation input. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
+	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
 };

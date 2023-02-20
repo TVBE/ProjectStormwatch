@@ -149,13 +149,11 @@ FRotator UPlayerCameraController::GetCameraSwayRotation()
 	float IntensityMultiplier {0.0};
 	switch(MovementType)
 	{
-	case 0: IntensityMultiplier = 0.1; // Idle
+	case EPlayerGroundMovementType::Idle: IntensityMultiplier = 0.1;
 		break;
-	case 1: IntensityMultiplier = 0.3; // Walking
+	case EPlayerGroundMovementType::Walking: IntensityMultiplier = 0.3;
 		break;
-	case 2: IntensityMultiplier = 1.65; // Sprinting
-		break;
-	default: IntensityMultiplier = 0.3; // Miscellaneous
+	case EPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.65;
 		break;
 	}
 	// Get a mapped deviation value that scales the shake intensity and speed. Used to introduce some cyclical pseudo-random variance.
@@ -209,7 +207,7 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation()
 	{
 		switch(MovementType)
 		{
-		case 2: IntensityMultiplier = 1.25; // Sprinting
+		case EPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.25; // Sprinting
 			break;
 		default: IntensityMultiplier = 0.5; // Miscellaneous
 			break;
@@ -289,7 +287,6 @@ void UPlayerCameraController::UpdateCameraDepthOfField(const float DeltaTime)
 
 float UPlayerCameraController::GetFocalDistance() const
 {
-	
 	if (!PlayerCharacter || !PlayerCharacter->GetCamera())
 	{
 		return 0.0f;

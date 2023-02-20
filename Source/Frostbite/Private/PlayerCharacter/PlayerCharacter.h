@@ -20,7 +20,9 @@ class UPlayerFlashlightController;
 class UPlayerCharacterMovementComponent;
 class UNiagaraComponent;
 enum class EFoot : uint8;
+enum class EPlayerLandingType : uint8;
 struct FFootstepData;
+struct FTimerHandle;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter))
 class APlayerCharacter : public ACharacter
@@ -35,15 +37,15 @@ public:
 private:
 	// CONFIGURATION
 	/** The character configuration data asset. */
-	UPROPERTY(EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration"))
+	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration"))
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
 	/** The camera configuration data asset */
-	UPROPERTY(EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration"))
+	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration"))
 	UPlayerCameraConfiguration* CameraConfiguration;
 
 	/** The flashlight configuration data asset*/
-	UPROPERTY(EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration"))
+	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration"))
 	UPlayerFlashlightConfiguration* FlashlightConfiguration;
 	
 	// COMPONENTS
@@ -112,6 +114,11 @@ private:
 	UPROPERTY(BlueprintGetter = GetYawDelta, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Yaw Delta"))
 	float YawDelta {0.f};
 
+	// TIMERS
+	/** The timer handle for the hard and heavy landing stun duration. */
+	UPROPERTY()
+	FTimerHandle FallStunTimer;
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
@@ -119,9 +126,6 @@ public:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// Called after the constructor but before BeginPlay().
 	virtual void PostInitProperties() override;
@@ -164,6 +168,14 @@ private:
 	 *	@Return A float value representing a rotator's yaw axis.
 	 */
 	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
+
+	/** Handles the landing callback from the player character movement component. */
+	UFUNCTION()
+	void HandleLanding(EPlayerLandingType Value);
+
+	/** Handles the ending of a landing. */
+	UFUNCTION()
+	void HandleLandingEnd();
 
 #if WITH_EDITOR
 	/** Checks whether an object is properly initialized.
