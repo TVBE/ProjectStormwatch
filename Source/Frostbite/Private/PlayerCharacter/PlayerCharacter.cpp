@@ -259,15 +259,18 @@ void APlayerCharacter::UpdateRotation(float DeltaTime)
 	}
 	else
 	{
+		constexpr float YawDeltaThreshold {30.0f};
+		constexpr float YawDeltaClamp {45.0f};
+		
 		if(IsTurningInPlace)
 		{
-			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, 70.f), 0));
+			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, YawDeltaClamp), 0));
 		}
 		if(FMath::IsNearlyEqual(YawDelta, 0, 0.5f))
 		{
 			IsTurningInPlace = false;
 		}
-		else if(abs(YawDelta) > 30)
+		else if(abs(YawDelta) > YawDeltaThreshold)
 		{
 			IsTurningInPlace = true;
 		}
@@ -280,8 +283,8 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const
 	if(abs(YawDelta) >= Clamp)
 	{
 		float RotationOvershoot {abs(YawDelta) - Clamp};
-		RotationOvershoot = RotationOvershoot * (YawDelta >= 0.0)? 1 : -1;
-		Rotation = Rotation + RotationOvershoot; 
+		RotationOvershoot = (YawDelta >= 0.0) ? RotationOvershoot : -RotationOvershoot;
+		Rotation += RotationOvershoot;
 	}
 	return Rotation;
 }
