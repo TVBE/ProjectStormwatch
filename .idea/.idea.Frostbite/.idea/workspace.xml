@@ -7,18 +7,10 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/SFX/Snow/Materials/Snow/M_SnowFlake_VelocityLerp.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/SFX/Snow/Materials/Snow/M_SnowFlake_VelocityLerp.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/SFX/Snow/Particles/Snow/P_Blizzard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/SFX/Snow/Particles/Snow/P_Blizzard.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Sources/MSS_ProceduralWindExample.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Sources/MSS_ProceduralWindHowling.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Sources/MSS_ProceduralWindHowling_Quaternion_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterConfiguration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -214,6 +206,7 @@
       <workItem from="1677056500375" duration="22000" />
       <workItem from="1677056726262" duration="12721000" />
       <workItem from="1677072791262" duration="2291000" />
+      <workItem from="1677077925085" duration="1644000" />
     </task>
     <servers />
   </component>

@@ -250,7 +250,7 @@ void APlayerCharacter::UpdateYawDelta()
 void APlayerCharacter::UpdateRotation(float DeltaTime)
 {
 	const UCharacterMovementComponent* MovementComponent {GetCharacterMovement()};
-	if(MovementComponent && ((MovementComponent->IsMovingOnGround() && GetVelocity().X > 1) || MovementComponent->IsFalling()))
+	if(MovementComponent && ((MovementComponent->IsMovingOnGround() && abs(GetVelocity().X) > 1) || MovementComponent->IsFalling()))
 	{
 		if(GetController())
 		{
