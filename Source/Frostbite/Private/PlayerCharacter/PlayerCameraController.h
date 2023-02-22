@@ -3,37 +3,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerCameraConfiguration.h"
+#include "PlayerCharacterConfiguration.h"
 #include "Components/ActorComponent.h"
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
+
+class APlayerCharacter;
+class APlayerCharacterController;
 
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.
  *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view.
  *	@Brief ActorComponent for managing player camera behavior.
  */
 class APlayerCharacterController;
-UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent) )
 class UPlayerCameraController : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	/** Pointer to the camera configuration of the player character this component is part of */
+	UPROPERTY()
+	UPlayerCameraConfiguration* CameraConfiguration;
+	
 private:
-	/** Reference to the PlayerCharacter. */
+	/** Pointer to the PlayerCharacter. */
 	UPROPERTY()
-	class APlayerCharacter* PlayerCharacter;
+	APlayerCharacter* PlayerCharacter;
 
-	/** Reference to PlayerCharacterController. */
+	/** Pointer to PlayerCharacterController. */
 	UPROPERTY()
-	class APlayerCharacterController* PlayerCharacterController;
+	APlayerCharacterController* PlayerCharacterController;
 	
 	/** When set to true, the player does not have full rotational control over the camera's orientation. */
-	UPROPERTY(BlueprintReadOnly, Category = Animation, Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerController|Animation", Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
 	bool IsCameraLockedToAnimation {false};
-
-	/** The camera configuration. */
-	UPROPERTY(BlueprintReadOnly, Category = Configuration, Meta = (DisplayName = "Camera Configuration", AllowPrivateAccess = "true"))
-	FPlayerCameraConfiguration CameraConfiguration;
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	UPROPERTY()
@@ -68,13 +72,14 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void FadeFromBlack(const float Duration);
+
 private:
 	/** Tries to get the owning pawn's player controller as PlayerCharacterController. */
 	UFUNCTION()
 	void HandleCharacterControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	/** Updates the camera relative location. */
-	UFUNCTION()
 	void UpdateCameraLocation();
 
 	/** Updates the camera world rotation*/
@@ -89,7 +94,15 @@ private:
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
 	FRotator GetScaledHeadSocketDeltaRotation();
 	
-	/** Updates the camera's field of view according to the Players movement. */
-	UFUNCTION()
+	/** Updates the camera's field of view according to the Player's movement. */
 	void UpdateCameraFieldOfView();
+
+	/** Updates the camera's vignette intensity according to the Player's movement.*/
+	void UpdateCameraVignetteIntensity(const float DeltaTime);
+
+	/** Updates the camera's depth of field according to whatever the player is looking at.*/
+	void UpdateCameraDepthOfField(const float DeltaTime);
+
+	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
+	float GetFocalDistance() const;
 };

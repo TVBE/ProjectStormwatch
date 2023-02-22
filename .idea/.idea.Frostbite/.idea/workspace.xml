@@ -7,19 +7,19 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BPFL_CharacterUtilities.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/Blueprints/BP_GameMode.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Systems/PlayerCharacter/S_O_1_Footstep_Metal02_LayerA_06.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/LandingIntensity.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/FootstepData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerAudioController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerAudioController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -34,6 +34,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;RiderCppLiveTemplatesSettingsId&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -176,6 +177,36 @@
       <workItem from="1676046462550" duration="462000" />
       <workItem from="1676203596181" duration="857000" />
       <workItem from="1676204530793" duration="1252000" />
+      <workItem from="1676210883678" duration="2080000" />
+      <workItem from="1676213121075" duration="14380000" />
+      <workItem from="1676234118633" duration="4071000" />
+      <workItem from="1676242946649" duration="2374000" />
+      <workItem from="1676282522987" duration="2242000" />
+      <workItem from="1676287188376" duration="85000" />
+      <workItem from="1676287610473" duration="1680000" />
+      <workItem from="1676289376903" duration="11606000" />
+      <workItem from="1676303045906" duration="2169000" />
+      <workItem from="1676305369292" duration="569000" />
+      <workItem from="1676306019136" duration="4402000" />
+      <workItem from="1676316037599" duration="10506000" />
+      <workItem from="1676378791587" duration="3083000" />
+      <workItem from="1676387599487" duration="2999000" />
+      <workItem from="1676390765457" duration="6778000" />
+      <workItem from="1676459247146" duration="9483000" />
+      <workItem from="1676729669261" duration="2130000" />
+      <workItem from="1676838651567" duration="20000" />
+      <workItem from="1676838701335" duration="801000" />
+      <workItem from="1676840632279" duration="49000" />
+      <workItem from="1676840715647" duration="9408000" />
+      <workItem from="1676892264638" duration="6528000" />
+      <workItem from="1676901947157" duration="5825000" />
+      <workItem from="1676915390946" duration="4550000" />
+      <workItem from="1676921658352" duration="6821000" />
+      <workItem from="1677008066895" duration="1395000" />
+      <workItem from="1677056500375" duration="22000" />
+      <workItem from="1677056726262" duration="12721000" />
+      <workItem from="1677072791262" duration="2291000" />
+      <workItem from="1677077925085" duration="1644000" />
     </task>
     <servers />
   </component>

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "FootstepData.generated.h"
 
+class UPhysicalMaterial;
 
 /** Enum for defining which foot performed a footstep. */
 UENUM(BlueprintType)
@@ -22,19 +22,23 @@ struct FFootstepData
 	GENERATED_USTRUCT_BODY()
 
 	/** Which foot performed the footstep. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Foot"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Foot"))
 	EFoot Foot;
 
 	/** Location of the footstep in world space. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Location"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Location"))
 	FVector Location;
 
+	/** The velocity of the character when the footstep was made. */
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Velocity"))
+	float Velocity;
+
 	/** The PhysicalMaterial underneath the foot. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Physical Material"))
-	class UPhysicalMaterial* PhysicalMaterial;
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Physical Material"))
+	UPhysicalMaterial* PhysicalMaterial;
 	
 	/** The object underneath the foot. */
-	UPROPERTY(BlueprintReadWrite, Category = FootstepData, Meta = (DisplayName = "Object Underneath Foot"))
+	UPROPERTY(BlueprintReadWrite, Category = "FootstepData", Meta = (DisplayName = "Object Underneath Foot"))
 	UObject* Object;
 	
 	/** Constructor with default values. */
@@ -42,10 +46,11 @@ struct FFootstepData
 	{
 		Foot = EFoot::Left;
 		Location = FVector();
+		Velocity = 0.0f;
 		PhysicalMaterial = nullptr;
 		Object = nullptr;
 	}
 
 	/** Constructor. */
-	FFootstepData(EFoot Foot, FVector Location, UPhysicalMaterial* PhysicalMaterial, UObject* Object);
+	FFootstepData(EFoot Foot, FVector Location, float Velocity, UPhysicalMaterial* PhysicalMaterial, UObject* Object);
 };

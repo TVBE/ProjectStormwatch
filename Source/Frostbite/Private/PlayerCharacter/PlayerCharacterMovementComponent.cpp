@@ -16,26 +16,26 @@ void UPlayerCharacterMovementComponent::BeginPlay()
 
 bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 {
-	LocomotionEventDelegate.Broadcast(JUMP);
+	OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::Jump);
 	return Super::DoJump(bReplayingMoves);
 }
 
 void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
-	if(Velocity.Z < -1300)
+	if(Velocity.Z < -1000)
 	{
-		if(Velocity.Z < -1600)
+		if(Velocity.Z < -1300)
 		{
-			LocomotionEventDelegate.Broadcast(LANDINGHEAVY);
+			OnLanding.Broadcast(EPlayerLandingType::Heavy);
 		}
 		else
 		{
-			LocomotionEventDelegate.Broadcast(LANDINGHARD);
+			OnLanding.Broadcast(EPlayerLandingType::Hard);
 		}
 	}
 	else
 	{
-		LocomotionEventDelegate.Broadcast(LANDINGSOFT);
+		OnLanding.Broadcast(EPlayerLandingType::Soft);
 	}
 	Super::ProcessLanded(Hit, remainingTime, Iterations);
 }
@@ -67,11 +67,11 @@ void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const A
 	}
 	if(Value)
 	{
-		LocomotionEventDelegate.Broadcast(SPRINTSTART);
+		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintStart);
 	}
 	else
 	{
-		LocomotionEventDelegate.Broadcast(SPRINTEND);
+		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintEnd);
 	}
 }
 
