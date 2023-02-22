@@ -37,15 +37,15 @@ public:
 private:
 	// CONFIGURATION
 	/** The character configuration data asset. */
-	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration"))
+	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
 	/** The camera configuration data asset */
-	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration"))
+	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration", DisplayPriority = "1"))
 	UPlayerCameraConfiguration* CameraConfiguration;
 
 	/** The flashlight configuration data asset*/
-	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration"))
+	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration", DisplayPriority = "2"))
 	UPlayerFlashlightConfiguration* FlashlightConfiguration;
 	
 	// COMPONENTS
@@ -54,11 +54,11 @@ private:
 	UCameraComponent* Camera;
 
 	/** The flashlight for the player. */
-	UPROPERTY(BlueprintGetter = GetFlashlight, EditAnywhere, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight"))
+	UPROPERTY(BlueprintGetter = GetFlashlight, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight"))
 	USpotLightComponent* Flashlight;
 
 	/** The SpringArmComponent the flashlight is attached to. */
-	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, EditAnywhere, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight Arm"))
+	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight Arm"))
 	USpringArmComponent* FlashlightSpringArm;
 
 	/** The PlayerAudioController that handles player audio. */
@@ -94,11 +94,11 @@ private:
 	UAudioComponent* RightFootAudioComponent;
 
 	/** The particle emitter for the player's left foot. */
-	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
+	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
 	UNiagaraComponent* LeftFootParticleEmitter;
 	
 	/** The particle emitter for the player's right foot. */
-	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
+	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
 	UNiagaraComponent* RightFootParticleEmitter;
 
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */

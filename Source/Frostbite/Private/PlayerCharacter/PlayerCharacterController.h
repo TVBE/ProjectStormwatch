@@ -9,6 +9,8 @@
 
 class UPlayerSubsystem;
 class APlayerCharacter;
+class APlayerCharacterState;
+struct FTimerHandle;
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, ClassGroup=(PlayerCharacter))
@@ -34,6 +36,10 @@ protected:
 	bool IsCrouchPending {false};
 
 private:
+	/** Pointer to the PlayerCharacterState instance for this controller. */
+	UPROPERTY(BlueprintGetter = GetPlayerCharacterState, Category = "PlayerCharacterController|PlayerState", Meta = (DisplayName = "Player Character State"))
+	APlayerCharacterState* PlayerCharacterState;
+	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
 	bool CanProcessMovementInput {false};
@@ -41,6 +47,10 @@ private:
 	/** When true, the player can receive user input for camera rotation. */
 	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
 	bool CanProcessRotationInput {false};
+
+	/** Timer handle for the state update timer. */
+	UPROPERTY()
+	FTimerHandle StateTimer;
 
 public:
 	APlayerCharacterController();
@@ -117,10 +127,15 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Camera Look At Query"))
 	FHitResult GetCameraLookAtQuery() const;
 
+	/** Updates the player character state. */
+	UFUNCTION()
+	void UpdatePlayerState();
+
 private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
+	virtual void InitPlayerState() override;
 
 	// User Input Callback Functions
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
@@ -172,6 +187,10 @@ private:
 	void UpdateCurrentActions();
 
 public:
+	/** Returns the player character state. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController|PlayerState", Meta = (DisplayName = "Player Character State"))
+	FORCEINLINE APlayerCharacterState* GetPlayerCharacterState() const {return PlayerCharacterState; }
+	
 	/** Returns whether the player controller can process movement input. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
 	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }

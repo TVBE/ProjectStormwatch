@@ -361,10 +361,11 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 			Subsystem->SetPlayerMovementInputLock(true);
 			Subsystem->SetPlayerRotationInputLock(true);
 		}
+		GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
 	}
 	GetCharacterMovement()->StopMovementImmediately();
 	
-	GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
+	
 }
 
 void APlayerCharacter::HandleLandingEnd()

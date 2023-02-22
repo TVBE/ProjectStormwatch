@@ -6,11 +6,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"
+#include "PlayerCharacterState.h"
 #include "Math/Rotator.h"
 #include "PlayerFlashlightController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
 #include "GameFramework/PawnMovementComponent.h"
 
 // Called on construction
@@ -42,8 +42,23 @@ void APlayerCharacterController::BeginPlay()
 		const FString PawnName {UKismetSystemLibrary::GetDisplayName(GetPawn())};
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController expected a Pawn of type PlayerCharacter, but got assigned to an instance of %s instead"), *PawnName);
 	}
-	
-	
+
+	// Start updating the player state.
+	if(GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(StateTimer, this, &APlayerCharacterController::UpdatePlayerState, 1.0f, true);	
+	}
+}
+
+// Called when the PlayerState is constructed.
+void APlayerCharacterController::InitPlayerState()
+{
+	Super::InitPlayerState();
+	PlayerCharacterState = Cast<APlayerCharacterState>(PlayerState);
+	if(!PlayerCharacterState)
+	{
+		UE_LOG(LogPlayerCharacterController, Error, TEXT("Player state is not an instance of PlayerCharacterState. "));
+	}
 }
 
 // Called when the controller is constructed.
@@ -372,6 +387,36 @@ FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
 		return HitResult;
 	}
 	return FHitResult();
+}
+
+void APlayerCharacterController::UpdatePlayerState()
+{
+	if(PlayerCharacter && PlayerCharacterState)
+	{
+		if(PlayerCharacterState->GetHealth() < 100)
+		{
+			PlayerCharacterState->IncrementHealth(4);
+		}
+		if(const UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+		{
+			if(PlayerCharacterMovement->GetIsSprinting())
+			{
+				PlayerCharacterState->IncrementExertion(3);
+			}
+			else
+			{
+				PlayerCharacterState->DecrementExertion(2);
+			}
+		}
+		if(PlayerCharacterState->GetFear() > 0)
+		{
+			PlayerCharacterState->DecrementFear(1);
+		}
+		if(PlayerCharacterState->GetVigilance() > 0)
+		{
+			PlayerCharacterState->DecrementVigilance(1);
+		}
+	}
 }
 
 
