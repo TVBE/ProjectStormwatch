@@ -134,9 +134,12 @@ APlayerCharacter::APlayerCharacter()
 		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller"));
 	}
 	VfxController->bEditableWhenInherited = false;
+
+	// Set the order of initialization for the components.
+	
 }
 
-// Called after the constructor but before InitializeComponents.
+// Called after the constructor but before the components are initialized.
 void APlayerCharacter::PostInitProperties()
 {
 	ValidateConfigurationAssets();
@@ -177,6 +180,8 @@ void APlayerCharacter::OnConstruction(const FTransform& Transform)
 // Called after InitializeComponents.
 void APlayerCharacter::PostInitializeComponents()
 {
+	Super::PostInitializeComponents();
+	
 	ApplyConfigurationAssets();
 
 	// Subscribe to the OnLanding event of the player character movement component.
@@ -184,8 +189,6 @@ void APlayerCharacter::PostInitializeComponents()
 	{
 		PlayerCharacterMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
 	}
-	
-	Super::PostInitializeComponents();
 }
 
 // Called when the game starts or when spawned
@@ -221,18 +224,11 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	if(NewController)
 	{
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
-		if(PlayerCharacterController)
+		if(APlayerController* PlayerController {Cast<APlayerController>(NewController)})
 		{
-			// Registers the new controller to the player character subsystem.
-			if(const UWorld* World {GetWorld()})
-			{
-				if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
-				{
-					PlayerSubsystem->RegisterPlayerController(Cast<APlayerCharacterController>(PlayerCharacterController));
-				}
-			}	
+			CameraConfiguration->ApplyToPlayerController(PlayerController);
+			StateConfiguration->ApplyToPlayerController(PlayerController);
 		}
-		CameraConfiguration->ApplyToPlayerController(Cast<APlayerController>(NewController));
 	}
 }
 
@@ -318,6 +314,14 @@ void APlayerCharacter::ValidateConfigurationAssets()
 		if(GIsEditor && FApp::IsGame())
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
+		}
+	}
+	if(!StateConfiguration)
+	{
+		StateConfiguration = NewObject<UPlayerStateConfiguration>();
+		if(GIsEditor && FApp::IsGame())
+		{
+			UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerState Configuration was selected for player character. Using default settings instead."))
 		}
 	}
 	if(!CameraConfiguration)

@@ -111,3 +111,11 @@ void UPlayerFlashlightConfiguration::ApplyToPlayerCharacter(const APlayerCharact
 		FlashlightSpringArm->CameraRotationLagSpeed = RotationLag;
 	}
 }
+
+void UPlayerStateConfiguration::ApplyToPlayerController(APlayerController* PlayerController)
+{
+	if(APlayerCharacterController* CharacterController {Cast<APlayerCharacterController>(PlayerController)})
+	{
+		CharacterController->StateConfiguration = this;
+	}
+}

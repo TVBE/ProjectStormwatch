@@ -7,6 +7,7 @@
 #include "PlayerCharacter.generated.h"
 
 class UPlayerCharacterConfiguration;
+class UPlayerStateConfiguration;
 class UPlayerCameraConfiguration;
 class UPlayerFlashlightConfiguration;
 class APlayerCharacterController;
@@ -40,13 +41,18 @@ private:
 	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
+	/** The playerstate configuration data asset. */
+	UPROPERTY(BlueprintGetter = GetStateConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "State Configuration", DisplayPriority = "1"))
+	UPlayerStateConfiguration* StateConfiguration;
+	
 	/** The camera configuration data asset */
-	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration", DisplayPriority = "1"))
+	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration", DisplayPriority = "2"))
 	UPlayerCameraConfiguration* CameraConfiguration;
 
 	/** The flashlight configuration data asset*/
-	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration", DisplayPriority = "2"))
+	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration", DisplayPriority = "3"))
 	UPlayerFlashlightConfiguration* FlashlightConfiguration;
+
 	
 	// COMPONENTS
 	/** The camera for the player. */
@@ -105,6 +111,7 @@ private:
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "PlayerCharacter", Meta = (DisplayName = "Player Character Controller"))
 	APlayerCharacterController* PlayerCharacterController;
 
+	
 	// VARIABLES
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
@@ -186,16 +193,20 @@ private:
 #endif
 
 public:
-		/** Returns the Character configuration. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Character Configuration"))
+	/** Returns the Character configuration. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Character Configuration"))
 	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const {return CharacterConfiguration; }
 
+	/** Returns the PlayerState configuration. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get State Configuration"))
+	FORCEINLINE UPlayerStateConfiguration* GetStateConfiguration() const {return StateConfiguration; }
+
 	/** Returns the Camera configuration. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Camera Configuration"))
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Camera Configuration"))
 	FORCEINLINE UPlayerCameraConfiguration* GetCameraConfiguration() const {return CameraConfiguration; }
 
 	/** Returns the Flashlight configuration. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Flashlight Configuration"))
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Flashlight Configuration"))
 	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return FlashlightConfiguration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */

@@ -10,6 +10,7 @@
 #include "Math/Rotator.h"
 #include "PlayerFlashlightController.h"
 #include "Components/CapsuleComponent.h"
+#include "Core/PlayerSubsystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
@@ -58,6 +59,20 @@ void APlayerCharacterController::InitPlayerState()
 	if(!PlayerCharacterState)
 	{
 		UE_LOG(LogPlayerCharacterController, Error, TEXT("Player state is not an instance of PlayerCharacterState. "));
+	}
+}
+
+// Called when the controller possesses a pawn.
+void APlayerCharacterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	// Registers the controller to the player character subsystem.
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			PlayerSubsystem->RegisterPlayerController(this);
+		}
 	}
 }
 
@@ -391,21 +406,21 @@ FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
 
 void APlayerCharacterController::UpdatePlayerState()
 {
-	if(PlayerCharacter && PlayerCharacterState)
+	if(PlayerCharacter && PlayerCharacterState && StateConfiguration)
 	{
 		if(PlayerCharacterState->GetHealth() < 100)
 		{
-			PlayerCharacterState->IncrementHealth(4);
+			PlayerCharacterState->IncrementHealth(StateConfiguration->HealthRegenAmount);
 		}
 		if(const UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 		{
 			if(PlayerCharacterMovement->GetIsSprinting())
 			{
-				PlayerCharacterState->IncrementExertion(3);
+				PlayerCharacterState->IncrementExertion(StateConfiguration->SprintExertionIncrement);
 			}
 			else
 			{
-				PlayerCharacterState->DecrementExertion(2);
+				PlayerCharacterState->DecrementExertion(StateConfiguration->ExertionReductionAmount);
 			}
 		}
 		if(PlayerCharacterState->GetFear() > 0)

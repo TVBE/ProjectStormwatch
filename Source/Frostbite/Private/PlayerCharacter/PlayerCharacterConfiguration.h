@@ -289,3 +289,34 @@ public:
 	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
 	
 };
+
+UCLASS(BlueprintType)
+class UPlayerStateConfiguration : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	/** The amount of health that is restored every update interval. */
+	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (DisplayName = "Health Regeneration"))
+	uint8 HealthRegenAmount {2};
+	
+	/** The amount of exertion that is removed per update interval when the player is not performing intensive movements.*/
+	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Exertion Reduction Amount"))
+	uint8 ExertionReductionAmount {2};
+	
+	/** The amount of exertion that is added per update interval when the player sprints. */
+	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Sprint Increment"))
+	uint8 SprintExertionIncrement {3};
+
+	/** The amount of exertion that is added when the player jumps. */
+	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Jump Increment"))
+	uint8 JumpExertionIncrement {5};
+
+	/** Constructor with default values. */
+	UPlayerStateConfiguration()
+	{
+	}
+
+	/** Applies some values of the camera configuration to the player controller. */
+	void ApplyToPlayerController(APlayerController* PlayerController);
+};

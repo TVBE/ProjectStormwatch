@@ -17,10 +17,15 @@ UCLASS(Blueprintable, ClassGroup=(PlayerCharacter))
 class APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
+	
 public:
-	/** The configuration to use for this player character. This data is copied from the PlayerCharacter. */
+	/** The character configuration to use for this player character. This pointer is copied from the PlayerCharacter. */
 	UPROPERTY()
 	UPlayerCharacterConfiguration* CharacterConfiguration;
+
+	/** The state configuration to use for this player character. This pointer is copied from the PlayerCharacter. */
+	UPROPERTY()
+	UPlayerStateConfiguration* StateConfiguration;
 
 protected:
 	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
@@ -136,6 +141,7 @@ private:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
 	virtual void InitPlayerState() override;
+	virtual void OnPossess(APawn* InPawn) override;
 
 	// User Input Callback Functions
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
