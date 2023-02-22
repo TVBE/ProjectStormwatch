@@ -4,6 +4,7 @@
 #include "Core/PlayerSubsystem.h"
 
 #include "Core/LogCategories.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerCharacter/PlayerCameraController.h"
 #include "PlayerCharacter/PlayerCharacter.h"
 #include "PlayerCharacter/PlayerCharacterController.h"
@@ -39,6 +40,28 @@ void UPlayerSubsystem::RegisterPlayerController(APlayerCharacterController* Cont
 	else
 	{
 		UE_LOG(LogPlayerSubsystem, Error, TEXT("Could not register player controller."));
+	}
+}
+
+void UPlayerSubsystem::UnregisterPlayerCharacter(APlayerCharacter* Character)
+{
+	if(Character)
+	{
+		if(PlayerCharacter == Character)
+		{
+			PlayerCharacter = nullptr;
+		}
+	}
+}
+
+void UPlayerSubsystem::UnregisterPlayerController(APlayerCharacterController* Controller)
+{
+	if(Controller)
+	{
+		if(PlayerController == Controller)
+		{
+			PlayerController = nullptr;
+		}
 	}
 }
 

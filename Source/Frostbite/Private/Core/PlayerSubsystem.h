@@ -58,6 +58,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player", Meta = (DisplayName = "Register Player Controller"))
 	void RegisterPlayerController(APlayerCharacterController* Controller);
 
+	/** Unregisters a Player Character from the subsystem. This will be ignored if the player character is not already registered.
+	*	@Character The PlayerCharacter to unregister.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Player", Meta = (DisplayName = "Unregister Player Character"))
+	void UnregisterPlayerCharacter(APlayerCharacter* Character);
+	
+	/** Unregisters a Player Controller from the subsystem. This will be ignored if the player controller is not already registered.
+	*	@Controller The PlayerController to unregister.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Player", Meta = (DisplayName = "Unregister Player Controller"))
+	void UnregisterPlayerController(APlayerCharacterController* Controller);
+
 	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
 	 *	@Value Whether a lock should be added or removed.
 	 *	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.

@@ -403,6 +403,18 @@ void APlayerCharacter::ApplyConfigurationAssets()
 	}
 }
 
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			Subsystem->UnregisterPlayerCharacter(this);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 
 
 

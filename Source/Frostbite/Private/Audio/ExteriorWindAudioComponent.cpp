@@ -2,6 +2,7 @@
 
 
 #include "ExteriorWindAudioComponent.h"
+#include "GameFramework/Actor.h"
 #include "MetasoundSource.h"
 #include "Components/AudioComponent.h"
 
@@ -21,7 +22,7 @@ UExteriorWindAudioComponent::UExteriorWindAudioComponent()
 
 	if(GetOwner())
 	{
-		// AudioComponent = GetOwner()->AddComponentByClass<UAudioComponent>(UAudioComponent::StaticClass());
+		AudioComponent = static_cast<UAudioComponent*>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), true));
 	}
 	
 }
@@ -48,5 +49,19 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+// Called when before the object is destroyed.
+void UExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if(AudioComponent)
+	{
+		if(AudioComponent->IsPlaying())
+		{
+			AudioComponent->Stop();
+		}
+		AudioComponent->DestroyComponent();
+	}
+	Super::EndPlay(EndPlayReason);
 }
 

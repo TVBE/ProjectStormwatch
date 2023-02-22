@@ -39,6 +39,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// Called when before the object is destroyed or when the game ends.
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	// Called when the component is initialized, but before BeginPlay
 	virtual void InitializeComponent() override;
 

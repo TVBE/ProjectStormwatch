@@ -434,4 +434,16 @@ void APlayerCharacterController::UpdatePlayerState()
 	}
 }
 
+void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			Subsystem->UnregisterPlayerController(this);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 

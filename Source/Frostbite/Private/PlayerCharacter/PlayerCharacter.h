@@ -148,6 +148,9 @@ protected:
 	
 	/** Called when the pawn is possessed by a controller. */
 	virtual void PossessedBy(AController* NewController) override;
+
+	/** Called when the pawn is ready to be destroyed or when the game ends. */
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	/** Updates the character's rotation. */
 	void UpdateRotation(float DeltaTime);
