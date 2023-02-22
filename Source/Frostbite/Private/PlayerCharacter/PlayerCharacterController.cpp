@@ -2,7 +2,7 @@
 
 
 #include "PlayerCharacterController.h"
-#include "Frostbite/Frostbite.h"
+#include "Core/LogCategories.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"

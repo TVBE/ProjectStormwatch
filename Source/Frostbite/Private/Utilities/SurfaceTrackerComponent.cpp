@@ -76,7 +76,6 @@ float USurfaceTrackerComponent::GetDistanceToSurface(const UWorld* World, const 
 
 void USurfaceTrackerComponent::DrawDebugVisualisation()
 {
-	
 	DrawDebugSphere(GetWorld(), GetComponentLocation(), 100.f, 32, FColor::White, false, 0.0f, 0, 1.f);
 }
 

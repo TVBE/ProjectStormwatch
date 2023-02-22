@@ -3,7 +3,7 @@
 
 #include "Core/PlayerSubsystem.h"
 
-#include "Frostbite/Frostbite.h"
+#include "Core/LogCategories.h"
 #include "PlayerCharacter/PlayerCameraController.h"
 #include "PlayerCharacter/PlayerCharacter.h"
 #include "PlayerCharacter/PlayerCharacterController.h"

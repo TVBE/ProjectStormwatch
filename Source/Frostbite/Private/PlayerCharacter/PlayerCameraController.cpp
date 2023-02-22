@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Frostbite/Frostbite.h"
+#include "Core/LogCategories.h"
 
 // Sets default values for this component's properties.
 UPlayerCameraController::UPlayerCameraController()

@@ -18,7 +18,7 @@
 #include "Core/PlayerSubsystem.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
-#include "Frostbite/Frostbite.h"
+#include "Core/LogCategories.h"
 
 
 /** The PlayerCharacter's initialization follows these stages:
