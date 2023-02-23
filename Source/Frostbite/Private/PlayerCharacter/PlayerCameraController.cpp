@@ -65,32 +65,33 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if(PlayerCharacter && PlayerCharacter->GetCamera() && PlayerCharacterController)
+	if(PlayerCharacter && PlayerCharacterController)
+		if(UCameraComponent* Camera {PlayerCharacter->GetCamera()})
 	{
-		UpdateCameraRotation(); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
-		UpdateCameraLocation();
+		UpdateCameraRotation(*Camera, DeltaTime); // Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera.
+		UpdateCameraLocation(*Camera);
 		if(CameraConfiguration->IsDynamicFOVEnabled)
 		{
-			UpdateCameraFieldOfView();
+			UpdateCameraFieldOfView(*Camera, DeltaTime);
 		}
 		if(CameraConfiguration->IsDynamicVignetteEnabled)
 		{
-			UpdateCameraVignetteIntensity(DeltaTime);
+			UpdateCameraVignetteIntensity(*Camera, DeltaTime);
 		}
 		if(CameraConfiguration->IsDynamicDOFEnabled)
 		{
-			UpdateCameraDepthOfField(DeltaTime);
+			UpdateCameraDepthOfField(*Camera, DeltaTime);
 		}
 	}
 }
 
 // Called by TickComponent.
-void UPlayerCameraController::UpdateCameraLocation()
+void UPlayerCameraController::UpdateCameraLocation(UCameraComponent& Camera)
 {
 	/* Get an alpha value based on the pitch of the camera. We do not want the camera to explicitly follow the head socket if the body of the player isn't visible (e.g. looking down),
 	 as this could be perceived as annoying by the user. */ 
 	const double PitchAlpha
-	{FMath::GetMappedRangeValueClamped(FVector2d(-30.0, -55.0), FVector2d(0.0, 1.0), PlayerCharacter->GetCamera()->GetComponentRotation().Pitch)};
+	{FMath::GetMappedRangeValueClamped(FVector2d(-30.0, -55.0), FVector2d(0.0, 1.0), Camera.GetComponentRotation().Pitch)};
 	
 	// Get the delta position of the current head socket location in relation to the default location. This allows us to introduce some socket-bound headbobbing with scalable intensity.
 	const FVector SocketLocation
@@ -122,18 +123,18 @@ void UPlayerCameraController::UpdateCameraLocation()
 	// Add the world location of the pawn to the result.
 	Result = Result + PlayerCharacter->GetActorLocation();
 	
-	PlayerCharacter->GetCamera()->SetWorldLocation(Result);
+	Camera.SetWorldLocation(Result);
 }
 
 // Called by TickComponent.
-void UPlayerCameraController::UpdateCameraRotation()
+void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, const float& DeltaTime)
 {
 	const FRotator Sway {CameraConfiguration->IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
 	const FRotator CentripetalRotation {CameraConfiguration->IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
 	FRotator SocketRotation {FRotator()};
 	if(!PlayerCharacter->GetIsTurningInPlace())
 	{
-		SocketRotation = GetScaledHeadSocketDeltaRotation();
+		SocketRotation = GetScaledHeadSocketDeltaRotation(DeltaTime);
 	}
 	PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacter->GetControlRotation());
 }
@@ -196,7 +197,7 @@ FRotator UPlayerCameraController::GetCameraCentripetalRotation()
 	return Rotation;
 }
 
-FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation()
+FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float& DeltaTime)
 {
 	// Get the current ground movement type from the PlayerController.
 	if(!PlayerCharacter->GetPlayerCharacterMovement()) {return FRotator();};
@@ -223,13 +224,13 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation()
 	// Interpolate the rotation value to smooth out jerky rotation changes.
 	if(const UWorld* World {GetWorld()})
 	{
-		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, World->GetDeltaSeconds(), 4);
+		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
 	}
 	return InterpolatedHeadSocketRotation;
 }
 
 // Called by TickComponent.
-void UPlayerCameraController::UpdateCameraFieldOfView()
+void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent& Camera, const float& DeltaTime)
 {
 	if(const UPlayerCharacterConfiguration* Configuration {PlayerCharacter->GetCharacterConfiguration()})
 	{
@@ -242,29 +243,29 @@ void UPlayerCameraController::UpdateCameraFieldOfView()
 						FVector2D(CameraConfiguration->DefaultFOV, CameraConfiguration->SprintFOV), LocalVelocity.X);
 		} 
 
-		PlayerCharacter->GetCamera()->FieldOfView = FMath::FInterpTo(PlayerCharacter->GetCamera()->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(),2.f );
+		Camera.FieldOfView = FMath::FInterpTo(Camera.FieldOfView, TargetFOV, DeltaTime,2.f );
 	}
 }
 
-void UPlayerCameraController::UpdateCameraVignetteIntensity(const float DeltaTime)
+void UPlayerCameraController::UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float& DeltaTime)
 {
 	if(PlayerCharacter->GetPlayerCharacterMovement())
 	{
 		const float TargetVignetteIntensity {PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting()
 			? CameraConfiguration->SprintVignetteIntensity : CameraConfiguration->DefaultVignetteIntensity};
 		
-		if(PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)
+		if(Camera.PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)
 		{
 			constexpr float InterpolationSpeed {3};
-			PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity =
-				FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity, TargetVignetteIntensity, DeltaTime, InterpolationSpeed);
+			Camera.PostProcessSettings.VignetteIntensity =
+				FMath::FInterpTo(Camera.PostProcessSettings.VignetteIntensity, TargetVignetteIntensity, DeltaTime, InterpolationSpeed);
 		}
 	}
 }
 
-void UPlayerCameraController::UpdateCameraDepthOfField(const float DeltaTime)
+void UPlayerCameraController::UpdateCameraDepthOfField(const UCameraComponent& Camera, const float& DeltaTime)
 {
-	float FocalDistance {GetFocalDistance()};
+	float FocalDistance {GetFocalDistance(Camera)};
 	FocalDistance = FMath::Clamp(FocalDistance, CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance);
 	
 	const float BlurFocus {static_cast<float>(FMath::GetMappedRangeValueClamped
@@ -276,32 +277,31 @@ void UPlayerCameraController::UpdateCameraDepthOfField(const float DeltaTime)
 			FVector2D(CameraConfiguration->MacroBlurAmount,CameraConfiguration->LongShotBlurAmount),FocalDistance))};
 
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldFocalDistance =
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldFocalDistance, FocalDistance, DeltaTime, CameraConfiguration->DynamicDofSpeed);
+		FMath::FInterpTo(Camera.PostProcessSettings.DepthOfFieldFocalDistance, FocalDistance, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 	
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount = 
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfiguration->DynamicDofSpeed);
+		FMath::FInterpTo(Camera.PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 	
 	PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius =
-		FMath::FInterpTo(PlayerCharacter->GetCamera()->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, CameraConfiguration->DynamicDofSpeed);
+		FMath::FInterpTo(Camera.PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, CameraConfiguration->DynamicDofSpeed);
 }
 
-float UPlayerCameraController::GetFocalDistance() const
+float UPlayerCameraController::GetFocalDistance(const UCameraComponent& Camera) const
 {
-	if (!PlayerCharacter || !PlayerCharacter->GetCamera())
+	if (!PlayerCharacter)
 	{
 		return 0.0f;
 	}
-
-	UCameraComponent* Camera {PlayerCharacter->GetCamera()};
-	FVector CameraLocation = Camera->GetComponentLocation();
-	FVector ForwardVector = Camera->GetForwardVector();
+	
+	FVector CameraLocation = Camera.GetComponentLocation();
+	FVector ForwardVector = Camera.GetForwardVector();
 
 	constexpr float TraceLength {50000.0f};
 	ForwardVector *= TraceLength;
 	FVector End = CameraLocation + ForwardVector;
 
 	FHitResult HitResult;
-	if (Camera->GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, End, ECollisionChannel::ECC_Visibility))
+	if (Camera.GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, End, ECollisionChannel::ECC_Visibility))
 	{
 		return (HitResult.Location - CameraLocation).Size();
 	}

@@ -8,6 +8,7 @@
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
 
+class UCameraComponent;
 class APlayerCharacter;
 class APlayerCharacterController;
 
@@ -80,10 +81,10 @@ private:
 	void HandleCharacterControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	/** Updates the camera relative location. */
-	void UpdateCameraLocation();
+	void UpdateCameraLocation(UCameraComponent& Camera);
 
 	/** Updates the camera world rotation*/
-	void UpdateCameraRotation();
+	void UpdateCameraRotation(const UCameraComponent& Camera, const float& DeltaTime);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
 	FRotator GetCameraSwayRotation();
@@ -92,17 +93,17 @@ private:
 	FRotator GetCameraCentripetalRotation();
 
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
-	FRotator GetScaledHeadSocketDeltaRotation();
+	FRotator GetScaledHeadSocketDeltaRotation(const float& DeltaTime);
 	
 	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView();
+	void UpdateCameraFieldOfView(UCameraComponent& Camera, const float& DeltaTime);
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(const float DeltaTime);
+	void UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float& DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(const float DeltaTime);
+	void UpdateCameraDepthOfField(const UCameraComponent& Camera, const float& DeltaTime);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
-	float GetFocalDistance() const;
+	float GetFocalDistance(const UCameraComponent& Camera) const;
 };

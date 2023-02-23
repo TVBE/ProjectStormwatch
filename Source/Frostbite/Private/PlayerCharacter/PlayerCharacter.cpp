@@ -247,7 +247,7 @@ void APlayerCharacter::UpdateYawDelta()
 	YawDelta = Delta;
 }
 
-void APlayerCharacter::UpdateRotation(float DeltaTime)
+void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 {
 	const UCharacterMovementComponent* MovementComponent {GetCharacterMovement()};
 	if(MovementComponent && ((MovementComponent->IsMovingOnGround() && abs(GetVelocity().X) > 1) || MovementComponent->IsFalling()))
@@ -261,11 +261,10 @@ void APlayerCharacter::UpdateRotation(float DeltaTime)
 	else
 	{
 		constexpr float YawDeltaThreshold {30.0f};
-		constexpr float YawDeltaClamp {45.0f};
 		
 		if(IsTurningInPlace)
 		{
-			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, YawDeltaClamp), 0));
+			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, 45.0f), 0));
 		}
 		if(FMath::IsNearlyEqual(YawDelta, 0, 0.5f))
 		{
@@ -278,7 +277,7 @@ void APlayerCharacter::UpdateRotation(float DeltaTime)
 	}
 }
 
-float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const float DeltaTime, const float Factor, const float Clamp)
+float APlayerCharacter::CalculateTurnInPlaceRotation(const float& YawDelta, const float& DeltaTime, const float Factor, const float Clamp)
 {
 	float Rotation {YawDelta * Factor * DeltaTime};
 	if(abs(YawDelta) >= Clamp)

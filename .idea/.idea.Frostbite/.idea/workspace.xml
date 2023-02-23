@@ -7,14 +7,14 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCameraController.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterAnimInstance.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerFlashlightController.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,6 +211,10 @@
       <workItem from="1677056726262" duration="12721000" />
       <workItem from="1677072791262" duration="2291000" />
       <workItem from="1677077925085" duration="7188000" />
+      <workItem from="1677144737408" duration="294000" />
+      <workItem from="1677145123405" duration="668000" />
+      <workItem from="1677147711810" duration="3715000" />
+      <workItem from="1677153767154" duration="9895000" />
     </task>
     <servers />
   </component>

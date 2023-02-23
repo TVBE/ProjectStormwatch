@@ -52,7 +52,6 @@ private:
 	/** The flashlight configuration data asset*/
 	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration", DisplayPriority = "3"))
 	UPlayerFlashlightConfiguration* FlashlightConfiguration;
-
 	
 	// COMPONENTS
 	/** The camera for the player. */
@@ -153,7 +152,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	/** Updates the character's rotation. */
-	void UpdateRotation(float DeltaTime);
+	void UpdateRotation(const float& DeltaTime);
 
 	/** Validates the configuration data assets. */
 	void ValidateConfigurationAssets();
@@ -177,7 +176,7 @@ private:
 	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
 	 *	@Return A float value representing a rotator's yaw axis.
 	 */
-	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
+	static float CalculateTurnInPlaceRotation (const float& YawDelta, const float& DeltaTime, const float Factor, const float Clamp);
 
 	/** Handles the landing callback from the player character movement component. */
 	UFUNCTION()

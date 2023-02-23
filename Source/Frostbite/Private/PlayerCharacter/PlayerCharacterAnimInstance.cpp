@@ -2,6 +2,21 @@
 
 
 #include "PlayerCharacterAnimInstance.h"
+#include "PlayerCharacter.h"
+
+void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
+{
+	if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
+	{
+		PlayerCharacter = Cast<APlayerCharacter>(GetSkelMeshComponent()->GetOwner());
+	}
+	Super::NativeInitializeAnimation();
+}
+
+void UPlayerCharacterAnimInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
+}
 
 FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 {
@@ -32,4 +47,15 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 		}
 	}
 	return FootstepData;
+}
+
+void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerCharacter& Character)
+{
+	if(Character.GetIsTurningInPlace())
+	{
+		if(Character.GetYawDelta() > 0)
+		{
+			
+		}
+	}
 }

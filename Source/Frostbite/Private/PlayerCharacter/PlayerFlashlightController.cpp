@@ -48,7 +48,7 @@ void UPlayerFlashlightController::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
-void UPlayerFlashlightController::UpdateMovementAlpha(const float DeltaTime)
+void UPlayerFlashlightController::UpdateMovementAlpha(const float& DeltaTime)
 {
 	const bool IsMoving {PlayerCharacter->GetCharacterMovement()->IsMovingOnGround() && PlayerCharacter->GetCharacterMovement()->Velocity.Length() > 1};
 	if(MovementAlpha != static_cast<int8>(IsMoving))
@@ -155,7 +155,7 @@ FRotator UPlayerFlashlightController::GetFlashlightSwayRotation() const
 	return Rotation;
 }
 
-FRotator UPlayerFlashlightController::GetSocketRotationWithOffset(FName Socket, EPlayerGroundMovementType MovementType) const
+FRotator UPlayerFlashlightController::GetSocketRotationWithOffset(const FName Socket, const EPlayerGroundMovementType MovementType) const
 {
 	if(const USkeletalMeshComponent* Mesh {PlayerCharacter->GetMesh()})
 	{
