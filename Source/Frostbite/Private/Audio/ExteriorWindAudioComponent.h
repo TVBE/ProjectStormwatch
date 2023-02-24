@@ -8,7 +8,7 @@
 
 class UMetaSoundSource;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = (Audio), Meta = (BlueprintSpawnableComponent) )
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Audio), Meta = (BlueprintSpawnableComponent) )
 class UExteriorWindAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -22,10 +22,18 @@ private:
 	/** The AudioComponent that is added to the owner of this actor to play wind audio on. */
 	UPROPERTY(BlueprintGetter = GetAudioComponent, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Audio Component"))
 	UAudioComponent* AudioComponent;
+	
+	/** The MetaSound asset to use for the exterior wind. */
+	UPROPERTY(EditAnywhere, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "MetaSound Asset"))
+	TSoftObjectPtr<UMetaSoundSource> MetaSoundAsset;
 
-	/** The MetaSound source that is played through the audio component. */
-	UPROPERTY(BlueprintGetter = GetMetaSoundSource, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "MetaSound Source"))
-	UMetaSoundSource* MetaSoundSource;
+	/** The last poll location of the component. */
+	UPROPERTY()
+	FVector LastPollLocation;
+
+	/** The array of vectors to use for the poll trace. */
+	UPROPERTY(BlueprintReadOnly, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Trace Vectors", AllowPrivateAccess = "true"))
+	TArray<FVector2D> TraceVectors;
 	
 public:	
 	// Sets default values for this component's properties
@@ -34,6 +42,10 @@ public:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Called when a poll is performed. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "On Poll"))
+	void EventOnPoll(const TArray<float>& PollResults);
 
 protected:
 	// Called when the game starts
@@ -44,17 +56,16 @@ protected:
 
 	// Called when the component is initialized, but before BeginPlay
 	virtual void InitializeComponent() override;
+	
+	/** Returns an array of trace lenghts. */
+	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Poll Location"))
+	TArray<float> PollLocation(const FVector& Location);
+
+private:
+	TArray<FVector2D> GetTraceVectors(const float Radius, const float NumPoints) const;
 
 public:
 	/** Returns the audio component that is used for playing wind audio. */
 	UFUNCTION(BlueprintGetter, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Audio Component"))
 	FORCEINLINE UAudioComponent* GetAudioComponent() const {return AudioComponent; }
-
-	/** Returns the MetaSound Source for the audio component that is used for playing wind audio. */
-	UFUNCTION(BlueprintGetter, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "MetaSound Source"))
-	FORCEINLINE UMetaSoundSource* GetMetaSoundSource() const {return MetaSoundSource; }
-
-	
-
-		
 };
