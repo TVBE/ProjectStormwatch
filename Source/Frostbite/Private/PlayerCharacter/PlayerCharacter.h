@@ -25,7 +25,7 @@ enum class EPlayerLandingType : uint8;
 struct FFootstepData;
 struct FTimerHandle;
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter))
+UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (PlayerCharacter))
 class APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
