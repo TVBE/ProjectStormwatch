@@ -84,15 +84,7 @@ private:
 	/** The AudioComponent for general player audio. */
 	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Body Audio Component"))
 	UAudioComponent* BodyAudioComponent;
-
-	/** The AudioComponent for the player's left foot. */
-	UPROPERTY(BlueprintGetter = GetLeftFootAudioComponent, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Audio Component"))
-	UAudioComponent* LeftFootAudioComponent;
-
-	/** The AudioComponent for the player's right foot.*/
-	UPROPERTY(BlueprintGetter = GetRightFootAudioComponent, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Audio Component"))
-	UAudioComponent* RightFootAudioComponent;
-
+	
 	/** The particle emitter for the player's left foot. */
 	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
 	UNiagaraComponent* LeftFootParticleEmitter;
@@ -240,15 +232,7 @@ public:
 	/** Returns the body AudioComponent. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Body Audio Component"))
 	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
-
-	/** Returns the left foot AudioComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Audio Component"))
-	FORCEINLINE UAudioComponent* GetLeftFootAudioComponent() const {return LeftFootAudioComponent; }
-
-	/** Returns the right foot AudioComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Audio Component"))
-	FORCEINLINE UAudioComponent* GetRightFootAudioComponent() const {return RightFootAudioComponent; }
-
+	
 	/** Returns the left foot ParticleSystem. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
 	FORCEINLINE UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootParticleEmitter; }

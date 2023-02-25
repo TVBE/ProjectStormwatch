@@ -62,11 +62,11 @@ APlayerCharacter::APlayerCharacter()
 
 #define FOOTSOCKET_L "foot_l_Socket"
 #define FOOTSOCKET_R "foot_r_Socket"
-#define SPINE "spine_04"
+#define BODYSOCKET "spine_04"
 	
-	// Construct Audio Components
+	// Construct Audio Component
 	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);
-	BodyAudioComponent->SetupAttachment(GetMesh(), SPINE);
+	BodyAudioComponent->SetupAttachment(GetMesh(), BODYSOCKET);
 	BodyAudioComponent->bAutoActivate = false;
 	BodyAudioComponent->bEditableWhenInherited = false;
 	
@@ -76,23 +76,6 @@ APlayerCharacter::APlayerCharacter()
 		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
 	}
 	
-	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"), true);
-	LeftFootAudioComponent->SetupAttachment(GetMesh(), FOOTSOCKET_L);
-	LeftFootAudioComponent->bAutoActivate = false;
-	LeftFootAudioComponent->bEditableWhenInherited = false;
-	
-	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"), true);
-	RightFootAudioComponent->SetupAttachment(GetMesh(), FOOTSOCKET_R); 
-	RightFootAudioComponent->bAutoActivate = false;
-	RightFootAudioComponent->bEditableWhenInherited = false;
-
-	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> FootstepSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Footsteps/MSS_Player_Footstep.MSS_Player_Footstep'"));
-	if(FootstepSourceMetasound.Succeeded())
-	{
-		LeftFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
-		RightFootAudioComponent->SetSound(FootstepSourceMetasound.Object);
-	}
-
 	// Construct Particle System Components
 	LeftFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Left Foot Particle Emitter"), true);
 	LeftFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_L);
@@ -215,8 +198,6 @@ void APlayerCharacter::BeginPlay()
 		ValidateObject(AudioController, "AudioController");
 		ValidateObject(VfxController, "VfxController");
 		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
-		ValidateObject(LeftFootAudioComponent, "LeftFootAudioComponent");
-		ValidateObject(RightFootAudioComponent, "RightFootAudioComponent");
 #endif
 }
 
