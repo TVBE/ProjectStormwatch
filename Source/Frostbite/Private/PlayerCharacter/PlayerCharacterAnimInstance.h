@@ -23,6 +23,7 @@ class UPlayerCharacterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+	/** The delegate to be broadcasted when the mesh encounters a footstep AnimNotify. */
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FFootstepDelegate OnFootstep;
 
@@ -89,25 +90,40 @@ protected:
 	float VerticalAlpha {0.0f};
 
 private:
+	/** Pointer to the player character that owns the skeletal mesh component that this anim instance is driving. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterAnimInstance", Meta = (Displayname = "Player Character", AllowPrivateAccess = "true", BlueprintProtected))
 	APlayerCharacter* PlayerCharacter;
 
 protected:
+	/** Is called after the AnimInstance object is created and all of its properties have been initialized, but before the animation update loop begins. */
 	virtual void NativeInitializeAnimation() override;
+
+	/** Is called when the animation update loop begins. */
 	virtual void NativeBeginPlay() override;
+
+	/** Is called every frame. */
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	
+
+	/** Returns data about a footstep at the specified foot, like the object or physical material underneath the foot at the time of the footstep.
+	 *	@Foot The foot that is performing the footstep.
+	 *	@Return FootstepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
+	 */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterAnimInstance", Meta = (DisplayName = "Get Footstep Data"))
 	FFootstepData GetFootstepData(EFoot Foot);
 
 private:
+	/** Checks the movement state of the character and updates certain state machine conditions. */
 	void CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerCharacterMovementComponent& CharacterMovement);
-	
+
+	/** Checks whether the character is turning in place, and updates certain state machine conditions accordingly. */
 	void CheckTurnInplaceConditions(const APlayerCharacter& Character);
 
+	/** Returns the direction the character is moving in. */
 	static float GetDirection(const APlayerCharacter& Character);
 
+	/** Returns the speed that the character is moving at. */
 	static float GetSpeed(const APlayerCharacter& Character, const UPlayerCharacterMovementComponent& CharacterMovement);
 
-	void UpdateFallTime(const float& DeltaTime);
+	/** Updates the time the player is falling, if the player is falling. */
+	void UpdateFallTime(const float DeltaTime);
 };

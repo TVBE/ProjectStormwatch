@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -18,14 +18,14 @@ class UPlayerAudioController : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	/** Sets default values for this component's properties. */
 	UPlayerAudioController();
 
 protected:
-	// Called when the game starts
+	/** Called when the game starts. */
 	virtual void BeginPlay() override;
 
-	// Initializes the component. Occurs at level startup or actor spawn. This is before BeginPlay.
+	/** Initializes the component. Occurs at level startup or actor spawn. This is before BeginPlay. */
 	virtual void InitializeComponent() override;
 
 	/** Pointer to the PlayerCharacter that owns this component. */
@@ -33,7 +33,7 @@ protected:
 	APlayerCharacter* PlayerCharacter;
 
 public:	
-	// Called every frame
+	/** Called every frame. */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	

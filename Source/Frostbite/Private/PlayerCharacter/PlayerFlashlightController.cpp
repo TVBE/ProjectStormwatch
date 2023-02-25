@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 
 #include "PlayerFlashlightController.h"
@@ -48,7 +48,7 @@ void UPlayerFlashlightController::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
-void UPlayerFlashlightController::UpdateMovementAlpha(const float& DeltaTime)
+void UPlayerFlashlightController::UpdateMovementAlpha(const float DeltaTime)
 {
 	const bool IsMoving {PlayerCharacter->GetCharacterMovement()->IsMovingOnGround() && PlayerCharacter->GetCharacterMovement()->Velocity.Length() > 1};
 	if(MovementAlpha != static_cast<int8>(IsMoving))

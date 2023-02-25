@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -29,11 +29,6 @@ UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (Playe
 class APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
-public:
-	/** If true, the character is currently jumping. We assume the character is jumping if the character has not left the ground yet, but the jump action is triggered. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Is Jumping"))
-	bool IsJumping;
 
 private:
 	// CONFIGURATION
@@ -109,7 +104,6 @@ private:
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "PlayerCharacter", Meta = (DisplayName = "Player Character Controller"))
 	APlayerCharacterController* PlayerCharacterController;
-
 	
 	// VARIABLES
 	/** If true, the character is currently turning in place. */
@@ -126,20 +120,20 @@ private:
 	FTimerHandle FallStunTimer;
 
 public:
-	// Sets default values for this character's properties
+	/** Sets default values for this character's properties. */
 	APlayerCharacter();
-
-public:	
-	// Called every frame
+	
+	/** Called every frame. */
 	virtual void Tick(float DeltaTime) override;
 	
-	// Called after the constructor but before BeginPlay().
+	/** Called after the constructor but before BeginPlay. */
 	virtual void PostInitProperties() override;
 
+	/** Ss called after all of the actor's components have been created and initialized, but before the BeginPlay function is called. */
 	virtual void PostInitializeComponents() override;
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned. */ // todo: convert code comments to homogenous structure.
 	virtual void BeginPlay() override;
 
 	/** Called after all default properties have been initialized. */
@@ -159,10 +153,6 @@ protected:
 
 	/** Applies the configuration data assets to the character. */
 	void ApplyConfigurationAssets();
-	
-	/** Specify whether the character is currently jumping. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Set IsJumping", CompactNodeTitle = "Is Jumping"))
-	void SetIsJumping(bool Value);
 
 private:
 	/** Updates the character's yaw delta. */
@@ -176,7 +166,7 @@ private:
 	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
 	 *	@Return A float value representing a rotator's yaw axis.
 	 */
-	static float CalculateTurnInPlaceRotation (const float& YawDelta, const float& DeltaTime, const float Factor, const float Clamp);
+	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
 
 	/** Handles the landing callback from the player character movement component. */
 	UFUNCTION()
@@ -274,7 +264,6 @@ public:
 	/** Returns the character yaw delta between the facing direction of the character and the camera. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Yaw Delta"))
 	FORCEINLINE float GetYawDelta() const {return YawDelta; }
-	
 };
 
 

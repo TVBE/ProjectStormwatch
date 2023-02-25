@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -21,6 +21,9 @@ public:
 	// Sets default values for this component's properties
 	UPlayerVfxController();
 
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -30,10 +33,4 @@ protected:
 	/** Pointer to the PlayerCharacter that owns this component. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerVFXController", Meta = (DisplayName = "Player Character"))
 	APlayerCharacter* PlayerCharacter;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };

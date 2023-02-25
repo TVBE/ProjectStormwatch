@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 
 #include "PlayerCharacter.h"
@@ -22,18 +22,17 @@
 
 
 /** The PlayerCharacter's initialization follows these stages:
- *	Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
- *	PostInitProperties(): Called after construction to perform additional initialization that requires access to default property values.
- *	OnConstruction(): Called after all default property values have been fully initialized, but before any of the components are initialized.
- *	PostInitializeComponents(): Called after initializing the components, which allows them to register with other systems and set up data structures.
- *	BeginPlay(): Called when the actor is ready to be used in the game world.
+ *	1) Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
+ *	2) PostInitProperties(): Called after construction to perform additional initialization that requires access to default property values.
+ *	3) OnConstruction(): Called after all default property values have been fully initialized, but before any of the components are initialized.
+ *	4) PostInitializeComponents(): Called after initializing the components, which allows them to register with other systems and set up data structures.
+ *	5) BeginPlay(): Called when the actor is ready to be used in the game world.
  */
 
 APlayerCharacter::APlayerCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -60,26 +59,30 @@ APlayerCharacter::APlayerCharacter()
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetupAttachment(FlashlightSpringArm);
 	Flashlight->SetVisibility(false); // We don't want the flashlight to be enabled on startup.
+
+#define FOOTSOCKET_L "foot_l_Socket"
+#define FOOTSOCKET_R "foot_r_Socket"
+#define SPINE "spine_04"
 	
 	// Construct Audio Components
 	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);
-	BodyAudioComponent->SetupAttachment(GetMesh(), "spine_04");
+	BodyAudioComponent->SetupAttachment(GetMesh(), SPINE);
 	BodyAudioComponent->bAutoActivate = false;
 	BodyAudioComponent->bEditableWhenInherited = false;
 	
-	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> MainSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Main/MSS_Player_Main.MSS_Player_Main'"));
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> MainSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Main/MSS_Player_Main.MSS_Player_Main'")); // TODO: We need to replace this with TSoftObjectPtrs.
 	if(MainSourceMetasound.Succeeded())
 	{
 		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
 	}
 	
 	LeftFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Left Foot Audio Component"), true);
-	LeftFootAudioComponent->SetupAttachment(GetMesh(), "foot_l_Socket");
+	LeftFootAudioComponent->SetupAttachment(GetMesh(), FOOTSOCKET_L);
 	LeftFootAudioComponent->bAutoActivate = false;
 	LeftFootAudioComponent->bEditableWhenInherited = false;
 	
 	RightFootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Right Foot Audio Component"), true);
-	RightFootAudioComponent->SetupAttachment(GetMesh(), "foot_r_Socket");
+	RightFootAudioComponent->SetupAttachment(GetMesh(), FOOTSOCKET_R); 
 	RightFootAudioComponent->bAutoActivate = false;
 	RightFootAudioComponent->bEditableWhenInherited = false;
 
@@ -92,12 +95,12 @@ APlayerCharacter::APlayerCharacter()
 
 	// Construct Particle System Components
 	LeftFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Left Foot Particle Emitter"), true);
-	LeftFootParticleEmitter->SetupAttachment(GetMesh(), "foot_l_Socket");
+	LeftFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_L);
 	LeftFootParticleEmitter->bAutoActivate = false;
 	LeftFootParticleEmitter->bEditableWhenInherited = false;
 
 	RightFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Right Foot Particle Emitter"),true);
-	RightFootParticleEmitter->SetupAttachment(GetMesh(), "foot_r_Socket");
+	RightFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_R);
 	RightFootParticleEmitter->bAutoActivate = false;
 	RightFootParticleEmitter->bEditableWhenInherited = false;
 	
@@ -277,7 +280,7 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 	}
 }
 
-float APlayerCharacter::CalculateTurnInPlaceRotation(const float& YawDelta, const float& DeltaTime, const float Factor, const float Clamp)
+float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const float DeltaTime, const float Factor, const float Clamp)
 {
 	float Rotation {YawDelta * Factor * DeltaTime};
 	if(abs(YawDelta) >= Clamp)
@@ -287,11 +290,6 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float& YawDelta, cons
 		Rotation += RotationOvershoot;
 	}
 	return Rotation;
-}
-
-void APlayerCharacter::SetIsJumping(bool Value)
-{
-	IsJumping = Value;
 }
 
 #if WITH_EDITOR
@@ -413,6 +411,7 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 	Super::EndPlay(EndPlayReason);
 }
+
 
 
 

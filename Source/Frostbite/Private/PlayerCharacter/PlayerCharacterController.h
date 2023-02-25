@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -59,8 +59,7 @@ private:
 
 public:
 	APlayerCharacterController();
-
-public:
+	
 	/** Returns whether the PlayerController has any movement input or not. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController|Input", Meta = (DisplayName = "Has Any Movement Input"))
 	bool GetHasMovementInput() const;

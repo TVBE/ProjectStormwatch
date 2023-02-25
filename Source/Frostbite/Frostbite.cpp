@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #include "Frostbite.h"
 #include "Modules/ModuleManager.h"

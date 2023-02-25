@@ -1,12 +1,10 @@
 // Copyright 2023 Barrelhouse
 
-
 #include "PlayerCharacterAnimInstance.h"
 #include "KismetAnimationLibrary.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-
 
 void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -40,17 +38,17 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Direction = GetDirection(*PlayerCharacter);
 		Speed = GetSpeed(*PlayerCharacter, *CharacterMovement);
 
-		// Reset fall timer if the player is no longer falling.
+		/** Reset fall timer if the player is no longer falling. */
 		if(IsFalling ^ CharacterMovement->IsFalling() && !IsFalling)
 		{
 			FallTime = 0.0f;
 		}
 
-		// Check whether the player is falling.
+		/** Check whether the player is falling. */
 		IsFalling = CharacterMovement->IsFalling();
 		IsAirborne = CharacterMovement->IsFalling() || CharacterMovement->GetIsJumping();
 
-		// Update fall time if the player is falling.
+		/** Update fall time if the player is falling. */
 		if(IsFalling)
 		{
 			UpdateFallTime(DeltaSeconds);
@@ -91,7 +89,7 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 	}
 	return FootstepData;
 }
-
+/** Check the movement state of the player character, and update animation variables accordingly. */
 void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerCharacterMovementComponent& CharacterMovement)
 {
 	IsMovementPending = Controller.GetHasMovementInput();
@@ -100,10 +98,12 @@ void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Ch
 	DoSprintSop = !IsMovementPending && Speed > 275 && (Direction >= -20 && Direction <= 20);
 }
 
+/** Check if the player character is turning in place, and update animation variables accordingly. */
 void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerCharacter& Character)
 {
 	if(Character.GetIsTurningInPlace())
 	{
+		/** Determine which direction the character is turning. */
 		if(Character.GetYawDelta() > 0)
 		{
 			IsTurningRight = true;
@@ -124,12 +124,14 @@ void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerChara
 	}
 }
 
+/** Get the character's movement direction. */
 float UPlayerCharacterAnimInstance::GetDirection(const APlayerCharacter& Character)
 {
 	const float UnmappedDirection {UKismetAnimationLibrary::CalculateDirection(Character.GetVelocity(), Character.GetActorRotation())};
 	return FMath::GetMappedRangeValueClamped(FVector2D(-171.5, 171.5), FVector2D(-180, 180), UnmappedDirection);
 }
 
+/** Get the character's speed based on its movement input vector.*/
 float UPlayerCharacterAnimInstance::GetSpeed(const APlayerCharacter& Character, const UPlayerCharacterMovementComponent& CharacterMovement)
 {
 	if(!CharacterMovement.GetLastInputVector().IsNearlyZero())
@@ -138,8 +140,8 @@ float UPlayerCharacterAnimInstance::GetSpeed(const APlayerCharacter& Character, 
 	}
 	return 0.0f;
 }
-
-void UPlayerCharacterAnimInstance::UpdateFallTime(const float& DeltaTime)
+/** Update the time that the character has been falling, and calculate a normalized alpha value. */
+void UPlayerCharacterAnimInstance::UpdateFallTime(const float DeltaTime)
 {
 	FallTime += DeltaTime;
 	VerticalAlpha = FMath::Clamp(FallTime, 0, 1);

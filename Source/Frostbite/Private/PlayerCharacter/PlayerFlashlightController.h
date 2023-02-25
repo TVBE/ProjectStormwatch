@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -36,12 +36,7 @@ private:
 public:	
 	// Sets default values for this component's properties
 	UPlayerFlashlightController();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -54,7 +49,7 @@ public:
 	bool IsFlashlightEnabled() const;
 
 	/** Updates the movement alpha value. */
-	void UpdateMovementAlpha(const float& DeltaTime);
+	void UpdateMovementAlpha(const float DeltaTime);
 
 	/** Calculates the flashlight focus rotation.
 	 *	@Return The target rotation for the flashlight to focus on whatever surface the player is looking at.
@@ -72,4 +67,8 @@ public:
 	 *	@Return The rotation of the socket with an offset depending on the ground movement type.
 	 */
 	FRotator GetSocketRotationWithOffset(const FName Socket, const EPlayerGroundMovementType MovementType) const;
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 };

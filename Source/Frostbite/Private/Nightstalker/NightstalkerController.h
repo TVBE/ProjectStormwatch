@@ -6,20 +6,26 @@
 #include "AIController.h"
 #include "NightstalkerController.generated.h"
 
-enum class BehaviorMode;
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class BehaviorMode : uint8
+{
+	RoamMode    UMETA(DisplayName = "Roam Mode", ToolTip = "In roam mode, we assume that the Nightstalker is not implicitly aware about the whereabouts of the player." ),
+	HuntMode    UMETA(DisplayName = "Hunt Mode", ToolTip = "In hunt mode, we assume that the Nightstalker is implicitly aware about the whereabouts of the player."),
+	AmbushMode  UMETA(DisplayName = "Ambush Mode", ToolTip = "In ambush mode, The Nightstalker is near the player and ready to strike.")
+};
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Nightstalker))
 class ANightstalkerController : public AAIController
 {
 	GENERATED_BODY()
 	
 private:
+	/** The current behavior mode of the Nightstalker.*/
 	UPROPERTY(BlueprintGetter = GetBehaviorMode, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Current Behavior Mode"))
 	TEnumAsByte<BehaviorMode> Behavior;
 	
 protected:
+	/** Called every frame. */
 	virtual void Tick(float DeltaSeconds) override;
 	
 	/** Set the controller to a specific behavior mode.
@@ -72,10 +78,3 @@ public:
 	FORCEINLINE TEnumAsByte<BehaviorMode> GetBehaviorMode() const {return Behavior; }
 };
 
-UENUM(BlueprintType)
-enum class BehaviorMode : uint8
-{
-	RoamMode    UMETA(DisplayName = "Roam Mode", ToolTip = "In roam mode, we assume that the Nightstalker is not implicitly aware about the whereabouts of the player." ),
-	HuntMode    UMETA(DisplayName = "Hunt Mode", ToolTip = "In hunt mode, we assume that the Nightstalker is implicitly aware about the whereabouts of the player."),
-	AmbushMode  UMETA(DisplayName = "Ambush Mode", ToolTip = "In ambush mode, The Nightstalker is near the player and ready to strike.")
-};

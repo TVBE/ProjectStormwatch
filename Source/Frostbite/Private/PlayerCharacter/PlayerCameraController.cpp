@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 
 #include "PlayerCameraController.h"
@@ -127,7 +127,7 @@ void UPlayerCameraController::UpdateCameraLocation(UCameraComponent& Camera)
 }
 
 // Called by TickComponent.
-void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, const float& DeltaTime)
+void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, const float DeltaTime)
 {
 	const FRotator Sway {CameraConfiguration->IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
 	const FRotator CentripetalRotation {CameraConfiguration->IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
@@ -197,7 +197,7 @@ FRotator UPlayerCameraController::GetCameraCentripetalRotation()
 	return Rotation;
 }
 
-FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float& DeltaTime)
+FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float DeltaTime)
 {
 	// Get the current ground movement type from the PlayerController.
 	if(!PlayerCharacter->GetPlayerCharacterMovement()) {return FRotator();};
@@ -230,7 +230,7 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float& 
 }
 
 // Called by TickComponent.
-void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent& Camera, const float& DeltaTime)
+void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent& Camera, const float DeltaTime)
 {
 	if(const UPlayerCharacterConfiguration* Configuration {PlayerCharacter->GetCharacterConfiguration()})
 	{
@@ -247,7 +247,7 @@ void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent& Camera, 
 	}
 }
 
-void UPlayerCameraController::UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float& DeltaTime)
+void UPlayerCameraController::UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float DeltaTime)
 {
 	if(PlayerCharacter->GetPlayerCharacterMovement())
 	{
@@ -263,7 +263,7 @@ void UPlayerCameraController::UpdateCameraVignetteIntensity(UCameraComponent& Ca
 	}
 }
 
-void UPlayerCameraController::UpdateCameraDepthOfField(const UCameraComponent& Camera, const float& DeltaTime)
+void UPlayerCameraController::UpdateCameraDepthOfField(const UCameraComponent& Camera, const float DeltaTime)
 {
 	float FocalDistance {GetFocalDistance(Camera)};
 	FocalDistance = FMath::Clamp(FocalDistance, CameraConfiguration->MinimumFocalDistance, CameraConfiguration->MaximumFocalDistance);

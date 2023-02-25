@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2023 Barrelhouse
 
 #pragma once
 
@@ -13,9 +13,7 @@ class APlayerCharacter;
 class APlayerCharacterController;
 
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.
- *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view.
- *	@Brief ActorComponent for managing player camera behavior.
- */
+ *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view. */
 class APlayerCharacterController;
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent) )
 class UPlayerCameraController : public UActorComponent
@@ -55,25 +53,22 @@ private:
 	/** The roll offset value of the camera lean rotation. */
 	UPROPERTY()
 	double CameraLeanRoll {0.0};
-	
-	// Camera shakes
-	
-	
+
 public:	
 	// Sets default values for this component's properties
 	UPlayerCameraController();
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Fades the camera from black. */
+	void FadeFromBlack(const float Duration);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
-	void InitializeComponent() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void FadeFromBlack(const float Duration);
+	virtual void InitializeComponent() override;
 
 private:
 	/** Tries to get the owning pawn's player controller as PlayerCharacterController. */
@@ -84,7 +79,7 @@ private:
 	void UpdateCameraLocation(UCameraComponent& Camera);
 
 	/** Updates the camera world rotation*/
-	void UpdateCameraRotation(const UCameraComponent& Camera, const float& DeltaTime);
+	void UpdateCameraRotation(const UCameraComponent& Camera, const float DeltaTime);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
 	FRotator GetCameraSwayRotation();
@@ -93,16 +88,16 @@ private:
 	FRotator GetCameraCentripetalRotation();
 
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
-	FRotator GetScaledHeadSocketDeltaRotation(const float& DeltaTime);
+	FRotator GetScaledHeadSocketDeltaRotation(const float DeltaTime);
 	
 	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView(UCameraComponent& Camera, const float& DeltaTime);
+	void UpdateCameraFieldOfView(UCameraComponent& Camera, const float DeltaTime);
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float& DeltaTime);
+	void UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(const UCameraComponent& Camera, const float& DeltaTime);
+	void UpdateCameraDepthOfField(const UCameraComponent& Camera, const float DeltaTime);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
 	float GetFocalDistance(const UCameraComponent& Camera) const;
