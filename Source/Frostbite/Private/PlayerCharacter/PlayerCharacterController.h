@@ -10,6 +10,7 @@
 class UPlayerSubsystem;
 class APlayerCharacter;
 class APlayerCharacterState;
+class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
@@ -107,6 +108,7 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Toggle Flashlight"))
 	bool CanToggleFlashlight() const;
 	
+	
 	/** Increases the PlayerMovementComponent maximum forward speed. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Start Sprinting"))
 	void StartSprinting();
@@ -122,6 +124,7 @@ protected:
 	/** Set the PlayerMovementComponent to stop crouching. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Sop Crouching"))
 	void StopCrouching();
+	
 	
 	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Clearance Above Pawn"))
@@ -142,8 +145,7 @@ private:
 	virtual void SetupInputComponent() override;
 	virtual void InitPlayerState() override;
 	virtual void OnPossess(APawn* InPawn) override;
-
-	// User Input Callback Functions
+	
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
 	void HandleHorizontalRotation(float Value);
@@ -183,14 +185,15 @@ private:
 	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
+
 	
 	/** Checks if any player actions are currently pending and tries to complete them. */
 	UFUNCTION()
-	void UpdatePendingActions();
+	void UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement);
 
 	/** Checks if the player can continue with any actions they are currently performing. */
 	UFUNCTION()
-	void UpdateCurrentActions();
+	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
 
 public:
 	/** Returns the player character state. */

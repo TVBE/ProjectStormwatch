@@ -1,6 +1,5 @@
 // Copyright 2023 Tim Verberne.
 
-
 #include "PlayerCharacterController.h"
 #include "Core/LogCategories.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -14,17 +13,17 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
-// Called on construction
+/** Called on construction. */
 APlayerCharacterController::APlayerCharacterController()
 {
 }
 
-// Called when the game starts.
+/** Called when the game starts. */
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Get a casted reference to the PlayerCharacter
+	/** Get a casted reference to the PlayerCharacter. */
 	if(!GetPawn())
 	{
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController is not assigned to a pawn."));
@@ -44,14 +43,14 @@ void APlayerCharacterController::BeginPlay()
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController expected a Pawn of type PlayerCharacter, but got assigned to an instance of %s instead"), *PawnName);
 	}
 
-	// Start updating the player state.
+	/** Start updating the player state. */
 	if(GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(StateTimer, this, &APlayerCharacterController::UpdatePlayerState, 1.0f, true);	
 	}
 }
 
-// Called when the PlayerState is constructed.
+/** Called when the PlayerState is constructed. */
 void APlayerCharacterController::InitPlayerState()
 {
 	Super::InitPlayerState();
@@ -62,11 +61,12 @@ void APlayerCharacterController::InitPlayerState()
 	}
 }
 
-// Called when the controller possesses a pawn.
+/** Called when the controller possesses a pawn. */
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	// Registers the controller to the player character subsystem.
+	
+	/** Registers the controller to the player character subsystem. */
 	if(const UWorld* World {GetWorld()})
 	{
 		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
@@ -76,7 +76,7 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	}
 }
 
-// Called when the controller is constructed.
+/** Called when the controller is constructed. */
 void APlayerCharacterController::SetupInputComponent()
 {
 	Super :: SetupInputComponent ();
@@ -97,10 +97,60 @@ void APlayerCharacterController::SetupInputComponent()
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	UpdateCurrentActions();
-	UpdatePendingActions();
+
+	if(PlayerCharacter)
+	{
+		if(const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+		{
+			UpdateCurrentActions(CharacterMovement);
+			UpdatePendingActions(CharacterMovement);
+		}
+	}
 }
 
+void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)
+{
+	if(!CanProcessMovementInput) {return;}
+	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
+	if(CharacterMovement->GetIsSprinting() && !CanSprint())
+	{
+		StopSprinting();
+	}
+	/** If the character is sprinting but sprinting is no longer pending, stop sprinting. */
+	if(CharacterMovement->GetIsSprinting() && !IsSprintPending)
+	{
+		StopSprinting();
+	}
+}
+
+void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement)
+{
+	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
+	if(IsSprintPending && !CharacterMovement->GetIsSprinting() && CanSprint())
+	{
+		if(!CharacterMovement->IsCrouching())
+		{
+			StartSprinting();
+		}
+		/** If the character is crouching, stand up before sprinting. */
+		else if(CharacterMovement->IsCrouching() && CanStandUp())
+		{
+			StopCrouching();
+			StartSprinting();
+			IsCrouchPending = false;
+		}
+	}
+	/** If crouch is pending and the character is not crouching, start crouching. */
+	if(IsCrouchPending && !CharacterMovement->IsCrouching() && CanCrouch())
+	{
+		if(CharacterMovement->GetIsSprinting())
+		{
+			StopSprinting();
+			IsSprintPending = false;
+		}
+		StartCrouching();
+	}
+}
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
@@ -215,46 +265,6 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 	if(CanToggleFlashlight())
 	{
 		PlayerCharacter->GetFlashlightController()->SetFlashlightEnabled(!PlayerCharacter->GetFlashlightController()->IsFlashlightEnabled());
-	}
-}
-
-void APlayerCharacterController::UpdateCurrentActions()
-{
-	if(!CanProcessMovementInput) {return;}
-	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting() && !CanSprint())
-	{
-		StopSprinting();
-	}
-	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting() && !IsSprintPending)
-	{
-		StopSprinting();
-	}
-}
-
-
-void APlayerCharacterController::UpdatePendingActions()
-{
-	if(IsSprintPending && PlayerCharacter->GetPlayerCharacterMovement() && !PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting() && CanSprint())
-	{
-		if(!GetCharacter()->GetMovementComponent()->IsCrouching())
-		{
-			StartSprinting();
-		}
-		else if(GetCharacter()->GetMovementComponent()->IsCrouching() && CanStandUp())
-		{
-			StopCrouching();
-			StartSprinting();
-			IsCrouchPending = false;
-		}
-	}
-	if(IsCrouchPending && !GetCharacter()->GetMovementComponent()->IsCrouching() && CanCrouch())
-	{
-			if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
-			{
-				StopSprinting();
-				IsSprintPending = false;
-			}
-			StartCrouching();
 	}
 }
 
@@ -383,11 +393,12 @@ float APlayerCharacterController::GetClearanceAbovePawn() const
 	FCollisionQueryParams CollisionParams;
 	if (Actor->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
 	{
+		/** We subtract the capsule collision half height as this is the distance between the center of the SkeletalMesh and the top of the head. */
 		return HitResult.Distance - GetCharacter()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		// We subtract the capsule collision half height as this is the distance between the center of the SkeletalMesh and the top of the head.
 	}
-	
-	return -1.f; // We return -1 if no hit result is produced by the collision query. This means that there is more than 500 units of clearance above the character.
+
+	/** We return -1 if no hit result is produced by the collision query. This means that there is more than 500 units of clearance above the character. */
+	return -1.f; 
 }
 
 FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
