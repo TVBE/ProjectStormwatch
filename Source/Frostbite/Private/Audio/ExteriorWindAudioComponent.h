@@ -54,7 +54,7 @@ public:
 
 	/** Called when a poll is performed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "On Poll"))
-	void EventOnPoll(const TArray<float>& PollResults);
+	void EventOnPoll(const TArray<float>& TerrainTraceResults, const TArray<float>& OcclusionTraceResults);
 
 	/** Sets the wind direction. */
 	UFUNCTION(BlueprintCallable, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Set Wind Direction"))

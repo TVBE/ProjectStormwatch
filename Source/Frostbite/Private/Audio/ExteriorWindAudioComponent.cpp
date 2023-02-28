@@ -58,8 +58,9 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		LastPollLocation = GetOwner()->GetActorLocation();
 		if(GetOwner())
 		{
-			const TArray<float> PollResults {DoTerrainCollisionQuery(LastPollLocation)};
-			EventOnPoll(PollResults);
+			const TArray<float> TerrainTraceResults {DoTerrainCollisionQuery(LastPollLocation)};
+			const TArray<float> OcclusionTraceResults {DoOcclusionCollisionQuery(LastPollLocation)};
+			EventOnPoll(TerrainTraceResults, OcclusionTraceResults);
 		}
 	}
 }
@@ -67,10 +68,10 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
-	for (const FVector Vector : TerrainTraceEndVectors)
+	for (int i {0}; i < TerrainTraceEndVectors.Num(); i++)
 	{
 		const FVector TraceStart {GetOwner()->GetActorLocation()};
-		const FVector TraceEnd {GetOwner()->GetActorLocation() + TerrainTraceEndVectors{} 
+		const FVector TraceEnd {GetOwner()->GetActorLocation() + TerrainTraceEndVectors[i]}; 
 
 		FHitResult HitResult;
 		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
@@ -94,11 +95,10 @@ TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector
 TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
-	for (const FVector2D Vector : OcclusionTraceStartVectors)
+	for (int i {0}; i < OcclusionTraceStartVectors.Num(); i++)
 	{
-		constexpr float ObstructionSpacing {250};
-		const FVector TraceStart {GetOwner()->GetActorLocation() + WindDirection.RotateVector(FVector(0, Vector.X * ObstructionSpacing, Vector.Y * ObstructionSpacing))};
-		const FVector TraceEnd {TraceStart + WindDirection.RotateVector(FVector(CollisionTraceLength, 0, 0))};
+		const FVector TraceStart {GetOwner()->GetActorLocation() + OcclusionTraceStartVectors[i]};
+		const FVector TraceEnd {GetOwner()->GetActorLocation() + OcclusionTraceEndVectors[i]};
 
 		FHitResult HitResult;
 		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
@@ -160,6 +160,7 @@ void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>&
 		ArrayA.Add(Vector);
 	}
 
+	/** Populate Array B. */
 	for (const FVector TraceStart : ArrayA)
 	{
 		const FVector Vector {TraceStart - Rotation.RotateVector(FVector(TraceLength, 0, 0))};
@@ -181,7 +182,7 @@ void UExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReas
 	Super::EndPlay(EndPlayReason);
 }
 
-void UExteriorWindAudioComponent::EventOnPoll_Implementation(const TArray<float>& PollResults)
+void UExteriorWindAudioComponent::EventOnPoll_Implementation(const TArray<float>& TerrainTraceResults, const TArray<float>& OcclusionTraceResults)
 {
 }
 
