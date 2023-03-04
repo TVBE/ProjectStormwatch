@@ -2,7 +2,6 @@
 
 #include "PlayerCharacterConfiguration.h"
 
-#include "PlayerCameraController.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 #include "PlayerFlashlightComponent.h"
@@ -39,38 +38,11 @@ void UPlayerCharacterConfiguration::ApplyToPlayerController(APlayerController* P
 	}
 }
 
-void UPlayerCameraConfiguration::ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter)
+void UPlayerCameraConfiguration::ApplyToCamera(UCameraComponent* Camera)
 {
-	if(!PlayerCharacter)
-	{
-		return;
-	}
-
-	if(UPlayerCameraController* CameraController {PlayerCharacter->GetCameraController()})
-	{
-		CameraController->CameraConfiguration = this;
-	}
-	
-	if(PlayerCharacter->GetCamera())
-	{
-		PlayerCharacter->GetCamera()->SetFieldOfView(DefaultFOV);
-		PlayerCharacter->GetCamera()->PostProcessSettings.VignetteIntensity = DefaultVignetteIntensity;
-	}
-}
-
-void UPlayerCameraConfiguration::ApplyToPlayerController(const APlayerController* PlayerController)
-{
-	if(!PlayerController)
-	{
-		return;
-	}
-	
-	if(PlayerController->PlayerCameraManager)
-	{
-		PlayerController->PlayerCameraManager->ViewPitchMax = MaximumViewPitch;
-		PlayerController->PlayerCameraManager->ViewPitchMin = MinimumViewPitch;
-	}
-		
+	if(!Camera) {return; }
+	Camera->SetFieldOfView(DefaultFOV);
+	Camera->PostProcessSettings.VignetteIntensity = DefaultVignetteIntensity;
 }
 
 void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFlashlightComponent* Component)

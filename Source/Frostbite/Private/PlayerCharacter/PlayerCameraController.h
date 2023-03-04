@@ -20,12 +20,17 @@ class UPlayerCameraController : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
-	/** Pointer to the camera configuration of the player character this component is part of */
-	UPROPERTY()
-	UPlayerCameraConfiguration* CameraConfiguration;
-	
 private:
+	// CONFIGURATION
+	/** The configuration asset to use for this component. */
+	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
+	TSoftObjectPtr<UPlayerCameraConfiguration> ConfigurationAsset;
+
+	/** Pointer to the configuration asset for this component. */
+	UPROPERTY(BlueprintGetter = GetConfiguration, Category = "Configuration", Meta = (DisplayName = "Configuration"))
+	UPlayerCameraConfiguration* Configuration;
+
+	// VARIABLES
 	/** Pointer to the PlayerCharacter. */
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
@@ -66,9 +71,8 @@ public:
 
 protected:
 	// Called when the game starts
+	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
-	
-	virtual void InitializeComponent() override;
 
 private:
 	/** Tries to get the owning pawn's player controller as PlayerCharacterController. */
@@ -101,4 +105,9 @@ private:
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
 	float GetFocalDistance(const UCameraComponent& Camera) const;
+
+public:
+	/** Returns the Camera configuration. */
+	UFUNCTION(BlueprintGetter, Category = "Configuration", Meta = (DisplayName = "Get Configuration"))
+	FORCEINLINE UPlayerCameraConfiguration* GetConfiguration() const {return Configuration; }
 };

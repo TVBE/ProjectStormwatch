@@ -7,6 +7,7 @@
 
 class APlayerCharacter;
 class UPlayerFlashlightComponent;
+class UCameraComponent;
 
 UCLASS(BlueprintType)
 class UPlayerCharacterConfiguration : public UDataAsset
@@ -206,10 +207,7 @@ public:
 	}
 	
 	/** Applies the camera configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
-
-	/** Applies some values of the camera configuration to the player controller and it's corresponding camera manager. */
-	void ApplyToPlayerController(const APlayerController* PlayerController);
+	void ApplyToCamera(UCameraComponent* Camera);
 };
 
 /** Enumeration for defining the socket rotation axis. */

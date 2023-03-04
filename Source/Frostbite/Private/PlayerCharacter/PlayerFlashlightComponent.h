@@ -34,11 +34,11 @@ private:
 	// CONFIGURATION
 	/** The configuration asset to use for this component. */
 	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
-	TSoftObjectPtr<UPlayerFlashlightConfiguration> FlashlightConfigurationAsset;
+	TSoftObjectPtr<UPlayerFlashlightConfiguration> ConfigurationAsset;
 
 	/** Pointer to the configuration asset for this component. */
 	UPROPERTY()
-	UPlayerFlashlightConfiguration* FlashlightConfiguration;
+	UPlayerFlashlightConfiguration* Configuration;
 
 	// VARIABLES
 	/** Pointer to the camera of the owner. */
@@ -112,5 +112,5 @@ public:
 
 	/** Returns the Flashlight configuration. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Flashlight Configuration"))
-	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return FlashlightConfiguration; }
+	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return Configuration; }
 };

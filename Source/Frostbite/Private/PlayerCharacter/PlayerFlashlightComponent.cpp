@@ -24,13 +24,13 @@ void UPlayerFlashlightComponent::OnRegister()
 	Super::OnRegister();
 
 	/** Load the configuration asset. If no configuration asset is provided, construct a default instance of the configuration asset instead. */
-	if(!FlashlightConfiguration)
+	if(!Configuration)
 	{
-		FlashlightConfiguration = FlashlightConfigurationAsset.LoadSynchronous();
-		if(!FlashlightConfiguration)
+		Configuration = ConfigurationAsset.LoadSynchronous();
+		if(!Configuration)
 		{
-			FlashlightConfiguration = NewObject<UPlayerFlashlightConfiguration>();
-			FlashlightConfiguration->AddToRoot();
+			Configuration = NewObject<UPlayerFlashlightConfiguration>();
+			Configuration->AddToRoot();
 		}
 	}
 	
@@ -49,13 +49,13 @@ void UPlayerFlashlightComponent::OnRegister()
 
 	/** Place the spring arm at the right location depending on the attachment context of the flashlight configuration asset. */
 	FVector RelativeLocation;
-	switch(FlashlightConfiguration->AttachmentContext)
+	switch(Configuration->AttachmentContext)
 	{
 	case EFlashlightSocketContext::Chest:
-		RelativeLocation = FVector(Mesh->GetSocketTransform(FlashlightConfiguration->ChestSocket, RTS_Actor).GetLocation());
+		RelativeLocation = FVector(Mesh->GetSocketTransform(Configuration->ChestSocket, RTS_Actor).GetLocation());
 		break;
 	case EFlashlightSocketContext::Head:
-		RelativeLocation = FVector(Mesh->GetSocketTransform(FlashlightConfiguration->HeadSocket, RTS_Actor).GetLocation());
+		RelativeLocation = FVector(Mesh->GetSocketTransform(Configuration->HeadSocket, RTS_Actor).GetLocation());
 		break;
 	default: RelativeLocation = FVector(Camera->GetRelativeTransform().GetLocation());
 	}
@@ -76,7 +76,7 @@ void UPlayerFlashlightComponent::OnRegister()
 	Flashlight->SetVisibility(false);
 
 	/** Apply the flashlight configuration data asset to this component. */
-	FlashlightConfiguration->ApplyToFlashlightComponent(this);
+	Configuration->ApplyToFlashlightComponent(this);
 }
 
 /** Called when the game starts */
@@ -202,9 +202,9 @@ FRotator UPlayerFlashlightComponent::GetFlashlightSwayRotation() const
 		PitchSwayIntensity = PitchSwayIntensity * PitchIntensityMultiplier;
 		YawSwayIntensity = YawSwayIntensity * YawIntensityMultiplier;
 
-		Rotation.Pitch = FMath::Cos(GameTime * PitchSwaySpeed) * PitchSwayIntensity * FlashlightConfiguration->RotationSway;
-		Rotation.Yaw = FMath::Cos(GameTime * YawSwaySpeed) * YawSwayIntensity * FlashlightConfiguration->RotationSway;
-		Rotation.Roll = FMath::Cos(GameTime * RollSwaySpeed) * RollSwayIntensity * FlashlightConfiguration->RotationSway;
+		Rotation.Pitch = FMath::Cos(GameTime * PitchSwaySpeed) * PitchSwayIntensity * Configuration->RotationSway;
+		Rotation.Yaw = FMath::Cos(GameTime * YawSwaySpeed) * YawSwayIntensity * Configuration->RotationSway;
+		Rotation.Roll = FMath::Cos(GameTime * RollSwaySpeed) * RollSwayIntensity * Configuration->RotationSway;
 		
 	}
 	return Rotation;
@@ -227,18 +227,18 @@ FRotator UPlayerFlashlightComponent::GetSocketRotationWithOffset(const FName Soc
 	FVector2D Offset;
 	switch(MovementType)
 	{
-	case EPlayerGroundMovementType::Idle: Offset = FlashlightConfiguration->IdleOffset;
+	case EPlayerGroundMovementType::Idle: Offset = Configuration->IdleOffset;
 		break;
-	case EPlayerGroundMovementType::Walking: Offset = FlashlightConfiguration->WalkingOffset;
+	case EPlayerGroundMovementType::Walking: Offset = Configuration->WalkingOffset;
 		break;
-	case EPlayerGroundMovementType::Sprinting: Offset = FlashlightConfiguration->SprintingOffset;
+	case EPlayerGroundMovementType::Sprinting: Offset = Configuration->SprintingOffset;
 		break;
-	default: Offset = FlashlightConfiguration->IdleOffset;
+	default: Offset = Configuration->IdleOffset;
 	}
 		
 	/** Offset adjustments. */
-	Pitch = ((Pitch - PitchOffset) * PitchMultiplier * FlashlightConfiguration->SocketRotation - 1.5f) * 0.4;
-	Yaw = Yaw * YawMultiplier * FlashlightConfiguration->SocketRotation - 2.4f;
+	Pitch = ((Pitch - PitchOffset) * PitchMultiplier * Configuration->SocketRotation - 1.5f) * 0.4;
+	Yaw = Yaw * YawMultiplier * Configuration->SocketRotation - 2.4f;
 	FRotator Rotation {FRotator(Pitch, Yaw, 0)};
 		
 	Rotation += FRotator(Offset.Y, Offset.X, 0);

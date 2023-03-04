@@ -7,16 +7,13 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-#include "PlayerFlashlightComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/SpotLightComponent.h"
 #include "Components/AudioComponent.h"
 #include "NiagaraComponent.h"
 #include "MetasoundSource.h"
 #include "PlayerVfxController.h"
 #include "Core/FrostbiteGameMode.h"
 #include "Core/PlayerSubsystem.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Math/Vector.h"
 #include "Core/LogCategories.h"
 
@@ -185,7 +182,6 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
 		if(APlayerController* PlayerController {Cast<APlayerController>(NewController)})
 		{
-			CameraConfiguration->ApplyToPlayerController(PlayerController);
 			StateConfiguration->ApplyToPlayerController(PlayerController);
 		}
 	}
@@ -277,14 +273,6 @@ void APlayerCharacter::ValidateConfigurationAssets()
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerState Configuration was selected for player character. Using default settings instead."))
 		}
 	}
-	if(!CameraConfiguration)
-	{
-		CameraConfiguration = NewObject<UPlayerCameraConfiguration>();
-		if(GIsEditor && FApp::IsGame())
-		{
-			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Camera Configuration was selected for player character. Using default settings instead."))
-		}
-	}
 }
 
 void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
@@ -337,10 +325,6 @@ void APlayerCharacter::ApplyConfigurationAssets()
 	if(CharacterConfiguration)
 	{
 		CharacterConfiguration->ApplyToPlayerCharacter(this);
-	}
-	if(CameraConfiguration)
-	{
-		CameraConfiguration->ApplyToPlayerCharacter(this);
 	}
 }
 

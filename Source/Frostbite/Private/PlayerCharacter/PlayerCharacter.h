@@ -8,8 +8,6 @@
 
 class UPlayerCharacterConfiguration;
 class UPlayerStateConfiguration;
-class UPlayerCameraConfiguration;
-class UPlayerFlashlightConfiguration;
 class APlayerCharacterController;
 class UCameraComponent;
 class USpotLightComponent;
@@ -40,12 +38,6 @@ private:
 	UPROPERTY(BlueprintGetter = GetStateConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "State Configuration", DisplayPriority = "1"))
 	UPlayerStateConfiguration* StateConfiguration;
 	
-	/** The camera configuration data asset */
-	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration", DisplayPriority = "2"))
-	UPlayerCameraConfiguration* CameraConfiguration;
-
-
-	
 	// COMPONENTS
 	/** The camera for the player. */
 	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = "PlayerCharacter|Camera", Meta = (DisplayName = "Camera"))
@@ -60,7 +52,7 @@ private:
 	UPlayerVfxController* VfxController;
 
 	/** The CameraController that handles first person camera behavior. */
-	UPROPERTY(BlueprintGetter = GetCameraController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
+	UPROPERTY(BlueprintGetter = GetCameraController, EditAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
 	UPlayerCameraController* CameraController;
 	
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
@@ -170,10 +162,6 @@ public:
 	/** Returns the PlayerState configuration. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get State Configuration"))
 	FORCEINLINE UPlayerStateConfiguration* GetStateConfiguration() const {return StateConfiguration; }
-
-	/** Returns the Camera configuration. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Camera Configuration"))
-	FORCEINLINE UPlayerCameraConfiguration* GetCameraConfiguration() const {return CameraConfiguration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "PlayerCharacterController"))
