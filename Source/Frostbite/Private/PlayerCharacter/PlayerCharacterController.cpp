@@ -112,7 +112,7 @@ void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMove
 {
 	if(!CanProcessMovementInput) {return;}
 	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
-	if(CharacterMovement->GetIsSprinting() && !CanSprint())
+	if(CharacterMovement->GetIsSprinting() && !CanCharacterSprint())
 	{
 		StopSprinting();
 	}
@@ -126,14 +126,14 @@ void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMove
 void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement)
 {
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
-	if(IsSprintPending && !CharacterMovement->GetIsSprinting() && CanSprint())
+	if(IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
 	{
 		if(!CharacterMovement->IsCrouching())
 		{
 			StartSprinting();
 		}
 		/** If the character is crouching, stand up before sprinting. */
-		else if(CharacterMovement->IsCrouching() && CanStandUp())
+		else if(CharacterMovement->IsCrouching() && PlayerCharacter->CanStandUp())
 		{
 			StopCrouching();
 			StartSprinting();
@@ -141,7 +141,7 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
-	if(IsCrouchPending && !CharacterMovement->IsCrouching() && CanCrouch())
+	if(IsCrouchPending && !CharacterMovement->IsCrouching() && PlayerCharacter->CanCrouch())
 	{
 		if(CharacterMovement->GetIsSprinting())
 		{
@@ -155,47 +155,35 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if(!CanProcessRotationInput) {return;}
-	if(CanRotate())
-	{
-		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
-	}
+	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if(!CanProcessRotationInput) {return;}
-	if(CanRotate())
-	{
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
-	}
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 {
 	if(!CanProcessMovementInput) {return;}
-	if(CanMove())
-	{
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw, 0)};
 		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
-	}
 }
 
 void APlayerCharacterController::HandleLateralMovementInput(float Value)
 {
 	if(!CanProcessMovementInput) {return;}
-	if(CanMove())
-	{
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
 		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
-	}
 }
 
 void APlayerCharacterController::HandleJumpActionPressed()
 {
 	if(!CanProcessMovementInput) {return;}
-	if(CanJump())
+	if(PlayerCharacter && PlayerCharacter->CanJump())
 	{
-		const float Clearance = GetClearanceAbovePawn();
+		const float Clearance = PlayerCharacter->GetClearanceAbovePawn();
 		if(Clearance <= 175 && Clearance != -1.f)
 		{
 			// We limit the JumpZVelocity of the player under a certain clearance to prevent the character from bumping its head into the object above.
@@ -213,7 +201,7 @@ void APlayerCharacterController::HandleSprintActionPressed()
 {
 	if(!CanProcessMovementInput) {return;}
 	IsSprintPending = true;
-	if(CanSprint())
+	if(CanCharacterSprint())
 	{
 		StartSprinting();
 	}
@@ -237,17 +225,17 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 
 	if(CharacterConfiguration->EnableCrouchToggle)
 	{
-		if(!GetCharacter()->GetMovementComponent()->IsCrouching() && CanCrouch())
+		if(!GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanCrouch())
 		{
 			StartCrouching();
 			return;
 		}
-		if(GetCharacter()->GetMovementComponent()->IsCrouching() && CanStandUp())
+		if(GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanStandUp())
 		{
 			StopCrouching();
 		}
 	}
-	else if(CanCrouch())
+	else if(PlayerCharacter->CanCrouch())
 	{
 		StartCrouching();
 	}
@@ -302,44 +290,15 @@ void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsyst
 	}
 }
 
-bool APlayerCharacterController::CanRotate() const
-{
-	return true;
-}
-
-bool APlayerCharacterController::CanMove() const
-{
-	return true; // Temp
-}
-
-bool APlayerCharacterController::CanJump() const
-{
-	constexpr float RequiredClearance {60};
-	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling()); //TODO: Refactor.
-}
-
-bool APlayerCharacterController::CanSprint() const
+bool APlayerCharacterController::CanCharacterSprint() const
 {
 	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
-bool APlayerCharacterController::CanCrouch() const
-{
-	return CharacterConfiguration->IsCrouchingEnabled;
-}
-
 bool APlayerCharacterController::CanInteract() const
 {
 	return false; // Temp
-}
-
-bool APlayerCharacterController::CanStandUp() const
-{
-	constexpr float RequiredClearance {100};
-	const float Clearance {GetClearanceAbovePawn()};
-	return (Clearance > RequiredClearance || Clearance == -1.f && GetCharacter()->GetMovementComponent()->IsCrouching());
 }
 
 void APlayerCharacterController::StartSprinting()
@@ -368,23 +327,6 @@ void APlayerCharacterController::StartCrouching()
 void APlayerCharacterController::StopCrouching()
 {
 	// Temp
-}
-
-float APlayerCharacterController::GetClearanceAbovePawn() const
-{
-	const AActor* Actor {this->GetPawn()};
-	const FVector Start {Actor->GetActorLocation()};
-	const FVector End {Start + FVector(0.f, 0.f, 500.f)};
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	if (Actor->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
-	{
-		/** We subtract the capsule collision half height as this is the distance between the center of the SkeletalMesh and the top of the head. */
-		return HitResult.Distance - GetCharacter()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	}
-
-	/** We return -1 if no hit result is produced by the collision query. This means that there is more than 500 units of clearance above the character. */
-	return -1.f; 
 }
 
 FHitResult APlayerCharacterController::GetCameraLookAtQuery() const

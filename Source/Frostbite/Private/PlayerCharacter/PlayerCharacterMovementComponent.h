@@ -58,17 +58,8 @@ private:
 	bool IsJumping {false};
 
 public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void BeginPlay() override;
 	virtual bool DoJump(bool bReplayingMoves) override;
-	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
 	
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Sprinting"))
-	FORCEINLINE bool GetIsSprinting() const {return IsSprinting; }
-
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Jumping"))
-	FORCEINLINE bool GetIsJumping() const {return IsJumping; }
-
 	/** Checks and returns the current player ground movement type.
 	 *	@Return An enumeration describing the current ground movement type of the movement component.
 	 */
@@ -78,4 +69,17 @@ public:
 	/** Sets whether the character movement component is sprinting or not. */
 	UFUNCTION(Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (Displayname = "Set Is Sprinting "))
 	void SetIsSprinting(const bool Value, const APlayerController* Controller);
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
+
+public:
+	
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Sprinting"))
+	FORCEINLINE bool GetIsSprinting() const {return IsSprinting; }
+
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Jumping"))
+	FORCEINLINE bool GetIsJumping() const {return IsJumping; }
 };

@@ -76,29 +76,6 @@ public:
 	void SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value);
 
 protected:
-	/** Checks whether the player can currently rotate. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Rotate"))
-	bool CanRotate() const;
-	
-	/** Checks whether the player can currently move. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Move"))
-	bool CanMove() const;
-	
-	/** Checks whether the player can currently jump. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Jump"))
-	bool CanJump() const;
-	
-	/** Checks whether the player can currently sprint. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Sprint"))
-	bool CanSprint() const;
-	
-	/** Checks whether the player can currently enter crouch. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Crouch"))
-	bool CanCrouch() const;
-	
-	/** Checks whether the player can stand up and stop crouching. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Stand Up"))
-	bool CanStandUp() const;
 	
 	/** Checks whether the player is currently looking at an interactable object. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Interact"))
@@ -119,11 +96,6 @@ protected:
 	/** Set the PlayerMovementComponent to stop crouching. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Sop Crouching"))
 	void StopCrouching();
-	
-	
-	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Clearance Above Pawn"))
-	float GetClearanceAbovePawn() const;
 	
 	/** Performs a collision query in front of the camera and returns the hit result. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Camera Look At Query"))
@@ -181,6 +153,10 @@ private:
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
 
+
+	/** Checks if the player character can currently sprint. */
+	UFUNCTION()
+	bool CanCharacterSprint() const;
 	
 	/** Checks if any player actions are currently pending and tries to complete them. */
 	UFUNCTION()

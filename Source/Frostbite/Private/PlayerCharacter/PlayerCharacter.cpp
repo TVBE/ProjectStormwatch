@@ -7,12 +7,11 @@
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/AudioComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Core/FrostbiteGameMode.h"
 #include "Core/PlayerSubsystem.h"
 #include "Math/Vector.h"
 #include "Core/LogCategories.h"
-
 
 /** The PlayerCharacter's initialization follows these stages:
  *	1) Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
@@ -264,6 +263,42 @@ void APlayerCharacter::ApplyConfigurationAssets()
 		CharacterConfiguration->ApplyToPlayerCharacter(this);
 	}
 }
+
+float APlayerCharacter::GetClearanceAbovePawn() const
+{
+	const FVector Start {GetActorLocation()};
+	const FVector End {Start + FVector(0.f, 0.f, 500.f)};
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
+	{
+		/** We subtract the capsule collision half height as this is the distance between the center of the SkeletalMesh and the top of the head. */
+		return HitResult.Distance - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	}
+
+	/** We return -1 if no hit result is produced by the collision query. This means that there is more than 500 units of clearance above the character. */
+	return -1.f; 
+}
+
+bool APlayerCharacter::CanPerformJump() const
+{
+	constexpr float RequiredClearance {60};
+	const float Clearance {GetClearanceAbovePawn()};
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetMovementComponent()->IsFalling());
+}
+
+bool APlayerCharacter::CanCrouch() const
+{
+	return Super::CanCrouch() && CharacterConfiguration->IsCrouchingEnabled;;
+}
+
+bool APlayerCharacter::CanStandUp() const
+{
+	constexpr float RequiredClearance {100};
+	const float Clearance {GetClearanceAbovePawn()};
+	return (Clearance > RequiredClearance || Clearance == -1.f && GetMovementComponent()->IsCrouching());
+}
+
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

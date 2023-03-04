@@ -81,6 +81,21 @@ public:
 	/** Ss called after all of the actor's components have been created and initialized, but before the BeginPlay function is called. */
 	virtual void PostInitializeComponents() override;
 
+	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
+	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Clearance Above Pawn"))
+	float GetClearanceAbovePawn() const;
+
+	/** Checks whether the player can currently jump. */
+	UFUNCTION(BlueprintPure, Category = "PlayerCharacter", Meta = (DisplayName = "Can Jump"))
+	bool CanPerformJump() const;
+	
+	/** Checks whether the player can currently enter crouch. */
+	bool CanCrouch() const override;
+	
+	/** Checks whether the player can stand up and stop crouching. */
+	UFUNCTION(BlueprintPure, Category = "PlayerCharacter", Meta = (DisplayName = "Can Stand Up"))
+	bool CanStandUp() const;
+
 protected:
 	/** Called when the game starts or when spawned. */
 	virtual void BeginPlay() override;

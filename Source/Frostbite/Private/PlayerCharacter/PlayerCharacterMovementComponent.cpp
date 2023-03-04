@@ -3,6 +3,7 @@
 
 #include "PlayerCharacterMovementComponent.h"
 
+
 void UPlayerCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
@@ -74,4 +75,5 @@ void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const A
 		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintEnd);
 	}
 }
+
 
