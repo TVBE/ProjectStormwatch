@@ -12,8 +12,7 @@ class APlayerCharacterController;
 class UCameraComponent;
 class USpotLightComponent;
 class USpringArmComponent;
-class UPlayerAudioController;
-class UPlayerVfxController;
+class UPlayerVfxComponent;
 class UPlayerCameraController;
 class UPlayerFlashlightComponent;
 class UPlayerCharacterMovementComponent;
@@ -43,14 +42,6 @@ private:
 	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = "PlayerCharacter|Camera", Meta = (DisplayName = "Camera"))
 	UCameraComponent* Camera;
 	
-	/** The PlayerAudioController that handles player audio. */
-	UPROPERTY(BlueprintGetter = GetAudioController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Audio Controller"))
-	UPlayerAudioController* AudioController;
-
-	/** The PlayerVfxController that handles player VFX. */
-	UPROPERTY(BlueprintGetter = GetVfxController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "VFX Controller"))
-	UPlayerVfxController* VfxController;
-
 	/** The CameraController that handles first person camera behavior. */
 	UPROPERTY(BlueprintGetter = GetCameraController, EditAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
 	UPlayerCameraController* CameraController;
@@ -58,19 +49,7 @@ private:
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player Character Movement Component"))
 	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
-
-	/** The AudioComponent for general player audio. */
-	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Body Audio Component"))
-	UAudioComponent* BodyAudioComponent;
 	
-	/** The particle emitter for the player's left foot. */
-	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
-	UNiagaraComponent* LeftFootParticleEmitter;
-	
-	/** The particle emitter for the player's right foot. */
-	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
-	UNiagaraComponent* RightFootParticleEmitter;
-
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "PlayerCharacter", Meta = (DisplayName = "Player Character Controller"))
 	APlayerCharacterController* PlayerCharacterController;
@@ -103,7 +82,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 protected:
-	/** Called when the game starts or when spawned. */ // todo: convert code comments to homogenous structure.
+	/** Called when the game starts or when spawned. */
 	virtual void BeginPlay() override;
 
 	/** Called after all default properties have been initialized. */
@@ -175,30 +154,10 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
 	FORCEINLINE UPlayerCameraController* GetCameraController() const {return CameraController; }
 	
-	/** Returns the Player Audio Controller. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player Audio Controller"))
-	FORCEINLINE UPlayerAudioController* GetAudioController() const {return AudioController; }
-
-	/** Returns the Player VFX Controller*/
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player VFX Controller"))
-	FORCEINLINE UPlayerVfxController* GetVfxController() const {return VfxController; }
-
 	/** Returns the PlayerCharacterMovementComponent. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player Character Movement Component"))
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const {return PlayerCharacterMovement; }
-
-	/** Returns the body AudioComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Body Audio Component"))
-	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
 	
-	/** Returns the left foot ParticleSystem. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
-	FORCEINLINE UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootParticleEmitter; }
-
-	/** Returns the right foot ParticleSystem. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
-	FORCEINLINE UNiagaraComponent* GetRightFootParticleEmitter() const {return RightFootParticleEmitter; }
-
 	/** Returns if the character is currently turning in place. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
 	FORCEINLINE bool GetIsTurningInPlace() const {return IsTurningInPlace; }

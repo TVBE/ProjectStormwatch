@@ -3,15 +3,11 @@
 
 #include "PlayerCharacter.h"
 
-#include "PlayerAudioController.h"
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
-#include "NiagaraComponent.h"
-#include "MetasoundSource.h"
-#include "PlayerVfxController.h"
 #include "Core/FrostbiteGameMode.h"
 #include "Core/PlayerSubsystem.h"
 #include "Math/Vector.h"
@@ -39,63 +35,10 @@ APlayerCharacter::APlayerCharacter()
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
-
-#define FOOTSOCKET_L "foot_l_Socket"
-#define FOOTSOCKET_R "foot_r_Socket"
-#define BODYSOCKET "spine_04"
-	
-	/** Construct Audio Component. */
-	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);
-	BodyAudioComponent->SetupAttachment(GetMesh(), BODYSOCKET);
-	BodyAudioComponent->bAutoActivate = false;
-	BodyAudioComponent->bEditableWhenInherited = false;
-	
-	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> MainSourceMetasound(TEXT("/Script/MetasoundEngine.MetaSoundSource'/Game/Game/Audio/Sources/Player/Main/MSS_Player_Main.MSS_Player_Main'")); // TODO: We need to replace this with TSoftObjectPtrs.
-	if(MainSourceMetasound.Succeeded())
-	{
-		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
-	}
-	
-	/** Construct Particle System Components. */
-	LeftFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Left Foot Particle Emitter"), true);
-	LeftFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_L);
-	LeftFootParticleEmitter->bAutoActivate = false;
-	LeftFootParticleEmitter->bEditableWhenInherited = false;
-
-	RightFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Right Foot Particle Emitter"),true);
-	RightFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_R);
-	RightFootParticleEmitter->bAutoActivate = false;
-	RightFootParticleEmitter->bEditableWhenInherited = false;
 	
 	/** Construct Camera Controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = false;
-	
-	/** Construct Audio Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the audio controller. */
-	static ConstructorHelpers::FClassFinder<UPlayerAudioController> AudioControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerAudioController.BPC_PlayerAudioController_C'"));
-	if(AudioControllerClass.Succeeded())
-	{
-		AudioController = Cast<UPlayerAudioController>(CreateDefaultSubobject(TEXT("Audio Controller"), AudioControllerClass.Class, AudioControllerClass.Class, true, true ));
-	}
-	else
-	{
-		/** Construct the base class if the Blueprint derived class cannot be found. */
-		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller")); 
-	}
-	AudioController->bEditableWhenInherited = false;
-	
-	/** Construct VFX Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the VFX controller. */
-	static ConstructorHelpers::FClassFinder<UPlayerVfxController> VfxControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerVfxController.BPC_PlayerVfxController_C'"));
-	if(VfxControllerClass.Succeeded())
-	{
-		VfxController = Cast<UPlayerVfxController>(CreateDefaultSubobject(TEXT("VFX Controller"), VfxControllerClass.Class, VfxControllerClass.Class, true, true ));
-	}
-	else
-	{
-		/** Construct the base class if the Blueprint derived class cannot be found. */
-		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller"));
-	}
-	VfxController->bEditableWhenInherited = false;
 }
 
 /** Called after the constructor but before the components are initialized. */
@@ -114,9 +57,6 @@ void APlayerCharacter::PostInitProperties()
 
 	/** Set components to call their virtual InitializeComponent functions. */
 	CameraController->bWantsInitializeComponent = true;
-	// FlashlightController->bWantsInitializeComponent = true;
-	AudioController->bWantsInitializeComponent = true;
-	VfxController->bWantsInitializeComponent = true;
 	
 	Super::PostInitProperties();
 }
@@ -167,9 +107,6 @@ void APlayerCharacter::BeginPlay()
 #if WITH_EDITOR
 		/** Check if all components have been succesfully initialized. */
 		ValidateObject(CameraController, "CameraController");
-		ValidateObject(AudioController, "AudioController");
-		ValidateObject(VfxController, "VfxController");
-		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
 #endif
 }
 

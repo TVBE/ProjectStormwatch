@@ -45,7 +45,6 @@ void UPlayerFlashlightComponent::OnRegister()
 	/** Construct FlashlightSpringArm. */
 	FlashlightSpringArm = Cast<USpringArmComponent>(GetOwner()->AddComponentByClass(USpringArmComponent::StaticClass(), false, FTransform(), false));
 	if(!FlashlightSpringArm) {return; }
-	FlashlightSpringArm->SetupAttachment(GetOwner()->GetRootComponent());
 
 	/** Place the spring arm at the right location depending on the attachment context of the flashlight configuration asset. */
 	FVector RelativeLocation;
