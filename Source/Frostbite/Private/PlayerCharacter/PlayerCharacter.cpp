@@ -7,7 +7,7 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-#include "PlayerFlashlightController.h"
+#include "PlayerFlashlightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/AudioComponent.h"
@@ -31,40 +31,23 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// Construct Camera.
+	/** Construct Camera. */
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(this->RootComponent);
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
 
-	// Construct FlashlightSpringArm.
-	FlashlightSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Flashlight Spring Arm"));
-	FlashlightSpringArm->SetupAttachment(this->RootComponent);
-	FlashlightSpringArm->SetRelativeLocation(FVector(20.12,2.6,40.9));
-	FlashlightSpringArm->SetComponentTickEnabled(false); // We only want the flashlight spring arm to update when the flashlight is enabled.
-	FlashlightSpringArm->TargetArmLength = 0.0;
-	FlashlightSpringArm->bDoCollisionTest = false;
-	FlashlightSpringArm->bUsePawnControlRotation = false;
-	FlashlightSpringArm->bEnableCameraLag = false;
-	FlashlightSpringArm->bEnableCameraRotationLag = true;
-	
-	// Construct Flashlight.
-	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
-	Flashlight->SetupAttachment(FlashlightSpringArm);
-	Flashlight->SetVisibility(false); // We don't want the flashlight to be enabled on startup.
-
 #define FOOTSOCKET_L "foot_l_Socket"
 #define FOOTSOCKET_R "foot_r_Socket"
 #define BODYSOCKET "spine_04"
 	
-	// Construct Audio Component
+	/** Construct Audio Component. */
 	BodyAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Body Audio Component"), true);
 	BodyAudioComponent->SetupAttachment(GetMesh(), BODYSOCKET);
 	BodyAudioComponent->bAutoActivate = false;
@@ -76,7 +59,7 @@ APlayerCharacter::APlayerCharacter()
 		BodyAudioComponent->SetSound(MainSourceMetasound.Object);
 	}
 	
-	// Construct Particle System Components
+	/** Construct Particle System Components. */
 	LeftFootParticleEmitter = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Left Foot Particle Emitter"), true);
 	LeftFootParticleEmitter->SetupAttachment(GetMesh(), FOOTSOCKET_L);
 	LeftFootParticleEmitter->bAutoActivate = false;
@@ -87,15 +70,11 @@ APlayerCharacter::APlayerCharacter()
 	RightFootParticleEmitter->bAutoActivate = false;
 	RightFootParticleEmitter->bEditableWhenInherited = false;
 	
-	// Construct Camera Controller
+	/** Construct Camera Controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = false;
 	
-	// Construct Flashlight Controller
-	FlashlightController = CreateDefaultSubobject<UPlayerFlashlightController>(TEXT("Flashlight Controller"));
-	FlashlightController->bEditableWhenInherited = false;
-
-	// Construct Audio Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the audio controller.
+	/** Construct Audio Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the audio controller. */
 	static ConstructorHelpers::FClassFinder<UPlayerAudioController> AudioControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerAudioController.BPC_PlayerAudioController_C'"));
 	if(AudioControllerClass.Succeeded())
 	{
@@ -103,12 +82,12 @@ APlayerCharacter::APlayerCharacter()
 	}
 	else
 	{
-		// Construct the base class if the Blueprint derived class cannot be found.
+		/** Construct the base class if the Blueprint derived class cannot be found. */
 		AudioController = CreateDefaultSubobject<UPlayerAudioController>(TEXT("Audio Controller")); 
 	}
 	AudioController->bEditableWhenInherited = false;
 	
-	// Construct VFX Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the VFX controller.
+	/** Construct VFX Controller, we want to use the Blueprint derived class for this so that designers can easily script behavior for the VFX controller. */
 	static ConstructorHelpers::FClassFinder<UPlayerVfxController> VfxControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerVfxController.BPC_PlayerVfxController_C'"));
 	if(VfxControllerClass.Succeeded())
 	{
@@ -116,16 +95,13 @@ APlayerCharacter::APlayerCharacter()
 	}
 	else
 	{
-		// Construct the base class if the Blueprint derived class cannot be found.
+		/** Construct the base class if the Blueprint derived class cannot be found. */
 		VfxController = CreateDefaultSubobject<UPlayerVfxController>(TEXT("VFX Controller"));
 	}
 	VfxController->bEditableWhenInherited = false;
-
-	// Set the order of initialization for the components.
-	
 }
 
-// Called after the constructor but before the components are initialized.
+/** Called after the constructor but before the components are initialized. */
 void APlayerCharacter::PostInitProperties()
 {
 	ValidateConfigurationAssets();
@@ -139,19 +115,19 @@ void APlayerCharacter::PostInitProperties()
 		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
 
-	// Set components to call their virtual InitializeComponent functions.
+	/** Set components to call their virtual InitializeComponent functions. */
 	CameraController->bWantsInitializeComponent = true;
-	FlashlightController->bWantsInitializeComponent = true;
+	// FlashlightController->bWantsInitializeComponent = true;
 	AudioController->bWantsInitializeComponent = true;
 	VfxController->bWantsInitializeComponent = true;
 	
 	Super::PostInitProperties();
 }
 
-// Called after all default property values have been fully initialized, but before any of the components are initialized.
+/** Called after all default property values have been fully initialized, but before any of the components are initialized. */
 void APlayerCharacter::OnConstruction(const FTransform& Transform)
 {
-	// Registers this player character to the player character subsystem.
+	/** Registers this player character to the player character subsystem. */
 	if(const UWorld* World {GetWorld()})
 	{
 		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
@@ -163,26 +139,26 @@ void APlayerCharacter::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 }
 
-// Called after InitializeComponents.
+/** Called after InitializeComponents. */
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
 	ApplyConfigurationAssets();
 
-	// Subscribe to the OnLanding event of the player character movement component.
+	/** Subscribe to the OnLanding event of the player character movement component. */
 	if(PlayerCharacterMovement)
 	{
 		PlayerCharacterMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
 	}
 }
 
-// Called when the game starts or when spawned
+/** Called when the game starts or when spawned. */
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Notify the GameMode that the character has Begun Play.
+	/** Notify the GameMode that the character has Begun Play. */
 	if(GetWorld() && GetWorld()->GetAuthGameMode())
 	{
 		if(AFrostbiteGameMode* GameMode {Cast<AFrostbiteGameMode>(GetWorld()->GetAuthGameMode())})
@@ -194,14 +170,13 @@ void APlayerCharacter::BeginPlay()
 #if WITH_EDITOR
 		/** Check if all components have been succesfully initialized. */
 		ValidateObject(CameraController, "CameraController");
-		ValidateObject(FlashlightController, "FlashlightController");
 		ValidateObject(AudioController, "AudioController");
 		ValidateObject(VfxController, "VfxController");
 		ValidateObject(BodyAudioComponent, "BodyAudioComponent");
 #endif
 }
 
-// Called when the controller is changed
+/** Called when the controller is changed. */
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -216,7 +191,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-// Called every frame
+/** Called every frame. */
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -310,14 +285,6 @@ void APlayerCharacter::ValidateConfigurationAssets()
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Camera Configuration was selected for player character. Using default settings instead."))
 		}
 	}
-	if(!FlashlightConfiguration)
-	{
-		FlashlightConfiguration = NewObject<UPlayerFlashlightConfiguration>();
-		if(GIsEditor && FApp::IsGame())
-		{
-			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Flashlight Configuration was selected for player character. Using default settings instead."))
-		}
-	}
 }
 
 void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
@@ -374,10 +341,6 @@ void APlayerCharacter::ApplyConfigurationAssets()
 	if(CameraConfiguration)
 	{
 		CameraConfiguration->ApplyToPlayerCharacter(this);
-	}
-	if(FlashlightConfiguration)
-	{
-		FlashlightConfiguration->ApplyToPlayerCharacter(this);
 	}
 }
 

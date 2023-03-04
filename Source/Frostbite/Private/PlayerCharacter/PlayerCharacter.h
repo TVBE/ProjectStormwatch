@@ -17,7 +17,7 @@ class USpringArmComponent;
 class UPlayerAudioController;
 class UPlayerVfxController;
 class UPlayerCameraController;
-class UPlayerFlashlightController;
+class UPlayerFlashlightComponent;
 class UPlayerCharacterMovementComponent;
 class UNiagaraComponent;
 enum class EFoot : uint8;
@@ -44,23 +44,13 @@ private:
 	UPROPERTY(BlueprintGetter = GetCameraConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Camera Configuration", DisplayPriority = "2"))
 	UPlayerCameraConfiguration* CameraConfiguration;
 
-	/** The flashlight configuration data asset*/
-	UPROPERTY(BlueprintGetter = GetFlashlightConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Flashlight Configuration", DisplayPriority = "3"))
-	UPlayerFlashlightConfiguration* FlashlightConfiguration;
+
 	
 	// COMPONENTS
 	/** The camera for the player. */
 	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = "PlayerCharacter|Camera", Meta = (DisplayName = "Camera"))
 	UCameraComponent* Camera;
-
-	/** The flashlight for the player. */
-	UPROPERTY(BlueprintGetter = GetFlashlight, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight"))
-	USpotLightComponent* Flashlight;
-
-	/** The SpringArmComponent the flashlight is attached to. */
-	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight Arm"))
-	USpringArmComponent* FlashlightSpringArm;
-
+	
 	/** The PlayerAudioController that handles player audio. */
 	UPROPERTY(BlueprintGetter = GetAudioController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Audio Controller"))
 	UPlayerAudioController* AudioController;
@@ -72,11 +62,7 @@ private:
 	/** The CameraController that handles first person camera behavior. */
 	UPROPERTY(BlueprintGetter = GetCameraController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
 	UPlayerCameraController* CameraController;
-
-	/** The FlashlightController that handles the flashlight behavior. */
-	UPROPERTY(BlueprintGetter = GetFlashlightController, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight Controller"))
-	UPlayerFlashlightController* FlashlightController;
-
+	
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player Character Movement Component"))
 	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
@@ -188,10 +174,6 @@ public:
 	/** Returns the Camera configuration. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Camera Configuration"))
 	FORCEINLINE UPlayerCameraConfiguration* GetCameraConfiguration() const {return CameraConfiguration; }
-
-	/** Returns the Flashlight configuration. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Flashlight Configuration"))
-	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return FlashlightConfiguration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "PlayerCharacterController"))
@@ -200,22 +182,10 @@ public:
 	/** Returns the camera component. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera"))
 	FORCEINLINE UCameraComponent* GetCamera() const {return Camera; }
-
-	/** Returns the flashlight component. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight"))
-	FORCEINLINE USpotLightComponent* GetFlashlight() const {return Flashlight; }
-
-	/** Returns the flashlight SpringArmComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight Spring Arm"))
-	FORCEINLINE USpringArmComponent* GetFlashlightSpringArm() const {return FlashlightSpringArm; }
-
+	
 	/** Returns the Player Camera Controller. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Camera Controller"))
 	FORCEINLINE UPlayerCameraController* GetCameraController() const {return CameraController; }
-
-	/** Returns the Player Flashlight Controller. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight Controller"))
-	FORCEINLINE UPlayerFlashlightController* GetFlashlightController() const {return FlashlightController; }
 	
 	/** Returns the Player Audio Controller. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Player Audio Controller"))

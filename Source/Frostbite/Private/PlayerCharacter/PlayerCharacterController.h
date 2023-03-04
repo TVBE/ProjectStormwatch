@@ -20,11 +20,11 @@ class APlayerCharacterController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	/** The character configuration to use for this player character. This pointer is copied from the PlayerCharacter. */
+	/** The character configuration to use for this player character. */
 	UPROPERTY()
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
-	/** The state configuration to use for this player character. This pointer is copied from the PlayerCharacter. */
+	/** The state configuration to use for this player character. */
 	UPROPERTY()
 	UPlayerStateConfiguration* StateConfiguration;
 
@@ -103,11 +103,6 @@ protected:
 	/** Checks whether the player is currently looking at an interactable object. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Interact"))
 	bool CanInteract() const;
-	
-	/** Checks whether the player can toggle the flashlight. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Toggle Flashlight"))
-	bool CanToggleFlashlight() const;
-	
 	
 	/** Increases the PlayerMovementComponent maximum forward speed. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Start Sprinting"))

@@ -5,7 +5,7 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
-#include "PlayerFlashlightController.h"
+#include "PlayerFlashlightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -73,20 +73,10 @@ void UPlayerCameraConfiguration::ApplyToPlayerController(const APlayerController
 		
 }
 
-void UPlayerFlashlightConfiguration::ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter)
+void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFlashlightComponent* Component)
 {
-	if(!PlayerCharacter)
-	{
-		return;
-	}
-
-	if(UPlayerFlashlightController* FlashlightController {PlayerCharacter->GetFlashlightController()})
-	{
-		FlashlightController->FlashlightConfiguration = this;
-	}
-	
-	USpotLightComponent* Flashlight {PlayerCharacter->GetFlashlight()};
-	USpringArmComponent* FlashlightSpringArm {PlayerCharacter->GetFlashlightSpringArm()};
+	USpotLightComponent* Flashlight {Component->GetFlashlight()};
+	USpringArmComponent* FlashlightSpringArm {Component->GetFlashlightSpringArm()};
 	
 	if(Flashlight && FlashlightSpringArm)
 	{

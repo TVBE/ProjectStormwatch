@@ -1,4 +1,4 @@
-// Copyright 2023 Tim Verberne.
+// Copyright 2023 Barrelhouse.
 
 #include "PlayerCharacterController.h"
 #include "Core/LogCategories.h"
@@ -7,7 +7,7 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerCharacterState.h"
 #include "Math/Rotator.h"
-#include "PlayerFlashlightController.h"
+#include "PlayerFlashlightComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/PlayerSubsystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,7 +23,7 @@ void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	/** Get a casted reference to the PlayerCharacter. */
+	/** Get a pointer to the PlayerCharacter instance this controller is controlling. */
 	if(!GetPawn())
 	{
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController is not assigned to a pawn."));
@@ -261,10 +261,10 @@ void APlayerCharacterController::HandleCrouchActionReleased()
 
 void APlayerCharacterController::HandleFlashlightActionPressed()
 {
-	if(!CanProcessMovementInput) {return;}
-	if(CanToggleFlashlight())
+	if(!PlayerCharacter || !CanProcessMovementInput) {return; }
+	if(UPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UPlayerFlashlightComponent>())
 	{
-		PlayerCharacter->GetFlashlightController()->SetFlashlightEnabled(!PlayerCharacter->GetFlashlightController()->IsFlashlightEnabled());
+		Flashlight->SetFlashlightEnabled(!Flashlight->IsFlashlightEnabled());
 	}
 }
 
@@ -316,7 +316,7 @@ bool APlayerCharacterController::CanJump() const
 {
 	constexpr float RequiredClearance {60};
 	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling());
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetCharacter()->GetMovementComponent()->IsFalling()); //TODO: Refactor.
 }
 
 bool APlayerCharacterController::CanSprint() const
@@ -334,20 +334,6 @@ bool APlayerCharacterController::CanInteract() const
 {
 	return false; // Temp
 }
-
-bool APlayerCharacterController::CanToggleFlashlight() const
-{
-	if(PlayerCharacter && PlayerCharacter->GetFlashlightController())
-	{
-		return true;
-	}
-	if(!PlayerCharacter->GetFlashlightController())
-	{
-		UE_LOG(LogPlayerCharacterController, Error, TEXT("Couldn't find flashlight controller"))
-	}
-	return false;
-}
-
 
 bool APlayerCharacterController::CanStandUp() const
 {
