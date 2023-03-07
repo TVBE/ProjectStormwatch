@@ -63,7 +63,7 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 {
 	FFootstepData FootstepData {FFootstepData()};
 	FootstepData.Foot = Foot;
-	const FName Socket {Foot == EFoot::Left ? "foot_l_Socket" : "foot_r_Socket"};
+	const FName Socket {Foot == EFoot::Left ? "foot_l_socket" : "foot_r_socket"};
 	if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
 		FVector Location {GetSkelMeshComponent()->GetSocketLocation(Socket)};
@@ -76,10 +76,11 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 		
 		FHitResult HitResult;
 		FVector TraceStart = Location;
-		FVector TraceEnd = Location + FVector(0, 0, -30);
+		FVector TraceEnd = Location - FVector(0, 0, 50);
 		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(GetSkelMeshComponent()->GetOwner());
+		Params.AddIgnoredActor(GetOwningActor());
 		Params.bTraceComplex = false;
+		Params.bReturnPhysicalMaterial = true;
 
 		if (GetWorld() && GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
 		{
