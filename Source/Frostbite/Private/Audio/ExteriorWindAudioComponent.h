@@ -71,12 +71,20 @@ protected:
 	virtual void InitializeComponent() override;
 	
 	/** Returns an array of terrain trace lenghts. */
-	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Do Terrain Collision Query"))
+	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Do Terrain Collision Query", BlueprintProtected))
 	TArray<float> DoTerrainCollisionQuery(const FVector& Location);
 
 	/** Returns an array of occlusion traces. */
-	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Do Occlusion Collision Query"))
+	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Do Occlusion Collision Query", BlueprintProtected))
 	TArray<float> DoOcclusionCollisionQuery(const FVector& Location);
+
+	/** Returns the average of a float array. */
+	UFUNCTION(BlueprintCallable, Category = "ExteriorWindAudioComponent", meta = (Displayname = "Get Average Of Float Array.", BlueprintProtected))
+	float GetAverageOfFloatArray(const TArray<float>& Array) const;
+
+	/** Called when the wind direction is updated. */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "On Wind Direction Changed"))
+	void EventOnWindDirectionChanged(const FRotator& Rotation);
 
 private:
 	/** Populates the terrain trace vector array. */

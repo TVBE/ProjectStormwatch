@@ -47,6 +47,7 @@ void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 	WindDirection = Rotation;
 	PopulateTerrainTraceVectors(TerrainTraceEndVectors, WindDirection, CollisionTraceLength, 8);
 	PopulateOcclusionTraceVectors(OcclusionTraceStartVectors, OcclusionTraceEndVectors, WindDirection, CollisionTraceLength, 250);
+	EventOnWindDirectionChanged(Rotation);
 }
 
 /** Called every frame. */
@@ -119,6 +120,17 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 	return TraceLengths;
 }
 
+float UExteriorWindAudioComponent::GetAverageOfFloatArray(const TArray<float>& Array) const
+{
+	float Sum {0.0f};
+	for(const float Value : Array)
+	{
+		Sum += Value;
+	}
+	Sum /= Array.Num();
+	return Sum;
+}
+
 /** Populates the terrain trace array. */
 void UExteriorWindAudioComponent::PopulateTerrainTraceVectors(TArray<FVector>& Array, const FRotator& Rotation, const float Radius, const float NumPoints)
 {
@@ -186,3 +198,6 @@ void UExteriorWindAudioComponent::EventOnPoll_Implementation(const TArray<float>
 {
 }
 
+void UExteriorWindAudioComponent::EventOnWindDirectionChanged_Implementation(const FRotator& Rotation)
+{
+}

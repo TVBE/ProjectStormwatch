@@ -7,12 +7,14 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterMovementComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterMovementComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterMovementComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacterMovementComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Blizzard/BP_Blizzard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Blizzard/BP_Blizzard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Blueprints/BPC_ExteriorWindComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Blueprints/BPC_ExteriorWindComponent.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/AudioGenerators/MSP_ProceduralWindHowling.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/AudioGenerators/MSP_ProceduralWindHowling.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Effects/MSP_QuadPanner.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Effects/MSP_QuadPanner.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWind_Quad.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWind_Quad.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Audio/ExteriorWindAudioComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,6 +231,8 @@
       <workItem from="1677751848509" duration="682000" />
       <workItem from="1677789226027" duration="860000" />
       <workItem from="1677926761382" duration="18789000" />
+      <workItem from="1678192912562" duration="603000" />
+      <workItem from="1678193575465" duration="3055000" />
     </task>
     <servers />
   </component>
