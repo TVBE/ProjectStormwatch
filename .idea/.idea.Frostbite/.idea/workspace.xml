@@ -7,10 +7,10 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Nightstalker/Nighstalker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Nightstalker/Nightstalker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Nightstalker/Nighstalker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Nightstalker/Nightstalker.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Utilities/Room.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Utilities/Room.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Core/LogCategories.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Core/LogCategories.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/Core/LogCategories.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/Core/LogCategories.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/RoomSystem/RoomVolume.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,6 +231,7 @@
       <workItem from="1678193575465" duration="4630000" />
       <workItem from="1678268852022" duration="105000" />
       <workItem from="1678269024732" duration="946000" />
+      <workItem from="1678270078104" duration="2423000" />
     </task>
     <servers />
   </component>

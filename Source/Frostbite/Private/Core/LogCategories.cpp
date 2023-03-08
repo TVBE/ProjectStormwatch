@@ -13,3 +13,5 @@ DEFINE_LOG_CATEGORY(LogInteractableActor)
 
 DEFINE_LOG_CATEGORY(LogNightstalker)
 DEFINE_LOG_CATEGORY(LogNightstalkerController)
+
+DEFINE_LOG_CATEGORY(LogRoomVolume)
