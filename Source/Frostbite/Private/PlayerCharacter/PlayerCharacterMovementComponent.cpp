@@ -18,6 +18,7 @@ void UPlayerCharacterMovementComponent::BeginPlay()
 bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 {
 	OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::Jump);
+	OnJump.Broadcast();
 	return Super::DoJump(bReplayingMoves);
 }
 

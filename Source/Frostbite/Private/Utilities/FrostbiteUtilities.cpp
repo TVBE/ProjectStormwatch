@@ -4,8 +4,14 @@
 #include "FrostbiteUtilities.h"
 #include "PlayerCharacter/FootstepData.h"
 
-FFootstepData UFrostbiteUtilities::GetFootstepData(const UWorld* World, const AActor* Actor, const float TraceLength)
+FFootstepData UFrostbiteUtilities::GetFootstepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
 {
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if(!World)
+	{
+		return FFootstepData();
+	}
+	
 	FFootstepData FootstepData {FFootstepData()};
 	if(Actor)
 	{

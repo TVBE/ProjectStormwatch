@@ -35,6 +35,7 @@ enum class EPlayerLocomotionEvent : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEventDelegate, EPlayerLocomotionEvent, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EPlayerLandingType, Value);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
 
 UCLASS()
 class UPlayerCharacterMovementComponent : public UCharacterMovementComponent
@@ -42,9 +43,16 @@ class UPlayerCharacterMovementComponent : public UCharacterMovementComponent
 	GENERATED_BODY()
 
 public:
+	// DELEGATES
+	/** Delegate that is called when a locomotion event occurs. */
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Locomotion Event"))
 	FLocomotionEventDelegate OnLocomotionEvent;
+
+	/** Delegate that is called when the player character jumps. */
+	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Jump Event"))
+	FJumpDelegate OnJump;
 	
+	/** Delegate that is called when the player character lands. */
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Landing Event"))
 	FLandingDelegate OnLanding;
 
