@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Nighstalker.generated.h"
+#include "Nightstalker.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (Nightstalker))
-class ANighstalker : public APawn
+class ANightstalker : public APawn
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this pawn's properties
-	ANighstalker();
+	ANightstalker();
 
 protected:
 	// Called when the game starts or when spawned
