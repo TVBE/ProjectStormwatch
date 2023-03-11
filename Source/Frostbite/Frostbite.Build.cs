@@ -11,13 +11,12 @@ public class Frostbite : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime" });
-
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Core/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Environment/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/RoomSystem/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Audio/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/PlayerCharacter/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Nightstalker/Public");
 	}
 }
