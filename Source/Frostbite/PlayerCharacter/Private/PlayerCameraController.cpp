@@ -1,4 +1,6 @@
-// Copyright 2023 Barrelhouse
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #include "PlayerCameraController.h"
 #include "PlayerCharacter.h"
@@ -148,7 +150,17 @@ void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, cons
 	{
 		SocketRotation = GetScaledHeadSocketDeltaRotation(DeltaTime);
 	}
-	PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacter->GetControlRotation());
+	if(Configuration->IsCameraLagEnabled)
+	{
+		const float InterpolationSpeed {(1 - Configuration->CameraLagIntensity) * 4 + 6};
+		CameraControlRotation = FMath::RInterpTo(CameraControlRotation, PlayerCharacter->GetControlRotation(), DeltaTime, InterpolationSpeed);
+		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + CameraControlRotation);
+	}
+	else
+	{
+		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacter->GetControlRotation());
+	}
+	
 }
 
 /** Called by UpdateCameraRotation. */

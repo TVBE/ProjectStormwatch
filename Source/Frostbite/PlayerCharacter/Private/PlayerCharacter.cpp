@@ -1,4 +1,6 @@
-// Copyright 2023 Barrelhouse
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #include "PlayerCharacter.h"
 #include "PlayerCameraController.h"
