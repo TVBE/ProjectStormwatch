@@ -7,67 +7,6 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/BarrelhouseUtilities.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/BarrelhouseUtilities/BarrelhouseUtilities.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Private/SurfaceTrackerComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Private/SurfaceTrackerComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Public/SurfaceTrackerComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Public/SurfaceTrackerComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite.Target.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite.Target.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/ExteriorWindAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/ExteriorWindAudioComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteScalabilitySettings.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteScalabilitySettings.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/LogCategories.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/LogCategories.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteGameMode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteScalabilitySettings.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteScalabilitySettings.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/LogCategories.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/LogCategories.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Environment/Private/Blizzard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Environment/Private/Blizzard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Environment/Public/Blizzard.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Environment/Public/Blizzard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/Nightstalker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/Nightstalker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerAudioController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerAudioController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorScript.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorScript.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerStart.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerStart.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerState.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerSubsystem.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerVfxController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerVfxController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/Nightstalker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/Nightstalker.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerAudioController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerAudioController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerBehaviorComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerBehaviorComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerBehaviorScript.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerBehaviorScript.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerStart.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerStart.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerState.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerSubsystem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerVfxController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerVfxController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerAudioComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterState.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterUtilities.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterUtilities.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerFlashlightComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerFlashlightComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerSubsystem.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerVfxComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerVfxComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/FootstepData.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/FootstepData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerAudioComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterAnimInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterConfiguration.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterConfiguration.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterState.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterUtilities.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterUtilities.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerFlashlightComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerFlashlightComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerSubsystem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerVfxComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerVfxComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Private/RoomVolume.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Private/RoomVolume.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Public/RoomVolume.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Public/RoomVolume.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/FrostbiteEditor.Target.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/FrostbiteEditor.Target.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -299,6 +238,10 @@
       <workItem from="1678532481042" duration="11303000" />
       <workItem from="1678546347837" duration="747000" />
       <workItem from="1678653647177" duration="306000" />
+      <workItem from="1678710511234" duration="331000" />
+      <workItem from="1678714947114" duration="750000" />
+      <workItem from="1678715816931" duration="251000" />
+      <workItem from="1678716467681" duration="580000" />
     </task>
     <servers />
   </component>
