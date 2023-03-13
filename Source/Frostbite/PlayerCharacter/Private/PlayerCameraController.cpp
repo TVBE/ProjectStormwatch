@@ -150,17 +150,7 @@ void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, cons
 	{
 		SocketRotation = GetScaledHeadSocketDeltaRotation(DeltaTime);
 	}
-	if(Configuration->IsCameraLagEnabled)
-	{
-		const float InterpolationSpeed {(1 - Configuration->CameraLagIntensity) * 4 + 6};
-		CameraControlRotation = FMath::RInterpTo(CameraControlRotation, PlayerCharacter->GetControlRotation(), DeltaTime, InterpolationSpeed);
-		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + CameraControlRotation);
-	}
-	else
-	{
 		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacter->GetControlRotation());
-	}
-	
 }
 
 /** Called by UpdateCameraRotation. */
