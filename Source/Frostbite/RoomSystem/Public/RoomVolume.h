@@ -37,7 +37,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNightstalkerEnterDelegate, ANightst
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNightstalkerLeaveDelegate, ANightstalker*, Nightstalker);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLuminosityChanged, bool, IsLit);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = ("RoomSystem"), Category = "RoomSystem")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (RoomSystem))
 class ARoomVolume : public ATriggerBox
 {
 	GENERATED_BODY()
