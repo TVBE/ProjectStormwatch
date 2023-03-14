@@ -7,9 +7,6 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbiteBunkerBlockout.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbiteBunkerBlockout.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Public/RoomVolume.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Public/RoomVolume.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
