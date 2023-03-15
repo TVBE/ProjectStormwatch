@@ -2,7 +2,6 @@
 
 #pragma once
 
-
 #include "CoreMinimal.h"
 #include "Sound/SoundWave.h"
 #include "Sound/SoundConcurrency.h"
@@ -120,7 +119,7 @@ public:
 	double Gain_Db {0.0};
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="HitSound")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="HitSound"))
 	TObjectPtr<USoundWave> HitSound;
 
 	/** Please add a variable description */
@@ -137,8 +136,7 @@ public:
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Sound_Attenuation", MakeStructureDefaultValue="/Script/Engine.SoundAttenuation'/Game/ThirdPartyContent/BallisticsVFX/SFX/Attentuations/ImpactsAttenuation.ImpactsAttenuation'"))
-	TObjectPtr<USoundAttenuation> Sound_Attenuation {10.0}
-	;
+	TObjectPtr<USoundAttenuation> Sound_Attenuation;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Sound_Concurrency", MakeStructureDefaultValue="None"))
