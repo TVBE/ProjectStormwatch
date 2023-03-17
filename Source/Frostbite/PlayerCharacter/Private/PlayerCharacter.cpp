@@ -38,7 +38,7 @@ APlayerCharacter::APlayerCharacter()
 	
 	/** Construct Camera Controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
-	CameraController->bEditableWhenInherited = false;
+	CameraController->bEditableWhenInherited = true;
 }
 
 /** Called after the constructor but before the components are initialized. */

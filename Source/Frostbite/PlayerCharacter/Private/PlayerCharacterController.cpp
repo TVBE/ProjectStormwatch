@@ -8,6 +8,7 @@
 #include "PlayerCharacterState.h"
 #include "PlayerFlashlightComponent.h"
 #include "LogCategories.h"
+#include "PlayerCameraController.h"
 #include "PlayerSubsystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"
@@ -74,6 +75,15 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerController(this);
+		}
+	}
+	
+	if(const UPlayerCameraController* CameraController {Cast<UPlayerCameraController>(InPawn->FindComponentByClass(UPlayerCameraController::StaticClass()))})
+	{
+		if(const UPlayerCameraConfiguration* Configuration {CameraController->GetConfiguration()})
+		{
+			PlayerCameraManager->ViewPitchMax = Configuration->MaximumViewPitch;
+			PlayerCameraManager->ViewPitchMin = Configuration->MinimumViewPitch;
 		}
 	}
 }
