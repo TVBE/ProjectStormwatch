@@ -116,16 +116,21 @@ void UPlayerCameraController::UpdateCameraLocation(UCameraComponent& Camera)
 	if(PitchAlpha == 0.0)
 	{
 		Result = Configuration->CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace());
-		
 	}
 	else
 	{
 		/** Get the target location if the player is not looking down. */
 		const FVector UprightCameraLocation {Configuration->CameraOffset + (SocketLocation * !PlayerCharacter->GetIsTurningInPlace())};
+
+		/** Get the character's forward vector. */
+		const FVector ForwardVector = PlayerCharacter->GetActorForwardVector();
+
+		/** Project the character's velocity onto its forward vector to get the forward velocity. */
+		const float ForwardVelocity = FVector::DotProduct(PlayerCharacter->GetVelocity(), ForwardVector);
 		
 		/** Calculate the target location if the player is looking down. */
 		const FVector DownwardCameraLocation {PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(Configuration->CameraOffset.X * 0.625, 0, 0)
-		- FVector(0, 0, (PlayerCharacter->GetVelocity().X * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
+		- FVector(0, 0, (ForwardVelocity * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
 		
 		/** Interpolate between the two target locations depending on PitchAlpha. */
 		Result = FMath::Lerp(UprightCameraLocation, DownwardCameraLocation, PitchAlpha); //NOTE: In UE 5.1 using FMath::Lerp() with two FVectors can cause semantic errors, but the code will compile and run just fine.
