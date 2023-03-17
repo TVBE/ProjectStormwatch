@@ -146,7 +146,7 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 	{
 		if(GetController())
 		{
-			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
+			SetActorRotation(FRotator(0, PlayerCharacterController->GetPlayerControlRotation().Yaw, 0));
 		}
 		IsTurningInPlace = false;
 	}
