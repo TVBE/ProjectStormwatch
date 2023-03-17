@@ -131,7 +131,7 @@ void UPlayerCameraController::UpdateCameraLocation(UCameraComponent& Camera)
 		Result = FMath::Lerp(UprightCameraLocation, DownwardCameraLocation, PitchAlpha); //NOTE: In UE 5.1 using FMath::Lerp() with two FVectors can cause semantic errors, but the code will compile and run just fine.
 	}
 	/** Rotate the result with the base aim rotation. */
-	const FRotator ControlRotation {FRotator(0, PlayerCharacterController->GetControlRotation().Yaw, 0)};
+	const FRotator ControlRotation {FRotator(0, PlayerCharacterController->GetPlayerControlRotation().Yaw, 0)};
 	Result = ControlRotation.RotateVector(Result);
 	
 	/** Add the world location of the pawn to the result. */
@@ -150,7 +150,7 @@ void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, cons
 	{
 		SocketRotation = GetScaledHeadSocketDeltaRotation(DeltaTime);
 	}
-		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacter->GetControlRotation());
+		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacterController->GetPlayerControlRotation());
 }
 
 /** Called by UpdateCameraRotation. */

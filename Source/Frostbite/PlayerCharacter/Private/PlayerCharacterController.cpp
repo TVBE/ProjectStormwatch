@@ -108,6 +108,12 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 			UpdatePendingActions(CharacterMovement);
 		}
 	}
+	UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
+}
+
+void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
+{
+	PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, ControlInterpolationSpeed);
 }
 
 void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)

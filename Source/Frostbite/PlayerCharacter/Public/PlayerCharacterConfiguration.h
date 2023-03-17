@@ -96,7 +96,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera",
 		Meta = (Displayname = "Minimum View Pitch", ClampMin = "-90", ClampMax = "0", UiMin = "-90", UIMax = "0"))
 	float MinimumViewPitch {-75.f};
-
+	
 	/** When enabled, the camera's field of view will scale according to the velocity of the player. This makes higher speeds seem more intense. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "FieldOfView",
 		Meta = (DisplayName = "Enable Dynamic Field Of View"))
@@ -308,7 +308,6 @@ public:
 	/** Determines how much the flashlight is allowed to orient up or down. Value is measures from the player character's forward vector. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Pitch Range", ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0"))
 	float PitchRange {60.0f};
-	
 	
 	/** The intensity of the flashlight. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Light",

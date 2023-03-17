@@ -42,7 +42,7 @@ protected:
 	/** If true, the player is currently pressing the crouch button. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Intention", Meta = (DisplayName = "Is Crouch Pending"))
 	bool IsCrouchPending {false};
-
+ 
 private:
 	/** Pointer to the PlayerCharacterState instance for this controller. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterState, Category = "PlayerCharacterController|PlayerState", Meta = (DisplayName = "Player Character State"))
@@ -56,6 +56,14 @@ private:
 	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
 	bool CanProcessRotationInput {false};
 
+	/** Smoothed control rotation. */
+	UPROPERTY(BlueprintGetter = GetPlayerControlRotation, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
+	FRotator PlayerControlRotation;
+
+	/** The interpolation speed of the player control rotation.*/
+	UPROPERTY(EditAnywhere, Category = "PlayerCharacterController|ControlRotation", Meta = (DisplayName = "Interpolation Speed"))
+	float ControlInterpolationSpeed {10.0f};
+	
 	/** Timer handle for the state update timer. */
 	UPROPERTY()
 	FTimerHandle StateTimer;
@@ -114,6 +122,10 @@ private:
 	virtual void SetupInputComponent() override;
 	virtual void InitPlayerState() override;
 	virtual void OnPossess(APawn* InPawn) override;
+
+	/** Updates the player control rotation. */
+	UFUNCTION()
+	void UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds);
 	
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
@@ -154,8 +166,7 @@ private:
 	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
-
-
+	
 	/** Checks if the player character can currently sprint. */
 	UFUNCTION()
 	bool CanCharacterSprint() const;
@@ -180,4 +191,8 @@ public:
 	/** Returns whether the player controller can process rotation input. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
 	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+
+	/** Returns the player control rotation. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
+	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
 };

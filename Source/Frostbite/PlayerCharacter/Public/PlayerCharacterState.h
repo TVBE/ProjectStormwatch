@@ -8,8 +8,8 @@
 #include "GameFramework/PlayerState.h"
 #include "PlayerCharacterState.generated.h"
 
-/**
- * 
+/**	This component is created to manage the state of the player character in the game.
+ *	While Unreal Engine provides a default APlayerState class, we've opted to create an actor component instead.
  */
 UCLASS()
 class APlayerCharacterState : public APlayerState

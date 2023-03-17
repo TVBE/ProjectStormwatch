@@ -7,6 +7,11 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterConfiguration.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterConfiguration.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterState.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -244,6 +249,10 @@
       <workItem from="1678716467681" duration="580000" />
       <workItem from="1678794277913" duration="38000" />
       <workItem from="1678794384675" duration="811000" />
+      <workItem from="1678873669981" duration="153000" />
+      <workItem from="1678873929188" duration="629000" />
+      <workItem from="1678895883348" duration="640000" />
+      <workItem from="1679061028108" duration="1915000" />
     </task>
     <servers />
   </component>
