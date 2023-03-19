@@ -117,10 +117,6 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	if(NewController)
 	{
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
-		if(APlayerController* PlayerController {Cast<APlayerController>(NewController)})
-		{
-			StateConfiguration->ApplyToPlayerController(PlayerController);
-		}
 	}
 }
 
@@ -200,14 +196,6 @@ void APlayerCharacter::ValidateConfigurationAssets()
 		if(GIsEditor && FApp::IsGame())
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
-		}
-	}
-	if(!StateConfiguration)
-	{
-		StateConfiguration = NewObject<UPlayerStateConfiguration>();
-		if(GIsEditor && FApp::IsGame())
-		{
-			UE_LOG(LogPlayerCharacter, Warning, TEXT("No PlayerState Configuration was selected for player character. Using default settings instead."))
 		}
 	}
 }

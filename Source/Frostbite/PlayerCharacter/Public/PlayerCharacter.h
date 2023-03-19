@@ -34,10 +34,6 @@ private:
 	/** The character configuration data asset. */
 	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
 	UPlayerCharacterConfiguration* CharacterConfiguration;
-
-	/** The playerstate configuration data asset. */
-	UPROPERTY(BlueprintGetter = GetStateConfiguration, EditAnywhere, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "State Configuration", DisplayPriority = "1"))
-	UPlayerStateConfiguration* StateConfiguration;
 	
 	// COMPONENTS
 	/** The camera for the player. */
@@ -154,10 +150,6 @@ public:
 	/** Returns the Character configuration. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Character Configuration"))
 	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const {return CharacterConfiguration; }
-
-	/** Returns the PlayerState configuration. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get State Configuration"))
-	FORCEINLINE UPlayerStateConfiguration* GetStateConfiguration() const {return StateConfiguration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Locomotion", Meta = (DisplayName = "PlayerCharacterController"))

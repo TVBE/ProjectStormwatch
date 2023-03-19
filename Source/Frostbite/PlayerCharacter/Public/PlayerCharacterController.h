@@ -26,10 +26,6 @@ public:
 	UPROPERTY()
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
-	/** The state configuration to use for this player character. */
-	UPROPERTY()
-	UPlayerStateConfiguration* StateConfiguration;
-
 protected:
 	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Actors", Meta = (DisplayName = "Player Character"))
@@ -44,10 +40,6 @@ protected:
 	bool IsCrouchPending {false};
  
 private:
-	/** Pointer to the PlayerCharacterState instance for this controller. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterState, Category = "PlayerCharacterController|PlayerState", Meta = (DisplayName = "Player Character State"))
-	APlayerCharacterState* PlayerCharacterState;
-	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
 	bool CanProcessMovementInput {false};
@@ -63,10 +55,6 @@ private:
 	/** The interpolation speed of the player control rotation.*/
 	UPROPERTY(EditAnywhere, Category = "PlayerCharacterController|ControlRotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
-	
-	/** Timer handle for the state update timer. */
-	UPROPERTY()
-	FTimerHandle StateTimer;
 
 public:
 	APlayerCharacterController();
@@ -111,16 +99,11 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Camera Look At Query"))
 	FHitResult GetCameraLookAtQuery() const;
 
-	/** Updates the player character state. */
-	UFUNCTION()
-	void UpdatePlayerState();
-
 private:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
-	virtual void InitPlayerState() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
 	/** Updates the player control rotation. */
@@ -180,10 +163,6 @@ private:
 	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
 
 public:
-	/** Returns the player character state. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController|PlayerState", Meta = (DisplayName = "Player Character State"))
-	FORCEINLINE APlayerCharacterState* GetPlayerCharacterState() const {return PlayerCharacterState; }
-	
 	/** Returns whether the player controller can process movement input. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
 	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
