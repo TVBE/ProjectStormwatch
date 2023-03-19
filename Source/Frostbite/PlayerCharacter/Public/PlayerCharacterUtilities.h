@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class UPlayerCharacterUtilities : public UBlueprintFunctionLibrary
+class FROSTBITE_API UPlayerCharacterUtilities : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

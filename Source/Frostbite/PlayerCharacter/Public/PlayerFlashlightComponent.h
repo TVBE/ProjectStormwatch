@@ -19,7 +19,7 @@ enum class EPlayerGroundMovementType : uint8;
  *	@Brief ActorComponent for controlling the player's flashlight.
  */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent)) // TODO: Make SuperClass for LightSource items.
-class UPlayerFlashlightComponent : public UActorComponent
+class FROSTBITE_API UPlayerFlashlightComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -136,7 +136,7 @@ enum class EFlashlightSocketContext : uint8
 
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class UPlayerFlashlightConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerFlashlightConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

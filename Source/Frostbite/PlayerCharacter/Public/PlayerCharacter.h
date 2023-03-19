@@ -25,7 +25,7 @@ struct FFootstepData;
 struct FTimerHandle;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (PlayerCharacter))
-class APlayerCharacter : public ACharacter
+class FROSTBITE_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -177,7 +177,7 @@ public:
 };
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class UPlayerCharacterConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerCharacterConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

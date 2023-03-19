@@ -16,7 +16,7 @@ struct FTimerHandle;
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, ClassGroup=(PlayerCharacter))
-class APlayerCharacterController : public APlayerController
+class FROSTBITE_API APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 	

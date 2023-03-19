@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFootstepDelegate, FFootstepData, Fo
  *	We mainly declare functions here to be used a BlueprintCallable UFunctions.
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
-class UPlayerCharacterAnimInstance : public UAnimInstance
+class FROSTBITE_API UPlayerCharacterAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 

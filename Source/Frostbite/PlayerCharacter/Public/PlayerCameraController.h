@@ -17,7 +17,7 @@ class APlayerCharacterController;
  *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view. */
 class APlayerCharacterController;
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent) )
-class UPlayerCameraController : public UActorComponent
+class FROSTBITE_API UPlayerCameraController : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -114,7 +114,7 @@ public:
 };
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class UPlayerCameraConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerCameraConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

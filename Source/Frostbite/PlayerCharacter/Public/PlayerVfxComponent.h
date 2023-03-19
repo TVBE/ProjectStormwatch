@@ -16,7 +16,7 @@ class APlayerCharacter;
  *	@Brief ActorComponent for managing player visual effects.
  */
 UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), meta=(BlueprintSpawnableComponent) )
-class UPlayerVfxComponent : public UActorComponent
+class FROSTBITE_API UPlayerVfxComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

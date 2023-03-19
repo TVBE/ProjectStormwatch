@@ -19,7 +19,7 @@ enum class EFoot : uint8
 
 /** Struct containing data about a footstep. */
 USTRUCT(BlueprintType)
-struct FFootstepData
+struct FROSTBITE_API FFootstepData
 {
 	GENERATED_USTRUCT_BODY()
 

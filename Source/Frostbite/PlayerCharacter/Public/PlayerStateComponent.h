@@ -27,7 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVigilanceChangedDelegate, const f
  *	While Unreal Engine provides a default APlayerState class, we've opted to create an actor component instead.
  */
 UCLASS(Abstract, Blueprintable, ClassGroup = (PlayerCharacter))
-class UPlayerStateComponent : public UActorComponent
+class FROSTBITE_API UPlayerStateComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -156,7 +156,7 @@ protected:
 };
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class UPlayerStateConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerStateConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

@@ -17,7 +17,7 @@ class UAudioComponent;
  *	@Brief ActorComponent for managing player audio.
  */
 UCLASS(Blueprintable, ClassGroup=(PlayerCharacter), Meta=(BlueprintSpawnableComponent) )
-class UPlayerAudioComponent : public UActorComponent
+class FROSTBITE_API UPlayerAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
