@@ -155,7 +155,7 @@ protected:
 	void EventOnUpdate();
 };
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
 class UPlayerStateConfiguration : public UDataAsset
 {
 	GENERATED_BODY()

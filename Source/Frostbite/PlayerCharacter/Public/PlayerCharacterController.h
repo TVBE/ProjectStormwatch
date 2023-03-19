@@ -6,12 +6,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PlayerCharacterConfiguration.h"
 #include "PlayerCharacterController.generated.h"
 
 class UPlayerSubsystem;
 class APlayerCharacter;
-class APlayerCharacterState;
+class UPlayerCharacterConfiguration;
 class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
 
@@ -74,7 +73,6 @@ public:
 	void SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value);
 
 protected:
-	
 	/** Checks whether the player is currently looking at an interactable object. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Interact"))
 	bool CanInteract() const;

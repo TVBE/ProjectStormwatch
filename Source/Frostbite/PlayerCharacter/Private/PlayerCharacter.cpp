@@ -301,6 +301,34 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter)
+{
+	if(!PlayerCharacter)
+	{
+		return;
+	}
+	
+	// Set character's movement component properties.
+	if(UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
+	{
+		MovementComponent->MaxWalkSpeed = WalkSpeed;
+		MovementComponent->JumpZVelocity = JumpVelocity;
+	}
+}
+
+void UPlayerCharacterConfiguration::ApplyToPlayerController(APlayerController* PlayerController)
+{
+	if(!PlayerController)
+	{
+		return;
+	}
+
+	if(APlayerCharacterController* CharacterController {Cast<APlayerCharacterController>(PlayerController)})
+	{
+		CharacterController->CharacterConfiguration = this;
+	}
+}
+
 
 
 

@@ -335,6 +335,13 @@ void UPlayerCameraController::FadeFromBlack(const float Duration)
 	}
 }
 
+void UPlayerCameraConfiguration::ApplyToCamera(UCameraComponent* Camera)
+{
+	if(!Camera) {return; }
+	Camera->SetFieldOfView(DefaultFOV);
+	Camera->PostProcessSettings.VignetteIntensity = DefaultVignetteIntensity;
+}
+
 
 
 

@@ -5,7 +5,6 @@
 #include "PlayerCharacterController.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"
-#include "PlayerStateComponent.h"
 #include "PlayerFlashlightComponent.h"
 #include "LogCategories.h"
 #include "PlayerCameraController.h"

@@ -297,6 +297,35 @@ void UPlayerFlashlightComponent::EndPlay(const EEndPlayReason::Type EndPlayReaso
 	Super::EndPlay(EndPlayReason);
 }
 
+void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFlashlightComponent* Component)
+{
+	USpotLightComponent* Flashlight {Component->GetFlashlight()};
+	USpringArmComponent* FlashlightSpringArm {Component->GetFlashlightSpringArm()};
+	
+	if(Flashlight && FlashlightSpringArm)
+	{
+		Flashlight->Intensity = Intensity;
+		Flashlight->LightColor = LightColor;
+		Flashlight->AttenuationRadius = AttenuationRadius;
+		Flashlight->InnerConeAngle = InnerConeAngle;
+		Flashlight->OuterConeAngle = OuterConeAngle;
+		Flashlight->CastShadows = CastsShadows;
+		Flashlight->VolumetricScatteringIntensity = VolumetricScatteringIntensity;
+		Flashlight->SetUseInverseSquaredFalloff(UseInverseSquaredFalloff);
+		Flashlight->LightFalloffExponent = LightFalloffExponent;
+		if(LightFunctionMaterial)
+		{
+			Flashlight->LightFunctionMaterial = LightFunctionMaterial;
+		}
+		if(IESTexture)
+		{
+			Flashlight->IESTexture = IESTexture;
+		}
+
+		FlashlightSpringArm->CameraRotationLagSpeed = RotationLag;
+	}
+}
+
 
 
 
