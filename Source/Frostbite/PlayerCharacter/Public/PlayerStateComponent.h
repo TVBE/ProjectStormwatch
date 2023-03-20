@@ -162,19 +162,19 @@ class FROSTBITE_API UPlayerStateConfiguration : public UDataAsset
 
 public:
 	/** The amount of pain that is restored every update interval. */
-	UPROPERTY(BlueprintReadOnly, Category = "Pain", Meta = (DisplayName = "Pain Reduction Amount"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Pain", Meta = (DisplayName = "Pain Reduction Amount"))
 	float PainReductionAmount {2.0f};
 	
 	/** The amount of exertion that is removed per update interval when the player is not performing intensive movements.*/
-	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Exertion Reduction Amount"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Exertion Reduction Amount"))
 	float ExertionReductionAmount {2.0f};
 	
 	/** The amount of exertion that is added per update interval when the player sprints. */
-	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Sprint Exertion Cost"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Sprint Exertion Cost"))
 	float SprintExertionCost {3.0f};
 
 	/** The amount of exertion that is added when the player jumps. */
-	UPROPERTY(BlueprintReadOnly, Category = "Exertion", Meta = (DisplayName = "Jump Exertion Cost"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Jump Exertion Cost"))
 	float JumpExertionCost {5.0f};
 
 	/** Constructor with default values. */
