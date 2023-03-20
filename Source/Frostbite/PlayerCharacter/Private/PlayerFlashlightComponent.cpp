@@ -4,7 +4,6 @@
 
 #include "PlayerFlashlightComponent.h"
 #include "PlayerCharacter.h"
-#include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "LogCategories.h"
 
