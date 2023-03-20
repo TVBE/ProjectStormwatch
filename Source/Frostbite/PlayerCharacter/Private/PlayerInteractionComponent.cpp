@@ -39,13 +39,13 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	CurrentInteractableActor = CheckForInteractableActor();
-	if(!CurrentInteractableActor) {return; }
+	if(!CurrentInteractableActor) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("Interactable Actor: %s"), *CurrentInteractableActor->GetActorLabel());
 }
 
 AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 {
-	if(!Camera) {return nullptr; }
+	if(!Camera) { return nullptr; }
 	
 	CameraLocation = Camera->GetComponentLocation();
 	
@@ -55,17 +55,18 @@ AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 	PerformTraceFromCamera(CameraTraceHitResult);
 
 	/** Break off the execution and return a nullptr if the camera trace did not yield a valid blocking hit. */
-	if(!CameraTraceHitResult.IsValidBlockingHit()) {return nullptr; }
-	
+	if(!CameraTraceHitResult.IsValidBlockingHit()) { return nullptr; }
+
+	/** Perform a multi sphere sweep for interactable object and get the actor closest to the camera trace hit. */
 	ObjectTraceHitResults.Empty();
-	
 	PerformInteractableObjectTrace(ObjectTraceHitResults, CameraTraceHitResult);
-	
-	if(ObjectTraceHitResults.IsEmpty()) {return nullptr; }
-	
+	if(ObjectTraceHitResults.IsEmpty()) { return nullptr; }
 	AActor* ClosestActor {GetClosestObject(ObjectTraceHitResults, CameraTraceHitResult)};
+
+	/** We reset the occlusion trace hit result instead of constructing a new one every check to prevent unnecessary memory allocation every frame. */
+	OcclusionTraceHitResult.Reset(0, false);
+	if(IsActorOccluded(ClosestActor)) { ClosestActor = nullptr; }
 	
-	// UE_LOG(LogTemp, Warning, TEXT("Objects: %s"), *ClosestActor->GetActorLabel());
 	return ClosestActor;
 }
 
@@ -91,7 +92,7 @@ void UPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult)
 /** Performs a multi sphere trace at the hit location of a hit result and populates and array of hit results. */
 void UPlayerInteractionComponent::PerformInteractableObjectTrace(TArray<FHitResult>& Array, const FHitResult& HitResult)
 {
-	if(!GetWorld()) {return; }
+	if(!GetWorld()) { return; }
 	GetWorld()->SweepMultiByObjectType(
 		Array,
 		HitResult.ImpactPoint,
@@ -123,6 +124,28 @@ AActor* UPlayerInteractionComponent::GetClosestObject(const TArray<FHitResult>& 
 		}
 	}
 	return ClosestActor;
+}
+
+bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
+{
+	if (!Actor) { return false; }
+	
+	const FVector EndLocation = Actor->GetActorLocation();
+	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), true, nullptr);
+	QueryParams.AddIgnoredActor(Actor);
+	QueryParams.bTraceComplex = true;
+
+	const bool IsHit = GetWorld()->LineTraceSingleByChannel(
+		OcclusionTraceHitResult,
+		CameraLocation,
+		EndLocation,
+		ECollisionChannel::ECC_Visibility,
+		QueryParams
+	);
+
+	/** If the line trace hits an object other than the target actor, we assume the target actor is occluded. */
+	const bool IsOccluded = IsHit && OcclusionTraceHitResult.GetActor() != nullptr && OcclusionTraceHitResult.GetActor() != Actor;
+	return IsOccluded;
 }
 
 void UPlayerInteractionComponent::OnUnregister()

@@ -38,6 +38,10 @@ private:
 	UPROPERTY()
 	FHitResult CameraTraceHitResult {FHitResult()};
 
+	/** The hit result for the occlusion line trace collision query performed from the camera. */
+	UPROPERTY()
+	FHitResult OcclusionTraceHitResult {FHitResult()};
+
 	/** The array of hit results for the interactable object multi sphere trace. */
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	TArray<FHitResult> ObjectTraceHitResults;
@@ -82,6 +86,9 @@ private:
 	void PerformInteractableObjectTrace(TArray<FHitResult>& Array, const FHitResult& HitResult);
 
 	UFUNCTION()
-	static AActor* GetClosestObject(const TArray<FHitResult>& HitResults, const FHitResult& HitResult);
+	static AActor* GetClosestObject(const TArray<FHitResult>& Array, const FHitResult& HitResult);
+
+	UFUNCTION()
+	bool IsActorOccluded(const AActor* Actor);
 	
 };
