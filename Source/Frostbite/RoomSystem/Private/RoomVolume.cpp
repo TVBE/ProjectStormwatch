@@ -10,7 +10,7 @@
 void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if(APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
+	if (APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
 	{
 		OnPlayerEnter.Broadcast(PlayerCharacter);
 		EventOnPlayerEnter(PlayerCharacter);
@@ -19,7 +19,7 @@ void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 		
 		return;
 	}
-	if(ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
+	if (ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
 	{
 		OnNightstalkerEnter.Broadcast(Nightstalker);
 		EventOnNightstalkerEnter(Nightstalker);
@@ -30,7 +30,7 @@ void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ARoomVolume::SetLightStatus(const bool Value)
 {
-	if(IsLit == Value) {return; }
+	if (IsLit == Value) { return; }
 	IsLit = Value;
 	OnLuminosityChanged.Broadcast(Value);
 }
@@ -38,7 +38,7 @@ void ARoomVolume::SetLightStatus(const bool Value)
 void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
-	if(APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
+	if (APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
 	{
 		OnPlayerLeave.Broadcast(PlayerCharacter);
 		EventOnPlayerLeave(PlayerCharacter);
@@ -47,7 +47,7 @@ void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 		
 		return;
 	}
-	if(ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
+	if (ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
 	{
 		OnNightstalkerLeave.Broadcast(Nightstalker);
 		EventOnNightstalkerLeave(Nightstalker);

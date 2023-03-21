@@ -22,9 +22,9 @@ bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 
 void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
-	if(Velocity.Z < -1000)
+	if (Velocity.Z < -1000)
 	{
-		if(Velocity.Z < -1300)
+		if (Velocity.Z < -1300)
 		{
 			OnLanding.Broadcast(EPlayerLandingType::Heavy);
 		}
@@ -43,11 +43,11 @@ void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, flo
 /** Checks the current movement state and returns a corresponding enumeration value. */
 EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementType() const
 {
-	if(IsSprinting)
+	if (IsSprinting)
 	{
 		return EPlayerGroundMovementType::Sprinting;
 	}
-	if(IsMovingOnGround() && Velocity.SquaredLength() >= 25)
+	if (IsMovingOnGround() && Velocity.SquaredLength() >= 25)
 	{
 		return EPlayerGroundMovementType::Walking;
 	}
@@ -57,15 +57,15 @@ EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementTy
 // Called by the player controller.
 void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const APlayerController* Controller)
 {
-	if(!PawnOwner || IsSprinting == Value)
+	if (!PawnOwner || IsSprinting == Value)
 	{
 		return;
 	}
-	if(PawnOwner->GetController() == Controller)
+	if (PawnOwner->GetController() == Controller)
 	{
 		IsSprinting = Value;
 	}
-	if(Value)
+	if (Value)
 	{
 		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintStart);
 	}

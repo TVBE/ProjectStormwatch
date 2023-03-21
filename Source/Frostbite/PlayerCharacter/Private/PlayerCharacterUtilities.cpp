@@ -8,13 +8,13 @@
 FFootstepData UPlayerCharacterUtilities::GetFootstepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	if(!World)
+	if (!World)
 	{
 		return FFootstepData();
 	}
 	
 	FFootstepData FootstepData {FFootstepData()};
-	if(Actor)
+	if (Actor)
 	{
 		FVector Location {Actor->GetActorLocation()};
 		FootstepData.Location = Location;

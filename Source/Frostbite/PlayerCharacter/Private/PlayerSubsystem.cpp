@@ -10,9 +10,9 @@
 
 void UPlayerSubsystem::RegisterPlayerCharacter(APlayerCharacter* Character)
 {
-	if(Character)
+	if (Character)
 	{
-		if(PlayerCharacter)
+		if (PlayerCharacter)
 		{
 			UE_LOG(LogPlayerSubsystem, Warning, TEXT("Tried to register a player character while a player character is already registered to the subsystem."));
 			return;
@@ -27,9 +27,9 @@ void UPlayerSubsystem::RegisterPlayerCharacter(APlayerCharacter* Character)
 
 void UPlayerSubsystem::RegisterPlayerController(APlayerCharacterController* Controller)
 {
-	if(Controller)
+	if (Controller)
 	{
-		if(PlayerController)
+		if (PlayerController)
 		{
 			UE_LOG(LogPlayerSubsystem, Warning, TEXT("Tried to register a player controller while a player character is already registered to the subsystem."));
 			return;
@@ -44,9 +44,9 @@ void UPlayerSubsystem::RegisterPlayerController(APlayerCharacterController* Cont
 
 void UPlayerSubsystem::UnregisterPlayerCharacter(APlayerCharacter* Character)
 {
-	if(Character)
+	if (Character)
 	{
-		if(PlayerCharacter == Character)
+		if (PlayerCharacter == Character)
 		{
 			PlayerCharacter = nullptr;
 		}
@@ -55,9 +55,9 @@ void UPlayerSubsystem::UnregisterPlayerCharacter(APlayerCharacter* Character)
 
 void UPlayerSubsystem::UnregisterPlayerController(APlayerCharacterController* Controller)
 {
-	if(Controller)
+	if (Controller)
 	{
-		if(PlayerController == Controller)
+		if (PlayerController == Controller)
 		{
 			PlayerController = nullptr;
 		}
@@ -67,10 +67,10 @@ void UPlayerSubsystem::UnregisterPlayerController(APlayerCharacterController* Co
 bool UPlayerSubsystem::SetPlayerMovementInputLock(const bool Value)
 {
 	MovementInputLockCount += Value ? 1 : -1;
-	if(PlayerController)
+	if (PlayerController)
 	{
 		const bool CanProcessInput {!MovementInputLockCount};
-		if(PlayerController->GetCanProcessMovementInput() != CanProcessInput)
+		if (PlayerController->GetCanProcessMovementInput() != CanProcessInput)
 		{
 			PlayerController->SetCanProcessMovementInput(this, CanProcessInput);
 			OnMovementInputLockChanged.Broadcast(CanProcessInput);
@@ -83,10 +83,10 @@ bool UPlayerSubsystem::SetPlayerMovementInputLock(const bool Value)
 bool UPlayerSubsystem::SetPlayerRotationInputLock(const bool Value)
 {
 	RotationInputLockCount += Value ? 1 : -1;
-	if(PlayerController)
+	if (PlayerController)
 	{
 		const bool CanProcessInput {!RotationInputLockCount};
-		if(PlayerController->GetCanProcessRotationInput() != CanProcessInput)
+		if (PlayerController->GetCanProcessRotationInput() != CanProcessInput)
 		{
 			PlayerController->SetCanProcessRotationInput(this, CanProcessInput);
 			OnRotationInputLockChanged.Broadcast(CanProcessInput);
@@ -98,7 +98,7 @@ bool UPlayerSubsystem::SetPlayerRotationInputLock(const bool Value)
 
 void UPlayerSubsystem::FadePlayerCameraFromBlack(const float Duration)
 {
-	if(PlayerCharacter && PlayerCharacter->GetCameraController())
+	if (PlayerCharacter && PlayerCharacter->GetCameraController())
 	{
 		PlayerCharacter->GetCameraController()->FadeFromBlack(Duration);
 	}

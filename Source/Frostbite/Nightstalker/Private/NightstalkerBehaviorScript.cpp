@@ -12,7 +12,7 @@ UNightstalkerBehaviorScript::UNightstalkerBehaviorScript()
 
 void UNightstalkerBehaviorScript::ActivateScript()
 {
-	if(IsScriptActive) {return; }
+	if (IsScriptActive) {return; }
 
 	SetComponentTickEnabled(true);
 	
@@ -22,7 +22,7 @@ void UNightstalkerBehaviorScript::ActivateScript()
 
 void UNightstalkerBehaviorScript::DeactivateScript()
 {
-	if(!IsScriptActive) {return; }
+	if (!IsScriptActive) {return; }
 
 	SetComponentTickEnabled(false);
 	

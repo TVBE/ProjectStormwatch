@@ -29,11 +29,11 @@ void UPlayerCharacterAnimInstance::NativeBeginPlay()
 
 void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if(PlayerCharacter)
+	if (PlayerCharacter)
 	{
 		const APlayerCharacterController* Controller {PlayerCharacter->GetPlayerCharacterController()};
 		const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()};
-		if(Controller && CharacterMovement)
+		if (Controller && CharacterMovement)
 		{
 			CheckMovementState(*PlayerCharacter, *Controller, *CharacterMovement);
 		}
@@ -42,7 +42,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Speed = GetSpeed(*PlayerCharacter, *CharacterMovement);
 
 		/** Reset fall timer if the player is no longer falling. */
-		if(IsFalling ^ CharacterMovement->IsFalling() && !IsFalling)
+		if (IsFalling ^ CharacterMovement->IsFalling() && !IsFalling)
 		{
 			FallTime = 0.0f;
 		}
@@ -52,7 +52,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		IsAirborne = CharacterMovement->IsFalling() || CharacterMovement->GetIsJumping();
 
 		/** Update fall time if the player is falling. */
-		if(IsFalling)
+		if (IsFalling)
 		{
 			UpdateFallTime(DeltaSeconds);
 		}
@@ -67,12 +67,12 @@ FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
 	FFootstepData FootstepData {FFootstepData()};
 	FootstepData.Foot = Foot;
 	const FName Socket {Foot == EFoot::Left ? "foot_l_socket" : "foot_r_socket"};
-	if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
+	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
 		FVector Location {GetSkelMeshComponent()->GetSocketLocation(Socket)};
 		FootstepData.Location = Location;
 
-		if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
+		if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 		{
 			FootstepData.Velocity = GetSkelMeshComponent()->GetOwner()->GetVelocity().Length();
 		}
@@ -105,10 +105,10 @@ void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Ch
 /** Check if the player character is turning in place, and update animation variables accordingly. */
 void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerCharacter& Character)
 {
-	if(Character.GetIsTurningInPlace())
+	if (Character.GetIsTurningInPlace())
 	{
 		/** Determine which direction the character is turning. */
-		if(Character.GetYawDelta() > 0)
+		if (Character.GetYawDelta() > 0)
 		{
 			IsTurningRight = true;
 			IsTurningLeft = false;
@@ -138,7 +138,7 @@ float UPlayerCharacterAnimInstance::GetDirection(const APlayerCharacter& Charact
 /** Get the character's speed based on its movement input vector.*/
 float UPlayerCharacterAnimInstance::GetSpeed(const APlayerCharacter& Character, const UPlayerCharacterMovementComponent& CharacterMovement)
 {
-	if(!CharacterMovement.GetLastInputVector().IsNearlyZero())
+	if (!CharacterMovement.GetLastInputVector().IsNearlyZero())
 	{
 		return Character.GetVelocity().Size2D();
 	}

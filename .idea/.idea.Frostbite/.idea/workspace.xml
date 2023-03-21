@@ -7,12 +7,23 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorScript.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerBehaviorScript.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerAudioComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterMovementComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterMovementComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterUtilities.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterUtilities.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerFlashlightComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerFlashlightComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerStateComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerStateComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerSubsystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerVfxComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerVfxComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Private/RoomVolume.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/RoomSystem/Private/RoomVolume.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -259,6 +270,9 @@
       <workItem from="1679238968920" duration="2372000" />
       <workItem from="1679241533920" duration="798000" />
       <workItem from="1679305595939" duration="11510000" />
+      <workItem from="1679399257134" duration="982000" />
+      <workItem from="1679400365284" duration="2475000" />
+      <workItem from="1679408417324" duration="2314000" />
     </task>
     <servers />
   </component>

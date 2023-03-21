@@ -26,15 +26,15 @@ void APlayerCharacterController::BeginPlay()
 	Super::BeginPlay();
 	
 	/** Get a pointer to the PlayerCharacter instance this controller is controlling. */
-	if(!GetPawn())
+	if (!GetPawn())
 	{
 		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController is not assigned to a pawn."));
 		return;
 	}
 	PlayerCharacter = Cast<APlayerCharacter>(this->GetPawn());
-	if(PlayerCharacter)
+	if (PlayerCharacter)
 	{
-		if(PlayerCharacter->GetCharacterConfiguration())
+		if (PlayerCharacter->GetCharacterConfiguration())
 		{
 			CharacterConfiguration = PlayerCharacter->GetCharacterConfiguration();	
 		}
@@ -52,17 +52,17 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	
 	/** Registers the controller to the player character subsystem. */
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
-		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerController(this);
 		}
 	}
 	
-	if(const UPlayerCameraController* CameraController {Cast<UPlayerCameraController>(InPawn->FindComponentByClass(UPlayerCameraController::StaticClass()))})
+	if (const UPlayerCameraController* CameraController {Cast<UPlayerCameraController>(InPawn->FindComponentByClass(UPlayerCameraController::StaticClass()))})
 	{
-		if(const UPlayerCameraConfiguration* Configuration {CameraController->GetConfiguration()})
+		if (const UPlayerCameraConfiguration* Configuration {CameraController->GetConfiguration()})
 		{
 			PlayerCameraManager->ViewPitchMax = Configuration->MaximumViewPitch;
 			PlayerCameraManager->ViewPitchMin = Configuration->MinimumViewPitch;
@@ -92,9 +92,9 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if(PlayerCharacter)
+	if (PlayerCharacter)
 	{
-		if(const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+		if (const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 		{
 			UpdateCurrentActions(CharacterMovement);
 			UpdatePendingActions(CharacterMovement);
@@ -110,14 +110,14 @@ void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rot
 
 void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) {return;}
 	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
-	if(CharacterMovement->GetIsSprinting() && !CanCharacterSprint())
+	if (CharacterMovement->GetIsSprinting() && !CanCharacterSprint())
 	{
 		StopSprinting();
 	}
 	/** If the character is sprinting but sprinting is no longer pending, stop sprinting. */
-	if(CharacterMovement->GetIsSprinting() && !IsSprintPending)
+	if (CharacterMovement->GetIsSprinting() && !IsSprintPending)
 	{
 		StopSprinting();
 	}
@@ -126,14 +126,14 @@ void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMove
 void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement)
 {
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
-	if(IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
+	if (IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
 	{
-		if(!CharacterMovement->IsCrouching())
+		if (!CharacterMovement->IsCrouching())
 		{
 			StartSprinting();
 		}
 		/** If the character is crouching, stand up before sprinting. */
-		else if(CharacterMovement->IsCrouching() && PlayerCharacter->CanStandUp())
+		else if (CharacterMovement->IsCrouching() && PlayerCharacter->CanStandUp())
 		{
 			StopCrouching();
 			StartSprinting();
@@ -141,9 +141,9 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
-	if(IsCrouchPending && !CharacterMovement->IsCrouching() && PlayerCharacter->CanCrouch())
+	if (IsCrouchPending && !CharacterMovement->IsCrouching() && PlayerCharacter->CanCrouch())
 	{
-		if(CharacterMovement->GetIsSprinting())
+		if (CharacterMovement->GetIsSprinting())
 		{
 			StopSprinting();
 			IsSprintPending = false;
@@ -154,37 +154,37 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
-	if(!CanProcessRotationInput) {return;}
+	if (!CanProcessRotationInput) { return; }
 	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
-	if(!CanProcessRotationInput) {return;}
+	if (!CanProcessRotationInput) { return; }
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw, 0)};
 		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 
 void APlayerCharacterController::HandleLateralMovementInput(float Value)
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
 		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 
 void APlayerCharacterController::HandleJumpActionPressed()
 {
-	if(!CanProcessMovementInput) {return;}
-	if(PlayerCharacter && PlayerCharacter->CanJump())
+	if (!CanProcessMovementInput) { return; }
+	if (PlayerCharacter && PlayerCharacter->CanJump())
 	{
 		const float Clearance = PlayerCharacter->GetClearanceAbovePawn();
-		if(Clearance <= 175 && Clearance != -1.f)
+		if (Clearance <= 175 && Clearance != -1.f)
 		{
 			// We limit the JumpZVelocity of the player under a certain clearance to prevent the character from bumping its head into the object above.
 			GetCharacter()->GetCharacterMovement()->JumpZVelocity = Clearance * 4.25;
@@ -199,9 +199,9 @@ void APlayerCharacterController::HandleJumpActionPressed()
 
 void APlayerCharacterController::HandleSprintActionPressed()
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 	IsSprintPending = true;
-	if(CanCharacterSprint())
+	if (CanCharacterSprint())
 	{
 		StartSprinting();
 	}
@@ -210,9 +210,9 @@ void APlayerCharacterController::HandleSprintActionPressed()
 
 void APlayerCharacterController::HandleSprintActionReleased()
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 	IsSprintPending = false;
-	if(PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
+	if (PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
 	{
 		StopSprinting();
 	}
@@ -220,22 +220,22 @@ void APlayerCharacterController::HandleSprintActionReleased()
 
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 	IsCrouchPending = true;
 
-	if(CharacterConfiguration->EnableCrouchToggle)
+	if (CharacterConfiguration->EnableCrouchToggle)
 	{
-		if(!GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanCrouch())
+		if (!GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanCrouch())
 		{
 			StartCrouching();
 			return;
 		}
-		if(GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanStandUp())
+		if (GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanStandUp())
 		{
 			StopCrouching();
 		}
 	}
-	else if(PlayerCharacter->CanCrouch())
+	else if (PlayerCharacter->CanCrouch())
 	{
 		StartCrouching();
 	}
@@ -243,14 +243,14 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 
 void APlayerCharacterController::HandleCrouchActionReleased()
 {
-	if(!CanProcessMovementInput) {return;}
+	if (!CanProcessMovementInput) { return; }
 	IsCrouchPending = false;
 }
 
 void APlayerCharacterController::HandleFlashlightActionPressed()
 {
-	if(!PlayerCharacter || !CanProcessMovementInput) {return; }
-	if(UPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UPlayerFlashlightComponent>())
+	if (!PlayerCharacter || !CanProcessMovementInput) { return; }
+	if (UPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UPlayerFlashlightComponent>())
 	{
 		Flashlight->SetFlashlightEnabled(!Flashlight->IsFlashlightEnabled());
 	}
@@ -258,7 +258,7 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 
 bool APlayerCharacterController::GetHasMovementInput() const
 {
-	if(InputComponent != nullptr)
+	if (InputComponent != nullptr)
 	{
 		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
 	}
@@ -267,7 +267,7 @@ bool APlayerCharacterController::GetHasMovementInput() const
 
 float APlayerCharacterController::GetHorizontalRotationInput() const
 {
-	if(InputComponent != nullptr)
+	if (InputComponent != nullptr)
 	{
 		return InputComponent->GetAxisValue("Horizontal Rotation");
 	}
@@ -276,7 +276,7 @@ float APlayerCharacterController::GetHorizontalRotationInput() const
 
 void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value)
 {
-	if(Subsystem)
+	if (Subsystem)
 	{
 		CanProcessMovementInput = Value;
 	}
@@ -284,7 +284,7 @@ void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsyst
 
 void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value)
 {
-	if(Subsystem)
+	if (Subsystem)
 	{
 		CanProcessRotationInput = Value;
 	}
@@ -304,7 +304,7 @@ bool APlayerCharacterController::CanInteract() const
 void APlayerCharacterController::StartSprinting()
 {
 	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->SprintSpeed;
-	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(true, this);	
 	}
@@ -313,7 +313,7 @@ void APlayerCharacterController::StartSprinting()
 void APlayerCharacterController::StopSprinting()
 {
 	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->WalkSpeed;
-	if(UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
 	{
 		PlayerCharacterMovement->SetIsSprinting(false, this);	
 	}
@@ -345,9 +345,9 @@ FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
 
 void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
-		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			Subsystem->UnregisterPlayerController(this);
 		}

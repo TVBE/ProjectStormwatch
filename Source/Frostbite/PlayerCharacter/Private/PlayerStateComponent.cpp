@@ -8,7 +8,7 @@ void UPlayerStateComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 	
-	if(ConfigurationAsset.IsNull()) {return; }
+	if (ConfigurationAsset.IsNull()) {return; }
 	Configuration = ConfigurationAsset.LoadSynchronous();
 }
 
@@ -17,7 +17,7 @@ void UPlayerStateComponent::BeginPlay()
 	Super::BeginPlay();
 
 	/** Start updating the player state. */
-	if(GetWorld())
+	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(StateTimer, this, &UPlayerStateComponent::UpdatePlayerState, 1.0f, true);	
 	}
@@ -34,7 +34,7 @@ void UPlayerStateComponent::ResetPlayerState()
 float UPlayerStateComponent::IncrementValue(float& Property, float Value)
 {
 	Value = FMath::Clamp(Value, 0, 100);
-	if(Property + Value > 100)
+	if (Property + Value > 100)
 	{
 		Property = 100;
 	}
@@ -48,7 +48,7 @@ float UPlayerStateComponent::IncrementValue(float& Property, float Value)
 float UPlayerStateComponent::DecrementValue(float& Property, float Value)
 {
 	Value = FMath::Clamp(Value, 0, 100);
-	if(Property < Value)
+	if (Property < Value)
 	{
 		Property = 0;
 	}
@@ -71,25 +71,25 @@ float UPlayerStateComponent::IncrementStateValue(const EPlayerStateValue Type, c
 	switch(Type)
 	{
 	case EPlayerStateValue::Pain:
-		if(Value <= 0.0f) {return Pain; }
+		if (Value <= 0.0f) {return Pain; }
 		IncrementValue(Pain, Value);
 		OnPainChanged.Broadcast(Pain);
 		return Pain;
 		
 	case EPlayerStateValue::Exertion:
-		if(Value <= 0.0f) {return Exertion; }
+		if (Value <= 0.0f) {return Exertion; }
 		IncrementValue(Exertion, Value);
 		OnExertionChanged.Broadcast(Exertion);
 		return Exertion;
 		
 	case EPlayerStateValue::Fear:
-		if(Value <= 0.0f) {return Fear; }
+		if (Value <= 0.0f) {return Fear; }
 		IncrementValue(Fear, Value);
 		OnFearChanged.Broadcast(Fear);
 		return Fear;
 		
 	case EPlayerStateValue::Vigilence:
-		if(Value <= 0.0f) {return Vigilance; }
+		if (Value <= 0.0f) {return Vigilance; }
 		IncrementValue(Vigilance, Value);
 		OnVigilanceChanged.Broadcast(Vigilance);
 		return Vigilance;
@@ -102,25 +102,25 @@ float UPlayerStateComponent::DecrementStateValue(const EPlayerStateValue Type, c
 	switch(Type)
 	{
 	case EPlayerStateValue::Pain:
-		if(Value <= 0.0f) {return Pain; }
+		if (Value <= 0.0f) {return Pain; }
 		DecrementValue(Pain, Value);
 		OnPainChanged.Broadcast(Pain);
 		return Pain;
 		
 	case EPlayerStateValue::Exertion:
-		if(Value <= 0.0f) {return Exertion; }
+		if (Value <= 0.0f) {return Exertion; }
 		DecrementValue(Exertion, Value);
 		OnExertionChanged.Broadcast(Exertion);
 		return Exertion;
 		
 	case EPlayerStateValue::Fear:
-		if(Value <= 0.0f) {return Fear; }
+		if (Value <= 0.0f) {return Fear; }
 		DecrementValue(Fear, Value);
 		OnFearChanged.Broadcast(Fear);
 		return Fear;
 		
 	case EPlayerStateValue::Vigilence:
-		if(Value <= 0.0f) {return Vigilance; }
+		if (Value <= 0.0f) {return Vigilance; }
 		DecrementValue(Vigilance, Value);
 		OnVigilanceChanged.Broadcast(Vigilance);
 		return Vigilance;
@@ -148,7 +148,7 @@ float UPlayerStateComponent::SetStateValue(const EPlayerStateValue Type, const f
 		return Fear;
 		
 	case EPlayerStateValue::Vigilence:
-		if(Value <= 0.0f) {return Vigilance; }
+		if (Value <= 0.0f) {return Vigilance; }
 		SetValue(Vigilance, Value);
 		OnVigilanceChanged.Broadcast(Vigilance);
 		return Vigilance;

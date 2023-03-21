@@ -46,11 +46,11 @@ void APlayerCharacter::PostInitProperties()
 {
 	ValidateConfigurationAssets();
 	
-	if(UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
+	if (UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
 	{
 		PlayerCharacterMovement = PlayerCharacterMovementComponent;
 	}
-	else if(GEngine)
+	else if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
 	}
@@ -65,9 +65,9 @@ void APlayerCharacter::PostInitProperties()
 void APlayerCharacter::OnConstruction(const FTransform& Transform)
 {
 	/** Registers this player character to the player character subsystem. */
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
-		if(UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerCharacter(this);
 		}
@@ -84,7 +84,7 @@ void APlayerCharacter::PostInitializeComponents()
 	ApplyConfigurationAssets();
 
 	/** Subscribe to the OnLanding event of the player character movement component. */
-	if(PlayerCharacterMovement)
+	if (PlayerCharacterMovement)
 	{
 		PlayerCharacterMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
 	}
@@ -96,9 +96,9 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	/** Notify the GameMode that the character has Begun Play. */
-	if(GetWorld() && GetWorld()->GetAuthGameMode())
+	if (GetWorld() && GetWorld()->GetAuthGameMode())
 	{
-		if(AFrostbiteGameMode* GameMode {Cast<AFrostbiteGameMode>(GetWorld()->GetAuthGameMode())})
+		if (AFrostbiteGameMode* GameMode {Cast<AFrostbiteGameMode>(GetWorld()->GetAuthGameMode())})
 		{
 			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
@@ -114,7 +114,7 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if(NewController)
+	if (NewController)
 	{
 		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
 	}
@@ -138,9 +138,9 @@ void APlayerCharacter::UpdateYawDelta()
 void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 {
 	const UCharacterMovementComponent* MovementComponent {GetCharacterMovement()};
-	if(MovementComponent && ((MovementComponent->IsMovingOnGround() && abs(GetVelocity().X) > 1) || MovementComponent->IsFalling()))
+	if (MovementComponent && ((MovementComponent->IsMovingOnGround() && abs(GetVelocity().X) > 1) || MovementComponent->IsFalling()))
 	{
-		if(GetController())
+		if (GetController())
 		{
 			SetActorRotation(FRotator(0, PlayerCharacterController->GetPlayerControlRotation().Yaw, 0));
 		}
@@ -150,15 +150,15 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 	{
 		constexpr float YawDeltaThreshold {30.0f};
 		
-		if(IsTurningInPlace)
+		if (IsTurningInPlace)
 		{
 			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, 45.0f), 0));
 		}
-		if(FMath::IsNearlyEqual(YawDelta, 0, 0.5f))
+		if (FMath::IsNearlyEqual(YawDelta, 0, 0.5f))
 		{
 			IsTurningInPlace = false;
 		}
-		else if(abs(YawDelta) > YawDeltaThreshold)
+		else if (abs(YawDelta) > YawDeltaThreshold)
 		{
 			IsTurningInPlace = true;
 		}
@@ -168,7 +168,7 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const float DeltaTime, const float Factor, const float Clamp)
 {
 	float Rotation {YawDelta * Factor * DeltaTime};
-	if(abs(YawDelta) >= Clamp)
+	if (abs(YawDelta) >= Clamp)
 	{
 		float RotationOvershoot {abs(YawDelta) - Clamp};
 		RotationOvershoot = (YawDelta >= 0.0) ? RotationOvershoot : -RotationOvershoot;
@@ -180,7 +180,7 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const
 #if WITH_EDITOR
 void APlayerCharacter::ValidateObject(const UObject* Object, const FString ObjectName)
 {
-	if(!Object)
+	if (!Object)
 	{
 		UE_LOG(LogPlayerCharacter, Error, TEXT("%s was not properly initialized during the construction of the PlayerCharacter."), *ObjectName); \
 	}
@@ -190,10 +190,10 @@ void APlayerCharacter::ValidateObject(const UObject* Object, const FString Objec
 void APlayerCharacter::ValidateConfigurationAssets()
 {
 	/** If the configuration properties are not properly serialized, construct a default instance instead. */
-	if(!CharacterConfiguration)
+	if (!CharacterConfiguration)
 	{
 		CharacterConfiguration = NewObject<UPlayerCharacterConfiguration>();
-		if(GIsEditor && FApp::IsGame())
+		if (GIsEditor && FApp::IsGame())
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
 		}
@@ -216,9 +216,9 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 		break;
 	}
 
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
-		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			Subsystem->SetPlayerMovementInputLock(true);
 			Subsystem->SetPlayerRotationInputLock(true);
@@ -232,11 +232,11 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 
 void APlayerCharacter::HandleLandingEnd()
 {
-	if(PlayerCharacterController)
+	if (PlayerCharacterController)
 	{
-		if(const UWorld* World {GetWorld()})
+		if (const UWorld* World {GetWorld()})
 		{
-			if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+			if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 			{
 				Subsystem->SetPlayerMovementInputLock(false);
 				Subsystem->SetPlayerRotationInputLock(false);
@@ -247,7 +247,7 @@ void APlayerCharacter::HandleLandingEnd()
 
 void APlayerCharacter::ApplyConfigurationAssets()
 {
-	if(CharacterConfiguration)
+	if (CharacterConfiguration)
 	{
 		CharacterConfiguration->ApplyToPlayerCharacter(this);
 	}
@@ -291,9 +291,9 @@ bool APlayerCharacter::CanStandUp() const
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
-		if(UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
 		{
 			Subsystem->UnregisterPlayerCharacter(this);
 		}
@@ -303,13 +303,13 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter)
 {
-	if(!PlayerCharacter)
+	if (!PlayerCharacter)
 	{
 		return;
 	}
 	
 	// Set character's movement component properties.
-	if(UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
+	if (UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
@@ -318,12 +318,12 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacte
 
 void UPlayerCharacterConfiguration::ApplyToPlayerController(APlayerController* PlayerController)
 {
-	if(!PlayerController)
+	if (!PlayerController)
 	{
 		return;
 	}
 
-	if(APlayerCharacterController* CharacterController {Cast<APlayerCharacterController>(PlayerController)})
+	if (APlayerCharacterController* CharacterController {Cast<APlayerCharacterController>(PlayerController)})
 	{
 		CharacterController->CharacterConfiguration = this;
 	}

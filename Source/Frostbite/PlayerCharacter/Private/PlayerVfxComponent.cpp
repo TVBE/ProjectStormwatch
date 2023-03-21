@@ -19,16 +19,16 @@ void UPlayerVfxComponent::OnRegister()
 	Super::OnRegister();
 	
 	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	if(!PlayerCharacter) {return ;}
+	if (!PlayerCharacter) { return ;}
 	
 	LeftFootEmitter = Cast<UNiagaraComponent>(GetOwner()->AddComponentByClass(UNiagaraComponent::StaticClass(), false, FTransform(), false));
-	if(!LeftFootEmitter) {return; }
+	if (!LeftFootEmitter) { return; }
 	LeftFootEmitter->AttachToComponent(PlayerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "foot_l_socket");
 	LeftFootEmitter->bAutoActivate = false;
 	LeftFootEmitter->bEditableWhenInherited = false;
 
 	RightFootEmitter = Cast<UNiagaraComponent>(GetOwner()->AddComponentByClass(UNiagaraComponent::StaticClass(), false, FTransform(), false));
-	if(!RightFootEmitter) {return; }
+	if (!RightFootEmitter) { return; }
 	RightFootEmitter->AttachToComponent(PlayerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "foot_r_socket");
 	RightFootEmitter->bAutoActivate = false;
 	RightFootEmitter->bEditableWhenInherited = false;
@@ -55,13 +55,13 @@ void UPlayerVfxComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UPlayerVfxComponent::CleanupComponent()
 {
-	if(LeftFootEmitter)
+	if (LeftFootEmitter)
 	{
 		LeftFootEmitter->Deactivate();
 		LeftFootEmitter->DestroyComponent();
 		LeftFootEmitter = nullptr;
 	}
-	if(RightFootEmitter)
+	if (RightFootEmitter)
 	{
 		RightFootEmitter->Deactivate();
 		RightFootEmitter->DestroyComponent();

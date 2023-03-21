@@ -22,7 +22,7 @@ void ANightstalkerController::Tick(float DeltaSeconds)
 
 void ANightstalkerController::SwitchBehaviorMode(const EBehaviorMode Mode)
 {
-	if(BehaviorMode == Mode)
+	if (BehaviorMode == Mode)
 	{
 		return;
 	}
@@ -30,7 +30,7 @@ void ANightstalkerController::SwitchBehaviorMode(const EBehaviorMode Mode)
 	
 	FTimerManager& TimerManager {GetWorldTimerManager()};
 	/** Clear the update timer. */
-	if(BehaviorUpdateTimerHandle.IsValid())
+	if (BehaviorUpdateTimerHandle.IsValid())
 	{
 		TimerManager.ClearTimer(BehaviorUpdateTimerHandle);
 	}

@@ -28,11 +28,11 @@ void UExteriorWindAudioComponent::InitializeComponent()
 	PopulateTerrainTraceVectors(TerrainTraceEndVectors, WindDirection, CollisionTraceLength, 8);
 	PopulateOcclusionTraceVectors(OcclusionTraceStartVectors, OcclusionTraceEndVectors, WindDirection, CollisionTraceLength, 250);
 	
-	if(GetOwner())
+	if (GetOwner())
 	{
 		AudioComponent = static_cast<UAudioComponent*>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), true));
 	}
-	if(AudioComponent && MetaSoundAsset)
+	if (AudioComponent && MetaSoundAsset)
 	{
 		AudioComponent->SetSound(MetaSoundAsset.LoadSynchronous());
 	}
@@ -42,7 +42,7 @@ void UExteriorWindAudioComponent::InitializeComponent()
 
 void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 {
-	if(WindDirection == Rotation)
+	if (WindDirection == Rotation)
 	{
 		return;
 	}
@@ -56,10 +56,10 @@ void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if(GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 62500)
+	if (GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 62500)
 	{
 		LastPollLocation = GetOwner()->GetActorLocation();
-		if(GetOwner())
+		if (GetOwner())
 		{
 			const TArray<float> TerrainTraceResults {DoTerrainCollisionQuery(LastPollLocation)};
 			const TArray<float> OcclusionTraceResults {DoOcclusionCollisionQuery(LastPollLocation)};
@@ -185,9 +185,9 @@ void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>&
 /** Called when before the object is destroyed. */
 void UExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if(AudioComponent)
+	if (AudioComponent)
 	{
-		if(AudioComponent->IsPlaying())
+		if (AudioComponent->IsPlaying())
 		{
 			AudioComponent->Stop();
 		}

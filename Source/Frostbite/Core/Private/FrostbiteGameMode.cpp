@@ -7,7 +7,7 @@
 
 void AFrostbiteGameMode::NotifyPlayerCharacterBeginPlay(APlayerCharacter* Character)
 {
-	if(Character)
+	if (Character)
 	{
 		IsPlayerActive = true;
 		OnPlayerSpawn(Character);

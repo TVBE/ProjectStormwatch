@@ -20,7 +20,7 @@ void UPlayerAudioComponent::OnRegister()
 	Super::OnRegister();
 	
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	if(!PlayerCharacter) {return; }
+	if (!PlayerCharacter) {return; }
 
 	/** Construct Audio Component. */
 	BodyAudioComponent = Cast<UAudioComponent>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), false));
@@ -43,9 +43,9 @@ void UPlayerAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UPlayerAudioComponent::CleanupComponent()
 {
-	if(BodyAudioComponent)
+	if (BodyAudioComponent)
 	{
-		if(BodyAudioComponent->IsPlaying())
+		if (BodyAudioComponent->IsPlaying())
 		{
 			BodyAudioComponent->Stop();
 		}

@@ -24,10 +24,10 @@ void UPlayerFlashlightComponent::OnRegister()
 	Super::OnRegister();
 
 	/** Load the configuration asset. If no configuration asset is provided, construct a default instance of the configuration asset instead. */
-	if(!Configuration)
+	if (!Configuration)
 	{
 		Configuration = ConfigurationAsset.LoadSynchronous();
-		if(!Configuration)
+		if (!Configuration)
 		{
 			Configuration = NewObject<UPlayerFlashlightConfiguration>();
 			Configuration->AddToRoot();
@@ -36,15 +36,15 @@ void UPlayerFlashlightComponent::OnRegister()
 	
 	/** Get a pointer to the member components of the PlayerCharacter this flashlight is part of. */
 	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	if(!PlayerCharacter) {return; }
+	if (!PlayerCharacter) { return; }
 	Mesh = PlayerCharacter->GetMesh();
 	Camera = PlayerCharacter->GetCamera();
 	Movement = PlayerCharacter->GetPlayerCharacterMovement();
-	if(!Mesh || !Camera || !Movement) {return; }
+	if (!Mesh || !Camera || !Movement) { return; }
 	
 	/** Construct FlashlightSpringArm. */
 	FlashlightSpringArm = Cast<USpringArmComponent>(GetOwner()->AddComponentByClass(USpringArmComponent::StaticClass(), false, FTransform(), false));
-	if(!FlashlightSpringArm) {return; }
+	if (!FlashlightSpringArm) { return; }
 
 	/** Place the spring arm at the right location depending on the attachment context of the flashlight configuration asset. */
 	FVector RelativeLocation;
@@ -70,7 +70,7 @@ void UPlayerFlashlightComponent::OnRegister()
 
 	/** Construct Flashlight. */
 	Flashlight = Cast<USpotLightComponent>(GetOwner()->AddComponentByClass(USpotLightComponent::StaticClass(), false, FTransform(), false));
-	if(!Flashlight) {return; }
+	if (!Flashlight) { return; }
 	Flashlight->AttachToComponent(FlashlightSpringArm, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Flashlight->SetVisibility(false);
 
@@ -81,7 +81,7 @@ void UPlayerFlashlightComponent::OnRegister()
 /** Called when the game starts */
 void UPlayerFlashlightComponent::BeginPlay()
 {
-	if(!Mesh || !Camera || !Movement) {return; }
+	if (!Mesh || !Camera || !Movement) { return; }
 	Super::BeginPlay();
 }
 
@@ -91,7 +91,7 @@ void UPlayerFlashlightComponent::BeginPlay()
 void UPlayerFlashlightComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if(!Mesh || !Camera || !Movement || !Flashlight || !FlashlightSpringArm)
+	if (!Mesh || !Camera || !Movement || !Flashlight || !FlashlightSpringArm)
 	{
 		SetComponentTickEnabled(false);
 		SetFlashlightEnabled(false);
@@ -114,7 +114,7 @@ void UPlayerFlashlightComponent::TickComponent(float DeltaTime, ELevelTick TickT
 void UPlayerFlashlightComponent::UpdateMovementAlpha(const float DeltaTime)
 {
 	const bool IsMoving {Movement->Velocity.Length() > 1};
-	if(MovementAlpha != static_cast<int8>(IsMoving))
+	if (MovementAlpha != static_cast<int8>(IsMoving))
 	{
 			constexpr float InterpolationSpeed {4};
 			MovementAlpha = FMath::FInterpTo(MovementAlpha, IsMoving, DeltaTime, InterpolationSpeed);
@@ -129,7 +129,7 @@ FRotator UPlayerFlashlightComponent::GetFlashlightFocusRotation() const
 	FVector TraceEnd {Camera->GetForwardVector() * 5000 + TraceStart};
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
-	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
+	if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
 	{
 		Target = HitResult.ImpactPoint;
 	}
@@ -189,7 +189,7 @@ FRotator UPlayerFlashlightComponent::GetFlashlightSwayRotation() const
 		break;
 	}
 		
-	if(const UWorld* World {GetWorld()})
+	if (const UWorld* World {GetWorld()})
 	{
 		const double GameTime {World->GetTimeSeconds()};
 			
@@ -247,7 +247,7 @@ FRotator UPlayerFlashlightComponent::GetSocketRotationWithOffset(const FName Soc
 
 void UPlayerFlashlightComponent::SetFlashlightEnabled(const bool Value)
 {
-	if(Flashlight && FlashlightSpringArm)
+	if (Flashlight && FlashlightSpringArm)
 	{
 		SetComponentTickEnabled(Value);
 		FlashlightSpringArm->SetComponentTickEnabled(Value);
@@ -257,7 +257,7 @@ void UPlayerFlashlightComponent::SetFlashlightEnabled(const bool Value)
 
 bool UPlayerFlashlightComponent::IsFlashlightEnabled() const
 {
-	if(Flashlight)
+	if (Flashlight)
 	{
 		return Flashlight->IsVisible();
 	}
@@ -266,13 +266,13 @@ bool UPlayerFlashlightComponent::IsFlashlightEnabled() const
 
 void UPlayerFlashlightComponent::CleanupComponent()
 {
-	if(Flashlight)
+	if (Flashlight)
 	{
 		Flashlight->SetVisibility(false);
 		Flashlight->DestroyComponent();
 		Flashlight = nullptr;
 	}
-	if(FlashlightSpringArm)
+	if (FlashlightSpringArm)
 	{
 		FlashlightSpringArm->SetComponentTickEnabled(false);
 		FlashlightSpringArm->DestroyComponent();
@@ -301,7 +301,7 @@ void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFla
 	USpotLightComponent* Flashlight {Component->GetFlashlight()};
 	USpringArmComponent* FlashlightSpringArm {Component->GetFlashlightSpringArm()};
 	
-	if(Flashlight && FlashlightSpringArm)
+	if (Flashlight && FlashlightSpringArm)
 	{
 		Flashlight->Intensity = Intensity;
 		Flashlight->LightColor = LightColor;
@@ -312,11 +312,11 @@ void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFla
 		Flashlight->VolumetricScatteringIntensity = VolumetricScatteringIntensity;
 		Flashlight->SetUseInverseSquaredFalloff(UseInverseSquaredFalloff);
 		Flashlight->LightFalloffExponent = LightFalloffExponent;
-		if(LightFunctionMaterial)
+		if (LightFunctionMaterial)
 		{
 			Flashlight->LightFunctionMaterial = LightFunctionMaterial;
 		}
-		if(IESTexture)
+		if (IESTexture)
 		{
 			Flashlight->IESTexture = IESTexture;
 		}
