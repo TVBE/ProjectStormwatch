@@ -122,10 +122,10 @@ private:
 	void UpdateYawDelta();
 	
 	/** Returns a scaled yaw delta value that is used for turn-in-place rotation.
-	 *	@YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
-	 *	@DeltaTime The frame time in seconds.
-	 *	@Factor A multiplier that affects the rotation speed.
-	 *	@Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
+	 *	@Param YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
+	 *	@Param DeltaTime The frame time in seconds.
+	 *	@Param Factor A multiplier that affects the rotation speed.
+	 *	@Param Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
 	 *	@Return A float value representing a rotator's yaw axis.
 	 */
 	static float CalculateTurnInPlaceRotation (const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
@@ -140,8 +140,8 @@ private:
 
 #if WITH_EDITOR
 	/** Checks whether an object is properly initialized.
-	 *	@Object The object to validate.
-	 *	@Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
+	 *	@Param Object The object to validate.
+	 *	@Param Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
 	 */
 	static void ValidateObject(const UObject* Object, const FString ObjectName);
 #endif

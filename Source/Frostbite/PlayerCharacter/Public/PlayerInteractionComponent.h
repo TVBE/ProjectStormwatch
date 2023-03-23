@@ -73,7 +73,7 @@ protected:
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 	virtual void BeginPlay() override;
-	
+	 
 	/** Checks if any interactable objects are in front of the player. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Check For Interactable Objects", BlueprintProtected))
 	AActor* CheckForInteractableActor();
