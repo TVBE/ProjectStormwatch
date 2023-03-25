@@ -60,6 +60,18 @@ private:
 	UPROPERTY()
 	double CameraLeanRoll {0.0};
 
+	/** The camera sway rotation. */
+	UPROPERTY()
+	FRotator Sway {FRotator()};
+
+	/** The camera centripetal rotation. */
+	UPROPERTY()
+	FRotator CentripetalRotation {FRotator()};
+	
+	/** The camera socket rotation. */
+	UPROPERTY()
+	FRotator SocketRotation {FRotator()};
+
 public:	
 	// Sets default values for this component's properties
 	UPlayerCameraController();
@@ -87,13 +99,13 @@ private:
 	void UpdateCameraRotation(const UCameraComponent& Camera, const float DeltaTime);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
-	FRotator GetCameraSwayRotation();
+	void GetCameraSwayRotation(FRotator& Rotator);
 
 	/** Returns a rotation offset for the camera when the player rotates while sprinting. Used to simulate leaning when running into bends. */
-	FRotator GetCameraCentripetalRotation();
+	void GetCameraCentripetalRotation(FRotator& Rotator);
 
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
-	FRotator GetScaledHeadSocketDeltaRotation(const float DeltaTime);
+	void GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
 	
 	/** Updates the camera's field of view according to the Player's movement. */
 	void UpdateCameraFieldOfView(UCameraComponent& Camera, const float DeltaTime);
@@ -222,23 +234,37 @@ public:
 
 	/** The maximum allowed centripetal rotation. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
-		Meta = (DisplayName = "Max Centripetal Rotation Angle", ClampMin = "0.0", ClampMax = "45.0", UIMin = "0.0", UIMax = "45.0", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+		Meta = (DisplayName = "Max Centripetal Rotation Angle", ClampMin = "0.0", ClampMax = "45.0", UIMin = "0.0", UIMax = "45.0",
+			EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
 	float MaxCentripetalRotation {14.f};
 
 	/** The intensity of the lean effect when the player is rotating their camera while sprinting. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
-		Meta = (DisplayName = "Centripetal Rotation Intensity", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+		Meta = (DisplayName = "Centripetal Rotation Intensity", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0",
+			EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
 	float CentripetalRotationIntensity {2.f};
 
 	/** Multiplier for the centripetal rotation caused by lateral velocity of the player. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
-		Meta = (DisplayName = "Velocity Based Centripetal Rotation", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0",  EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+		Meta = (DisplayName = "Velocity Based Centripetal Rotation", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0",
+			EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
 	float VelocityCentripetalRotation {1.f};
 
 	/** Multiplier for the centripetal rotation caused by rotation of the player. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
-		Meta = (DisplayName = "Rotation Based Centripetal Rotation", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
-	float RotationCentripetalRotation {2.f};	
+		Meta = (DisplayName = "Rotation Based Centripetal Rotation", ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0",
+			EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float RotationCentripetalRotation {2.f};
+
+	/** When enabled, centripetal rotation will also be applied when not sprinting. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
+		Meta = (DisplayName = "Sprint Only", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	bool IsCentripetalRotationSprintOnly {true};
+
+	/** Multiplier for the centripetal rotation when not sprinting. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CentripetalRotation",
+		Meta = (DisplayName = "Sprint Multiplier", EditCondition = "IsCentripetalRotationEnabled", EditConditionHides))
+	float CentripetalRotationNonSprintMultiplier {1.25f};
  
 	/** Constructor with default values. */
 	UPlayerCameraConfiguration()

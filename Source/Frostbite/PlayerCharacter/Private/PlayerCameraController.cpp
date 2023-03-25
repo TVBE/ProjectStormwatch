@@ -148,21 +148,35 @@ void UPlayerCameraController::UpdateCameraLocation(UCameraComponent& Camera)
 /** Called by TickComponent. */
 void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent&, const float DeltaTime)
 {
-	const FRotator Sway {Configuration->IsCameraSwayEnabled ? GetCameraSwayRotation() : FRotator()};
-	const FRotator CentripetalRotation {Configuration->IsCentripetalRotationEnabled ? GetCameraCentripetalRotation() : FRotator()};
-	FRotator SocketRotation {FRotator()};
+	if (Configuration->IsCameraSwayEnabled)
+	{
+		GetCameraSwayRotation(Sway);
+	}
+	
+	if (Configuration->IsCentripetalRotationEnabled)
+	{
+		GetCameraCentripetalRotation(CentripetalRotation);
+	}
+	
 	if (!PlayerCharacter->GetIsTurningInPlace())
 	{
-		SocketRotation = GetScaledHeadSocketDeltaRotation(DeltaTime);
+		GetScaledHeadSocketDeltaRotation(SocketRotation, DeltaTime);
 	}
+	else
+	{
+		SocketRotation.Pitch = 0.0f;
+		SocketRotation.Roll = 0.0f;
+		SocketRotation.Yaw = 0.0f;
+	}
+	
 		PlayerCharacter->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + PlayerCharacterController->GetPlayerControlRotation());
 }
 
 /** Called by UpdateCameraRotation. */
-FRotator UPlayerCameraController::GetCameraSwayRotation()
+void UPlayerCameraController::GetCameraSwayRotation(FRotator& Rotator)
 {
 	/** Get the current ground movement type from the PlayerController. */
-	if (!PlayerCharacter->GetPlayerCharacterMovement()) { return FRotator(); }
+	if (!PlayerCharacter->GetPlayerCharacterMovement()) { return; }
 	
 	const EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
 	/** Get a oscillation multiplier value according to the ground movement type. */
@@ -187,39 +201,41 @@ FRotator UPlayerCameraController::GetCameraSwayRotation()
 	/** Interpolate between the current camera roll and the target camera roll. */
 	CameraShakeRoll = FMath::FInterpTo(CameraShakeRoll, TargetRollOffset, GetWorld()->GetDeltaSeconds(), 3.0);
 	
-	/** Return a rotator with the camera roll offset. */
-	return FRotator(0, 0, CameraShakeRoll);
+	Rotator.Roll = CameraShakeRoll;
 }
 
 /** Called by UpdateCameraRotation. */
-FRotator UPlayerCameraController::GetCameraCentripetalRotation()
+void UPlayerCameraController::GetCameraCentripetalRotation(FRotator& Rotator)
 {
-	FRotator Rotation {FRotator()};
+	const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()};
+	if (!CharacterMovement) { return; }
+	if (Configuration->IsCentripetalRotationSprintOnly && !CharacterMovement->GetIsSprinting()) { return; }
 	
-	double TargetRoll {0.0};
-	if (PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
-	{
-		/** When the player is moving laterally while sprinting, we want the camera to lean into that direction. */
-		const float LateralVelocityMultiplier {0.002353f * Configuration->VelocityCentripetalRotation};
-		const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
-		const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
-		const double LateralVelocityRoll {LocalVelocity.Y * LateralVelocityMultiplier};
+	/** When the player is moving laterally while sprinting, we want the camera to lean into that direction. */
+	const float LateralVelocityMultiplier {0.002353f * Configuration->VelocityCentripetalRotation};
+	const float SprintMultiplier {Configuration->IsCentripetalRotationSprintOnly ? Configuration->CentripetalRotationNonSprintMultiplier : 1.0f};
+	const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};
+	const FVector LocalVelocity {PlayerCharacter->GetActorTransform().InverseTransformVector(WorldVelocity)};
+	const double LateralVelocityRoll {LocalVelocity.Y * LateralVelocityMultiplier * SprintMultiplier};
 		
-		/** When the player is rotating horizontally while sprinting, we want the camera to lean into that direction. */
-		const float HorizontalRotationRoll{FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * Configuration->RotationCentripetalRotation,
-					-Configuration->MaxCentripetalRotation, Configuration->MaxCentripetalRotation)};
-
-		TargetRoll = LateralVelocityRoll + HorizontalRotationRoll;
+	/** When the player is rotating horizontally while sprinting, we want the camera to lean into that direction. */
+	float HorizontalRotationRoll {0.0f};
+	if (CharacterMovement->GetIsSprinting())
+	{
+		HorizontalRotationRoll = FMath::Clamp(PlayerCharacterController->GetHorizontalRotationInput() * Configuration->RotationCentripetalRotation,
+				-Configuration->MaxCentripetalRotation, Configuration->MaxCentripetalRotation);
 	}
+	
+	const double TargetRoll {LateralVelocityRoll + HorizontalRotationRoll};
+	
 	/** Interpolate the roll value. */
 	CameraLeanRoll = FMath::FInterpTo(CameraLeanRoll, TargetRoll, GetWorld()->GetDeltaSeconds(), 4.f);
-	Rotation = (FRotator(0, 0, CameraLeanRoll));
-	return Rotation;
+	Rotator.Roll = CameraLeanRoll;
 }
 
-FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float DeltaTime)
+void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime)
 {
-	if (!PlayerCharacter->GetPlayerCharacterMovement()) { return FRotator(); }
+	if (!PlayerCharacter->GetPlayerCharacterMovement()) { return; }
 	
 	/** Get the current ground movement type from the PlayerController. */
 	const EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
@@ -247,7 +263,7 @@ FRotator UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const float D
 	{
 		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
 	}
-	return InterpolatedHeadSocketRotation;
+	Rotator = InterpolatedHeadSocketRotation;
 }
 
 /** Called by TickComponent. */
