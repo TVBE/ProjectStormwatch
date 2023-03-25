@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryItem.generated.h"
+#include "InventoryObjectInterface.generated.h"
 
 UINTERFACE(MinimalAPI)
 class UInventoryItem : public UInterface
@@ -13,7 +13,7 @@ class UInventoryItem : public UInterface
 	GENERATED_BODY()
 };
 
-class FROSTBITE_API_API IInventoryItem
+class FROSTBITE_API IInventoryItem
 {
 	GENERATED_BODY()
 
