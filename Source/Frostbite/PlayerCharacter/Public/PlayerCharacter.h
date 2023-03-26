@@ -19,9 +19,9 @@ class UPlayerCameraController;
 class UPlayerFlashlightComponent;
 class UPlayerCharacterMovementComponent;
 class UNiagaraComponent;
-enum class EFoot : uint8;
+enum class ELeftRight : uint8;
 enum class EPlayerLandingType : uint8;
-struct FFootstepData;
+struct FStepData;
 struct FTimerHandle;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (PlayerCharacter))

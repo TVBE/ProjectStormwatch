@@ -22,9 +22,9 @@ bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 
 void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
-	if (Velocity.Z < -1000)
+	if (Velocity.Z < -800)
 	{
-		if (Velocity.Z < -1300)
+		if (Velocity.Z < -1000)
 		{
 			OnLanding.Broadcast(EPlayerLandingType::Heavy);
 		}

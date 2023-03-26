@@ -3,17 +3,17 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerCharacterUtilities.h"
-#include "FootstepData.h"
+#include "StepData.h"
 
-FFootstepData UPlayerCharacterUtilities::GetFootstepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
+FStepData UPlayerCharacterUtilities::GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World)
 	{
-		return FFootstepData();
+		return FStepData();
 	}
 	
-	FFootstepData FootstepData {FFootstepData()};
+	FStepData FootstepData {FStepData()};
 	if (Actor)
 	{
 		FVector Location {Actor->GetActorLocation()};

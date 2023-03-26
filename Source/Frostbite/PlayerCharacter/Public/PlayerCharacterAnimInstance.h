@@ -6,14 +6,15 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "FootstepData.h"
+#include "StepData.h"
 #include "PlayerCharacterAnimInstance.generated.h"
 
 class APlayerCharacter;
 class APlayerCharacterController;
 class UPlayerCharacterMovementComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFootstepDelegate, FFootstepData, FootstepData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFootstepDelegate, FStepData, FootstepData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHandstepDelegate, FStepData, HandstepData);
 
 /** The AnimInstance class is an instance of an animation asset that can be played on a skeletal mesh.
  *	This class is implemented as an Animation Blueprint, with most logic being executed through Blueprint nodes.
@@ -28,6 +29,10 @@ public:
 	/** The delegate to be broadcasted when the mesh encounters a footstep AnimNotify. */
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FFootstepDelegate OnFootstep;
+
+	/** The delegate to be broadcasted when the mesh encounters a handstep AnimNotify. */
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FFootstepDelegate OnHandstep;
 
 protected:
 	/** Booleans to be evaluated through Fast-Path in the animation state machine. All data has to be evaluated and copied over to the AnimInstance during runtime. */
@@ -106,12 +111,22 @@ protected:
 	/** Is called every frame. */
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	/** Returns step data at the specified location. */
+	void GetStepData(FStepData& StepData, const FVector Location);
+
 	/** Returns data about a footstep at the specified foot, like the object or physical material underneath the foot at the time of the footstep.
-	 *	@Foot The foot that is performing the footstep.
-	 *	@Return FootstepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
+	 *	@param Foot The foot that is performing the step.
+	 *	@Return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
 	 */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterAnimInstance", Meta = (DisplayName = "Get Footstep Data"))
-	FFootstepData GetFootstepData(EFoot Foot);
+	FStepData GetFootstepData(const ELeftRight Foot);
+
+	/** Returns data about a 'handstep' at the specified hand, like the object or physical material underneath the hand at the time of the handstep.
+	*	@Param Hand The hand that is performing the step.
+	*	@Return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep. 
+	*/
+	UFUNCTION(BlueprintPure, Category = "PlayerCharacterAnimInstance", Meta = (DisplayName = "Get Handstep Data"))
+	FStepData GetHandstepData(const ELeftRight Hand);
 
 private:
 	/** Checks the movement state of the character and updates certain state machine conditions. */

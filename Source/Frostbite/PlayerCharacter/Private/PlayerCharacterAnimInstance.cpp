@@ -62,37 +62,54 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }
 
-FFootstepData UPlayerCharacterAnimInstance::GetFootstepData(EFoot Foot)
+void UPlayerCharacterAnimInstance::GetStepData(FStepData& StepData, const FVector Location)
 {
-	FFootstepData FootstepData {FFootstepData()};
-	FootstepData.Foot = Foot;
-	const FName Socket {Foot == EFoot::Left ? "foot_l_socket" : "foot_r_socket"};
+	StepData.Location = Location;
+
+	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
+	{
+		StepData.Velocity = GetSkelMeshComponent()->GetOwner()->GetVelocity().Length();
+	}
+		
+	FHitResult HitResult;
+	FVector TraceStart = Location;
+	FVector TraceEnd = Location - FVector(0, 0, 50);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwningActor());
+	Params.bTraceComplex = false;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (GetWorld() && GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
+	{
+		StepData.Object = HitResult.GetActor();
+		StepData.PhysicalMaterial = HitResult.PhysMaterial.Get();
+	}
+}
+
+FStepData UPlayerCharacterAnimInstance::GetFootstepData(const ELeftRight Foot)
+{
+	FStepData StepData {FStepData()};
+	const FName Socket {Foot == ELeftRight::Left ? "foot_l_socket" : "foot_r_socket"};
 	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
 		FVector Location {GetSkelMeshComponent()->GetSocketLocation(Socket)};
-		FootstepData.Location = Location;
-
-		if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
-		{
-			FootstepData.Velocity = GetSkelMeshComponent()->GetOwner()->GetVelocity().Length();
-		}
-		
-		FHitResult HitResult;
-		FVector TraceStart = Location;
-		FVector TraceEnd = Location - FVector(0, 0, 50);
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(GetOwningActor());
-		Params.bTraceComplex = false;
-		Params.bReturnPhysicalMaterial = true;
-
-		if (GetWorld() && GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
-		{
-			FootstepData.Object = HitResult.GetActor();
-			FootstepData.PhysicalMaterial = HitResult.PhysMaterial.Get();
-		}
+		GetStepData(StepData, Location);
 	}
-	return FootstepData;
+	return StepData;
 }
+
+FStepData UPlayerCharacterAnimInstance::GetHandstepData(const ELeftRight Hand)
+{
+	FStepData StepData {FStepData()};
+	const FName Socket {Hand == ELeftRight::Left ? "hand_l_socket" : "hand_r_socket"};
+	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
+	{
+		FVector Location {GetSkelMeshComponent()->GetSocketLocation(Socket)};
+		GetStepData(StepData, Location);
+	}
+	return StepData;
+}
+
 /** Check the movement state of the player character, and update animation variables accordingly. */
 void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerCharacterMovementComponent& CharacterMovement)
 {

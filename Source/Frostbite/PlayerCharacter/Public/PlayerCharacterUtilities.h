@@ -20,5 +20,5 @@ class FROSTBITE_API UPlayerCharacterUtilities : public UBlueprintFunctionLibrary
 	*	@Return FootstepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
 	*/
 	UFUNCTION(BlueprintPure, Category = "FrostbiteUtilities|Character", Meta = (DisplayName = "Get Footstep Data Underneath Actor", WorldContext = "WorldContextObject"))
-	static FFootstepData GetFootstepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength);
+	static FStepData GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength);
 };
