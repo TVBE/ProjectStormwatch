@@ -6,20 +6,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicOneshotPlayer_4Voices.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicOneshotPlayer_4Voices.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicWavePlayer_16Voices.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicWavePlayer_16Voices.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicWavePlayer_4Voices.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/Waveplayers/MSP_PolyphonicWavePlayer_4Voices.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/InteractableObjectInterface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -282,7 +270,8 @@
       <workItem from="1679911985949" duration="91000" />
       <workItem from="1679912125907" duration="7780000" />
       <workItem from="1679999941329" duration="2499000" />
-      <workItem from="1680002554738" duration="9070000" />
+      <workItem from="1680002554738" duration="9920000" />
+      <workItem from="1680013100651" duration="1019000" />
     </task>
     <servers />
   </component>

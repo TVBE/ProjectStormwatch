@@ -134,9 +134,9 @@ private:
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Begin Interaction"))
-	void EventBeginInteraction(const EInteractionActionType Type);
+	void EventBeginInteraction(const EInteractionActionType Type, const UObject* Object);
     
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
-	void EventEndInteraction(const EInteractionActionType Type);
+	void EventEndInteraction(const EInteractionActionType Type, const UObject* Object);
 	
 };

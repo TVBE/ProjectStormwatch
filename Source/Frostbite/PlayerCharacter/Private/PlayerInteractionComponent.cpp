@@ -170,13 +170,29 @@ UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AA
 
 UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionType Type)
 {
-	EventBeginInteraction(Type);
+	if (!CurrentInteractableActor) {return nullptr; }
+	UObject* InteractableObject {nullptr};
+	if (CurrentInteractableActor->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
+	{
+		InteractableObject = CurrentInteractableActor;
+	}
+	else if (UActorComponent* InteractableComponent {FindInteractableComponent(CurrentInteractableActor)})
+	{
+		InteractableObject = InteractableComponent;
+	}
+
+	if (IInteractableObject* InterfaceObject {Cast<IInteractableObject>(CurrentInteractableActor)})
+	{
+		InterfaceObject->BeginInteraction(Type, GetOwner());
+	}
+	
+	EventBeginInteraction(Type, InteractableObject);
 	return nullptr;
 }
 
 UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionType Type)
 {
-	EventEndInteraction(Type);
+	// EventEndInteraction(Type);
 	return nullptr;
 }
 
@@ -185,11 +201,11 @@ void UPlayerInteractionComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-void UPlayerInteractionComponent::EventEndInteraction_Implementation(const EInteractionActionType Type)
+void UPlayerInteractionComponent::EventEndInteraction_Implementation(const EInteractionActionType Type, const UObject* Object)
 {
 }
 
-void UPlayerInteractionComponent::EventBeginInteraction_Implementation(const EInteractionActionType Type)
+void UPlayerInteractionComponent::EventBeginInteraction_Implementation(const EInteractionActionType Type, const UObject* Object)
 {
 }
 
