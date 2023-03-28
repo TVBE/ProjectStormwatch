@@ -3,6 +3,8 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerInteractionComponent.h"
+
+#include "InteractableObjectInterface.h"
 #include "PlayerCharacter.h"
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Camera/CameraComponent.h"
@@ -25,7 +27,6 @@ void UPlayerInteractionComponent::OnRegister()
 	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
 	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
 	
-	ObjectTraceQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1);
 }
 
 /** Called when the game starts. */
@@ -40,7 +41,6 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	CurrentInteractableActor = CheckForInteractableActor();
 	if (!CurrentInteractableActor) { return; }
-	UE_LOG(LogTemp, Warning, TEXT("Interactable Actor: %s"), *CurrentInteractableActor->GetActorLabel());
 }
 
 AActor* UPlayerInteractionComponent::CheckForInteractableActor()
@@ -93,15 +93,20 @@ void UPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult)
 void UPlayerInteractionComponent::PerformInteractableObjectTrace(TArray<FHitResult>& Array, const FHitResult& HitResult)
 {
 	if (!GetWorld()) { return; }
-	GetWorld()->SweepMultiByObjectType(
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+
+	GetWorld()->SweepMultiByChannel(
 		Array,
 		HitResult.ImpactPoint,
 		HitResult.ImpactPoint,
 		FQuat::Identity,
-		ObjectTraceQueryParams,
-		FCollisionShape::MakeSphere(ObjectTraceRadius)
+		ECollisionChannel::ECC_GameTraceChannel1,
+		FCollisionShape::MakeSphere(ObjectTraceRadius),
+		QueryParams
 	);
-	
+
 	if (IsDebugVisEnabled)
 	{
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, ObjectTraceRadius, 32, FColor::White, false, 0.0f, 0, 2.0f);
@@ -148,8 +153,43 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	return IsOccluded;
 }
 
+UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AActor* Actor)
+{
+	if (!Actor) { return nullptr; }
+	TSet<UActorComponent*> Components {Actor->GetComponents()};
+	if (Components.IsEmpty()) { return nullptr; }
+	for (UActorComponent* Component : Components)
+	{
+		if (Component->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
+		{
+			return Component;
+		}
+	}
+	return nullptr;
+}
+
+UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionType Type)
+{
+	EventBeginInteraction(Type);
+	return nullptr;
+}
+
+UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionType Type)
+{
+	EventEndInteraction(Type);
+	return nullptr;
+}
+
 void UPlayerInteractionComponent::OnUnregister()
 {
 	Super::OnUnregister();
+}
+
+void UPlayerInteractionComponent::EventEndInteraction_Implementation(const EInteractionActionType Type)
+{
+}
+
+void UPlayerInteractionComponent::EventBeginInteraction_Implementation(const EInteractionActionType Type)
+{
 }
 
