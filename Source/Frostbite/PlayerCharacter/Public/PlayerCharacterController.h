@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
 
+class UPlayerInteractionComponent;
 class UPlayerSubsystem;
 class APlayerCharacter;
 class UPlayerCharacterConfiguration;
@@ -39,6 +40,10 @@ protected:
 	bool IsCrouchPending {false};
  
 private:
+	/** Pointer to the interaction component of the player character. */
+	UPROPERTY()
+	UPlayerInteractionComponent* InteractionComponent;
+	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
 	bool CanProcessMovementInput {false};
@@ -54,6 +59,7 @@ private:
 	/** The interpolation speed of the player control rotation.*/
 	UPROPERTY(EditAnywhere, Category = "PlayerCharacterController|ControlRotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
+	
 
 public:
 	APlayerCharacterController();
@@ -108,6 +114,32 @@ private:
 	UFUNCTION()
 	void UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds);
 	
+	/** Checks if the player character can currently sprint. */
+	UFUNCTION()
+	bool CanCharacterSprint() const;
+	
+	/** Checks if any player actions are currently pending and tries to complete them. */
+	UFUNCTION()
+	void UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+
+	/** Checks if the player can continue with any actions they are currently performing. */
+	UFUNCTION()
+	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+
+public:
+	/** Returns whether the player controller can process movement input. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
+	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+
+	/** Returns whether the player controller can process rotation input. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
+	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+
+	/** Returns the player control rotation. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
+	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
+
+private:
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
 	void HandleHorizontalRotation(float Value);
@@ -147,29 +179,28 @@ private:
 	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
-	
-	/** Checks if the player character can currently sprint. */
+
+	/** Handles the callback for when the player has pressed the PrimaryAction button. */
 	UFUNCTION()
-	bool CanCharacterSprint() const;
-	
-	/** Checks if any player actions are currently pending and tries to complete them. */
+	void HandlePrimaryActionPressed();
+
+	/** Handles the callback for when the player has released the PrimaryAction button. */
 	UFUNCTION()
-	void UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+	void HandlePrimaryActionReleased();
 
-	/** Checks if the player can continue with any actions they are currently performing. */
+	/** Handles the callback for when the player has pressed the SecondaryAction button. */
 	UFUNCTION()
-	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+	void HandleSecondaryActionPressed();
 
-public:
-	/** Returns whether the player controller can process movement input. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
-	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+	/** Handles the callback for when the player has released the SecondaryAction button. */
+	UFUNCTION()
+	void HandleSecondaryActionReleased();
 
-	/** Returns whether the player controller can process rotation input. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
-	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+	/** Handles the callback for when the player has pressed the InventoryAction button. */
+	UFUNCTION()
+	void HandleInventoryActionPressed();
 
-	/** Returns the player control rotation. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
-	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
+	/** Handles the callback for when the player has released the InventoryAction button. */
+	UFUNCTION()
+	void HandleInventoryActionReleased();
 };
