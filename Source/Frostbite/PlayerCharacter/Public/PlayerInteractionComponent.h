@@ -11,6 +11,14 @@
 class UCameraComponent;
 struct FCollisionQueryParams;
 
+/** The interaction action type. */
+UENUM(BlueprintType)
+enum class EInteractionActionType : uint8
+{
+	Primary					UMETA(DisplayName = "Primary"),
+	Secondary				UMETA(DisplayName = "Secondary"),
+};
+
 /** PlayerCharacter component that checks for interactable objects in front of the player character. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent))
 class FROSTBITE_API UPlayerInteractionComponent : public UActorComponent
@@ -50,12 +58,13 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Current Interactable Actor", AllowPrivateAccess = "true"))
 	AActor* CurrentInteractableActor;
 
+	/** The actor that is currently being interacted with. */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
+	AActor* CurrentInteractingActor;
+
 	/** The collision query data for the camera trace. */
 	FCollisionQueryParams CameraTraceQueryParams;
-
-	/** The collision query data for the object multi sphere trace. */
-	FCollisionObjectQueryParams ObjectTraceQueryParams;
-
+	
 	/** The timer for the update function. */
 	UPROPERTY()
 	FTimerHandle UpdateTimerHandle;
@@ -68,6 +77,30 @@ public:
 	UPlayerInteractionComponent();
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	/** begins interaction with an object if possible.
+	*	@Return Whether an interaction was successfully started.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
+	UObject* BeginInteraction(const EInteractionActionType Type);
+
+	/** Ends interaction with an object if possible.
+	 *	@Return The object the interaction was ended with.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
+	UObject* EndInteraction(const EInteractionActionType Type);
+
+	/** Returns the object the interaction component is currently interacting with. */
+	UFUNCTION(BlueprintPure, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Current Interaction Object"))
+	FORCEINLINE AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
+
+	/** Returns whether there is an object in front of the player that can be interacted with. */
+	UFUNCTION(BlueprintPure, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Can Interact"))
+	FORCEINLINE bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
+
+	/** Returns a pointer to an object that is currently available for interaction. Returns a nullptr if no interactable object is in front of the player. */
+	UFUNCTION(BlueprintPure, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Get Current Interactable Actor"))
+	FORCEINLINE AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
 
 protected:
 	virtual void OnRegister() override;
@@ -79,16 +112,31 @@ protected:
 	AActor* CheckForInteractableActor();
 
 private:
+	/** Performs a line trace from the camera. */
 	UFUNCTION()
 	void PerformTraceFromCamera(FHitResult& HitResult);
 
+	/** Performs a multi sphere trace for objects that respond to the interactable trace channel. */
 	UFUNCTION()
 	void PerformInteractableObjectTrace(TArray<FHitResult>& Array, const FHitResult& HitResult);
 
+	/** Returns the closest object to the specified hit hit result from an array of hit results. */
 	UFUNCTION()
 	static AActor* GetClosestObject(const TArray<FHitResult>& Array, const FHitResult& HitResult);
 
+	/** Checks whether an actor is occluded. Is used to prevent the interaction component from highlighting objects behind walls or other objects. */
 	UFUNCTION()
 	bool IsActorOccluded(const AActor* Actor);
+
+	/** Tries to find a component that implements the IInteractableObject interface in a. specified actor.*/
+	UFUNCTION()
+	UActorComponent* FindInteractableComponent(const AActor* Actor);
+
+protected:
+	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Begin Interaction"))
+	void EventBeginInteraction(const EInteractionActionType Type);
+    
+	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
+	void EventEndInteraction(const EInteractionActionType Type);
 	
 };

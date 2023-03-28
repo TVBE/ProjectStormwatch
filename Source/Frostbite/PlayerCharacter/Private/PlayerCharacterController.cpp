@@ -8,6 +8,7 @@
 #include "PlayerFlashlightComponent.h"
 #include "LogCategories.h"
 #include "PlayerCameraController.h"
+#include "PlayerInteractionComponent.h"
 #include "PlayerSubsystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"
@@ -81,11 +82,23 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAxis(TEXT("Move Lateral"),this, &APlayerCharacterController::HandleLateralMovementInput);
 
 	InputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &APlayerCharacterController::HandleJumpActionPressed);
+	
 	InputComponent->BindAction(TEXT("Sprint"),IE_Pressed, this, &APlayerCharacterController::HandleSprintActionPressed);
 	InputComponent->BindAction(TEXT("Sprint"),IE_Released, this, &APlayerCharacterController::HandleSprintActionReleased);
+	
 	InputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &APlayerCharacterController::HandleCrouchActionPressed);
 	InputComponent->BindAction(TEXT("Crouch"), IE_Released, this, &APlayerCharacterController::HandleCrouchActionReleased);
+	
 	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &APlayerCharacterController::HandleFlashlightActionPressed);
+
+	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &APlayerCharacterController::HandlePrimaryActionPressed);
+	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &APlayerCharacterController::HandlePrimaryActionReleased);
+
+	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Pressed, this, &APlayerCharacterController::HandleSecondaryActionPressed);
+	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Released, this, &APlayerCharacterController::HandleSecondaryActionReleased);
+
+	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &APlayerCharacterController::HandleInventoryActionPressed);
+	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &APlayerCharacterController::HandleInventoryActionReleased);
 }
 
 void APlayerCharacterController::Tick(float DeltaSeconds)
@@ -150,6 +163,105 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 		}
 		StartCrouching();
 	}
+}
+
+bool APlayerCharacterController::GetHasMovementInput() const
+{
+	if (InputComponent != nullptr)
+	{
+		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
+	}
+	return 0.0;
+}
+
+float APlayerCharacterController::GetHorizontalRotationInput() const
+{
+	if (InputComponent != nullptr)
+	{
+		return InputComponent->GetAxisValue("Horizontal Rotation");
+	}
+	return 0.0;
+}
+
+void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value)
+{
+	if (Subsystem)
+	{
+		CanProcessMovementInput = Value;
+	}
+}
+
+void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value)
+{
+	if (Subsystem)
+	{
+		CanProcessRotationInput = Value;
+	}
+}
+
+bool APlayerCharacterController::CanCharacterSprint() const
+{
+	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
+			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
+}
+
+bool APlayerCharacterController::CanInteract() const
+{
+	return false; // Temp
+}
+
+void APlayerCharacterController::StartSprinting()
+{
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->SprintSpeed;
+	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+	{
+		PlayerCharacterMovement->SetIsSprinting(true, this);	
+	}
+}
+
+void APlayerCharacterController::StopSprinting()
+{
+	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->WalkSpeed;
+	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+	{
+		PlayerCharacterMovement->SetIsSprinting(false, this);	
+	}
+}
+
+void APlayerCharacterController::StartCrouching()
+{
+	GetCharacter()->Crouch();
+}
+
+void APlayerCharacterController::StopCrouching()
+{
+	// Temp
+}
+
+FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
+{
+	constexpr float TraceLength {250.f};
+	const FVector Start {this->PlayerCameraManager->GetCameraLocation()};
+	const FVector End {Start + this->PlayerCameraManager->GetActorForwardVector() * TraceLength};
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
+	{
+		return HitResult;
+	}
+	return FHitResult();
+}
+
+void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		{
+			Subsystem->UnregisterPlayerController(this);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
 }
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
@@ -256,103 +368,46 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 	}
 }
 
-bool APlayerCharacterController::GetHasMovementInput() const
+void APlayerCharacterController::HandlePrimaryActionPressed()
 {
-	if (InputComponent != nullptr)
+	if (!InteractionComponent)
 	{
-		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
-	}
-	return 0.0;
-}
-
-float APlayerCharacterController::GetHorizontalRotationInput() const
-{
-	if (InputComponent != nullptr)
-	{
-		return InputComponent->GetAxisValue("Horizontal Rotation");
-	}
-	return 0.0;
-}
-
-void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value)
-{
-	if (Subsystem)
-	{
-		CanProcessMovementInput = Value;
-	}
-}
-
-void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value)
-{
-	if (Subsystem)
-	{
-		CanProcessRotationInput = Value;
-	}
-}
-
-bool APlayerCharacterController::CanCharacterSprint() const
-{
-	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
-			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
-}
-
-bool APlayerCharacterController::CanInteract() const
-{
-	return false; // Temp
-}
-
-void APlayerCharacterController::StartSprinting()
-{
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->SprintSpeed;
-	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
-	{
-		PlayerCharacterMovement->SetIsSprinting(true, this);	
-	}
-}
-
-void APlayerCharacterController::StopSprinting()
-{
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->WalkSpeed;
-	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
-	{
-		PlayerCharacterMovement->SetIsSprinting(false, this);	
-	}
-}
-
-void APlayerCharacterController::StartCrouching()
-{
-	GetCharacter()->Crouch();
-}
-
-void APlayerCharacterController::StopCrouching()
-{
-	// Temp
-}
-
-FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
-{
-	constexpr float TraceLength {250.f};
-	const FVector Start {this->PlayerCameraManager->GetCameraLocation()};
-	const FVector End {Start + this->PlayerCameraManager->GetActorForwardVector() * TraceLength};
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
-	{
-		return HitResult;
-	}
-	return FHitResult();
-}
-
-void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (const UWorld* World {GetWorld()})
-	{
-		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if(GetPawn())
 		{
-			Subsystem->UnregisterPlayerController(this);
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
 		}
 	}
-	Super::EndPlay(EndPlayReason);
+	if (!InteractionComponent) { return; }
+	InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
+}
+
+void APlayerCharacterController::HandlePrimaryActionReleased()
+{
+	if (!InteractionComponent)
+	{
+		if(GetPawn())
+		{
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		}
+	}
+	if (!InteractionComponent) { return; }
+	InteractionComponent->EndInteraction(EInteractionActionType::Primary);
+}
+
+void APlayerCharacterController::HandleSecondaryActionPressed()
+{
+}
+
+void APlayerCharacterController::HandleSecondaryActionReleased()
+{
+}
+
+void APlayerCharacterController::HandleInventoryActionPressed()
+{
+}
+
+void APlayerCharacterController::HandleInventoryActionReleased()
+{
 }
 
 
