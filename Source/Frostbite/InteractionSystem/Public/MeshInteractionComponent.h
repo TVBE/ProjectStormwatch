@@ -43,8 +43,8 @@ private:
 	FVector InteractionWidgetOffset {FVector()};
 
 public:
-	FORCEINLINE bool BeginInteraction_Implementation(const EInteractionActionType Type, const AActor* Interactor) { return false; }
-	FORCEINLINE bool EndInteraction_Implementation(const EInteractionActionType Type, const AActor* Interactor) { return false; }
+	FORCEINLINE bool Use_Implementation(const AActor* Interactor) { return false; }
+	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) { return false; }
 	FORCEINLINE EInteractionType GetInteractionType_Implementation() const { return InteractionType; }
 	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const { return InteractionTriggerType; }
 	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const { return InteractionHandType; }

@@ -35,8 +35,7 @@ enum class EInteractionHandType : uint8
 	TwoHanded			UMETA(DisplayName = "Two Handed"),
 };
 
-/** C++ implementable interface. */
-UINTERFACE(Blueprintable)
+UINTERFACE(Blueprintable, Meta = (DisplayName = "Interactable Object Interface"))
 class FROSTBITE_API UInteractableObject : public UInterface
 {
 	GENERATED_BODY()
@@ -51,15 +50,15 @@ public:
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Begin Interaction"))
-	bool BeginInteraction(const EInteractionActionType Type, const AActor* Interactor);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Use"))
+	bool Use(const AActor* Interactor);
 
 	/** Ends interaction with the object.
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "End Interaction"))
-	bool EndInteraction(const EInteractionActionType Type, const AActor* Interactor);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Disuse"))
+	bool Disuse(const AActor* Interactor);
 
 	/** Returns the interaction type of the object. */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Type"))

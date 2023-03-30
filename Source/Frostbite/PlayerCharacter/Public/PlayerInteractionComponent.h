@@ -128,9 +128,14 @@ private:
 	UFUNCTION()
 	bool IsActorOccluded(const AActor* Actor);
 
-	/** Tries to find a component that implements the IInteractableObject interface in a. specified actor.*/
+	/** Checks if an actor or one of its components implements the IInteractableObject interface.
+	 *	Returns the first UObject that implements the interface that it finds. */
 	UFUNCTION()
-	UActorComponent* FindInteractableComponent(const AActor* Actor);
+	UObject* FindInteractableObject(const AActor* Actor) const;
+
+	/** Tries to find a component that implements the IInteractableObject interface in a specified actor.*/
+	UFUNCTION()
+	UActorComponent* FindInteractableComponent(const AActor* Actor) const;
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Begin Interaction"))

@@ -153,7 +153,26 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	return IsOccluded;
 }
 
-UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AActor* Actor)
+UObject* UPlayerInteractionComponent::FindInteractableObject(const AActor* Actor) const
+{
+	if (!Actor) { return nullptr; }
+	 UObject* InteractableObject {nullptr};
+	
+	/** Check if the actor implements the IInteractableObject interface. */
+	if (CurrentInteractableActor->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
+	{
+		InteractableObject = CurrentInteractableActor;
+	}
+	
+	/** If the actor does not implement the IInteractableObject interface, try to find a component that does.*/
+	else if (UActorComponent* InteractableComponent {FindInteractableComponent(CurrentInteractableActor)})
+	{
+		InteractableObject = InteractableComponent;
+	}
+	return InteractableObject;
+}
+
+UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AActor* Actor) const
 {
 	if (!Actor) { return nullptr; }
 	TSet<UActorComponent*> Components {Actor->GetComponents()};
@@ -170,24 +189,20 @@ UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AA
 
 UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionType Type)
 {
-	if (!CurrentInteractableActor) {return nullptr; }
-	UObject* InteractableObject {nullptr};
-	if (CurrentInteractableActor->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
+	if (!CurrentInteractableActor) { return nullptr; }
+	UObject* InteractableObject {FindInteractableObject(CurrentInteractableActor)};
+	if (!InteractableObject) { return nullptr; }
+	
+	/** If the player performs a primary interaction action and the interactable object can be 'used',
+	 *	call the use IInteractableObject interface function on the object. */
+	const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
+	if (InteractionType == EInteractionType::Usable || InteractionType == EInteractionType::Handleable)
 	{
-		InteractableObject = CurrentInteractableActor;
-	}
-	else if (UActorComponent* InteractableComponent {FindInteractableComponent(CurrentInteractableActor)})
-	{
-		InteractableObject = InteractableComponent;
-	}
-
-	if (IInteractableObject* InterfaceObject {Cast<IInteractableObject>(CurrentInteractableActor)})
-	{
-		InterfaceObject->BeginInteraction(Type, GetOwner());
+		IInteractableObject::Execute_Use(InteractableObject, GetOwner());
 	}
 	
 	EventBeginInteraction(Type, InteractableObject);
-	return nullptr;
+	return InteractableObject;
 }
 
 UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionType Type)
