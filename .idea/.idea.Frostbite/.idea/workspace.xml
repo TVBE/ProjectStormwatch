@@ -6,14 +6,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/ActorInteractionComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/InteractionActorComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/ActorInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractionActorComponent.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/BPC_PlayerPhysicsGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/BPC_PlayerPhysicsGrabComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

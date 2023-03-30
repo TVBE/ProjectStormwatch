@@ -33,12 +33,12 @@ private:
 public:	
 	UActorInteractionComponent();
 
-	FORCEINLINE virtual bool BeginInteraction(const EInteractionActionType Type, const AActor* Interactor) override { return false; }
-	FORCEINLINE virtual bool EndInteraction(const EInteractionActionType Type, const AActor* Interactor) override { return false; }
-	FORCEINLINE virtual EInteractionType GetInteractionType() const override { return InteractionType; }
-	FORCEINLINE virtual EInteractionTriggerType GetInteractionTriggerType() const override { return InteractionTriggerType; }
-	FORCEINLINE virtual EInteractionHandType GetInteractionHandType() const override { return InteractionHandType; }
-	FORCEINLINE virtual FVector GetInteractionWidgetOffset() const override { return InteractionWidgetOffset; }
+	FORCEINLINE bool BeginInteraction_Implementation(const EInteractionActionType Type, const AActor* Interactor) { return false; }
+	FORCEINLINE bool EndInteraction_Implementation(const EInteractionActionType Type, const AActor* Interactor) { return false; }
+	FORCEINLINE EInteractionType GetInteractionType_Implementation() const { return InteractionType; }
+	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const { return InteractionTriggerType; }
+	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const { return InteractionHandType; }
+	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const { return InteractionWidgetOffset; }
 
 protected:
 	// Called when the game starts
