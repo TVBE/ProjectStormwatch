@@ -1,10 +1,10 @@
 // Copyright 2023 Barrelhouse
 
 
-#include "InteractionActorComponent.h"
+#include "ActorInteractionComponent.h"
 
 // Sets default values for this component's properties
-UInteractionActorComponent::UInteractionActorComponent()
+UActorInteractionComponent::UActorInteractionComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -15,7 +15,7 @@ UInteractionActorComponent::UInteractionActorComponent()
 
 
 // Called when the game starts
-void UInteractionActorComponent::BeginPlay()
+void UActorInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -25,7 +25,7 @@ void UInteractionActorComponent::BeginPlay()
 
 
 // Called every frame
-void UInteractionActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UActorInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
