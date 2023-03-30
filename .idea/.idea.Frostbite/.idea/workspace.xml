@@ -7,13 +7,9 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/Components/BPC_PlayerInteractionComponent.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/ActorInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/ActorInteractionComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_ReverbSetting.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_ReverbSetting.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
     </list>
@@ -281,7 +277,7 @@
       <workItem from="1680013100651" duration="2269000" />
       <workItem from="1680038045837" duration="443000" />
       <workItem from="1680179630353" duration="1178000" />
-      <workItem from="1680201468819" duration="2770000" />
+      <workItem from="1680201468819" duration="7308000" />
     </task>
     <servers />
   </component>

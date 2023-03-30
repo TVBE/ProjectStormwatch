@@ -40,6 +40,11 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	CurrentInteractableActor = CheckForInteractableActor();
+	
+	if (ActorInUse && ActorInUse != CurrentInteractableActor)
+	{
+		ReleaseActorInUse();
+	}
 	if (!CurrentInteractableActor) { return; }
 }
 
@@ -136,9 +141,8 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	if (!Actor) { return false; }
 	
 	const FVector EndLocation = Actor->GetActorLocation();
-	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), true, nullptr);
-	QueryParams.AddIgnoredActor(Actor);
-	QueryParams.bTraceComplex = true;
+	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, nullptr);
+	QueryParams.AddIgnoredActor(GetOwner());
 
 	const bool IsHit = GetWorld()->LineTraceSingleByChannel(
 		OcclusionTraceHitResult,
@@ -149,26 +153,27 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	);
 
 	/** If the line trace hits an object other than the target actor, we assume the target actor is occluded. */
-	const bool IsOccluded = IsHit && OcclusionTraceHitResult.GetActor() != nullptr && OcclusionTraceHitResult.GetActor() != Actor;
+	const bool IsOccluded = IsHit && OcclusionTraceHitResult.GetActor() && OcclusionTraceHitResult.GetActor() != Actor;
 	return IsOccluded;
 }
 
-UObject* UPlayerInteractionComponent::FindInteractableObject(const AActor* Actor) const
+UObject* UPlayerInteractionComponent::FindInteractableObject(AActor* Actor) const
 {
 	if (!Actor) { return nullptr; }
 	 UObject* InteractableObject {nullptr};
 	
 	/** Check if the actor implements the IInteractableObject interface. */
-	if (CurrentInteractableActor->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
+	if (Actor->GetClass()->ImplementsInterface(UInteractableObject::StaticClass()))
 	{
-		InteractableObject = CurrentInteractableActor;
+		InteractableObject = Actor;
 	}
 	
 	/** If the actor does not implement the IInteractableObject interface, try to find a component that does.*/
-	else if (UActorComponent* InteractableComponent {FindInteractableComponent(CurrentInteractableActor)})
+	else if (UActorComponent* InteractableComponent {FindInteractableComponent(Actor)})
 	{
 		InteractableObject = InteractableComponent;
 	}
+	
 	return InteractableObject;
 }
 
@@ -194,22 +199,69 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 	if (!InteractableObject) { return nullptr; }
 	
 	/** If the player performs a primary interaction action and the interactable object can be 'used',
-	 *	call the use IInteractableObject interface function on the object. */
-	const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
-	if (InteractionType == EInteractionType::Usable || InteractionType == EInteractionType::Handleable)
+	*	call the use IInteractableObject interface function on the object.
+	*	If the player performs a secondary interaction action and the interactable object can be grabbed,
+	*	pass the object to the grab component.
+	*/
+	switch (Type)
 	{
-		IInteractableObject::Execute_Use(InteractableObject, GetOwner());
+	case EInteractionActionType::Primary:
+		{
+			const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
+			if (InteractionType == EInteractionType::Usable || InteractionType == EInteractionType::Handleable)
+			{
+				const bool IsUsed {IInteractableObject::Execute_Use(InteractableObject, GetOwner())};
+		
+				if (IsUsed)
+				{
+					/** Request the trigger type from the interactable object. If the object is of type press-and-hold,
+					 *	store the pointer to the interactable object. */
+					const EInteractionTriggerType TriggerType {IInteractableObject::Execute_GetInteractionTriggerType(InteractableObject)};
+					if (TriggerType == EInteractionTriggerType::PressAndHold)
+					{
+						ActorInUse = CurrentInteractableActor;
+					}
+				}
+			}
+		}
+		break;
+		
+	case EInteractionActionType::Secondary: break; //TODO: Implement grab component here when its finished.
+	default: break;
 	}
-	
 	EventBeginInteraction(Type, InteractableObject);
 	return InteractableObject;
 }
 
 UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionType Type)
 {
-	// EventEndInteraction(Type);
+	switch (Type)
+	{
+	case EInteractionActionType::Primary:
+		{
+			if (ActorInUse) { ReleaseActorInUse(); }
+		}
+		break;
+		
+	case EInteractionActionType::Secondary: break; //TODO: Implement grab component here when it is finished.
+	default: break;
+	}
 	return nullptr;
 }
+
+void UPlayerInteractionComponent::ReleaseActorInUse()
+{
+	if (!ActorInUse) { return; }
+	UObject* InteractableObject {FindInteractableObject(ActorInUse)};
+	if (!InteractableObject)
+	{
+		ActorInUse = nullptr;
+		return;
+	}
+	bool IsReleased {IInteractableObject::Execute_Disuse(InteractableObject, GetOwner())};
+	if (IsReleased) { ActorInUse = nullptr; }
+}
+
 
 void UPlayerInteractionComponent::OnUnregister()
 {

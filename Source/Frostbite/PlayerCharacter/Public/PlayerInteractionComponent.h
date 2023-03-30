@@ -62,6 +62,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
 	AActor* CurrentInteractingActor;
 
+	/** The actor that is currently being used. */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Actor In Use", AllowPrivateAccess = "true"))
+	AActor* ActorInUse;
+
 	/** The collision query data for the camera trace. */
 	FCollisionQueryParams CameraTraceQueryParams;
 	
@@ -89,6 +93,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
 	UObject* EndInteraction(const EInteractionActionType Type);
+
+	/** Releases and actor that is currently being used. */
+	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Release Actor In Use"))
+	void ReleaseActorInUse();
 
 	/** Returns the object the interaction component is currently interacting with. */
 	UFUNCTION(BlueprintPure, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Current Interaction Object"))
@@ -131,7 +139,7 @@ private:
 	/** Checks if an actor or one of its components implements the IInteractableObject interface.
 	 *	Returns the first UObject that implements the interface that it finds. */
 	UFUNCTION()
-	UObject* FindInteractableObject(const AActor* Actor) const;
+	UObject* FindInteractableObject(AActor* Actor) const;
 
 	/** Tries to find a component that implements the IInteractableObject interface in a specified actor.*/
 	UFUNCTION()
@@ -143,5 +151,5 @@ protected:
     
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteractionComponent", Meta = (DisplayName = "End Interaction"))
 	void EventEndInteraction(const EInteractionActionType Type, const UObject* Object);
-	
 };
+
