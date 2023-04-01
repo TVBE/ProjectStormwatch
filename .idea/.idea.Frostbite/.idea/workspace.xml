@@ -6,13 +6,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/DoorInterface.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/InventoryObjectInterface.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/InventoryObjectInterface.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Environment/Private/Blizzard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Blizzard.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Environment/Public/Blizzard.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Blizzard.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/InteractableObjectInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/InteractableObjectInterface.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -283,6 +283,7 @@
       <workItem from="1680253213109" duration="4387000" />
       <workItem from="1680291225339" duration="213000" />
       <workItem from="1680291483948" duration="735000" />
+      <workItem from="1680348657908" duration="5870000" />
     </task>
     <servers />
   </component>
