@@ -22,18 +22,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Pawn Detected"))
 	FOnPawnDetected OnPawnDetectedDelegate;
 
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proximity Sensor|Detection Cone", Meta = (DisplayName = "Radius"))
-	float Radius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proximity Sensor|Detection Cone", Meta = (DisplayName = "Height"))
-	float Height;
-
-	UPROPERTY()
-	uint8 NumSides {32};
-
-	UConeComponent();
-
 private:
 	/** The collision component to use for detection. */
 	UPROPERTY(EditAnywhere, Category = "Proximity Sensor", Meta = (DisplayName = "Detection Cone"))
