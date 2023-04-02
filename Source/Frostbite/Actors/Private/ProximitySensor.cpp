@@ -2,28 +2,57 @@
 // Written by Tim Verberne
 // This source code is part of the project Frostbite
 
-
 #include "ProximitySensor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 
-// Sets default values
 AProximitySensor::AProximitySensor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
+	
+	DetectionCone = CreateDefaultSubobject<UCapsuleComponent>(TEXT("DetectionCone"));
+	SetRootComponent(DetectionCone);
+	DetectionCone->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetectionCone->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetectionCone->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	DetectionCone->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
-// Called when the game starts or when spawned
 void AProximitySensor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
 }
 
-// Called every frame
-void AProximitySensor::Tick(float DeltaTime)
+void AProximitySensor::Poll()
 {
-	Super::Tick(DeltaTime);
+	TArray<AActor*> OverlappingActors;
+	DetectionCone->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
 
+	APawn* NearestPawn = nullptr;
+	float NearestPawnDistance = FLT_MAX;
+
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		if (APawn* OverlappingPawn = Cast<APawn>(OverlappingActor))
+		{
+			float Distance = FVector::Distance(GetActorLocation(), OverlappingPawn->GetActorLocation());
+			if (Distance < NearestPawnDistance)
+			{
+				NearestPawnDistance = Distance;
+				NearestPawn = OverlappingPawn;
+			}
+		}
+	}
+
+	if (NearestPawn)
+	{
+		IsPawnDetected = true;
+		OnPawnDetectedDelegate.Broadcast(NearestPawn, NearestPawnDistance);
+	}
 }
+
 
