@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerPhysicsGrabComponent.h"
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
@@ -76,6 +77,9 @@ private:
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
 	bool IsDebugVisEnabled {false};
+
+	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
+	UPlayerPhysicsGrabConfiguration* PlayerPhysicsGrabConfiguration;
 	
 public:	
 	UPlayerInteractionComponent();

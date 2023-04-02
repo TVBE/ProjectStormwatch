@@ -3,7 +3,6 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerInteractionComponent.h"
-
 #include "InteractableObjectInterface.h"
 #include "PlayerCharacter.h"
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
@@ -26,6 +25,13 @@ void UPlayerInteractionComponent::OnRegister()
 
 	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
 	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
+
+	// Create a new instance of UPlayerPhysicsGrabComponent and set the interaction component's parent as the owner.
+	UPlayerPhysicsGrabComponent* PhysicsGrabComponent = NewObject<UPlayerPhysicsGrabComponent>(GetOwner());
+		
+	// Set the Configuration variable in the component
+	PhysicsGrabComponent->ConfigurationAsset = PlayerPhysicsGrabConfiguration;
+	
 	
 }
 
