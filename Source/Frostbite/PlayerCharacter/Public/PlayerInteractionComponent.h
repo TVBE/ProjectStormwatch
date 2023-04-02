@@ -78,8 +78,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
 	bool IsDebugVisEnabled {false};
 
+	//For setting the parameters of the playerPhysicsGrabComponent
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
 	UPlayerPhysicsGrabConfiguration* PlayerPhysicsGrabConfiguration;
+
+	//The reference to the playerPhysicsGrabComponent
+	UPROPERTY();
+	UPlayerPhysicsGrabComponent* GrabComponent;
 	
 public:	
 	UPlayerInteractionComponent();

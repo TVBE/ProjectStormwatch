@@ -32,7 +32,7 @@ void UPlayerInteractionComponent::OnRegister()
 	// Set the Configuration variable in the component
 	PhysicsGrabComponent->ConfigurationAsset = PlayerPhysicsGrabConfiguration;
 	
-	
+	GrabComponent = PhysicsGrabComponent;
 }
 
 /** Called when the game starts. */
@@ -232,7 +232,17 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 		}
 		break;
 		
-	case EInteractionActionType::Secondary: break; //TODO: Implement grab component here when its finished.
+	case EInteractionActionType::Secondary:
+		{
+			const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
+			if (InteractionType ==EInteractionType::Grabbable ||
+				InteractionType == EInteractionType::GrabUsable ||
+				InteractionType == EInteractionType::Handleable )
+			{
+				GrabComponent->GrabObject(CurrentInteractableActor);
+			}
+			
+		}
 	default: break;
 	}
 	EventBeginInteraction(Type, InteractableObject);
@@ -249,7 +259,11 @@ UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionTyp
 		}
 		break;
 		
-	case EInteractionActionType::Secondary: break; //TODO: Implement grab component here when it is finished.
+	case EInteractionActionType::Secondary:
+		{
+			GrabComponent->ReleaseObject();
+		}
+
 	default: break;
 	}
 	return nullptr;

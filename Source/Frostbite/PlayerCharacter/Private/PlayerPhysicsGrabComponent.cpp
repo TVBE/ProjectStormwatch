@@ -38,7 +38,7 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 	StaticMeshComponent = Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	if (StaticMeshComponent)
 	{
-		// the component was found, do something with it
+		GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
 	}
 }
 
