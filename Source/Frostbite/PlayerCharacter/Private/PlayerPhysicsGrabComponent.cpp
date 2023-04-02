@@ -1,11 +1,10 @@
-// Copyright 2023 Barrelhouse
-
+// Copyright (c) 2022-present Barrelhouse
+// Written by Nino Saglia
+// This source code is part of the project Frostbite
 
 #include "PlayerPhysicsGrabComponent.h"
 
 #include "PlayerCharacter.h"
-
-
 
 void UPlayerPhysicsGrabComponent::OnRegister()
 {
@@ -27,8 +26,6 @@ void UPlayerPhysicsGrabComponent::OnRegister()
 		Camera = PlayerCharacter->GetCamera();
 	}
 }
-
-
 
 void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 {

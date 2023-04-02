@@ -1,5 +1,6 @@
-// Copyright 2023 Barrelhouse
-
+// Copyright (c) 2022-present Barrelhouse
+// Written by Nino Saglia
+// This source code is part of the project Frostbite
 #pragma once
 
 #include "CoreMinimal.h"
@@ -33,7 +34,12 @@ public:
 	//The camera component of the player
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
+
+private:
+	UPROPERTY()
+	float CurrentZoomLevel;
 	
+public:
 	// The object that will be passed to the physics handle.
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
 	void GrabObject(AActor* ObjectToGrab);
@@ -51,11 +57,7 @@ protected:
 	//virtual void OnUnregister() override;
 	//virtual void BeginPlay() override;
 	//virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-private:
 
-	
-	UPROPERTY()
-	float CurrentZoomLevel;
 };
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))

@@ -396,10 +396,28 @@ void APlayerCharacterController::HandlePrimaryActionReleased()
 
 void APlayerCharacterController::HandleSecondaryActionPressed()
 {
+	if (!InteractionComponent)
+	{
+		if(GetPawn())
+		{
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		}
+	}
+	if (!InteractionComponent) { return; }
+	InteractionComponent->BeginInteraction(EInteractionActionType::Secondary);
 }
 
 void APlayerCharacterController::HandleSecondaryActionReleased()
 {
+	if (!InteractionComponent)
+	{
+		if(GetPawn())
+		{
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		}
+	}
+	if (!InteractionComponent) { return; }
+	InteractionComponent->EndInteraction(EInteractionActionType::Secondary);
 }
 
 void APlayerCharacterController::HandleInventoryActionPressed()

@@ -6,16 +6,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/TriggerableObjectInterface.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_ReverbSetting.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_ReverbSetting.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerPhysicsGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerPhysicsGrabComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerPhysicsGrabComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerPhysicsGrabComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -287,7 +285,7 @@
       <workItem from="1680291225339" duration="213000" />
       <workItem from="1680291483948" duration="735000" />
       <workItem from="1680348657908" duration="5870000" />
-      <workItem from="1680459674704" duration="6861000" />
+      <workItem from="1680459674704" duration="9361000" />
     </task>
     <servers />
   </component>

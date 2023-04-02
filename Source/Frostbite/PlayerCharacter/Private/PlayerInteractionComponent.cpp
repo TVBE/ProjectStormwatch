@@ -1,5 +1,5 @@
 // Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
+// Written by Tim Verberne & Nino Saglia
 // This source code is part of the project Frostbite
 
 #include "PlayerInteractionComponent.h"
@@ -25,14 +25,14 @@ void UPlayerInteractionComponent::OnRegister()
 
 	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
 	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
-
-	// Create a new instance of UPlayerPhysicsGrabComponent and set the interaction component's parent as the owner.
-	UPlayerPhysicsGrabComponent* PhysicsGrabComponent = NewObject<UPlayerPhysicsGrabComponent>(GetOwner());
-		
-	// Set the Configuration variable in the component
-	PhysicsGrabComponent->ConfigurationAsset = PlayerPhysicsGrabConfiguration;
 	
-	GrabComponent = PhysicsGrabComponent;
+	// UPlayerPhysicsGrabComponent* PhysicsGrabComponent = NewObject<UPlayerPhysicsGrabComponent>(GetOwner());
+	GrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetOwner()->AddComponentByClass(UPlayerPhysicsGrabComponent::StaticClass(), false, FTransform(), false));
+
+	if (GrabComponent)
+	{
+		GrabComponent->ConfigurationAsset = PlayerPhysicsGrabConfiguration.LoadSynchronous();
+	}
 }
 
 /** Called when the game starts. */
@@ -207,8 +207,7 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 	/** If the player performs a primary interaction action and the interactable object can be 'used',
 	*	call the use IInteractableObject interface function on the object.
 	*	If the player performs a secondary interaction action and the interactable object can be grabbed,
-	*	pass the object to the grab component.
-	*/
+	*	pass the object to the grab component. */
 	switch (Type)
 	{
 	case EInteractionActionType::Primary:
@@ -240,6 +239,7 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 				InteractionType == EInteractionType::Handleable )
 			{
 				GrabComponent->GrabObject(CurrentInteractableActor);
+				UE_LOG(LogTemp, Error, TEXT("Secondary Action Pressed, Actor is grabbable.")) //TODO: Remove this.
 			}
 			
 		}
@@ -261,7 +261,10 @@ UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionTyp
 		
 	case EInteractionActionType::Secondary:
 		{
-			GrabComponent->ReleaseObject();
+			if (GrabComponent)
+			{
+				GrabComponent->ReleaseObject();
+			}
 		}
 
 	default: break;

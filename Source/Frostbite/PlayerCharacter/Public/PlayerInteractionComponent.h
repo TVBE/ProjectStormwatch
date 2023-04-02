@@ -1,5 +1,5 @@
 // Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
+// Written by Tim Verberne & Nino Saglia
 // This source code is part of the project Frostbite
 
 #pragma once
@@ -80,7 +80,7 @@ private:
 
 	/** For setting the parameters of the playerPhysicsGrabComponent. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
-	UPlayerPhysicsGrabConfiguration* PlayerPhysicsGrabConfiguration;
+	TSoftObjectPtr<UPlayerPhysicsGrabConfiguration> PlayerPhysicsGrabConfiguration;
 
 	/** The reference to the playerPhysicsGrabComponent. */
 	UPROPERTY();
