@@ -31,40 +31,69 @@ void APressableButton::HandleCooldownFinished()
 	IsCooldownActive = false;
 }
 
-void APressableButton::EventOnPress_Implementation()
+void APressableButton::DoTargetActorActions(const bool IsPressedAction)
 {
-	if (LinkedButtons.IsEmpty()) { return; }
-	for (const FLinkedButton& LinkedButton : LinkedButtons)
+	for (const auto& [Actor, PressedAction, ReleasedAction] : TargetActors)
 	{
-		if (LinkedButton.Actor)
+		if (Actor.IsValid())
 		{
-			switch (LinkedButton.PressedAction)
+			switch (const ETriggerableObjectAction Action {IsPressedAction ? PressedAction : ReleasedAction})
+			{
+			case ETriggerableObjectAction::Trigger:
+				{
+					if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+					{
+						ITriggerableObject::Execute_Trigger(Actor.Get(), this);
+					}
+				}
+				break;
+			case ETriggerableObjectAction::Untrigger:
+				{
+					if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+					{
+						ITriggerableObject::Execute_Untrigger(Actor.Get(), this);
+					}
+				}
+				break;
+			default: break;
+			}
+		}
+	}
+}
+
+void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
+{
+	for (const auto& [Actor, PressedAction, ReleasedAction, IsActionLinked] : LinkedButtons)
+	{
+		if (Actor.IsValid())
+		{
+			switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
 			{
 			case ELinkedButtonAction::Press:
 				{
-					if (!LinkedButton.Actor->GetIsPressed())
+					if (!Actor->GetIsPressed())
 					{
-						LinkedButton.Actor->EventOnPress();
+						Actor->EventOnPress(!IsActionLinked, false);
 					}
 				}
 				break;
 			case ELinkedButtonAction::Release:
 				{
-					if (LinkedButton.Actor->GetIsPressed())
+					if (Actor->GetIsPressed())
 					{
-						LinkedButton.Actor->EventOnRelease();
+						Actor->EventOnRelease(!IsActionLinked, false);
 					}
 				}
 				break;
 			case ELinkedButtonAction::Toggle:
 				{
-					if (LinkedButton.Actor->GetIsPressed())
+					if (Actor->GetIsPressed())
 					{
-						LinkedButton.Actor->EventOnRelease();
+						Actor->EventOnRelease(!IsActionLinked, false);
 					}
 					else
 					{
-						LinkedButton.Actor->EventOnPress();
+						Actor->EventOnPress(!IsActionLinked, false);
 					}
 				}
 				break;
@@ -76,8 +105,33 @@ void APressableButton::EventOnPress_Implementation()
 	}
 }
 
-void APressableButton::EventOnRelease_Implementation()
+void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
 {
+	if (LinkedButtons.IsEmpty()) { return; }
+	if (CallTargetActors)
+	{
+		DoTargetActorActions(true);
+	}
+	
+	if (CallLinkedButtons)
+	{
+		DoLinkedButtonActions(true);
+	}
+	
+}
+
+void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
+{
+	if (LinkedButtons.IsEmpty()) { return; }
+	if (CallTargetActors)
+	{
+		DoTargetActorActions(false);
+	}
+	
+	if (CallLinkedButtons)
+	{
+		DoLinkedButtonActions(false);
+	}
 }
 
 

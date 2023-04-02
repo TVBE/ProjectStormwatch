@@ -5,10 +5,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TriggerableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "PressableButton.generated.h"
 
 struct FTimerHandle;
+
+/** Struct containg a soft object pointer to an actor that implements the ITriggerableObject interface,
+ *	and actions to execute when the button that targets the actor is pressed. */
+USTRUCT(BlueprintType)
+struct FButtonTargetActor
+{
+	GENERATED_BODY()
+
+	/** The button actor that is linked.*/
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Target Actor"))
+	TSoftObjectPtr<AActor> Actor;
+
+	/** The action that should be performed on the linked actor when the button is pressed. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Action When Pressed"))
+	ETriggerableObjectAction PressedAction {ETriggerableObjectAction::Trigger};
+
+	/** The action that should be performed on the linked actor when the button is released. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Action When Released"))
+	ETriggerableObjectAction ReleasedAction {ETriggerableObjectAction::Untrigger};
+};
 
 /** Defines some actions to execute on linked buttons when the button is pressed or unpressed. */
 UENUM(BlueprintType)
@@ -28,14 +49,21 @@ struct FLinkedButton
 {
 	GENERATED_BODY()
 
+	/** The button actor that is linked.*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Linked Button"))
 	TSoftObjectPtr<APressableButton> Actor;
 
+	/** The action that should be performed on the linked actor when the button is pressed. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Action When Pressed"))
 	ELinkedButtonAction PressedAction {ELinkedButtonAction::Release};
 
+	/** The action that should be performed on the linked actor when the button is released. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Action When Released"))
 	ELinkedButtonAction ReleasedAction {ELinkedButtonAction::Nothing};
+
+	/** When true, the linked actor will not perform its gameplay action when triggered by this button. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Safe Link"))
+	bool IsActionLinked {true};
 };
 
 /** Base class for button actors. Note that we do not implement the IInteractableObject interface here
@@ -57,7 +85,7 @@ protected:
 
 	/** Array of soft object pointers to other button instances. This allows us to affect other button instances when this button is pressed. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Button|Linked Actors", Meta = (DisplayName = "Target Actors"))
-	TArray<TSoftObjectPtr<AActor>> TargetActors;
+	TArray<FButtonTargetActor> TargetActors;
 	
 	/** Array of soft object pointers to other button instances. This allows us to affect other button instances when this button is pressed. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Button|Linked Actors", Meta = (DisplayName = "Linked Buttons"))
@@ -86,16 +114,28 @@ private:
 	/** Called when the cooldown timer is finished. */
 	void HandleCooldownFinished();
 
+	/** calls the corresponding actions on target actors. */
+	void DoTargetActorActions(const bool IsPressedAction);
+
+	/** Calls the corresponding actions on linked button instances. */
+	void DoLinkedButtonActions(const bool IsPressedAction);
+
 public:
 	/** Presses the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
-	 *	This functions should only be called by linked objects. */
+	 *	This functions should only be called by linked objects.
+	 *	@Param CallTargetActorss If true, the event should execute its gameplay actions.
+	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button", Meta = (DisplayName = "Press Button"))
-	void EventOnPress();
+	void EventOnPress(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
 
 	/** Releases the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
-	 *	This functions should only be called by linked objects. */
+	 *	This functions should only be called by linked objects.
+	 *	@Param CallTargetActors If true, the event should execute its gameplay actions.
+	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button", Meta = (DisplayName = "Release Button"))
-	void EventOnRelease();
+	void EventOnRelease(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
 
 	/** Returns whether the button is currently pressed. */
 	UFUNCTION()
