@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Math/Vector.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerPhysicsGrabComponent.generated.h"
 
@@ -23,9 +24,6 @@ class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 public:
 
 	// CONFIGURATION
-	/** The configuration asset to use for this component. */
-	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
-	TSoftObjectPtr<UPlayerPhysicsGrabConfiguration> ConfigurationAsset;
 
 	/** Pointer to the configuration asset for this component. */
 	UPROPERTY()
@@ -35,8 +33,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
 
-private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float CurrentZoomLevel;
 	
 public:
@@ -47,17 +44,26 @@ public:
 	// Called when you release the object or place the object
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
 	void ReleaseObject();
+
+	// Calculate the rotated hand offset based on the camera rotation.
+	UFUNCTION(Category="Player Physics Grab")
+	FVector GetRotatedHandOffset();
 	
 	// Will be updated when a component is being grabbed.
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
-	void UpdateDesiredLocation(float ZoomAxisValue);
+	void UpdateTargetLocation(float ZoomAxisValue);
 
 protected:
 	virtual void OnRegister() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	//virtual void OnUnregister() override;
 	//virtual void BeginPlay() override;
 	//virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+private:
+	// Boolean flag to track if Tick is enabled or disabled
+	bool bIsTickEnabled;
+	
 };
 
 UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
@@ -66,21 +72,64 @@ class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
 	GENERATED_BODY()
 
 public:
+
+	// The location where the holding hand should be relative to the physics grab component.
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
 	FVector RelativeHoldingHandLocation;
-	
+
+	// The minimum zoom level in UE units.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MinZoomLevel;
 
+	// The maximum zoom level in UE units.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MaxZoomLevel;
 
+	//The speed at which you can zoom.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float ZoomSpeed;
 
+	
+	// ... PhysicsHandleSettings ...
+
+	// Linear and angular damping controls how fast the object slows down.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
+	float LinearDamping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
+	float AngularDamping;
+
+	// The force that is used to move the grabbed object.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
+	float InterpolationSpeed;
+
+	// The maximum distance that the grab can be performed from.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
+	float GrabDistance;
+
+	// Determines whether we should attempt to use CCD on this physics handle component.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	bool bSoftAngularConstraint;
+
+	// Controls how fast we move the grabbed object to the target location.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float InterpolationSpeedThreshold;
+
+	
 	/** Constructor with default values. */
 	UPlayerPhysicsGrabConfiguration()
+	: RelativeHoldingHandLocation(FVector::ZeroVector)
+	, MinZoomLevel(0.0f)
+	, MaxZoomLevel(1000.0f)
+	, ZoomSpeed(1.0f)
+	, LinearDamping(1.0f)
+	, AngularDamping(1.0f)
+	, InterpolationSpeed(1.0f)
+	, GrabDistance(1000.0f)
+	, bSoftAngularConstraint(false)
+	, InterpolationSpeedThreshold(1.0f)
 	{
 	}
-	void ApplyToPlayerPhysicsGrabComponent(const UPlayerPhysicsGrabComponent* Component);
+	
+	void ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent);
 };

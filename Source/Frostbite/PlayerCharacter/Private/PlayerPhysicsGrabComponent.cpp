@@ -5,25 +5,26 @@
 #include "PlayerPhysicsGrabComponent.h"
 
 #include "PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
+
 
 void UPlayerPhysicsGrabComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	/** Load the configuration asset. If no configuration asset is provided, construct a default instance of the configuration asset instead. */
-	if (!Configuration)
-	{
-		Configuration = ConfigurationAsset.LoadSynchronous();
-		if (!Configuration)
-		{
-			Configuration = NewObject<UPlayerPhysicsGrabConfiguration>();
-			Configuration->AddToRoot();
-
-		}
-	}
 	if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetOwner())})
 	{
 		Camera = PlayerCharacter->GetCamera();
+	}
+}
+
+void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if(GrabbedComponent)
+	{
+		UpdateTargetLocation(0.0);
 	}
 }
 
@@ -35,26 +36,51 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 	StaticMeshComponent = Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	if (StaticMeshComponent)
 	{
+		CurrentZoomLevel = FVector::Distance(GetRotatedHandOffset(), StaticMeshComponent->GetCenterOfMass());
 		GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
+		bIsTickEnabled = true;
 	}
 }
 
 void UPlayerPhysicsGrabComponent::ReleaseObject()
 {
 	ReleaseComponent();
+	bIsTickEnabled = false;
+	
 }
 
-void UPlayerPhysicsGrabComponent::UpdateDesiredLocation(float ZoomAxisValue)
+FVector UPlayerPhysicsGrabComponent::GetRotatedHandOffset()
+{
+	// Get the camera's world rotation
+	FRotator CameraRotation = Camera->GetComponentRotation();
+
+	// Rotate the hand offset vector using the camera's world rotation
+	FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
+
+	return RotatedHandOffset;
+}
+
+void UPlayerPhysicsGrabComponent::UpdateTargetLocation(float ZoomAxisValue)
 {
 	if (!GrabbedComponent) return;
 	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
-
-	// Calculate the desired location based on the forward vector and zoom level
 	
+	// Calculate the desired location based on the forward vector and zoom level
+	if (Camera)
+	{
+		const FVector TargetLocation = GetRotatedHandOffset() + (CurrentZoomLevel * Camera->GetForwardVector());
+		SetTargetLocation(TargetLocation);
+	}
 }
 
-void UPlayerPhysicsGrabConfiguration::ApplyToPlayerPhysicsGrabComponent(const UPlayerPhysicsGrabComponent* Component)
+void UPlayerPhysicsGrabConfiguration::ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent)
 {
-	
+	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.
+	this->LinearDamping = LinearDamping;
+	this->AngularDamping = AngularDamping;
+	this->InterpolationSpeed = InterpolationSpeed;
+	this->GrabDistance = GrabDistance;
+	this->bSoftAngularConstraint = bSoftAngularConstraint;
+	this->InterpolationSpeedThreshold = InterpolationSpeedThreshold;
 }
 
