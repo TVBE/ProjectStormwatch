@@ -37,6 +37,10 @@ public:
 	float CurrentZoomLevel;
 	
 public:
+	/** Returns the traveled distance of this component between every update*/
+	UFUNCTION()
+	double GetDeltaLocation();
+	
 	// The object that will be passed to the physics handle.
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
 	void GrabObject(AActor* ObjectToGrab);
@@ -65,7 +69,10 @@ protected:
 private:
 	// Boolean flag to track if Tick is enabled or disabled
 	bool bIsTickEnabled;
+	/** The current value that the mouse scroll wheel is putting out */
 	float CurrentZoomAxisValue;
+	/** the latest location that is being stored by the GetDeltaLocation function */
+	FVector LastLocation;
 	
 };
 
@@ -87,6 +94,10 @@ public:
 	// The maximum zoom level in UE units.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MaxZoomLevel;
+
+	// The distance where the object will move towards the hand location.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float BeginHandOffsetDistance;
 
 	//The speed at which you can zoom.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -131,6 +142,7 @@ public:
 	, GrabDistance(1000.0f)
 	, bSoftAngularConstraint(false)
 	, InterpolationSpeedThreshold(1.0f)
+	, BeginHandOffsetDistance(200.0f)
 	{
 	}
 	

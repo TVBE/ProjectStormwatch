@@ -28,6 +28,13 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
+double UPlayerPhysicsGrabComponent::GetDeltaLocation()
+{
+	float DeltaLocation = FVector::Distance(Camera->GetComponentLocation(), LastLocation);
+	LastLocation = Camera->GetComponentLocation();
+	return DeltaLocation;
+}
+
 void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 {
 	// check if there's a reference and cast to static mesh component to get a ref to the first static mesh.
@@ -55,20 +62,21 @@ FVector UPlayerPhysicsGrabComponent::GetRotatedHandOffset()
 	FRotator CameraRotation = Camera->GetComponentRotation();
 
 	// Rotate the hand offset vector using the camera's world rotation
-	FVector RotatedHandOffset = Camera->GetComponentLocation() + CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
+	FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
 
-	return RotatedHandOffset;
+	float HandOffsetScaler = FMath::Clamp((((Configuration->BeginHandOffsetDistance) - CurrentZoomLevel) / Configuration->BeginHandOffsetDistance), 0.0, 1000.0);
+	FVector RotatedHandOffsetMultiplied =  Camera->GetComponentLocation() + HandOffsetScaler * RotatedHandOffset;
+	return RotatedHandOffsetMultiplied;
 }
 
 void UPlayerPhysicsGrabComponent::UpdateTargetLocation(float ZoomAxisValue)
 {
 	if (!GrabbedComponent) return;
-	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
-	UE_LOG(LogTemp, Log, TEXT("ZoomAxisvalue %f"), ZoomAxisValue);
+	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel - GetDeltaLocation() + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
 	// Calculate the desired location based on the forward vector and zoom level
 	if (Camera)
 	{
-		const FVector TargetLocation = Camera->GetComponentLocation() + (CurrentZoomLevel * Camera->GetForwardVector());
+		const FVector TargetLocation = GetRotatedHandOffset() + (CurrentZoomLevel * Camera->GetForwardVector());
 		SetTargetLocation(TargetLocation);
 	}
 }
