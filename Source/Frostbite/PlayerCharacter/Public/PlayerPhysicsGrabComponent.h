@@ -53,6 +53,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
 	void UpdateTargetLocation(float ZoomAxisValue);
 
+	void UpdateZoomAxisValue(float ZoomAxis);
+
 protected:
 	virtual void OnRegister() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -63,6 +65,7 @@ protected:
 private:
 	// Boolean flag to track if Tick is enabled or disabled
 	bool bIsTickEnabled;
+	float CurrentZoomAxisValue;
 	
 };
 

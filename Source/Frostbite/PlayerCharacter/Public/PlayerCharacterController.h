@@ -9,6 +9,7 @@
 #include "PlayerCharacterController.generated.h"
 
 class UPlayerInteractionComponent;
+class UPlayerPhysicsGrabComponent;
 class UPlayerSubsystem;
 class APlayerCharacter;
 class UPlayerCharacterConfiguration;
@@ -43,6 +44,10 @@ private:
 	/** Pointer to the interaction component of the player character. */
 	UPROPERTY()
 	UPlayerInteractionComponent* InteractionComponent;
+
+	/** Pointer to the physics grab component of the player character */
+	UPROPERTY()
+	UPlayerPhysicsGrabComponent* PhysicsGrabComponent;
 	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
@@ -155,6 +160,10 @@ private:
 	/** Tries to move the character forward or backward depending on the input. */
 	UFUNCTION()
 	void HandleLateralMovementInput(float Value);
+
+	/** Handles the callback for when the player tries to zoom in. */
+	UFUNCTION()
+	void HandleZoomDirectionInput(float Value);
 
 	/** Handles the callback for when the player has pressed the Jump button */
 	UFUNCTION()

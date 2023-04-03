@@ -80,6 +80,7 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAxis(TEXT("Vertical Rotation"), this,  &APlayerCharacterController::HandleVerticalRotation);
 	InputComponent->BindAxis(TEXT("Move Longitudinal"), this, &APlayerCharacterController::HandleLongitudinalMovementInput);
 	InputComponent->BindAxis(TEXT("Move Lateral"),this, &APlayerCharacterController::HandleLateralMovementInput);
+	InputComponent->BindAxis(TEXT("ZoomAxis"), this, &APlayerCharacterController::HandleZoomDirectionInput);
 
 	InputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &APlayerCharacterController::HandleJumpActionPressed);
 	
@@ -288,6 +289,18 @@ void APlayerCharacterController::HandleLateralMovementInput(float Value)
 	if (!CanProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
 		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
+}
+void APlayerCharacterController::HandleZoomDirectionInput(float Value)
+{
+	if (!PhysicsGrabComponent)
+	{
+		if(GetPawn())
+		{
+			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
+		}
+	}
+	if (!PhysicsGrabComponent) { return; }
+	PhysicsGrabComponent->UpdateZoomAxisValue(Value);
 }
 
 void APlayerCharacterController::HandleJumpActionPressed()
