@@ -24,7 +24,7 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if(GrabbedComponent)
 	{
-		UpdateTargetLocation(0.0);
+		UpdateTargetLocation(CurrentZoomAxisValue * DeltaTime);
 	}
 }
 
@@ -55,7 +55,7 @@ FVector UPlayerPhysicsGrabComponent::GetRotatedHandOffset()
 	FRotator CameraRotation = Camera->GetComponentRotation();
 
 	// Rotate the hand offset vector using the camera's world rotation
-	FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
+	FVector RotatedHandOffset = Camera->GetComponentLocation() + CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
 
 	return RotatedHandOffset;
 }
@@ -64,13 +64,18 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocation(float ZoomAxisValue)
 {
 	if (!GrabbedComponent) return;
 	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
-	
+	UE_LOG(LogTemp, Log, TEXT("ZoomAxisvalue %f"), ZoomAxisValue);
 	// Calculate the desired location based on the forward vector and zoom level
 	if (Camera)
 	{
 		const FVector TargetLocation = Camera->GetComponentLocation() + (CurrentZoomLevel * Camera->GetForwardVector());
 		SetTargetLocation(TargetLocation);
 	}
+}
+
+void UPlayerPhysicsGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
+{
+	CurrentZoomAxisValue = ZoomAxis;
 }
 
 void UPlayerPhysicsGrabConfiguration::ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent)
