@@ -17,13 +17,13 @@ struct FReacousticSoundData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData, Meta = (ClampMin = "-50.0", ClampMax = "50.0", UIMin = "-50.0", UIMax = "50.0"))
-	float Gain;
+	float Gain{0.0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	float MaxSpeedScalar;
+	float MaxSpeedScalar{1.0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	float ImpulseLength {5.0f};
+	float ImpulseLength{1.5};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Analysis)
 	TArray<float> OnsetTimingData;
@@ -41,7 +41,7 @@ struct FReacousticSoundData
 	USoundWave* SlidingWaveAsset;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Surface, Meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
-	float SurfaceDampeningPercentage;
+	float SurfaceDampeningPercentage{0.0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
 	USoundAttenuation* Attenuation;
@@ -51,11 +51,13 @@ struct FReacousticSoundData
 
 	// Constructor with default values.
 	FReacousticSoundData()
+	: Gain(0.0)
+	, MaxSpeedScalar(1.0)
+	, ImpulseLength(1.5)
+	, SurfaceDampeningPercentage(0.0)
+	, Attenuation(nullptr)
+	, Concurrency(nullptr)
 	{
-		Gain = 1.0;
-		MaxSpeedScalar = 1.0;
-		ImpulseLength = 1.0;
-		SurfaceDampeningPercentage = 25.0;
 	}
 };
 
@@ -81,6 +83,13 @@ struct FMeshToAudioMapEntry
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh To Audio Map")
 	int32 ReacousticSoundDataRef;
+
+	// Constructor with default values.
+	FMeshToAudioMapEntry()
+	: Mesh(nullptr)
+	, ReacousticSoundDataRef(0)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -93,6 +102,13 @@ struct FPhysicalMaterialToAudioMapEntry
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EPhysicalSurface To Audio Map")
 	int32 ReacousticSoundDataRef;
+
+	// Constructor with default values.
+	FPhysicalMaterialToAudioMapEntry()
+		: SurfaceType(EPhysicalSurface::SurfaceType_Default)
+		, ReacousticSoundDataRef(0)
+	{
+	}
 };
 
 // The map with all references to quickly be able to access the right audio data.
@@ -106,6 +122,11 @@ public:
  
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = MaterialToAudioMap)
 	TArray<FPhysicalMaterialToAudioMapEntry> PhysicalMaterialMapEntries;
+
+	// Constructor with default values.
+	UReacousticSoundDataRef_Map()
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -146,6 +167,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="ImpulseLength", MakeStructureDefaultValue="0.600000"))
 	double ImpulseLength;
 
+	FReacousticObjects()
+	: Gain_Db(0.0)
+	, HitSound(nullptr)
+	, SlidingRollingSound(nullptr)
+	, MaxSpeedScalar(10.0)
+	, Sound_Attenuation(nullptr)
+	, Sound_Concurrency(nullptr)
+	, ImpulseLength(0.6)
+	{
+	}
 	
 };
 
@@ -154,31 +185,42 @@ struct FReacousticSurfaces
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	/** Please add a variable description */
+	/** The gain for the hitsound */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Gain_Db", MakeStructureDefaultValue="0.000000"))
 	double Gain_Db;
 
-	/** Please add a variable description */
+	/** The source sound to be used */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="HitSound", MakeStructureDefaultValue="None"))
 	TObjectPtr<USoundWave> HitSound;
 
-	/** Please add a variable description */
+	/** Surfacematerial for this sound */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Material", MakeStructureDefaultValue="SurfaceType_Default"))
 	TEnumAsByte<EPhysicalSurface> Material;
 
-	/** Please add a variable description */
+	/** How much a surface sound would dampen the velocity of the object sound */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="SurfaceDampening%", MakeStructureDefaultValue="0.000000"))
 	double SurfaceDampeningPercentage;
 
-	/** Please add a variable description */
+	/** Looping sound to be used for when the object is sliding */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="SlidingRollingSound", MakeStructureDefaultValue="None"))
 	TObjectPtr<USoundWave> SlidingRollingSound;
 
-	/** Please add a variable description */
+	/** How fast the object is expected to hit things eg: a cup would be 1. A basketball 5 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="1.000000"))
 	double MaxSpeedScalar;
 
-	/** Please add a variable description */
+	/** How long the sound should be */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="ImpulseLength", MakeStructureDefaultValue="0.500000"))
 	double ImpulseLength;
+
+	FReacousticSurfaces()
+	: Gain_Db(0.0)
+	, HitSound(nullptr)
+	, Material(SurfaceType_Default)
+	, SurfaceDampeningPercentage(0.0)
+	, SlidingRollingSound(nullptr)
+	, MaxSpeedScalar(1.0)
+	, ImpulseLength(0.5)
+	{
+	}
 };
