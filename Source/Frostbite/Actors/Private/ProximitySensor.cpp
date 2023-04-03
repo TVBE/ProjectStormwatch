@@ -33,6 +33,13 @@ void AProximitySensor::OnConstruction(const FTransform& Transform)
 	DetectionBox->SetBoxExtent(FVector(DetectionBoxLength, DetectionBoxWidth, DetectionBoxHeighth), false);
 	DetectionBox->SetRelativeLocation(FVector(DetectionBoxLength, 0, 0));
 	ConeAngle = CalculateConeAngle(DetectionBox);
+
+#if WITH_EDITOR
+	if (EnableDebugVisualisation)
+	{
+		VisualizeCone(false);
+	}
+#endif
 }
 
 void AProximitySensor::BeginPlay()
@@ -43,11 +50,12 @@ void AProximitySensor::BeginPlay()
 #if WITH_EDITOR
 	if (EnableDebugVisualisation)
 	{
-		VisualizeCone(MAX_FLT);
+		VisualizeCone(true);
 	}
 #endif
 }
 
+/** Called at regular intervals to check for overlapping actors and determine the nearest pawn. */
 void AProximitySensor::Poll()
 {
 	DetectionBox->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
@@ -61,7 +69,7 @@ void AProximitySensor::Poll()
 				const FVector DirectionToActor {(Actor->GetActorLocation() - this->GetActorLocation()).GetSafeNormal()};
 				const float DotProduct {static_cast<float>(FVector::DotProduct(DirectionToActor, Root->GetForwardVector()))};
 
-				if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))))
+				if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))) || IsActorOccluded(Actor))
 				{
 					OverlappingActors[Index] = nullptr;
 				}
@@ -94,6 +102,30 @@ void AProximitySensor::Poll()
 	}
 }
 
+/** Determines if the given actor is occluded by another object using a line trace. */
+bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
+{
+	FVector StartLocation {GetActorLocation()};
+	FVector EndLocation {Actor->GetActorLocation()};
+	FHitResult HitResult;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	CollisionParams.AddIgnoredActor(Actor);
+	
+	if (bool IsHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
+	{
+		AActor* HitActor {HitResult.GetActor()};
+		
+		if (HitActor != Actor)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/** Calculates the cone angle based on the dimensions of the given box component. */
 float AProximitySensor::CalculateConeAngle(const UBoxComponent* BoxComponent) const 
 {
 	const FVector BoxExtent {BoxComponent->GetScaledBoxExtent()};
@@ -104,7 +136,8 @@ float AProximitySensor::CalculateConeAngle(const UBoxComponent* BoxComponent) co
 }
 
 #if WITH_EDITOR
-void AProximitySensor::VisualizeCone(const float DebugLineDuration) const
+/** Visualizes the detection cone by drawing debug lines in the editor. */
+void AProximitySensor::VisualizeCone(const bool IsPersistent) const
 {
 	const FVector BoxExtent {DetectionBox->GetScaledBoxExtent()};
 	const FVector BoxLocation {Root->GetComponentLocation()};
@@ -124,10 +157,10 @@ void AProximitySensor::VisualizeCone(const float DebugLineDuration) const
 
 	const FColor DebugLineColor {FColor::Red};
 
-	DrawDebugLine(GetWorld(), BoxLocation, TopRight, DebugLineColor, false, DebugLineDuration);
-	DrawDebugLine(GetWorld(), BoxLocation, TopLeft, DebugLineColor, false, DebugLineDuration);
-	DrawDebugLine(GetWorld(), BoxLocation, BottomRight, DebugLineColor, false, DebugLineDuration);
-	DrawDebugLine(GetWorld(), BoxLocation, BottomLeft, DebugLineColor, false, DebugLineDuration);
+	DrawDebugLine(GetWorld(), BoxLocation, TopRight, DebugLineColor, IsPersistent, 1.0f);
+	DrawDebugLine(GetWorld(), BoxLocation, TopLeft, DebugLineColor, IsPersistent, 1.0f);
+	DrawDebugLine(GetWorld(), BoxLocation, BottomRight, DebugLineColor, IsPersistent, 1.0f);
+	DrawDebugLine(GetWorld(), BoxLocation, BottomLeft, DebugLineColor, IsPersistent, 1.0f);
 }
 #endif
 

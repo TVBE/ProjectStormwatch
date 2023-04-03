@@ -7,15 +7,9 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestProximitySensor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestProximitySensor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Meshes/SM_Laptop.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Meshes/SM_Laptop.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Content/Audio/Metasounds/MSS_Reacoustic.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Content/Audio/Metasounds/MSS_Reacoustic.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Content/Audio/SA_HitSounds.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Content/Audio/SA_HitSounds.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerPhysicsGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerPhysicsGrabComponent.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -292,6 +286,7 @@
       <workItem from="1680470838186" duration="1292000" />
       <workItem from="1680509712065" duration="187000" />
       <workItem from="1680509968692" duration="11783000" />
+      <workItem from="1680530460530" duration="1489000" />
     </task>
     <servers />
   </component>

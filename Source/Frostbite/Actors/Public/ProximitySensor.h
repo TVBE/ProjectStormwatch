@@ -83,12 +83,18 @@ protected:
 	void Poll();
 
 private:
+	/** Checks if the object within the sensor's range is occluded.*/
+	UFUNCTION()
+	bool IsActorOccluded(const AActor* Actor) const;
+	
 	/** Calculates the cone angle based on the box extends. */
 	UFUNCTION()
 	float CalculateConeAngle(const UBoxComponent* BoxComponent) const;
 
-	void VisualizeCone(const float DebugLineDuration) const;
-	
+	/** Draws debug visualisation for the sensor. */
+	UFUNCTION()
+	void VisualizeCone(const bool IsPersistent) const;
+
 public:
 	/** Returns if there currently is a pawn inside the sensor's range. */
 	UFUNCTION(BlueprintGetter, Category = "Proximity Sensor", Meta = (DisplayName = "Is Pawn Detected"))

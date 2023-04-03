@@ -36,7 +36,7 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 	StaticMeshComponent = Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	if (StaticMeshComponent)
 	{
-		CurrentZoomLevel = FVector::Distance(GetRotatedHandOffset(), StaticMeshComponent->GetCenterOfMass());
+		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 		GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
 		bIsTickEnabled = true;
 	}
@@ -68,7 +68,7 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocation(float ZoomAxisValue)
 	// Calculate the desired location based on the forward vector and zoom level
 	if (Camera)
 	{
-		const FVector TargetLocation = GetRotatedHandOffset() + (CurrentZoomLevel * Camera->GetForwardVector());
+		const FVector TargetLocation = Camera->GetComponentLocation() + (CurrentZoomLevel * Camera->GetForwardVector());
 		SetTargetLocation(TargetLocation);
 	}
 }
