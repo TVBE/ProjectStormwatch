@@ -26,7 +26,6 @@ void UPlayerInteractionComponent::OnRegister()
 	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
 	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
 	
-	// UPlayerPhysicsGrabComponent* PhysicsGrabComponent = NewObject<UPlayerPhysicsGrabComponent>(GetOwner());
 	GrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetOwner()->AddComponentByClass(UPlayerPhysicsGrabComponent::StaticClass(), false, FTransform(), false));
 
 	if (GrabComponent)
