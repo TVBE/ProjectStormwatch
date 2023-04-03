@@ -58,6 +58,7 @@ void AProximitySensor::BeginPlay()
 /** Called at regular intervals to check for overlapping actors and determine the nearest pawn. */
 void AProximitySensor::Poll()
 {
+	if (!DetectionBox) { return; }
 	DetectionBox->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
 	
 	if (!OverlappingActors.IsEmpty())
@@ -79,26 +80,26 @@ void AProximitySensor::Poll()
 
 	if (OverlappingActors.IsEmpty()) { return; }
 
-	APawn* NearestPawn {nullptr};
+	AActor* NearestActor {nullptr};
 	float NearestPawnDistance {FLT_MAX};
 	
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		if (APawn* OverlappingPawn = Cast<APawn>(OverlappingActor))
+		if (OverlappingActor)
 		{
-			const float Distance {static_cast<float>(FVector::Dist(GetActorLocation(), OverlappingPawn->GetActorLocation()))};
+			const float Distance {static_cast<float>(FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation()))};
 			if (Distance < NearestPawnDistance)
 			{
 				NearestPawnDistance = Distance;
-				NearestPawn = OverlappingPawn;
+				NearestActor = OverlappingActor;
 			}
 		}
 	}
 
-	if (NearestPawn)
+	if (NearestActor)
 	{
-		IsPawnDetected = true;
-		OnPawnDetectedDelegate.Broadcast(NearestPawn, NearestPawnDistance);
+		IsActorDetected = true;
+		OnActorDetectedDelegate.Broadcast(NearestActor, NearestPawnDistance);
 	}
 }
 
