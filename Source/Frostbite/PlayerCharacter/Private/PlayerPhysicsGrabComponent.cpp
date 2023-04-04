@@ -24,27 +24,29 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if(GrabbedComponent)
 	{
-		UpdateTargetLocation(CurrentZoomAxisValue * DeltaTime);
+		UpdateTargetLocationWithRotation(CurrentZoomAxisValue * DeltaTime);
 	}
 }
 
-double UPlayerPhysicsGrabComponent::GetDeltaLocation()
-{
-	float DeltaLocation = FVector::Distance(Camera->GetComponentLocation(), LastLocation);
-	LastLocation = Camera->GetComponentLocation();
-	return DeltaLocation;
-}
 
 void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 {
 	// check if there's a reference and cast to static mesh component to get a ref to the first static mesh.
 	if (!ObjectToGrab){return;}
+	if(GrabbedComponent){return;}
 	UStaticMeshComponent* StaticMeshComponent = nullptr;
 	StaticMeshComponent = Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	if (StaticMeshComponent)
 	{
 		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
-		GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
+		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
+
+		/** Get the original rotation of the grabbed component */
+		 OriginalRotation = StaticMeshComponent->GetComponentRotation() - Camera->GetComponentRotation();
+
+
+
+
 		bIsTickEnabled = true;
 	}
 }
@@ -59,31 +61,46 @@ void UPlayerPhysicsGrabComponent::ReleaseObject()
 FVector UPlayerPhysicsGrabComponent::GetRotatedHandOffset()
 {
 	// Get the camera's world rotation
-	FRotator CameraRotation = Camera->GetComponentRotation();
+	const FRotator CameraRotation = Camera->GetComponentRotation();
 
 	// Rotate the hand offset vector using the camera's world rotation
-	FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
+	const FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
 
 	float HandOffsetScaler = FMath::Clamp((((Configuration->BeginHandOffsetDistance) - CurrentZoomLevel) / Configuration->BeginHandOffsetDistance), 0.0, 1000.0);
-	FVector RotatedHandOffsetMultiplied =  Camera->GetComponentLocation() + HandOffsetScaler * RotatedHandOffset;
+	const FVector RotatedHandOffsetMultiplied =  Camera->GetComponentLocation() + HandOffsetScaler * RotatedHandOffset;
 	return RotatedHandOffsetMultiplied;
 }
 
-void UPlayerPhysicsGrabComponent::UpdateTargetLocation(float ZoomAxisValue)
+void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float ZoomAxisValue)
 {
 	if (!GrabbedComponent) return;
-	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel - GetDeltaLocation() + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
-	// Calculate the desired location based on the forward vector and zoom level
+	AActor* CompOwner = this->GetOwner();
+	if (CompOwner)
+	{
+		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel - Configuration->WalkingRetunZoomSpeed * CompOwner->GetVelocity().Size() + ZoomAxisValue * Configuration->ZoomSpeed, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
+		// Calculate the desired location based on the forward vector and zoom level
+	}
+
 	if (Camera)
 	{
 		const FVector TargetLocation = GetRotatedHandOffset() + (CurrentZoomLevel * Camera->GetForwardVector());
-		SetTargetLocation(TargetLocation);
+
+		/** Calculate the difference between the camera rotation and the original rotation */
+		RotationDifference = OriginalRotation + Camera->GetComponentRotation();
+		
+		// Update the rotation of the grabbed component based on the camera rotation
+		FRotator TargetRotation = FRotator(0.0f, RotationDifference.Yaw, RotationDifference.Roll);;
+
+		SetTargetLocationAndRotation(TargetLocation,TargetRotation);
+		//SetTargetLocation(TargetLocation);
+
+
 	}
 }
 
 void UPlayerPhysicsGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 {
-	CurrentZoomAxisValue = ZoomAxis;
+	CurrentZoomAxisValue = FMath::Clamp(((CurrentZoomAxisValue + 0.1 * ZoomAxis) * 0.9),-2.0,2.0);
 }
 
 void UPlayerPhysicsGrabConfiguration::ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent)
