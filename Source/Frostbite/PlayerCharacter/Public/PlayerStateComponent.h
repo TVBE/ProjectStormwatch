@@ -26,7 +26,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVigilanceChangedDelegate, const f
 /**	This component is created to manage the state of the player character in the game.
  *	While Unreal Engine provides a default APlayerState class, we've opted to create an actor component instead.
  */
-UCLASS(Abstract, Blueprintable, ClassGroup = (PlayerCharacter))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+	DisplayName = "Player State Component", ShortToolTip = "Component that manages the player's state."))
 class FROSTBITE_API UPlayerStateComponent : public UActorComponent
 {
 	GENERATED_BODY()

@@ -9,22 +9,18 @@
 #include "PlayerVocalComponent.generated.h"
 
 /** Actor component that handles all vocal audio for the player character. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (PlayerCharacter), Meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+	DisplayName = "Player Vocal Component", ShortToolTip = "Component that handles vocal audio for the player character."))
 class FROSTBITE_API UPlayerCharacterVocalComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UPlayerCharacterVocalComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };

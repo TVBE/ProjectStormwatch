@@ -9,7 +9,7 @@
 #include "MotionSensor.generated.h"
 
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Interaction), Meta = (DisplayName = "Motion Sensor"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Motion Sensor"))
 class AMotionSensor : public AProximitySensor
 {
 	GENERATED_BODY()

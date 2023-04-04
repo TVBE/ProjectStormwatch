@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bo
 
 /** World Subsystem that provides access to the Player Character and its subobjects.
  *	Provides high level functions for changing the PlayerCharacter's behavior. */
-UCLASS()
+UCLASS(ClassGroup = "PlayerCharacter", Meta = (DisplayName = "Player Subsystem"))
 class FROSTBITE_API UPlayerSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()

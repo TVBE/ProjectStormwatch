@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present Barrelhouse
 // Written by Nino Saglia
 // This source code is part of the project Frostbite
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,20 +10,20 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerPhysicsGrabComponent.generated.h"
 
-/**
- * 
- */
-
 class UCameraComponent;
 class APlayerCharacter;
 
-UCLASS(Blueprintable, ClassGroup=PlayerCharacter, meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+	DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
 class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
 	
 public:
 
+	//TODO: Adhere to code conventions for Frostbite: use inline comments, initialize properties with direct list assignments instead of constructor: {}.
+	//TODO: Thank you! :)
+	
 	// CONFIGURATION
 
 	/** Pointer to the configuration asset for this component. */

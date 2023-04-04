@@ -68,7 +68,7 @@ struct FLinkedButton
 
 /** Base class for button actors. Note that we do not implement the IInteractableObject interface here
  *	as some derived button types may not be pressable by the player. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Interaction), Meta = (DisplayName = "Button"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Button"))
 class APressableButton : public AActor
 {
 	GENERATED_BODY()

@@ -24,7 +24,8 @@ enum class EPlayerLandingType : uint8;
 struct FStepData;
 struct FTimerHandle;
 
-UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (PlayerCharacter))
+UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "PlayerCharacter", Meta =
+	(DisplayName = "Player Character", ShortToolTip = "The main player character for Frostbite."))
 class FROSTBITE_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()

@@ -12,7 +12,7 @@ struct FTimerHandle;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetected, const AActor*, Actor, const float, Distance);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Interaction), Meta = (DisplayName = "Proximity Sensor"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Proximity Sensor"))
 class FROSTBITE_API AProximitySensor : public AActor
 { 
 	GENERATED_BODY()
