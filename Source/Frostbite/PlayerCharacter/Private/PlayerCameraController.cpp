@@ -3,6 +3,7 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerCameraController.h"
+
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
@@ -11,6 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/KismetMathLibrary.h"
+
+#if WITH_EDITOR
+#include "Editor/UnrealEd/Public/Editor.h"
+#endif
 
 /** Sets default values for this component's properties. */
 UPlayerCameraController::UPlayerCameraController()
@@ -36,8 +41,19 @@ void UPlayerCameraController::OnRegister()
 	PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
 	if (!PlayerCharacter) {return; }
 	HeadSocketTransform = PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor);
-	PlayerCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCameraController::HandleCharacterControllerChanged);
 
+#if WITH_EDITOR
+	/** Perform a check to make sure that the game is being simulated in the editor to prevent an assertion error on this delegate. */
+	if (GEditor && GEditor->IsPlayingSessionInEditor())
+	{
+		PlayerCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCameraController::HandleCharacterControllerChanged);
+	}
+#endif
+
+#if !(WITH_EDITOR)
+	PlayerCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCameraController::HandleCharacterControllerChanged);
+#endif
+	
 	/** Apply the camera configuration. */
 	if (!Configuration) {return; }
 	Configuration->ApplyToCamera(PlayerCharacter->GetCamera());

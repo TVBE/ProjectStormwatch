@@ -12,7 +12,7 @@ public class Frostbite : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime", "UnrealEd" });
 		
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Actors/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Core/Public");

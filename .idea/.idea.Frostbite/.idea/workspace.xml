@@ -5,7 +5,12 @@
     <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="" />
+    <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -284,6 +289,7 @@
       <workItem from="1680530460530" duration="3833000" />
       <workItem from="1680534410494" duration="1093000" />
       <workItem from="1680603036260" duration="4000000" />
+      <workItem from="1680617767943" duration="2136000" />
     </task>
     <servers />
   </component>
