@@ -49,6 +49,9 @@ void UPlayerInteractionComponent::BeginPlay()
 void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (GrabComponent && GrabComponent->GetGrabbedActor()) { return; }
+	
 	CurrentInteractableActor = CheckForInteractableActor();
 	
 	if (ActorInUse && ActorInUse != CurrentInteractableActor)

@@ -64,9 +64,7 @@ void AMotionSensor::Poll()
 
 bool AMotionSensor::IsActorMoving(const AActor* Actor) const
 {
-	UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
-
-	if (PrimitiveComponent)
+	if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Actor->GetRootComponent()))
 	{
 		const FVector ActorVelocity = PrimitiveComponent->GetPhysicsLinearVelocity();
 		return ActorVelocity.Size() >= VelocityThreshold;

@@ -20,36 +20,51 @@ class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 	GENERATED_BODY()
 	
 public:
-
 	//TODO: Adhere to code conventions for Frostbite: use inline comments, initialize properties with direct list assignments instead of constructor: {}.
 	//TODO: Thank you! :)
 	
-	// CONFIGURATION
-
-	/** Pointer to the configuration asset for this component. */
+	/** Pointer to the configuration data asset instance for this component. */
 	UPROPERTY()
 	UPlayerPhysicsGrabConfiguration* Configuration;
 
-	//The camera component of the player
+	/** Pointer to the camera component of the player. */
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
 
-	UPROPERTY(EditAnywhere)
+private:
+	UPROPERTY()
 	float CurrentZoomLevel;
 	
+	UPROPERTY()
+	float CurrentZoomAxisValue;
+	
+	UPROPERTY()
+	FVector LastLocation;
+	
+	UPROPERTY()
+	FRotator OriginalRotation;
+	
+	UPROPERTY()
+	FRotator RotationDifference;
+	
+	UPROPERTY()
+	FRotator CameraRotation;
+	
+	UPROPERTY()
+	FVector RotatedHandOffset;
+	
 public:
-
 	/** The object that will be passed to the physics handle. */
-	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void GrabObject(AActor* ObjectToGrab);
 
 	/** Called when you release the object or place the object */
-	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void ReleaseObject();
 
 	/** Calculate the rotated hand offset based on the camera rotation.*/
-	UFUNCTION(Category="Player Physics Grab")
-	FVector GetRotatedHandOffset();
+	UFUNCTION(Category = "Player Physics Grab")
+	void UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset);
 	
 	/** Will be updated when a component is being grabbed. */
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
@@ -61,31 +76,23 @@ public:
 protected:
 	virtual void OnRegister() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	//virtual void OnUnregister() override;
-	//virtual void BeginPlay() override;
-	//virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-private:
-	// Boolean flag to track if Tick is enabled or disabled
-	bool bIsTickEnabled;
-	/** The current value that the mouse scroll wheel is putting out */
-	float CurrentZoomAxisValue;
-	/** the latest location that is being stored by the GetDeltaLocation function */
-	FVector LastLocation;
-	/** The original rotation of the object when it gets grabbed*/
-	FRotator OriginalRotation;
-	/** The original rotation of the camera when it gets grabbed*/
-	FRotator RotationDifference;
-	
+public:
+	/** Returns the actor that is currently being grabbed. */
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
+	FORCEINLINE AActor* GetGrabbedActor() const
+	{
+		if (const UPrimitiveComponent* Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
+		return nullptr; 
+	}
 };
 
-UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
 class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-
 	/** The location where the holding hand should be relative to the physics grab component.*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
 	FVector RelativeHoldingHandLocation;

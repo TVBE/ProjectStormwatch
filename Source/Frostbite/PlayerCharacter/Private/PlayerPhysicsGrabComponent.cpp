@@ -31,44 +31,38 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 {
-	// check if there's a reference and cast to static mesh component to get a ref to the first static mesh.
-	if (!ObjectToGrab){return;}
-	if(GrabbedComponent){return;}
-	UStaticMeshComponent* StaticMeshComponent = nullptr;
-	StaticMeshComponent = Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-	if (StaticMeshComponent)
+	/** check if there's a reference and cast to static mesh component to get a ref to the first static mesh. */
+	if (!ObjectToGrab || GrabbedComponent) { return; }
+	if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))})
 	{
 		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
 
 		/** Get the original rotation of the grabbed component */
 		 OriginalRotation = StaticMeshComponent->GetComponentRotation() - Camera->GetComponentRotation();
-
-
-
-
-		bIsTickEnabled = true;
+		
+		SetComponentTickEnabled(true);
 	}
 }
 
 void UPlayerPhysicsGrabComponent::ReleaseObject()
 {
+	SetComponentTickEnabled(false);
 	ReleaseComponent();
-	bIsTickEnabled = false;
-	
 }
 
-FVector UPlayerPhysicsGrabComponent::GetRotatedHandOffset()
+void UPlayerPhysicsGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset)
 {
-	// Get the camera's world rotation
-	const FRotator CameraRotation = Camera->GetComponentRotation();
+	/** Get the camera's world rotation. */
+	CameraRotation = Camera->GetComponentRotation();
 
-	// Rotate the hand offset vector using the camera's world rotation
-	const FVector RotatedHandOffset = CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
+	/** Rotate the hand offset vector using the camera's world rotation. */
+	RotatedHandOffset =CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation);
 
-	float HandOffsetScaler = FMath::Clamp((((Configuration->BeginHandOffsetDistance) - CurrentZoomLevel) / Configuration->BeginHandOffsetDistance), 0.0, 1000.0);
-	const FVector RotatedHandOffsetMultiplied =  Camera->GetComponentLocation() + HandOffsetScaler * RotatedHandOffset;
-	return RotatedHandOffsetMultiplied;
+	const float HandOffsetScalar {static_cast<float>(FMath::Clamp((((Configuration->BeginHandOffsetDistance)
+		- CurrentZoomLevel) / Configuration->BeginHandOffsetDistance), 0.0, 1000.0))};
+	
+	RotatedHandOffset = Camera->GetComponentLocation() + HandOffsetScalar * RotatedHandOffset;
 }
 
 void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float ZoomAxisValue)
@@ -83,7 +77,8 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float ZoomAxi
 
 	if (Camera)
 	{
-		const FVector TargetLocation = GetRotatedHandOffset() + (CurrentZoomLevel * Camera->GetForwardVector());
+		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
+		const FVector TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
 
 		/** Calculate the difference between the camera rotation and the original rotation */
 		RotationDifference = OriginalRotation + Camera->GetComponentRotation();

@@ -28,6 +28,10 @@ class FROSTBITE_API UPlayerInteractionComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
+	/** The physics grab component that is used to grab actors. */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Grab Component", AllowPrivateAccess = "true"))
+	UPlayerPhysicsGrabComponent* GrabComponent;
+	
 	/** The camera component of the Player Character. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
@@ -83,10 +87,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
 	TSoftObjectPtr<UPlayerPhysicsGrabConfiguration> PlayerPhysicsGrabConfiguration;
 
-	/** The reference to the playerPhysicsGrabComponent. */
-	UPROPERTY();
-	UPlayerPhysicsGrabComponent* GrabComponent;
-	
 public:	
 	UPlayerInteractionComponent();
 	
