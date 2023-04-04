@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacterMovementComponent.h"
 #include "Components/ActorComponent.h"
 #include "Math/Vector.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -68,7 +69,7 @@ public:
 	
 	/** Will be updated when a component is being grabbed. */
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
-	void UpdateTargetLocationWithRotation(float ZoomAxisValue);
+	void UpdateTargetLocationWithRotation(float DeltaTime);
 
 	/** Gets triggered when the zoom axis value gets changed*/
 	void UpdateZoomAxisValue(float ZoomAxis);
@@ -95,70 +96,63 @@ class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
 public:
 	/** The location where the holding hand should be relative to the physics grab component.*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
-	FVector RelativeHoldingHandLocation;
+	FVector RelativeHoldingHandLocation{70.0f,40.0f, -30.0f};
 
 	/** The minimum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float MinZoomLevel;
+	float MinZoomLevel{0.0f};
 
 	/** The maximum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float MaxZoomLevel;
+	float MaxZoomLevel{300.0f};
 
 	/** The distance where the object will move towards the hand location.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float BeginHandOffsetDistance;
+	float BeginHandOffsetDistance{100.0f};
 
 	/**The speed at which you can zoom.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float ZoomSpeed;
+	float ZoomSpeed{1500.0f};
 
 	/** The speed at which the object will return to your hand depending on how fast you walk*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float WalkingRetunZoomSpeed;
+	float WalkingRetunZoomSpeed{10.0f};
 
 	
-	// ... PhysicsHandleSettings ...
+	// ... PhysicsHandleSettings ... 
 
-	/** Linear damping controls how fast the object slows down.*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
-	float LinearDamping;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle)
+	uint32 bSoftAngularConstraint : 1;
 
-	/** Angular damping controls how fast the object slows down.*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
-	float AngularDamping;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PhysicsHandle)
+	uint32 bSoftLinearConstraint : 1;
 
-	/** The force that is used to move the grabbed object. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
-	float InterpolationSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicsHandle)
+	uint32 bInterpolateTarget : 1;
 
-	/** The maximum distance that the grab can be performed from. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta=(ClampMin = "0.0", UIMin = "0.0"))
-	float GrabDistance;
+	/** Linear damping of the handle spring. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftLinearConstraint"))
+	float LinearDamping{200.0f};
 
-	/** Determines whether we should attempt to use CCD on this physics handle component. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
-	bool bSoftAngularConstraint;
+	/** Linear stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftLinearConstraint"))
+	float LinearStiffness{750.0f};
 
-	/** Controls how fast we move the grabbed object to the target location. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (ClampMin = "0.0", UIMin = "0.0"))
-	float InterpolationSpeedThreshold;
+	/** Angular damping of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftAngularConstraint"))
+	float AngularDamping{500.0f};
+
+	/** Angular stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftAngularConstraint"))
+	float AngularStiffness{1500.0f};
+
+	/** How quickly we interpolate the physics target transform */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bInterpolateTarget"))
+	float InterpolationSpeed{50.0f};
 
 	
 	/** Constructor with default values. */
 	UPlayerPhysicsGrabConfiguration()
-	: RelativeHoldingHandLocation(FVector::ZeroVector)
-	, MinZoomLevel(0.0f)
-	, MaxZoomLevel(1000.0f)
-	, ZoomSpeed(1.0f)
-	, WalkingRetunZoomSpeed(200.0f)
-	, LinearDamping(1.0f)
-	, AngularDamping(1.0f)
-	, InterpolationSpeed(1.0f)
-	, GrabDistance(1000.0f)
-	, bSoftAngularConstraint(false)
-	, BeginHandOffsetDistance(200.0f)
-	, InterpolationSpeedThreshold(1.0f)
 	{
 	}
 	
