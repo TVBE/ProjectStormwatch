@@ -53,6 +53,9 @@ private:
 	
 	UPROPERTY()
 	FVector RotatedHandOffset;
+
+	UPROPERTY()
+	UPlayerCharacterMovementComponent* Movement;
 	
 public:
 	/** The object that will be passed to the physics handle. */
