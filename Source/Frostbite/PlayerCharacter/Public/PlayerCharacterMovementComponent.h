@@ -37,7 +37,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEventDelegate, EPlayerLoc
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EPlayerLandingType, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
 
-UCLASS(ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (DisplayName = "Player Character Movement Component"))
+UCLASS(ClassGroup = "PlayerCharacter", Meta = (DisplayName = "Player Character Movement Component"))
 class FROSTBITE_API UPlayerCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()

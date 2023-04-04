@@ -15,7 +15,7 @@ class APlayerCharacter;
  *	This class provides a simple and convenient way for designers to customize the player's VFX implementation.
  *	@Brief ActorComponent for managing player visual effects.
  */
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player VFX Component", ShortToolTip = "Component that manages player VFX."))
 class FROSTBITE_API UPlayerVfxComponent : public UActorComponent
 {

@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerInventoryComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Inventory Component"))
 class FROSTBITE_API UPlayerInventoryComponent : public UActorComponent
 {

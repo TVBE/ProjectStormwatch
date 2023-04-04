@@ -16,7 +16,7 @@ class APlayerCharacterController;
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.
  *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view. */
 class APlayerCharacterController;
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Camera Controller", ShortToolTip = "Camera controller for the player character.") )
 class FROSTBITE_API UPlayerCameraController : public UActorComponent
 {

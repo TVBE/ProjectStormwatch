@@ -18,7 +18,7 @@ enum class EPlayerGroundMovementType : uint8;
  *	This class provides a simple and convenient way for designers to customize the player's flashlight behavior.
  *	@Brief ActorComponent for controlling the player's flashlight.
  */
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class FROSTBITE_API UPlayerFlashlightComponent : public UActorComponent
 {
 	GENERATED_BODY()

@@ -9,7 +9,7 @@
 #include "PlayerVocalComponent.generated.h"
 
 /** Actor component that handles all vocal audio for the player character. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Vocal Component", ShortToolTip = "Component that handles vocal audio for the player character."))
 class FROSTBITE_API UPlayerCharacterVocalComponent : public UActorComponent
 {

@@ -13,7 +13,7 @@
 class UCameraComponent;
 class APlayerCharacter;
 
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
 class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 {

@@ -21,7 +21,7 @@ enum class EInteractionActionType : uint8
 };
 
 /** PlayerCharacter component that checks for interactable objects in front of the player character. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Interaction Component"))
 class FROSTBITE_API UPlayerInteractionComponent : public UActorComponent
 {

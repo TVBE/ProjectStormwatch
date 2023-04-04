@@ -16,7 +16,7 @@ class UAudioComponent;
  *	This class provides a simple and convenient way for designers to customize the player's audio implementation.
  *	@Brief ActorComponent for managing player audio.
  */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 DisplayName = "Player Audio Component", ShortToolTip = "Audio component for the player character.") )
 class FROSTBITE_API UPlayerAudioComponent : public UActorComponent
 {
