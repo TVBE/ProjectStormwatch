@@ -50,15 +50,6 @@ void APlayerCharacter::PostInitProperties()
 	{
 		PlayerCharacterMovement = PlayerCharacterMovementComponent;
 	}
-#if WITH_EDITOR
-	else if (GEngine)
-	{
-		if (GEditor && GEditor->IsPlayingSessionInEditor())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, FLT_MAX, FColor::Red, "PlayerCharacter failed to initialize PlayerCharacterMovementComponent.");
-		}
-	}
-#endif
 	
 	/** Set components to call their virtual InitializeComponent functions. */
 	CameraController->bWantsInitializeComponent = true;
