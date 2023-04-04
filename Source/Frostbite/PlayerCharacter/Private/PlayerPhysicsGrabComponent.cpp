@@ -42,13 +42,19 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 
 		/** Get the original rotation of the grabbed component */
 		 OriginalRotation = StaticMeshComponent->GetComponentRotation() - Camera->GetComponentRotation();
-		
+		/** start the tick function so that the update for the target location can start updating*/
 		SetComponentTickEnabled(true);
+
+		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 }
 
 void UPlayerPhysicsGrabComponent::ReleaseObject()
 {
+	if(GrabbedComponent)
+	{
+		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	}
 	SetComponentTickEnabled(false);
 	ReleaseComponent();
 }
