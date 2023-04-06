@@ -29,8 +29,8 @@ void UMeshInteractionComponent::OnRegister()
 		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
 		{
 			MeshComponent->SetSimulatePhysics(true);
-			MeshComponent->SetGenerateOverlapEvents(true);
 			MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
+			MeshComponent->SetNotifyRigidBodyCollision(true);
 			MeshComponent->SetMobility(EComponentMobility::Movable);
 		}
 	}

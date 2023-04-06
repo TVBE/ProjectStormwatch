@@ -1,4 +1,6 @@
-// Copyright 2023 Barrelhouse
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne & Nino Saglia
+// This source code is part of the project Frostbite
 
 #pragma once
 
@@ -15,9 +17,22 @@ class FROSTBITE_API UPlayerInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	/** Pointer to the interaction component of the player. */
-	UPROPERTY()
-	UPlayerInteractionComponent* InteractionComponent;
+	/** The currently selected slot in the Inventory. */
+	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotIndex, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Current Selected Hotbar Slot"))
+	int32 SelectedSlot {0};
+
+	/** The actor in the hotbar at the index of the selected slot. */
+	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotActor, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Current Selected Hotbar Actor"))
+	AActor* SelectedActor;
+
+	/** The amount of hotbar slots available for the inventory. */
+	UPROPERTY(BlueprintGetter = GetHotbarSize, EditDefaultsOnly, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Hotbar Slots",
+		ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
+	int32 HotbarSlots {4};
+
+	/** The entry of AActor pointers in the hotbar. This property can be treated as 'the hotbar'. */
+	UPROPERTY(BlueprintGetter = GetHotbar, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Hotbar"))
+	TArray<AActor*> Hotbar;
 
 public:	
 	UPlayerInventoryComponent();
@@ -27,8 +42,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Find Inventory Object"))
 	UObject* FindInventoryObject(AActor* Actor) const;
 
+	/** Tries to add an item into the hotbar. */
+	UFUNCTION(BlueprintCallable, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Add Object To Inventory"))
+	bool AddActorToInventory(AActor* Actor);
+
+	/** Tries to take an item from the hotbar. */
+	UFUNCTION(BlueprintCallable, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Take Actor From Inventory"))
+	AActor* TakeActorFromInventory();
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnComponentCreated() override;
 
 private:
 	/** Called when the interaction component has detected a new interactable actor in front of the player. */
@@ -38,4 +62,21 @@ private:
 	/** Tries to find a component that implements the IInventoryObject interface in a specified actor.*/
 	UFUNCTION()
 	UActorComponent* FindInventoryComponent(const AActor* Actor) const;
+
+public:
+	/** Returns the current selected slot index. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Current Selected Hotbar Slot Index"))
+	FORCEINLINE int32 GetCurrentSelectedSlotIndex() const { return SelectedSlot; }
+
+	/** Returns the current selected slot actor. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Current Selected Hotbar Slot Actor"))
+	FORCEINLINE AActor* GetCurrentSelectedSlotActor() const { return SelectedActor; }
+
+	/** Returns the hotbar size. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Hotbar Size"))
+	FORCEINLINE int32 GetHotbarSize() const { return HotbarSlots; }
+
+	/** Returns the hotbar. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Hotbar"))
+	FORCEINLINE TArray<AActor*> GetHotbar() const { return Hotbar; }
 };

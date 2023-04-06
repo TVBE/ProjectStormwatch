@@ -5,6 +5,7 @@
 #include "PlayerInteractionComponent.h"
 #include "InteractableObjectInterface.h"
 #include "PlayerCharacter.h"
+#include "PlayerInventoryComponent.h"
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Camera/CameraComponent.h"
 
@@ -43,6 +44,10 @@ void UPlayerInteractionComponent::OnRegister()
 void UPlayerInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetOwner())
+	{
+		InventoryComponent = Cast<UPlayerInventoryComponent>(GetOwner()->FindComponentByClass(UPlayerInventoryComponent::StaticClass()));
+	}
 }
 
 /** Called every frame. */
@@ -232,12 +237,12 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 			if (InteractionType == EInteractionType::Usable || InteractionType == EInteractionType::Handleable)
 			{
 				const bool IsUsed {IInteractableObject::Execute_Use(InteractableObject, GetOwner())};
-		
 				if (IsUsed)
 				{
 					/** Request the trigger type from the interactable object. If the object is of type press-and-hold,
 					 *	store the pointer to the interactable object. */
 					const EInteractionTriggerType TriggerType {IInteractableObject::Execute_GetInteractionTriggerType(InteractableObject)};
+					;
 					if (TriggerType == EInteractionTriggerType::PressAndHold)
 					{
 						ActorInUse = CurrentInteractableActor;
@@ -258,6 +263,36 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 			}
 			
 		}
+
+	case EInteractionActionType::Inventory:
+		{
+			
+			if (InventoryComponent)
+			{
+				if (!InventoryComponent->GetCurrentSelectedSlotActor())
+				{
+					InventoryComponent->AddActorToInventory(CurrentInteractableActor);
+					UE_LOG(LogTemp, Error, TEXT("Hello!"))
+				}
+				else
+				{
+					if (AActor* TakenActor {InventoryComponent->TakeActorFromInventory()})
+					{
+						if (const UObject* InteractableInventoryObject {FindInteractableObject(TakenActor)})
+						{
+							const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
+							if (InteractionType == EInteractionType::Grabbable ||
+								InteractionType == EInteractionType::Handleable)
+							{
+								GrabComponent->GrabObject(TakenActor);
+							}
+						}
+					}
+				}
+			}
+		}
+		break;
+		
 	default: break;
 	}
 	EventBeginInteraction(Type, InteractableObject);
@@ -296,7 +331,7 @@ void UPlayerInteractionComponent::ReleaseActorInUse()
 		ActorInUse = nullptr;
 		return;
 	}
-	bool IsReleased {IInteractableObject::Execute_Disuse(InteractableObject, GetOwner())};
+	const bool IsReleased {IInteractableObject::Execute_Disuse(InteractableObject, GetOwner())};
 	if (IsReleased) { ActorInUse = nullptr; }
 }
 

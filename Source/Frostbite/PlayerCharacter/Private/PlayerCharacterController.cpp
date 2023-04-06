@@ -265,6 +265,18 @@ void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReaso
 	Super::EndPlay(EndPlayReason);
 }
 
+UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteractionComponent()
+{
+	if (!InteractionComponent)
+	{
+		if(GetPawn())
+		{
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		}
+	}
+	return InteractionComponent;
+}
+
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
@@ -383,58 +395,43 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 
 void APlayerCharacterController::HandlePrimaryActionPressed()
 {
-	if (!InteractionComponent)
+	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
 	{
-		if(GetPawn())
-		{
-			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
-		}
+		InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
 	}
-	if (!InteractionComponent) { return; }
-	InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
 }
 
 void APlayerCharacterController::HandlePrimaryActionReleased()
 {
-	if (!InteractionComponent)
+	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
 	{
-		if(GetPawn())
-		{
-			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
-		}
+		InteractionComponent->EndInteraction(EInteractionActionType::Primary);
 	}
-	if (!InteractionComponent) { return; }
-	InteractionComponent->EndInteraction(EInteractionActionType::Primary);
 }
 
 void APlayerCharacterController::HandleSecondaryActionPressed()
 {
-	if (!InteractionComponent)
+	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
 	{
-		if(GetPawn())
-		{
-			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
-		}
+		InteractionComponent->BeginInteraction(EInteractionActionType::Secondary);
 	}
-	if (!InteractionComponent) { return; }
-	InteractionComponent->BeginInteraction(EInteractionActionType::Secondary);
 }
 
 void APlayerCharacterController::HandleSecondaryActionReleased()
 {
-	if (!InteractionComponent)
+	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
 	{
-		if(GetPawn())
-		{
-			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
-		}
+		InteractionComponent->EndInteraction(EInteractionActionType::Secondary);
 	}
-	if (!InteractionComponent) { return; }
-	InteractionComponent->EndInteraction(EInteractionActionType::Secondary);
 }
 
 void APlayerCharacterController::HandleInventoryActionPressed()
 {
+	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	{
+		InteractionComponent->BeginInteraction(EInteractionActionType::Inventory);
+	}
+	// TODO: Implement timer for press and hold.
 }
 
 void APlayerCharacterController::HandleInventoryActionReleased()

@@ -9,6 +9,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
+class UPlayerInventoryComponent;
 class UCameraComponent;
 struct FCollisionQueryParams;
 
@@ -16,8 +17,9 @@ struct FCollisionQueryParams;
 UENUM(BlueprintType)
 enum class EInteractionActionType : uint8
 {
-	Primary					UMETA(DisplayName = "Primary"),
-	Secondary				UMETA(DisplayName = "Secondary"),
+	Primary					UMETA(DisplayName = "Primary", ToolTip = "The primary action is used to 'use' actors."),
+	Secondary				UMETA(DisplayName = "Secondary", ToolTip = "The secondary action is used to grab actors."),
+	Inventory				UMETA(DisplayName = "Inventory", ToolTip = "The inventory action is used to add or take objects from the inventory.")
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractableActorFoundDelegate, AActor*, InteractableActor);
@@ -35,6 +37,10 @@ public:
 	FInteractableActorFoundDelegate OnInteractableActorFound;
 
 private:
+	/** The inventory component that is used to store actors in the player's inventory. */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Inventory Component", AllowPrivateAccess = "true"))
+	UPlayerInventoryComponent* InventoryComponent;
+	
 	/** The physics grab component that is used to grab actors. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Grab Component", AllowPrivateAccess = "true"))
 	UPlayerPhysicsGrabComponent* GrabComponent;

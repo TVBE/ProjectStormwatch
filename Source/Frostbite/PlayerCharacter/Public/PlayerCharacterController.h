@@ -131,6 +131,10 @@ private:
 	UFUNCTION()
 	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
 
+	/** Tries to find an InteractionComponent in the player character. */
+	UFUNCTION()
+	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
+
 public:
 	/** Returns whether the player controller can process movement input. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))

@@ -50,29 +50,29 @@ public:
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Use"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Use"))
 	bool Use(const AActor* Interactor);
 
 	/** Ends interaction with the object.
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Disuse"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Disuse"))
 	bool Disuse(const AActor* Interactor);
 
 	/** Returns the interaction type of the object. */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Type"))
-	EInteractionType GetInteractionType() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Type"))
+	EInteractionType GetInteractionType();
 
 	/** Returns whether the object has a single-press interaction, or a press-and-hold interaction. */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Trigger Type"))
-	EInteractionTriggerType GetInteractionTriggerType() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Trigger Type"))
+	EInteractionTriggerType GetInteractionTriggerType();
 	
 	/** Returns the interaction hand type of the object. */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Hand Type"))
-	EInteractionHandType GetInteractionHandType() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Hand Type"))
+	EInteractionHandType GetInteractionHandType();
 
 	/** Returns the offset of the interaction widget. */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Interaction Widget Offset"))
-	FVector GetInteractionWidgetOffset() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Interaction Widget Offset"))
+	FVector GetInteractionWidgetOffset();
 };
