@@ -15,7 +15,7 @@ enum class EInteractionType : uint8
 	Draggable			UMETA(DisplayName = "Draggable", Tooltip = "Draggable actors can only be dragged or pushed. They don't offer any additional functionality."),
 	Usable				UMETA(DisplayName = "Usable", Tooltip = "Usable items can be interacted with using the secondary interaction action. However, they cannot be grabbed."),
 	Handleable			UMETA(DisplayName = "Handleable", Tooltip = "Handleable items can both be grabbed and used."),
-	GrabUsable			UMETA(DisplayName = "Grab Usable", Tooltip = "Grab Usable actors are actors that serve the purpose of Usable actors, but are 'used' by using the grab action.")
+	UsableViaGrab		UMETA(DisplayName = "Usable Via Grab", Tooltip = "Grab Usable actors are actors that serve the purpose of Usable actors, but are 'used' by using the grab action.")
 };
 
 /** Defines whether the actor has a single-press interaction, or a press-and-hold interaction.

@@ -58,7 +58,16 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	{
 		ReleaseActorInUse();
 	}
-	if (!CurrentInteractableActor) { return; }
+
+	/** Check if the current interactable actor is different from the previous interactable actor.
+	 *	Call OnInteractableActorFound if this is the case.
+	 *	This allows other objects to perform a check once a new interactable actor is found. */
+	if (CurrentInteractableActor && CurrentInteractableActor != PreviousInteractableActor)
+	{
+		OnInteractableActorFound.Broadcast(CurrentInteractableActor);
+	}
+	
+	PreviousInteractableActor = CurrentInteractableActor;
 }
 
 AActor* UPlayerInteractionComponent::CheckForInteractableActor()
@@ -241,12 +250,11 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 	case EInteractionActionType::Secondary:
 		{
 			const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
-			if (InteractionType ==EInteractionType::Grabbable ||
-				InteractionType == EInteractionType::GrabUsable ||
+			if (InteractionType == EInteractionType::Grabbable ||
+				InteractionType == EInteractionType::UsableViaGrab ||
 				InteractionType == EInteractionType::Handleable )
 			{
 				GrabComponent->GrabObject(CurrentInteractableActor);
-				UE_LOG(LogTemp, Error, TEXT("Secondary Action Pressed, Actor is grabbable.")) //TODO: Remove this.
 			}
 			
 		}

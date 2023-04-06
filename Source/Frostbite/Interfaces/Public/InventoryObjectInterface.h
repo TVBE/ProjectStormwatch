@@ -32,7 +32,7 @@ public:
 	 *	@Return Whether the item can be added to an inventory.
 	 */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InventoryObject", Meta = (Displayname = "Can Be Added To Inventory"))
-	bool CanAddToInventory(const AActor* Actor);
+	bool CanAddToInventory(const AActor* Actor) const;
 	
 	/** Adds the item to the player's inventory.
 	 *	@Param Actor The actor that owns this item when its added to an inventory.
@@ -50,5 +50,5 @@ public:
 
 	/** Returns the inventory trigger type of the object. */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "InventoryObject", Meta = (Displayname = "Get Inventory Trigger Type"))
-	EInventoryTriggerType GetTriggerType();
+	EInventoryTriggerType GetTriggerType() const;
 };

@@ -78,6 +78,7 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 {
 	if (!GrabbedComponent) return;
 	AActor* CompOwner = this->GetOwner();
+	
 	if (CompOwner)
 	{
 		/** Update the zoom level dependent on the scroll wheel and the movement type.*/
@@ -91,9 +92,8 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 		}
 		/** In any case, clam the zoom level within the min max of configuration*/
 		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
-		
 	}
-
+	
 	if (Camera)
 	{
 		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
@@ -106,9 +106,6 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 		FRotator TargetRotation = FRotator(0.0f, RotationDifference.Yaw, RotationDifference.Roll);;
 
 		SetTargetLocationAndRotation(TargetLocation,TargetRotation);
-
-
-
 	}
 }
 /** The update loop that scales the zoomaxis value from the mouse input */

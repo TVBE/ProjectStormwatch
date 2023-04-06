@@ -6,10 +6,11 @@
 
 #include "CoreMinimal.h"
 #include "InteractableObjectInterface.h"
+#include "InventoryObjectInterface.h"
 #include "MeshInteractionComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, Placeable, ClassGroup = ("Interaction"), Meta = (BlueprintSpawnableComponent))
-class UMeshInteractionComponent : public UActorComponent, public IInteractableObject
+class UMeshInteractionComponent : public UActorComponent, public IInteractableObject, public IInventoryObject
 {
 	GENERATED_BODY()
 
@@ -42,6 +43,19 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Widget Offset"))
 	FVector InteractionWidgetOffset {FVector()};
 
+	/** If true, the CanAddToInventory boolean is not set automatically, but has to be configured manually instead. */
+	UPROPERTY(EditInstanceOnly, Category = "Inventory", Meta = (DisplayName = "Override Automatic Inventory Configuration"))
+	bool OverrideInventoryAutoConfig {false};
+	
+	/** If true, the mesh can be added to the player's inventory. This will be set to false if the object is too heavy or too large. */
+	UPROPERTY(EditInstanceOnly, Category = "Inventory", Meta = (DisplayName = "Can Be Added To Inventory",
+		EditCondition = OverrideInventoryAutoConfig, InlineEditConditionToggle))
+	bool IsInventoryAddable {false};
+
+	/** Determines whether this actor can be added to the inventory with a single press of the inventory action, or whether the action is press-and-hold. */
+	UPROPERTY(EditInstanceOnly, Category = "Inventory", Meta = (DisplayName = "Inventory Trigger Type"))
+	EInventoryTriggerType InventoryTriggerType {EInventoryTriggerType::PressAndHold};
+
 public:
 	/** IInteractableObject interface functions. */
 	FORCEINLINE bool Use_Implementation(const AActor* Interactor) { return false; }
@@ -52,7 +66,15 @@ public:
 	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const { return InteractionWidgetOffset; }
 
 	/** IInventoryObject interface functions. */
+	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const { return IsInventoryAddable; };
+	bool AddToInventory_Implementation(const AActor* Actor);
+	bool TakeFromInventory_Implementation(const AActor* Actor);
+	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const { return InventoryTriggerType; }
 
 private:
 	virtual void OnComponentCreated() override;
+	virtual void OnRegister() override;
+
+	/** Determines whether the mesh can be added to the inventory or not. */
+	bool DetermineInventoryAddibility() const;
 };

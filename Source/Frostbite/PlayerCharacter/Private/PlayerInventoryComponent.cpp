@@ -3,32 +3,69 @@
 
 #include "PlayerInventoryComponent.h"
 
+#include "InventoryObjectInterface.h"
+#include "PlayerInteractionComponent.h"
+
 // Sets default values for this component's properties
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	if(const AActor* PlayerCharacter {GetOwner()})
+	{
+		InteractionComponent = Cast<UPlayerInteractionComponent>(PlayerCharacter->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		if (InteractionComponent)
+		{
+			InteractionComponent->OnInteractableActorFound.AddDynamic(this, &UPlayerInventoryComponent::HandleInteractableActorChanged);
+		}
+	}
+	
+}
 
-	// ...
+UObject* UPlayerInventoryComponent::FindInventoryObject(AActor* Actor) const
+{
+	if (!Actor) { return nullptr; }
+	UObject* InventoryObject {nullptr};
+	
+	/** Check if the actor implements the IInteractableObject interface. */
+	if (Actor->GetClass()->ImplementsInterface(UInventoryObject::StaticClass()))
+	{
+		InventoryObject = Actor;
+	}
+	
+	/** If the actor does not implement the IInteractableObject interface, try to find a component that does.*/
+	else if (UActorComponent* InventoryComponent {FindInventoryComponent(Actor)})
+	{
+		InventoryObject = InventoryComponent;
+	}
+	
+	return InventoryObject;
+}
+
+UActorComponent* UPlayerInventoryComponent::FindInventoryComponent(const AActor* Actor) const
+{
+	if (!Actor) { return nullptr; }
+	TSet<UActorComponent*> Components {Actor->GetComponents()};
+	if (Components.IsEmpty()) { return nullptr; }
+	for (UActorComponent* Component : Components)
+	{
+		if (Component->GetClass()->ImplementsInterface(UInventoryObject::StaticClass()))
+		{
+			return Component;
+		}
+	}
+	return nullptr;
+}
+
+
+void UPlayerInventoryComponent::HandleInteractableActorChanged(AActor* InteractableActor)
+{
 	
 }
 
 
-// Called every frame
-void UPlayerInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
 
