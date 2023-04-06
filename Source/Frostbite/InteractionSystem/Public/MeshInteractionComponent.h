@@ -58,18 +58,18 @@ private:
 
 public:
 	/** IInteractableObject interface functions. */
-	FORCEINLINE bool Use_Implementation(const AActor* Interactor) { return false; }
-	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) { return false; }
-	FORCEINLINE EInteractionType GetInteractionType_Implementation() const { return InteractionType; }
-	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const { return InteractionTriggerType; }
-	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const { return InteractionHandType; }
-	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const { return InteractionWidgetOffset; }
+	FORCEINLINE bool Use_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE EInteractionType GetInteractionType_Implementation() const override { return InteractionType; }
+	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const override { return InteractionTriggerType; }
+	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const override { return InteractionHandType; }
+	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const override { return InteractionWidgetOffset; }
 
 	/** IInventoryObject interface functions. */
-	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const { return IsInventoryAddable; };
-	bool AddToInventory_Implementation(const AActor* Actor);
-	bool TakeFromInventory_Implementation(const AActor* Actor);
-	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const { return InventoryTriggerType; }
+	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const override { return IsInventoryAddable; };
+	bool AddToInventory_Implementation(const AActor* Actor) override;
+	bool TakeFromInventory_Implementation(const AActor* Actor) override;
+	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const override { return InventoryTriggerType; }
 
 private:
 	virtual void OnComponentCreated() override;

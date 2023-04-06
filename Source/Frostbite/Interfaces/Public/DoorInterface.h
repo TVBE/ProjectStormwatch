@@ -29,14 +29,14 @@ class IDoor
 
 public:
     /** Attempts to open the door. */
-    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Open"))
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Open"))
     void Open();
 
     /** Attempts to close the door. */
-    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Close"))
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Close"))
     void Close();
     
     /** Returns the door's state. */
-    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Get Door State"))
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Get Door State"))
     EDoorState GetDoorState();
 };

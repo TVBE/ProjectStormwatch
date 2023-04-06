@@ -33,12 +33,12 @@ private:
 public:	
 	UActorInteractionComponent();
 
-	FORCEINLINE bool Use_Implementation(const AActor* Interactor) { return false; }
-	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) { return false; }
-	FORCEINLINE EInteractionType GetInteractionType_Implementation() const { return InteractionType; }
-	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const { return InteractionTriggerType; }
-	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const { return InteractionHandType; }
-	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const { return InteractionWidgetOffset; }
+	FORCEINLINE bool Use_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE EInteractionType GetInteractionType_Implementation() const override { return InteractionType; }
+	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const override { return InteractionTriggerType; }
+	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const override { return InteractionHandType; }
+	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const override { return InteractionWidgetOffset; }
 
 protected:
 	// Called when the game starts

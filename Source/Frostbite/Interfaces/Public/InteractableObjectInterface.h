@@ -62,17 +62,17 @@ public:
 
 	/** Returns the interaction type of the object. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Type"))
-	EInteractionType GetInteractionType();
+	EInteractionType GetInteractionType() const;
 
 	/** Returns whether the object has a single-press interaction, or a press-and-hold interaction. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Trigger Type"))
-	EInteractionTriggerType GetInteractionTriggerType();
+	EInteractionTriggerType GetInteractionTriggerType() const;
 	
 	/** Returns the interaction hand type of the object. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Hand Type"))
-	EInteractionHandType GetInteractionHandType();
+	EInteractionHandType GetInteractionHandType() const;
 
 	/** Returns the offset of the interaction widget. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Interaction Widget Offset"))
-	FVector GetInteractionWidgetOffset();
+	FVector GetInteractionWidgetOffset() const;
 };

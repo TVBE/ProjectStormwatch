@@ -236,6 +236,7 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 			const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
 			if (InteractionType == EInteractionType::Usable || InteractionType == EInteractionType::Handleable)
 			{
+			
 				const bool IsUsed {IInteractableObject::Execute_Use(InteractableObject, GetOwner())};
 				if (IsUsed)
 				{
@@ -272,7 +273,6 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 				if (!InventoryComponent->GetCurrentSelectedSlotActor())
 				{
 					InventoryComponent->AddActorToInventory(CurrentInteractableActor);
-					UE_LOG(LogTemp, Error, TEXT("Hello!"))
 				}
 				else
 				{
