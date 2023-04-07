@@ -264,6 +264,7 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 			}
 			
 		}
+		break;
 
 	case EInteractionActionType::Inventory:
 		{
