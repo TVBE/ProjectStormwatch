@@ -28,10 +28,11 @@ void UMeshInteractionComponent::OnRegister()
 	{
 		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
 		{
+			MeshComponent->SetMobility(EComponentMobility::Movable);
 			MeshComponent->SetSimulatePhysics(true);
+			MeshComponent->PutRigidBodyToSleep();
 			MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
 			MeshComponent->SetNotifyRigidBodyCollision(true);
-			MeshComponent->SetMobility(EComponentMobility::Movable);
 		}
 	}
 	if (!OverrideInventoryAutoConfig)

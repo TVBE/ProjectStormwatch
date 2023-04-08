@@ -69,6 +69,11 @@ private:
 	UPROPERTY()
 	FHitResult OcclusionTraceHitResult {FHitResult()};
 
+	/** The offset used for the occlusion trace. Prevents the occlusion trace hitting the actor underneath
+	 *	the interactable object that the occlusion trace is performed for. */
+	UPROPERTY()
+	FVector OcclusionOffset {FVector(0, 0, 5)};
+
 	/** The array of hit results for the interactable object multi sphere trace. */
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	TArray<FHitResult> ObjectTraceHitResults;

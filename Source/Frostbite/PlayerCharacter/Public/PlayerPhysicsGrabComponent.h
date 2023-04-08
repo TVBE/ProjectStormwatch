@@ -21,9 +21,6 @@ class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 	GENERATED_BODY()
 	
 public:
-	//TODO: Adhere to code conventions for Frostbite: use inline comments, initialize properties with direct list assignments instead of constructor: {}.
-	//TODO: Thank you! :)
-	
 	/** Pointer to the configuration data asset instance for this component. */
 	UPROPERTY()
 	UPlayerPhysicsGrabConfiguration* Configuration;

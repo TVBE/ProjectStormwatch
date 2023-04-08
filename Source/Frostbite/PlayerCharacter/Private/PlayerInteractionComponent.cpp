@@ -170,11 +170,11 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	const FVector EndLocation = Actor->GetActorLocation();
 	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, nullptr);
 	QueryParams.AddIgnoredActor(GetOwner());
-
+	
 	const bool IsHit = GetWorld()->LineTraceSingleByChannel(
 		OcclusionTraceHitResult,
 		CameraLocation,
-		EndLocation,
+		EndLocation + OcclusionOffset,
 		ECollisionChannel::ECC_Visibility,
 		QueryParams
 	);
