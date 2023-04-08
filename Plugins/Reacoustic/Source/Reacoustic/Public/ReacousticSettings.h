@@ -10,16 +10,16 @@
 /**
  * 
  */
-UCLASS(config = Reacoustic, defaultconfig, meta = (DisplayName = "Reacoustic"))
+UCLASS(config = Reacoustic, defaultconfig, Meta = (DisplayName = "Reacoustic"))
 class REACOUSTIC_API UReacousticProjectSettings : public UDeveloperSettings
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "Datatable"))
+	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "/Script/Engine.DataTable"))
 	FSoftObjectPath ReacousticObjectSounds;
 
-	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "Datatable"))
+	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "/Script/Engine.DataTable"))
 	FSoftObjectPath ReacousticSurfaceSounds;
 
 public:
