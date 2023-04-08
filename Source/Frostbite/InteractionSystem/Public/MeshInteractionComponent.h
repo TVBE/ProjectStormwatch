@@ -74,6 +74,7 @@ public:
 private:
 	virtual void OnComponentCreated() override;
 	virtual void OnRegister() override;
+	virtual void BeginPlay() override;
 
 	/** Determines whether the mesh can be added to the inventory or not. */
 	bool DetermineInventoryAddibility() const;

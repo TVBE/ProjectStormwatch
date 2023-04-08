@@ -41,6 +41,18 @@ void UMeshInteractionComponent::OnRegister()
 	}
 }
 
+void UMeshInteractionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
+	{
+		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
+		{
+			MeshComponent->PutRigidBodyToSleep();
+		}
+	}
+}
+
 bool UMeshInteractionComponent::DetermineInventoryAddibility() const
 {
 	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
