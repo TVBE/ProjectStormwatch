@@ -6,7 +6,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerphysicsGrabConfiguration.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerphysicsGrabConfiguration.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Cup_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Cup_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Cup_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Cup_02.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Mug_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Cups/SM_Mug_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_02.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/DeskLamps/SM_DeskLamp_03.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Printers/SM_Printer_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Printers/SM_Printer_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_FeltPen_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_FeltPen_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_FountainPen_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_FountainPen_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pen_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pen_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pencil_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pencil_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pencil_Eraser_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/WritingInstruments/SM_Pencil_Eraser_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerPhysicsGrabComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerPhysicsGrabComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,6 +314,7 @@
       <workItem from="1680817137735" duration="746000" />
       <workItem from="1680852441752" duration="1244000" />
       <workItem from="1680904505078" duration="280000" />
+      <workItem from="1680948337097" duration="1994000" />
     </task>
     <servers />
   </component>
