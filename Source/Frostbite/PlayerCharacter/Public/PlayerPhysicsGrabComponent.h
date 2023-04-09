@@ -14,11 +14,17 @@
 class UCameraComponent;
 class APlayerCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhysicsGrabComponentReleasedDelegate, const AActor*, GrabbedActor);
+
 UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
 class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
+
+private:
+	UPROPERTY(BlueprintAssignable, Category = "PhysicsGrabComponent|Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
+	FOnPhysicsGrabComponentReleasedDelegate OnPhysicsGrabComponentReleased;
 	
 public:
 	/** Pointer to the configuration data asset instance for this component. */
@@ -30,6 +36,10 @@ public:
 	UCameraComponent* Camera;
 
 private:
+
+	UPROPERTY()
+	FVector TargetLocation;
+	
 	UPROPERTY()
 	float CurrentZoomLevel;
 	
@@ -52,9 +62,25 @@ private:
 	FVector RotatedHandOffset;
 
 	UPROPERTY()
+	float PrePrimingThrowTimer;
+	
+	UPROPERTY()
+	float ThrowingTimeLine;
+
+	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;
 	
 public:
+	
+	UPROPERTY()
+	bool IsPrimingThrow;
+
+	UPROPERTY()
+	bool WillThrowOnRelease;
+	
+	UPROPERTY()
+	bool WillReleaseOnEndInteraction;
+	
 	/** The object that will be passed to the physics handle. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void GrabObject(AActor* ObjectToGrab);
@@ -62,6 +88,18 @@ public:
 	/** Called when you release the object or place the object */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void ReleaseObject();
+
+	/** Called to start charging a throw*/
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	void PrimeThrow();
+	
+	/** Called to cancel charging a throw*/
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	void StopPrimingThrow();
+
+	/** Called to execute a throw during the priming of a throw*/
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	void PerformThrow();
 
 	/** Calculate the rotated hand offset based on the camera rotation.*/
 	UFUNCTION(Category = "Player Physics Grab")
@@ -88,6 +126,7 @@ public:
 	}
 };
 
+/** Configuration asset to fine tune all variables within the physics grab component*/
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
 class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
 {
@@ -96,27 +135,63 @@ class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
 public:
 	/** The location where the holding hand should be relative to the physics grab component.*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
-	FVector RelativeHoldingHandLocation{70.0f,40.0f, -30.0f};
+	FVector RelativeHoldingHandLocation{70.0f,60.0f, -30.0f};
+
+	/** The distance on which the player will let the prop go*/
+	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
+	float LetGoDistance{30.0f};
 
 	/** The minimum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MinZoomLevel{0.0f};
 
-	/** The maximum zoom level in UE units. */
+	/** The maximum zoom level in UE units.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MaxZoomLevel{300.0f};
 
 	/** The distance where the object will move towards the hand location.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float BeginHandOffsetDistance{100.0f};
+	float BeginHandOffsetDistance{50.0f};
 
 	/**The speed at which you can zoom.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float ZoomSpeed{1500.0f};
 
-	/** The speed at which the object will return to your hand depending on how fast you walk*/
+	/** The speed at which the object will return to your hand depending on how fast you walk.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float WalkingRetunZoomSpeed{10.0f};
+
+	// ... Throw variables ... 
+
+	/** The time it takes to start priming the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float PrePrimingThrowDelayTime{0.5f};
+
+	/** The minimum impulse applied when you throw an object.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float MinThrowingStrength{0.0f};
+
+	/** The maximum impulse applied when you throw an object.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float MaxThrowingStrength{100.0f};
+	
+	/** The time it will take to fully charge a throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float ThrowChargeTime{1.5f};
+	
+	/** The zoom level for the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float ThrowingZoomLevel{200.0f};
+
+	/**The distance the object will back up when you charge the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	FVector ThrowingBackupVector{0.0,0.0,0.0};
+	/**The strength of the shaking when charging a throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float ThrowingShakeSize{0.1f};
+
+	
+
 
 	
 	// ... PhysicsHandleSettings ... 
