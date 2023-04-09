@@ -16,10 +16,10 @@ class REACOUSTIC_API UReacousticProjectSettings : public UDeveloperSettings
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "/Script/Engine.DataTable"))
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
 	FSoftObjectPath ReacousticObjectSounds;
 
-	UPROPERTY(Config, EditAnywhere, meta = (AllowedClasses = "/Script/Engine.DataTable"))
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
 	FSoftObjectPath ReacousticSurfaceSounds;
 
 public:

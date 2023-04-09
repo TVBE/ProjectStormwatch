@@ -16,7 +16,7 @@ struct FReacousticSoundData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData, Meta = (ClampMin = "-50.0", ClampMax = "50.0", UIMin = "-50.0", UIMax = "50.0"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReacousticSoundData", Meta = (ClampMin = "-50.0", ClampMax = "50.0", UIMin = "-50.0", UIMax = "50.0"))
 	float Gain{0.0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
@@ -35,10 +35,10 @@ struct FReacousticSoundData
 	TArray<float> OnsetVolumeData;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Sounds)
-	USoundWave* ImpactWaveAsset;
+	USoundWave* ImpactWaveAsset {nullptr};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Sounds)
-	USoundWave* SlidingWaveAsset;
+	USoundWave* SlidingWaveAsset {nullptr};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Surface, Meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
 	float SurfaceDampeningPercentage{0.0};

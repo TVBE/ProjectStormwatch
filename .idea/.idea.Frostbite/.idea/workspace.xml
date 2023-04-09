@@ -7,69 +7,29 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Fork_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Fork_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Plate_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Plate_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Plate_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Plates/SM_Plate_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Speakers/SM_Speaker_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Speakers/SM_Speaker_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Speakers/SM_Speaker_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Speakers/SM_Speaker_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_03.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_04.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_04.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_05.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tape/SM_Tape_05.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_AllenWrench_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_AllenWrench_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Hammer_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Hammer_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Pliers_03.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_RubberMallet_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_RubberMallet_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Scissors_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Scissors_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_03.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_04.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_04.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_05.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_05.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_06.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_06.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_07.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_07.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_08.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_08.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_09.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_09.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_10.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_ScrewDriver_10.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_03.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_04.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_04.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_05.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_05.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_06.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Tools/SM_Wrench_06.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_03.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_03.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_04.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_PlasticTray_04.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_RecordCase_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Trays/SM_RecordCase_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Clothing.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Footsteps.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Blizzard/BP_Blizzard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Blizzard/BP_Blizzard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Wires/SM_Wire_A01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Blueprints/BPC_ExteriorWindComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Blueprints/BPC_ExteriorWindComponent.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/AudioGenerators/MSP_ProceduralWindHowling.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/MetaSounds/Patches/AudioGenerators/MSP_ProceduralWindHowling.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Blizzard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Blizzard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_DiegeticSound.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_DiegeticSound.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Main.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Main.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Music.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Music.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerBreathing.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerBreathing.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerClothing.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerClothing.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerFootsteps.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_PlayerFootsteps.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_UserInterface.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_UserInterface.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Vocalisation.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Core/SoundClasses/SC_Vocalisation.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Clothing/MSS_Character_Clothing_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Clothing/MSS_Character_Clothing_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Footstep_Concrete_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Footstep_Concrete_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Footstep_Concrete_Gritty_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Footstep_Concrete_Gritty_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Jump_Concrete_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Jump_Concrete_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Jump_Concrete_Gritty_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Jump_Concrete_Gritty_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Land_Concrete_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Land_Concrete_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Land_Concrete_Gritty_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Concrete/MSS_Player_Land_Concrete_Gritty_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Footstep_Metal_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Footstep_Metal_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Footstep_Metal_Plate_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Footstep_Metal_Plate_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Jump_Metal_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Jump_Metal_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Jump_Metal_Plate_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Jump_Metal_Plate_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Land_Metal_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Land_Metal_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Land_Metal_Plate_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Metal/MSS_Player_Land_Metal_Plate_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Footstep_Snow_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Footstep_Snow_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Jump_Snow_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Jump_Snow_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Land_Snow_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Player/Footsteps/Snow/MSS_Player_Land_Snow_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWindHowling.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWindHowling.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWind_Quad.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Audio/Sources/Environment/Wind/MSS_ProceduralWind_Quad.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/MeshInteractionComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerStateComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerStateComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticDataTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticDataTypes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticSettings.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticSettings.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/ExteriorWindAudioComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/ExteriorWindAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/ExteriorWindAudioComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/InteractableObjectInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/InteractableObjectInterface.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -358,7 +318,11 @@
       <workItem from="1680817137735" duration="746000" />
       <workItem from="1680852441752" duration="1244000" />
       <workItem from="1680904505078" duration="280000" />
-      <workItem from="1680948337097" duration="8079000" />
+      <workItem from="1680948337097" duration="9599000" />
+      <workItem from="1680993917501" duration="1133000" />
+      <workItem from="1681039535879" duration="9152000" />
+      <workItem from="1681054535820" duration="488000" />
+      <workItem from="1681055110043" duration="15846000" />
     </task>
     <servers />
   </component>
