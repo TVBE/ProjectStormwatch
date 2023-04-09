@@ -49,10 +49,16 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		}
 		else
 		{
-			WillThrowOnRelease = true;
-			if(PrePrimingThrowTimer <= Configuration->ThrowChargeTime)
+			if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
 			{
-				ThrowingTimeLine += DeltaTime;
+				CurrentZoomLevel += 0.2 * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+			}
+			WillThrowOnRelease = true;
+			if(PrePrimingThrowTimer <= 1.0)
+			{
+				/**The timeline to be used by various on tick functions that update location.
+				 *We normalize the value here since it otherwise would be need to be normalised multiple times later.*/
+				ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
 			}
 		}
 	}
@@ -83,6 +89,7 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 		/** Enable continous collision detection to prevent the player from being able to clip objects through walls. */
 		GrabbedComponent->SetUseCCD(true);
 	}
+	MouseImputRotation = FRotator{0.0,0.0,0.0};
 }
 
 void UPlayerPhysicsGrabComponent::ReleaseObject()
@@ -137,7 +144,7 @@ void UPlayerPhysicsGrabComponent::PerformThrow()
 			}
 		FVector ThrowDirection = (Target - TraceStart).GetSafeNormal();
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine/Configuration->ThrowChargeTime),0.0,1.0));
+		const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
 		
 		GrabbedComponent->SetPhysicsLinearVelocity(ThrowDirection * ThrowingStrength);
 		GrabbedComponent->WakeRigidBody();
@@ -157,7 +164,7 @@ void UPlayerPhysicsGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FV
 	const FVector MinValues = FVector(-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize);
 	const FVector MaxValues = FVector(Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize);
 	const FVector ThrowingShake = FMath::RandPointInBox(FBox(MinValues, MaxValues));
-	const FVector ThrowingVector = (ThrowingShake + Configuration->ThrowingBackupVector)*FMath::Clamp((ThrowingTimeLine/Configuration->ThrowChargeTime),0.0,1.0);
+	const FVector ThrowingVector = (ThrowingShake + Configuration->ThrowingBackupVector)*FMath::Clamp((ThrowingTimeLine),0.0,1.0);
 	
 	/** Rotate the hand offset vector using the camera's world rotation. */
 	RotatedHandOffset =CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation + ThrowingVector);
@@ -198,10 +205,17 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 		RotationDifference = OriginalRotation + Camera->GetComponentRotation();
 		
 		/** Update the rotation of the grabbed component based on the camera rotation */
-		FRotator TargetRotation = FRotator(-RotationDifference.Pitch, RotationDifference.Yaw, RotationDifference.Roll);;
-
+		FRotator TargetRotation = FRotator(-RotationDifference.Pitch, RotationDifference.Yaw, RotationDifference.Roll)
+			+ MouseImputRotation;
+		
 		SetTargetLocationAndRotation(TargetLocation,TargetRotation);
 	}
+}
+
+/** Updates on tick when you are manually rotating the object.*/
+void UPlayerPhysicsGrabComponent::UpdateMouseImputRotation(FVector2d MouseImputDelta)
+{
+	MouseImputRotation += FRotator(MouseImputDelta.X,MouseImputDelta.Y, 0.0);
 }
 /** The update loop that scales the zoomaxis value from the mouse input */
 void UPlayerPhysicsGrabComponent::UpdateZoomAxisValue(float ZoomAxis)

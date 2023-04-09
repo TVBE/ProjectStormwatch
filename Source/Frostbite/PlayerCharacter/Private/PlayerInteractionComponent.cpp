@@ -8,6 +8,7 @@
 #include "PlayerInventoryComponent.h"
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Camera/CameraComponent.h"
+#include "Chaos/ChaosPerfTest.h"
 
 UPlayerInteractionComponent::UPlayerInteractionComponent()
 {
@@ -57,7 +58,7 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	if (GrabComponent && GrabComponent->GetGrabbedActor())
 	{
-		CurrentInteractableActor = nullptr;
+		CurrentInteractableActor = GrabComponent->GetGrabbedActor();
 		return;
 	}
 	
@@ -253,23 +254,37 @@ UObject* UPlayerInteractionComponent::BeginInteraction(const EInteractionActionT
 						ActorInUse = CurrentInteractableActor;
 					}
 				}
+				GrabComponent->StopPrimingThrow();
+				GrabComponent->WillReleaseOnEndInteraction = false;
 			}
 		}
 		break;
 		
 	case EInteractionActionType::Secondary:
 		{
-			const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
-			if (InteractionType == EInteractionType::Grabbable ||
-				InteractionType == EInteractionType::UsableViaGrab ||
-				InteractionType == EInteractionType::Handleable )
+			if(GrabComponent)
 			{
-				GrabComponent->GrabObject(CurrentInteractableActor);
+				UE_LOG(LogTemp,Warning, TEXT("Secondary"))
+				if(GrabComponent->GetGrabbedActor())
+				{
+					GrabComponent->WillReleaseOnEndInteraction = true;
+					GrabComponent->PrimeThrow();
+				}
+				else
+				{
+					const EInteractionType InteractionType {IInteractableObject::Execute_GetInteractionType(InteractableObject)};
+					if (InteractionType == EInteractionType::Grabbable ||
+						InteractionType == EInteractionType::UsableViaGrab ||
+						InteractionType == EInteractionType::Handleable )
+					{
+						GrabComponent->GrabObject(CurrentInteractableActor);
+						GrabComponent->WillReleaseOnEndInteraction = false;
+					}
+				}
 			}
-			
 		}
 		break;
-
+	
 	case EInteractionActionType::Inventory:
 		{
 			
@@ -318,7 +333,14 @@ UObject* UPlayerInteractionComponent::EndInteraction(const EInteractionActionTyp
 		{
 			if (GrabComponent)
 			{
-				GrabComponent->ReleaseObject();
+				if(GrabComponent->WillThrowOnRelease)
+				{
+					GrabComponent->PerformThrow();
+				}
+				if(GrabComponent->WillReleaseOnEndInteraction)
+				{
+					GrabComponent->ReleaseObject();
+				}
 			}
 		}
 
