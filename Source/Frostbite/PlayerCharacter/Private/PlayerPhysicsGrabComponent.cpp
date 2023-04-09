@@ -31,10 +31,13 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
 		/** If the distance between the location and target location is too big, let the object go.*/
-		if(Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+		if(!IsPrimingThrow)
 		{
-			OnPhysicsGrabComponentReleased.Broadcast(GrabbedComponent->GetOwner());
-			ReleaseObject();
+			if(Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+			{
+				OnPhysicsGrabComponentReleased.Broadcast(GrabbedComponent->GetOwner());
+				ReleaseObject();
+			}
 		}
 	}
 
@@ -51,7 +54,7 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		{
 			if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
 			{
-				CurrentZoomLevel += 0.2 * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+				CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
 			}
 			WillThrowOnRelease = true;
 			if(PrePrimingThrowTimer <= 1.0)
@@ -99,9 +102,14 @@ void UPlayerPhysicsGrabComponent::ReleaseObject()
 		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
 		GrabbedComponent->SetUseCCD(false);
+		if(WillThrowOnRelease)
+		{
+			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
+		}
 		ReleaseComponent();
 		UE_LOG(LogTemp,Warning, TEXT("ReleaseObject"))
 		StopPrimingThrow();
+		WillThrowOnReleaseMultiplier = 1.0;
 	}
 
 }
@@ -199,7 +207,7 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 	if (Camera)
 	{
 		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
-		TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
+		TargetLocation = RotatedHandOffset * WillThrowOnReleaseMultiplier + (CurrentZoomLevel * Camera->GetForwardVector());
 
 		/** Calculate the difference between the camera rotation and the original rotation */
 		RotationDifference = OriginalRotation + Camera->GetComponentRotation();

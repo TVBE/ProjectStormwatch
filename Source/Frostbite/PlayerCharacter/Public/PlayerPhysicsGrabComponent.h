@@ -62,6 +62,9 @@ private:
 	FVector RotatedHandOffset;
 
 	UPROPERTY()
+	float WillThrowOnReleaseMultiplier;
+
+	UPROPERTY()
 	float PrePrimingThrowTimer;
 	
 	UPROPERTY()
@@ -191,6 +194,10 @@ public:
 	/** The zoom level for the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float ThrowingZoomLevel{200.0f};
+
+	/** The speed at which the items goes to the throwing zoom level*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
+	float ToThrowingZoomSpeed{0.1f};
 
 	/**The distance the object will back up when you charge the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
