@@ -88,9 +88,21 @@ void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	float {ReturnImpactForce(HitComp,OtherActor,OtherComp,NormalImpulse,Hit)};
-	OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+	if(Hit.ImpactNormal.Length() > 0.001)
+	{
+		DeltaLocationDistance = FVector::Distance(LatestLocation, Hit.Location);
+		DeltaHitTime =  FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
+		LatestLocation = Hit.Location;
+		LatestTime = FPlatformTime::Seconds();
+		
+		if(DeltaLocationDistance > 0.0001 && DeltaHitTime > 0.0001)
+		{
+			OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+		}
+	}
 	
+
+
 }
 
 void UReacousticComponent::OnComponentHit_Implementation(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -113,6 +125,16 @@ float UReacousticComponent::ReturnImpactForce(UPrimitiveComponent* HitComp, AAct
 	//	ImpactForce = -1;
 	//}
 return 0;
+}
+
+double UReacousticComponent::ReturnDeltaTime()
+{
+	return DeltaHitTime;
+}
+
+double UReacousticComponent::ReturnDeltaLocationDistance()
+{
+	return DeltaLocationDistance;
 }
 
 void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn)

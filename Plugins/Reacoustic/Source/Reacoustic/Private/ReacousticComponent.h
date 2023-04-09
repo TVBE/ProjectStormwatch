@@ -32,6 +32,12 @@ private:
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map", AllowPrivateAccess = "true"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
 
+	/** These variables are used to calculate the difference in distance and time between hits.*/
+	float DeltaLocationDistance;
+	double DeltaHitTime;
+	FVector LatestLocation;
+	double LatestTime = FPlatformTime::Seconds();
+
 	
 	
 public:	
@@ -70,12 +76,19 @@ public:
 	UFUNCTION(BlueprintGetter, Category = Reacoustic, Meta = (DisplayName = "Get Owner StaticMeshComponent"))
 	FORCEINLINE UStaticMeshComponent* GetOwnerMeshComponent() const {return MeshComponent; }
 
-	/** Returns the impact force*/
+	/** Returns the impact force of each hit*/
 	UFUNCTION(BlueprintPure)
 	float ReturnImpactForce(UPrimitiveComponent* HitComp, AActor* OtherActor,
 												 UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 												 const FHitResult& Hit);
 
+	/** Get the time interval between hits */
+	UFUNCTION(BlueprintPure)
+	double ReturnDeltaTime();
+
+	UFUNCTION(BlueprintPure)
+	double ReturnDeltaLocationDistance();
+	
 	UFUNCTION()
 	void TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn);
 };
