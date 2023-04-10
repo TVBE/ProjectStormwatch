@@ -4,7 +4,7 @@
 
 #include "PlayerUseComponent.h"
 
-#include "UsableObjectInterface"
+#include "UsableObjectInterface.h"
 
 UPlayerUseComponent::UPlayerUseComponent()
 {
@@ -16,6 +16,20 @@ void UPlayerUseComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+AActor* UPlayerUseComponent::GetActorFromObject(UObject* Object) const
+{
+	if (AActor* Actor {Cast<AActor>(Object)})
+	{
+		return Actor;
+	}
+	
+	if (const UActorComponent* Component {Cast<UActorComponent>(Object)})
+	{
+		return Component->GetOwner();
+	}
+	return nullptr;
+}
+
 void UPlayerUseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -23,7 +37,7 @@ void UPlayerUseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 bool UPlayerUseComponent::BeginUse(UObject* UsableObject)
 {
-	if (!UsableObject || !UsableObject->Implements<IUsableObject>()) { return false; }
+	if (!UsableObject || !UsableObject->Implements<UUsableObject>()) { return false; }
 
 	if (ObjectInUse)
 	{
@@ -41,7 +55,7 @@ bool UPlayerUseComponent::BeginUse(UObject* UsableObject)
 
 bool UPlayerUseComponent::EndUse()
 {
-	if (!ObjectInUse || !ObjectInUse->Implements<IUsableObject>()) { return false; }
+	if (!ObjectInUse || !ObjectInUse->Implements<UUsableObject>()) { return false; }
 	IUsableObject::Execute_EndUse(ObjectInUse, GetOwner());
 	ObjectInUse = nullptr;
 	ActorInUse = nullptr;

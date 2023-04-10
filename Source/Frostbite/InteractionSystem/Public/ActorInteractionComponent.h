@@ -3,10 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UsableObjectInterface"
+#include "UsableObjectInterface.h"
 #include "Components/ActorComponent.h"
 #include "ActorInteractionComponent.generated.h"
-
 
 UCLASS(Blueprintable, BlueprintType, Placeable, ClassGroup = (Interaction), Meta = (BlueprintSpawnableComponent) )
 class UActorInteractionComponent : public UActorComponent, public IUsableObject

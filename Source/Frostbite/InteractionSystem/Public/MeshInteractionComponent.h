@@ -6,7 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "GrabbableObjectInterface.h"
-#include "UsableObjectInterface"
+#include "UsableObjectInterface.h"
 #include "InventoryObjectInterface.h"
 #include "MeshInteractionComponent.generated.h"
 

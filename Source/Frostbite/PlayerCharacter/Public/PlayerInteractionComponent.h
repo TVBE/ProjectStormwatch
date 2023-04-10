@@ -8,10 +8,11 @@
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
+class UPlayerPhysicsGrabConfiguration;
 class UPlayerDragComponent;
 class UPlayerUseComponent;
 class UPlayerInventoryComponent;
-class UPlayerPhysicsGrabComponent;
+class UPlayerGrabComponent;
 class UCameraComponent;
 struct FCollisionQueryParams;
 
@@ -45,7 +46,7 @@ private:
 	
 	/** The physics grab component that is used to grab actors. */
 	UPROPERTY(BlueprintGetter = GetGrabComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Grab Component"))
-	UPlayerPhysicsGrabComponent* GrabComponent;
+	UPlayerGrabComponent* GrabComponent;
 
 	/** The physics drag component that is used to drag actors. */
 	UPROPERTY(BlueprintGetter = GetDragComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Drag Component"))
@@ -60,6 +61,10 @@ private:
 	/** The camera component of the Player Character. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
+
+	/** If true, the interaction component is currently performing a tertiary interaction. */
+	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Is Performing Tertiary Interaction", AllowPrivateAccess = "true"))
+	bool IsTertiaryInteractionActive {false};
 
 	/** The length of the initial line trace. */
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
@@ -108,21 +113,21 @@ private:
 	/** The timer for the update function. */
 	UPROPERTY()
 	FTimerHandle UpdateTimerHandle;
-
-	/** When true, we will draw debug visualisation to the screen for every collision query. */
-	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
-	bool IsDebugVisEnabled {false};
-
+	
 	/** For setting the parameters of the playerPhysicsGrabComponent. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
 	TSoftObjectPtr<UPlayerPhysicsGrabConfiguration> PlayerPhysicsGrabConfiguration;
+
+#if WITH_EDITORONLY_DATA
+	/** When true, we will draw debug visualisation to the screen for every collision query. */
+	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
+	bool IsDebugVisEnabled {false};
+#endif
 
 public:	
 	UPlayerInteractionComponent();
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-	// INTERACTION -----------------------------------------------------------------------------------------------------
 
 	/** Begins the primary interaction action. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteration|Actions", Meta = (DisplayName = "Begin Primary Interaction", BlueprintProtected))
@@ -159,6 +164,14 @@ public:
 	/** Handles scroll input. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Add Scroll Input", BlueprintProtected))
 	void AddScrollInput(const float Input);
+
+	/** Adds pitch input to the interaction component. */
+	UFUNCTION()
+	void AddPitchInput(const float Input);
+
+	/** Adds yaw input to the interaction component. */
+	UFUNCTION()
+	void AddYawInput(const float Input);
 	
 	/** Checks if an actor or one of its components implements the IInteractableObject interface.
 	*	Returns the first UObject that implements the interface that it finds. */
@@ -208,7 +221,7 @@ public:
 
 	/** Returns a pointer to the grab component. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Grab Component"))
-	FORCEINLINE UPlayerPhysicsGrabComponent* GetGrabComponent() const { return GrabComponent; }
+	FORCEINLINE UPlayerGrabComponent* GetGrabComponent() const { return GrabComponent; }
 
 	/** Returns a pointer to the drag component. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Drag Component"))
@@ -217,6 +230,10 @@ public:
 	/** Returns the object the interaction component is currently interacting with. */
 	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interaction Object"))
 	FORCEINLINE AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
+
+	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
+	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction", Meta = (DisplayName = "Is Tertiary Interaction Active"))
+	FORCEINLINE bool GetIsTertiaryInteractionActive() const { return IsTertiaryInteractionActive; }
 
 	/** Returns whether there is an object in front of the player that can be interacted with. */
 	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Can Interact"))

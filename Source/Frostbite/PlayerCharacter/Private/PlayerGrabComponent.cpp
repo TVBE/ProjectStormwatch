@@ -2,7 +2,7 @@
 // Written by Nino Saglia
 // This source code is part of the project Frostbite
 
-#include "PlayerPhysicsGrabComponent.h"
+#include "PlayerGrabComponent.h"
 
 #include "PlayerCharacter.h"
 #include "SWarningOrErrorBox.h"
@@ -11,7 +11,7 @@
 #include "Serialization/JsonTypes.h"
 
 
-void UPlayerPhysicsGrabComponent::OnRegister()
+void UPlayerGrabComponent::OnRegister()
 {
 	Super::OnRegister();
 
@@ -23,19 +23,21 @@ void UPlayerPhysicsGrabComponent::OnRegister()
 	}
 }
 
-void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if(GrabbedComponent)
+	if (GrabbedComponent)
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
-		/** If the distance between the location and target location is too big, let the object go.*/
-		if(!IsPrimingThrow)
+		
+		/** If the distance between the location and target location is too big, let the object go. */
+		//TODO: Release is triggered here immediately the first time the player grabs an object.
+		if (!IsPrimingThrow) 
 		{
-			if(Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
 			{
-				OnPhysicsGrabComponentReleased.Broadcast(GrabbedComponent->GetOwner());
+				OnGrabbedObjectReleased.Broadcast(GrabbedComponent->GetOwner());
 				ReleaseObject();
 			}
 		}
@@ -72,22 +74,22 @@ void UPlayerPhysicsGrabComponent::TickComponent(float DeltaTime, ELevelTick Tick
 }
 
 /** Grab the object pass it to the physicshandle and capture the relative object rotation*/
-void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
+void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 {
 	/** check if there's a reference and cast to static mesh component to get a ref to the first static mesh. */
-	if (!ObjectToGrab || GrabbedComponent) { return; }
-	if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ObjectToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))})
+	if (!ActorToGrab || GrabbedComponent) { return; }
+	if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))})
 	{
 		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
 
-		/** Get the original rotation of the grabbed component */
+		/** Get the original rotation of the grabbed . */
 		 OriginalRotation = StaticMeshComponent->GetRelativeRotation();
 	
-		/** start the tick function so that the update for the target location can start updating*/
+		/** Start the tick function so that the update for the target location can start updating. */
 		SetComponentTickEnabled(true);
 
-		/** Dissable the colission with the player*/
+		/** Disable the colission with the player. */
 		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 		
 		/** Enable continous collision detection to prevent the player from being able to clip objects through walls. */
@@ -97,11 +99,11 @@ void UPlayerPhysicsGrabComponent::GrabObject(AActor* ObjectToGrab)
 	MouseInputRotation = FRotator{0.0,0.0,0.0};
 
 
-	FBox BoundingBox = GrabbedComponent->Bounds.GetBox();
+	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
 }
 
-void UPlayerPhysicsGrabComponent::ReleaseObject()
+void UPlayerGrabComponent::ReleaseObject()
 {
 	if(GrabbedComponent)
 	{
@@ -120,7 +122,7 @@ void UPlayerPhysicsGrabComponent::ReleaseObject()
 }
 
 
-void UPlayerPhysicsGrabComponent::PrimeThrow()
+void UPlayerGrabComponent::BeginPrimingThrow()
 {
 	IsPrimingThrow = true;
 	PrePrimingThrowTimer = 0.0;
@@ -128,7 +130,7 @@ void UPlayerPhysicsGrabComponent::PrimeThrow()
 	UE_LOG(LogTemp,Warning, TEXT("PrimeThrow"))
 }
 
-void UPlayerPhysicsGrabComponent::StopPrimingThrow()
+void UPlayerGrabComponent::StopPrimingThrow()
 {
 	IsPrimingThrow = false;
 	WillThrowOnRelease = false;
@@ -138,7 +140,7 @@ void UPlayerPhysicsGrabComponent::StopPrimingThrow()
 }
 
 /** Execute a throw if the throw is priming*/
-void UPlayerPhysicsGrabComponent::PerformThrow()
+void UPlayerGrabComponent::PerformThrow()
 {
 	if(IsPrimingThrow)
 	{
@@ -169,7 +171,7 @@ void UPlayerPhysicsGrabComponent::PerformThrow()
 }
 
 
-void UPlayerPhysicsGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset)
+void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset)
 {
 	/** Get the camera's world rotation. */
 	CameraRotation = Camera->GetComponentRotation();
@@ -200,9 +202,9 @@ void UPlayerPhysicsGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FV
 }
 
 /** The looping function that updates the target location and rotation of the currently grabbed object*/
-void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
+void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 {
-	if (!GrabbedComponent) return;
+	if (!GrabbedComponent) { return; }
 	AActor* CompOwner = this->GetOwner();
 	
 	if (CompOwner)
@@ -232,8 +234,6 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 		FVector CameraUp = Camera->GetUpVector();
 		FVector CameraForward = Camera->GetForwardVector();
 		FVector CameraRight = Camera->GetRightVector();
-
-
 		
 		FMatrix RotationMatrix(CameraRight, CameraForward, CameraUp, FVector::ZeroVector);
 		FQuat ObjectRotation(RotationMatrix);
@@ -248,14 +248,14 @@ void UPlayerPhysicsGrabComponent::UpdateTargetLocationWithRotation(float DeltaTi
 }
 
 /** Updates on tick when you are manually rotating the object.*/
-void UPlayerPhysicsGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
+void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 {
 	MouseInputRotation += FRotator(MouseInputDelta.X,MouseInputDelta.Y, CurrentZoomAxisValue);
 }
 /** The update loop that scales the zoomaxis value from the mouse input */
-void UPlayerPhysicsGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
+void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 {
-	if(!RotateObjectMode)
+	if(!IsRotationModeActive)
 	{
 		CurrentZoomAxisValue = FMath::Clamp(((CurrentZoomAxisValue + 0.1 * ZoomAxis) * 0.9),-2.0,2.0);
 	}

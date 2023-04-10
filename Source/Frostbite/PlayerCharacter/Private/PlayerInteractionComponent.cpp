@@ -6,11 +6,11 @@
 
 #include "GrabbableObjectInterface.h"
 #include "InventoryObjectInterface.h"
-#include "UsableObjectInterface"
+#include "UsableObjectInterface.h"
 #include "PlayerCharacter.h"
 #include "PlayerDragComponent.h"
 #include "PlayerInventoryComponent.h"
-#include "PlayerPhysicsGrabComponent.h"
+#include "PlayerGrabComponent.h"
 #include "PlayerUseComponent.h"
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Camera/CameraComponent.h"
@@ -35,7 +35,7 @@ void UPlayerInteractionComponent::OnRegister()
 
 	/** Add the necessary components to the owner. */
 	UseComponent = Cast<UPlayerUseComponent>(GetOwner()->AddComponentByClass(UPlayerUseComponent::StaticClass(), false, FTransform(), false));
-	GrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetOwner()->AddComponentByClass(UPlayerPhysicsGrabComponent::StaticClass(), false, FTransform(), false));
+	GrabComponent = Cast<UPlayerGrabComponent>(GetOwner()->AddComponentByClass(UPlayerGrabComponent::StaticClass(), false, FTransform(), false));
 	DragComponent = Cast<UPlayerDragComponent>(GetOwner()->AddComponentByClass(UPlayerDragComponent::StaticClass(), false, FTransform(), false));
 	
 	if (GrabComponent)
@@ -45,7 +45,6 @@ void UPlayerInteractionComponent::OnRegister()
 		{
 			GrabComponent->Configuration->ApplyToPhysicsHandle(GrabComponent);
 		}
-		
 	}
 }
 
@@ -252,7 +251,7 @@ void UPlayerInteractionComponent::BeginPrimaryInteraction()
 {
 	if (CurrentInteractableActor && UseComponent)
 	{
-		if (UObject* InteractableObject {FindInteractableObject<IUsableObject>(CurrentInteractableActor)})
+		if (UObject* InteractableObject {FindInteractableObject<UUsableObject>(CurrentInteractableActor)})
 		{
 			UseComponent->BeginUse(InteractableObject);
 		}
@@ -267,32 +266,47 @@ void UPlayerInteractionComponent::EndPrimaryInteraction()
 
 void UPlayerInteractionComponent::BeginSecondaryInteraction()
 {
-	if (CurrentInteractableActor && GrabComponent)
+	if (GrabComponent)
 	{
-		if (UObject* InteractableObject {FindInteractableObject<IGrabbableObject>(CurrentInteractableActor)})
+		if (GrabComponent->GetGrabbedActor())
 		{
-			GrabComponent->GrabObject(CurrentInteractableActor);
+			GrabComponent->BeginPrimingThrow();
+		}
+		else if (CurrentInteractableActor)
+		{
+			if (UObject* GrabbableObject {FindInteractableObject<UGrabbableObject>(CurrentInteractableActor)})
+			{
+				GrabComponent->GrabActor(CurrentInteractableActor);
+			}
 		}
 	}
 }
 
 void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
+	if (GrabComponent && GrabComponent->GetIsPrimingThrow())
+	{
+		GrabComponent->PerformThrow();
+	}
 }
 
 void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
+	IsTertiaryInteractionActive = true;
+	UE_LOG(LogTemp, Warning, TEXT("BEGIN TERTIARY INTERACTION"))
 }
 
 void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
+	IsTertiaryInteractionActive = false;
+	UE_LOG(LogTemp, Warning, TEXT("END TERTIARY INTERACTION"))
 }
 
 void UPlayerInteractionComponent::BeginInventoryInteraction()
 {
 	if (CurrentInteractableActor && InventoryComponent)
 	{
-		if (UObject* InteractableObject {FindInteractableObject<IInventoryObject>(CurrentInteractableActor)})
+		if (UObject* InteractableObject {FindInteractableObject<UInventoryObject>(CurrentInteractableActor)})
 		{
 			InventoryComponent->AddActorToInventory(GetActorFromObject(CurrentInteractableActor));
 		}
@@ -305,6 +319,26 @@ void UPlayerInteractionComponent::EndInventoryInteraction()
 
 void UPlayerInteractionComponent::AddScrollInput(const float Input)
 {
+	if (GrabComponent && GrabComponent->GetGrabbedActor())
+	{
+		GrabComponent->UpdateZoomAxisValue(Input);
+	}
+}
+
+void UPlayerInteractionComponent::AddPitchInput(const float Input)
+{
+	if (IsTertiaryInteractionActive && GrabComponent && GrabComponent->GetGrabbedActor())
+	{
+		GrabComponent->UpdateMouseImputRotation(FVector2D(0, Input));
+	}
+}
+
+void UPlayerInteractionComponent::AddYawInput(const float Input)
+{
+	if (IsTertiaryInteractionActive && GrabComponent && GrabComponent->GetGrabbedActor())
+	{
+		GrabComponent->UpdateMouseImputRotation(FVector2D(Input, 0));
+	}
 }
 
 void UPlayerInteractionComponent::OnUnregister()

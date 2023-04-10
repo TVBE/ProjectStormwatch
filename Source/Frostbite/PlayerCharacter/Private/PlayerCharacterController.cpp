@@ -9,7 +9,7 @@
 #include "LogCategories.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
-#include "PlayerPhysicsGrabComponent.h"
+#include "PlayerGrabComponent.h"
 #include "PlayerSubsystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"
@@ -52,6 +52,8 @@ void APlayerCharacterController::BeginPlay()
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (!InPawn) { return; }
 	
 	/** Registers the controller to the player character subsystem. */
 	if (const UWorld* World {GetWorld()})
@@ -70,6 +72,8 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 			PlayerCameraManager->ViewPitchMin = Configuration->MinimumViewPitch;
 		}
 	}
+	
+	InteractionComponent = Cast<UPlayerInteractionComponent>(InPawn->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
 }
 
 /** Called when the controller is constructed. */
@@ -92,15 +96,15 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAction(TEXT("Crouch"), IE_Released, this, &APlayerCharacterController::HandleCrouchActionReleased);
 	
 	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &APlayerCharacterController::HandleFlashlightActionPressed);
-
-	InputComponent->BindAction(TEXT("ToggleRotateOject"), IE_Pressed, this, &APlayerCharacterController::HandleRotateGrabbedObjectPressed);
-	InputComponent->BindAction(TEXT("ToggleRotateOject"), IE_Released, this, &APlayerCharacterController::HandleRotateGrabbedObjectReleased);
 	
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &APlayerCharacterController::HandlePrimaryActionPressed);
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &APlayerCharacterController::HandlePrimaryActionReleased);
 
 	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Pressed, this, &APlayerCharacterController::HandleSecondaryActionPressed);
 	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Released, this, &APlayerCharacterController::HandleSecondaryActionReleased);
+
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Pressed, this, &APlayerCharacterController::HandleTertiaryActionPressed);
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Released, this, &APlayerCharacterController::HandleTertiaryActionReleased);
 
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &APlayerCharacterController::HandleInventoryActionPressed);
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &APlayerCharacterController::HandleInventoryActionReleased);
@@ -284,39 +288,22 @@ UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteract
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
-	if(RotatePhysicsGrabObjectMode)
+	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
-		if (!PhysicsGrabComponent)
-		{
-			if(GetPawn())
-			{
-				PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-			}
-		}
-		if (!PhysicsGrabComponent) { return; }
-		PhysicsGrabComponent->UpdateMouseImputRotation(FVector2d(Value, 0.0));
+		InteractionComponent->AddYawInput(Value);
 	}
 	else
 	{
 		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
 	}
-
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
-	if(RotatePhysicsGrabObjectMode)
+	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
-		if (!PhysicsGrabComponent)
-		{
-			if(GetPawn())
-			{
-				PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-			}
-		}
-		if (!PhysicsGrabComponent) { return; }
-		PhysicsGrabComponent->UpdateMouseImputRotation(FVector2d(0.0, Value));
+		InteractionComponent->AddPitchInput(Value);
 	}
 	else
 	{
@@ -339,15 +326,10 @@ void APlayerCharacterController::HandleLateralMovementInput(float Value)
 }
 void APlayerCharacterController::HandleZoomDirectionInput(float Value)
 {
-	if (!PhysicsGrabComponent)
+	if (InteractionComponent)
 	{
-		if(GetPawn())
-		{
-			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-		}
+		InteractionComponent->AddScrollInput(Value);
 	}
-	if (!PhysicsGrabComponent) { return; }
-	PhysicsGrabComponent->UpdateZoomAxisValue(Value);
 }
 
 void APlayerCharacterController::HandleJumpActionPressed()
@@ -378,7 +360,6 @@ void APlayerCharacterController::HandleSprintActionPressed()
 		StartSprinting();
 	}
 }
-
 
 void APlayerCharacterController::HandleSprintActionReleased()
 {
@@ -428,77 +409,61 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 	}
 }
 
-void APlayerCharacterController::HandleRotateGrabbedObjectPressed()
+void APlayerCharacterController::HandleTertiaryActionPressed()
 {
-	if (!PhysicsGrabComponent)
+	if (InteractionComponent)
 	{
-		if(GetPawn())
-		{
-			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-		}
+		InteractionComponent->BeginTertiaryInteraction();
 	}
-	if (!PhysicsGrabComponent) { return; }
-	
 }
 
-void APlayerCharacterController::HandleRotateGrabbedObjectReleased()
+void APlayerCharacterController::HandleTertiaryActionReleased()
 {
-	if (!PhysicsGrabComponent)
+	if (InteractionComponent)
 	{
-		if(GetPawn())
-		{
-			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-		}
-	}
-	if (!PhysicsGrabComponent) { return; }
-	if(PhysicsGrabComponent->GetGrabbedActor())
-	{
-		RotatePhysicsGrabObjectMode = true;
-		PhysicsGrabComponent->RotateObjectMode = true;
+		InteractionComponent->EndTertiaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandlePrimaryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
+		InteractionComponent->BeginPrimaryInteraction();
+		UE_LOG(LogTemp, Warning, TEXT("AttempingInteraction"))
 	}
-	RotatePhysicsGrabObjectMode = false;
-	PhysicsGrabComponent->RotateObjectMode = false;
 }
 
 void APlayerCharacterController::HandlePrimaryActionReleased()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->EndInteraction(EInteractionActionType::Primary);
+		InteractionComponent->EndPrimaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleSecondaryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Secondary);
+		InteractionComponent->BeginSecondaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleSecondaryActionReleased()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->EndInteraction(EInteractionActionType::Secondary);
+		InteractionComponent->EndSecondaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleInventoryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Inventory);
+		InteractionComponent->BeginInventoryInteraction();
 	}
-	// TODO: Implement timer for press and hold.
 }
 
 void APlayerCharacterController::HandleInventoryActionReleased()
