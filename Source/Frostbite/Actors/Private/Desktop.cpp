@@ -4,9 +4,17 @@
 
 #include "Desktop.h"
 
+#include "Components/BoxComponent.h"
+
 ADesktop::ADesktop()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	CursorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cursor"));
+	CursorMesh->SetupAttachment(RootComponent);
+
+	ScreenSpace = CreateDefaultSubobject<UBoxComponent>(TEXT("ScreenSpace"));
+	ScreenSpace->SetupAttachment(RootComponent);
 }
 
 void ADesktop::PostInitProperties()
@@ -18,6 +26,20 @@ void ADesktop::PostInitProperties()
 void ADesktop::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ADesktop::MoveCursor(FVector InputVelocity)
+{
+	FVector NewCursorPosition {CursorMesh->GetComponentLocation() + InputVelocity};
+	
+	const FVector ScreenSpaceMin {ScreenSpace->GetComponentLocation() - (ScreenSpace->GetScaledBoxExtent())};
+	const FVector ScreenSpaceMax {ScreenSpace->GetComponentLocation() + (ScreenSpace->GetScaledBoxExtent())};
+
+	NewCursorPosition.X = FMath::Clamp(NewCursorPosition.X, ScreenSpaceMin.X, ScreenSpaceMax.X);
+	NewCursorPosition.Y = FMath::Clamp(NewCursorPosition.Y, ScreenSpaceMin.Y, ScreenSpaceMax.Y);
+	NewCursorPosition.Z = FMath::Clamp(NewCursorPosition.Z, ScreenSpaceMin.Z, ScreenSpaceMax.Z);
+
+	CursorMesh->SetWorldLocation(NewCursorPosition);
 }
 
 void ADesktop::FormatDisplayText()
@@ -68,5 +90,8 @@ FString& ADesktop::GetLastLineWithSpace()
 	}
 	return LastLine;
 }
+
+
+
 
 

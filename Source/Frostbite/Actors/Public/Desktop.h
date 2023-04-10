@@ -8,12 +8,22 @@
 #include "GameFramework/Actor.h"
 #include "Desktop.generated.h"
 
+class UBoxComponent;
+class UStaticMeshComponent;
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Desktop"))
 class FROSTBITE_API ADesktop : public AActor
 {
 	GENERATED_BODY()
 
 protected:
+	/** The text displayed on the desktop screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Desktop|Screen", Meta = (DisplayName = "Cursor Screen Space"))
+	UBoxComponent* ScreenSpace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Desktop|Cursor", Meta = (DisplayName = "Cursor Mesh"))
+	UStaticMeshComponent* CursorMesh;
+	
 	/** The text displayed on the desktop screen. */
 	UPROPERTY(BlueprintReadWrite, Category = "Desktop|Text", Meta = (DisplayName = "Text Line Array"))
 	TArray<FString> TextLineArray;
@@ -36,6 +46,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitProperties() override;
+
+	/** Moves the cursor over the screen. */
+	UFUNCTION(BlueprintCallable, Category = "Desktop|Cursor", Meta = (DisplayName = "Move Cursor"))
+	void MoveCursor(FVector InputVelocity);
+
 
 	/** Formats the display text. */
 	UFUNCTION(BlueprintCallable, Category = "Keyboard", Meta = (DisplayName = "Format Display Text"))
