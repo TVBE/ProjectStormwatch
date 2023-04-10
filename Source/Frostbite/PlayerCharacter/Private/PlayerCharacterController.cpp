@@ -9,6 +9,7 @@
 #include "LogCategories.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
+#include "PlayerPhysicsGrabComponent.h"
 #include "PlayerSubsystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"

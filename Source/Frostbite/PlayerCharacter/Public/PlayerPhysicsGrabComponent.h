@@ -16,8 +16,8 @@ class APlayerCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhysicsGrabComponentReleasedDelegate, const AActor*, GrabbedActor);
 
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
-	DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
 class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
