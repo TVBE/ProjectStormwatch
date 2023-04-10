@@ -9,34 +9,46 @@
 #include "Components/ActorComponent.h"
 #include "Math/Vector.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "PlayerPhysicsGrabComponent.generated.h"
+#include "PlayerGrabComponent.generated.h"
 
 class UCameraComponent;
 class APlayerCharacter;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhysicsGrabComponentReleasedDelegate, const AActor*, GrabbedActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, const AActor*, GrabbedActor);
 
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
-	DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
-class UPlayerPhysicsGrabComponent : public UPhysicsHandleComponent
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
+class UPlayerGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
 
-private:
-	UPROPERTY(BlueprintAssignable, Category = "PhysicsGrabComponent|Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
-	FOnPhysicsGrabComponentReleasedDelegate OnPhysicsGrabComponentReleased;
-	
 public:
+	UPROPERTY(BlueprintAssignable, Category = "GrabComponent|Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
+	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;
+	
 	/** Pointer to the configuration data asset instance for this component. */
 	UPROPERTY()
 	UPlayerPhysicsGrabConfiguration* Configuration;
 
+private:
 	/** Pointer to the camera component of the player. */
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
+	
+	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
+	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
+	bool IsRotationModeActive;
 
-private:
+	/** If true, the grab component is currently priming an object for throwing. */
+	UPROPERTY(BlueprintGetter = GetIsPrimingThrow, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
+	bool IsPrimingThrow;
 
+	UPROPERTY()
+	bool WillThrowOnRelease;
+	
+	UPROPERTY()
+	bool WillReleaseOnEndInteraction;
+	
 	UPROPERTY()
 	FVector TargetLocation;
 	
@@ -83,25 +95,9 @@ private:
 	float GrabbedComponentSize;
 	
 public:
-
-	UPROPERTY()
-	bool RotateObjectMode;
-	
-	UPROPERTY()
-	bool IsPrimingThrow;
-
-	UPROPERTY()
-	bool WillThrowOnRelease;
-	
-	UPROPERTY()
-	bool WillReleaseOnEndInteraction;
-
-	UPROPERTY()
-	bool IsInRotationMode;
-	
-	/** The object that will be passed to the physics handle. */
+	/** Grabs an actor. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
-	void GrabObject(AActor* ObjectToGrab);
+	void GrabActor(AActor* ActorToGrab);
 
 	/** Called when you release the object or place the object */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
@@ -109,7 +105,7 @@ public:
 
 	/** Called to start charging a throw*/
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
-	void PrimeThrow();
+	void BeginPrimingThrow();
 	
 	/** Called to cancel charging a throw*/
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
@@ -145,6 +141,14 @@ public:
 		if (const UPrimitiveComponent* Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
 		return nullptr; 
 	}
+
+	/** Returns whether the grab component is currently in rotation mode or not. */
+	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
+	FORCEINLINE bool GetIsRotationModeActive() const { return IsRotationModeActive; }
+
+	/** Returns whether the grab component is priming throw on an object or not. */
+	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
+	FORCEINLINE bool GetIsPrimingThrow() const { return IsPrimingThrow; }
 };
 
 /** Configuration asset to fine tune all variables within the physics grab component*/

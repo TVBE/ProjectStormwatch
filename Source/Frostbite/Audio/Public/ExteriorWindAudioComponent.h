@@ -10,8 +10,17 @@
 
 class UMetaSoundSource;
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Audio), Meta = (BlueprintSpawnableComponent) )
-class UExteriorWindAudioComponent : public UActorComponent
+UENUM()
+enum class ETraceCardinalDirection : uint8
+{
+	North				UMETA(DisplayName = "North"),
+	East				UMETA(DisplayName = "East"),
+	South				UMETA(DisplayName = "South"),
+	West				UMETA(DisplayName = "West"),
+};
+
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Audio", Meta = (BlueprintSpawnableComponent))
+class FROSTBITE_API UExteriorWindAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -24,7 +33,44 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Collision Trace Length"))
 	float CollisionTraceLength {3000};
 
+protected:
+	/** The number of frames to use for a single temporal collision query.
+	 *Currently we do not keep the framerate of the system in count, so keep this number below 10 to keep the query responsive. */
+	UPROPERTY(EditAnywhere, Category = "ExteriorWindAudioComponent|Temporal Geometry Query", Meta = (DisplayName = "Temporal Geomtry Query Length",
+		ClampMin = "0", ClampMax = "16", UIMin = "0", UIMax = "16"))
+	uint8 TemporalTraceLength {8};
+
+	/** Defines the angle increment per trace frame. */
+	UPROPERTY(EditAnywhere, Category = "ExteriorWindAudioComponent|Temporal Geometry Query", Meta = (DisplayName = "Temporal Trace Pitch Increment",
+		ClampMin = "0", ClampMax = "20", UIMin = "0", UIMax = "20"))
+	float TemporalTracePitchIncrement {10.0f};
+
+	/** Defines the pitch offset of the entire temporal geometry query. */
+	UPROPERTY(EditAnywhere, Category = "ExteriorWindAudioComponent|Temporal Geometry Query", Meta = (DisplayName = "Temporal Trace Pitch Offset",
+		ClampMin = "-45", ClampMax = "45", UIMin = "-45", UIMax = "45"))
+	float TemporalTracePitchOffset {-20.0f};
+
 private:
+	/** When true, the component is currently performing a temporal terrain query. */
+	UPROPERTY()
+	bool IsQueryingGeometry {false};
+
+	/** When true, we assume another query is queued after the current temporal query. */
+	UPROPERTY()
+	bool IsGeometryQueryQueued {false};
+
+	/** Array of hit results from a temporal geometry query.  */
+	UPROPERTY()
+	TArray<FHitResult> GeometryQueryResults;
+
+	/** The current frame of the temporal geometry query. */
+	UPROPERTY()
+	uint8 CurrentTemporalTraceFrame {0};
+
+	/** The location from a temporal query is performed. */
+	UPROPERTY()
+	FVector TemporalQueryOrigin;
+	
 	/** The AudioComponent that is added to the owner of this actor to play wind audio on. */
 	UPROPERTY(BlueprintGetter = GetAudioComponent, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Audio Component"))
 	UAudioComponent* AudioComponent;
@@ -38,26 +84,28 @@ private:
 	FVector LastPollLocation;
 
 	/** The array of vectors to use for the terrain poll trace. */
-	UPROPERTY()
-	TArray<FVector> TerrainTraceEndVectors;
+	UPROPERTY(BlueprintReadOnly, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Geometry Trace Vectors", AllowPrivateAccess = "true"))
+	TArray<FVector> GeometryTraceVectors;
 
 	/** The arrays of vectors to use for the wind occlusion query. */
 	UPROPERTY()
 	TArray<FVector> OcclusionTraceStartVectors;
 	UPROPERTY()
 	TArray<FVector> OcclusionTraceEndVectors;
-	
+
+#if WITH_EDITORONLY_DATA
+	/** If enabled, the component will visualize the traces. */
+	UPROPERTY(EditAnywhere, Category = "ExteriorWindAudioComponent|Editor", Meta = (DisplayName = "Enable Trace Visualisation"))
+	bool IsTraceVisEnabled {false};
+#endif
+
 public:	
 	/** Sets default values for this component's properties. */
 	UExteriorWindAudioComponent();
 	
 	/** Called every frame. */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	/** Called when a poll is performed. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "On Poll"))
-	void EventOnPoll(const TArray<float>& TerrainTraceResults, const TArray<float>& OcclusionTraceResults);
-
+	
 	/** Sets the wind direction. */
 	UFUNCTION(BlueprintCallable, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Set Wind Direction"))
 	void SetWindDirection(const FRotator& Rotation);
@@ -84,13 +132,27 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ExteriorWindAudioComponent", meta = (Displayname = "Get Average Of Float Array.", BlueprintProtected))
 	float GetAverageOfFloatArray(const TArray<float>& Array) const;
 
-	/** Called when the wind direction is updated. */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "On Wind Direction Changed"))
-	void EventOnWindDirectionChanged(const FRotator& Rotation);
+	/** Returns the average trace length of the last geometry query in a relative cardinal direction. */
+	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Get Average Trace Length In Cardinal Direction"))
+	float GetAverageTraceLengthInCardinalDirection(const ETraceCardinalDirection Direction);
 
 private:
+	/** Begins a temporal geometry query. */
+	void BeginTemporalGeometryQuery();
+
+	/** Performs a single temporal geometry query frame. */
+	void UpdateGeometryQuery();
+
+	/** Resets the geometry trace result array. */
+	void ResetGeometryQueryResults();
+	
 	/** Populates the terrain trace vector array. */
-	static void PopulateTerrainTraceVectors(TArray<FVector>& Array, const FRotator& Rotation, const float Radius, const float NumPoints);
+	static void PopulateGeometryTraceVectors(TArray<FVector>& Array, const FRotator& Rotation, const float Radius,
+		const float NumPoints, const uint8 TemporalFrames, const float PitchIncrement, const float PitchOffset);
+
+	/** Sorts the geometry trace vector array depending on yaw.
+	 *	This way, we can easily access all vectors in a certain direction by index.*/
+	static void SortTraceVectorsByYaw(TArray<FVector>& TraceVectors);
 
 	/** Populates the occlusion trace vector arrays. */
 	static void PopulateOcclusionTraceVectors(TArray<FVector>& ArrayA, TArray<FVector>& ArrayB, const FRotator& Rotation, const float TraceLength, const float Spacing);
@@ -99,4 +161,29 @@ public:
 	/** Returns the audio component that is used for playing wind audio. */
 	UFUNCTION(BlueprintGetter, Category = "ExteriorWindAudioComponent", Meta = (DisplayName = "Audio Component"))
 	FORCEINLINE UAudioComponent* GetAudioComponent() const {return AudioComponent; }
+
+	/** Returns whether the component is currently performing a temporal geometry query. */
+	UFUNCTION(BlueprintGetter, Category = "ExteriorWindAudioComponent|Temporal Geometry Query", Meta = (DisplayName = "Is Querying Geometry"))
+	FORCEINLINE bool GetIsQueryingGeometry() const { return IsQueryingGeometry; }
+
+	/** Returns an array of hit results from the most recent geometry query.
+	 *	Be careful when calling this function while the component is performing a temporal query,
+	 *	as this means that the array is not fully populated yet. In this case, we return an empty array. */
+	UFUNCTION(BlueprintPure, Category = "ExteriorWindAudioComponent|Temporal Geometry Query", Meta = (DisplayName = "Get Geometry Query Results"))
+	TArray<FHitResult> GetGeometryQueryResults() const;
+
+protected:
+	/** Called when a poll is performed. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ExteriorWindAudioComponent|Events", Meta = (DisplayName = "On Occlusion Poll"))
+	void EventOnOcclusionPoll(const TArray<float>& OcclusionTraceResults);
+
+	/** Called when a temporal geometry query is completed.*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ExteriorWindAudioComponent|Events", Meta = (DisplayName = "On Temporal Geometry Query Finished"))
+	void EventOnGeometryQueryFinished(const TArray<FHitResult>& GeometryTraceResults);
+
+	/** Called when the wind direction is updated. */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ExteriorWindAudioComponent|Events", Meta = (DisplayName = "On Wind Direction Changed"))
+	void EventOnWindDirectionChanged(const FRotator& Rotation);
+
+
 };
