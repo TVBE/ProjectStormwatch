@@ -45,6 +45,9 @@ private:
 	
 	UPROPERTY()
 	float CurrentZoomAxisValue;
+
+	UPROPERTY()
+	float CurrentRotationZoomAxisValue;
 	
 	UPROPERTY()
 	FVector LastLocation;
@@ -62,15 +65,27 @@ private:
 	FVector RotatedHandOffset;
 
 	UPROPERTY()
+	float WillThrowOnReleaseMultiplier;
+
+	UPROPERTY()
 	float PrePrimingThrowTimer;
 	
 	UPROPERTY()
 	float ThrowingTimeLine;
 
 	UPROPERTY()
+	FRotator MouseInputRotation;
+
+	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;
+
+	UPROPERTY()
+	float GrabbedComponentSize;
 	
 public:
+
+	UPROPERTY()
+	bool RotateObjectMode;
 	
 	UPROPERTY()
 	bool IsPrimingThrow;
@@ -80,6 +95,9 @@ public:
 	
 	UPROPERTY()
 	bool WillReleaseOnEndInteraction;
+
+	UPROPERTY()
+	bool IsInRotationMode;
 	
 	/** The object that will be passed to the physics handle. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
@@ -111,6 +129,9 @@ public:
 
 	/** Gets triggered when the zoom axis value gets changed*/
 	void UpdateZoomAxisValue(float ZoomAxis);
+
+	/** Updates on tick when you are manually rotating the object.*/
+	void UpdateMouseImputRotation(FVector2d MouseDelta);
 
 protected:
 	virtual void OnRegister() override;
@@ -164,30 +185,34 @@ public:
 	// ... Throw variables ... 
 
 	/** The time it takes to start priming the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float PrePrimingThrowDelayTime{0.5f};
 
 	/** The minimum impulse applied when you throw an object.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float MinThrowingStrength{0.0f};
 
 	/** The maximum impulse applied when you throw an object.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float MaxThrowingStrength{100.0f};
 	
 	/** The time it will take to fully charge a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float ThrowChargeTime{1.5f};
 	
 	/** The zoom level for the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float ThrowingZoomLevel{200.0f};
 
+	/** The speed at which the items goes to the throwing zoom level*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
+	float ToThrowingZoomSpeed{0.1f};
+
 	/**The distance the object will back up when you charge the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	FVector ThrowingBackupVector{0.0,0.0,0.0};
 	/**The strength of the shaking when charging a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float ThrowingShakeSize{0.1f};
 
 	
