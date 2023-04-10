@@ -45,6 +45,9 @@ private:
 	
 	UPROPERTY()
 	float CurrentZoomAxisValue;
+
+	UPROPERTY()
+	float CurrentRotationZoomAxisValue;
 	
 	UPROPERTY()
 	FVector LastLocation;
@@ -71,12 +74,18 @@ private:
 	float ThrowingTimeLine;
 
 	UPROPERTY()
-	FRotator MouseImputRotation;
+	FRotator MouseInputRotation;
 
 	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;
+
+	UPROPERTY()
+	float GrabbedComponentSize;
 	
 public:
+
+	UPROPERTY()
+	bool RotateObjectMode;
 	
 	UPROPERTY()
 	bool IsPrimingThrow;

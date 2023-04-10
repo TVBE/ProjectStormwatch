@@ -92,6 +92,9 @@ void APlayerCharacterController::SetupInputComponent()
 	
 	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &APlayerCharacterController::HandleFlashlightActionPressed);
 
+	InputComponent->BindAction(TEXT("ToggleRotateOject"), IE_Pressed, this, &APlayerCharacterController::HandleRotateGrabbedObjectPressed);
+	InputComponent->BindAction(TEXT("ToggleRotateOject"), IE_Released, this, &APlayerCharacterController::HandleRotateGrabbedObjectReleased);
+	
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &APlayerCharacterController::HandlePrimaryActionPressed);
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &APlayerCharacterController::HandlePrimaryActionReleased);
 
@@ -280,13 +283,44 @@ UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteract
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
-	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	if(RotatePhysicsGrabObjectMode)
+	{
+		if (!PhysicsGrabComponent)
+		{
+			if(GetPawn())
+			{
+				PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
+			}
+		}
+		if (!PhysicsGrabComponent) { return; }
+		PhysicsGrabComponent->UpdateMouseImputRotation(FVector2d(Value, 0.0));
+	}
+	else
+	{
+		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	}
+
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
+	if(RotatePhysicsGrabObjectMode)
+	{
+		if (!PhysicsGrabComponent)
+		{
+			if(GetPawn())
+			{
+				PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
+			}
+		}
+		if (!PhysicsGrabComponent) { return; }
+		PhysicsGrabComponent->UpdateMouseImputRotation(FVector2d(0.0, Value));
+	}
+	else
+	{
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	}
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
@@ -393,12 +427,44 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 	}
 }
 
+void APlayerCharacterController::HandleRotateGrabbedObjectPressed()
+{
+	if (!PhysicsGrabComponent)
+	{
+		if(GetPawn())
+		{
+			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
+		}
+	}
+	if (!PhysicsGrabComponent) { return; }
+	
+}
+
+void APlayerCharacterController::HandleRotateGrabbedObjectReleased()
+{
+	if (!PhysicsGrabComponent)
+	{
+		if(GetPawn())
+		{
+			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
+		}
+	}
+	if (!PhysicsGrabComponent) { return; }
+	if(PhysicsGrabComponent->GetGrabbedActor())
+	{
+		RotatePhysicsGrabObjectMode = true;
+		PhysicsGrabComponent->RotateObjectMode = true;
+	}
+}
+
 void APlayerCharacterController::HandlePrimaryActionPressed()
 {
 	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
 	{
 		InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
 	}
+	RotatePhysicsGrabObjectMode = false;
+	PhysicsGrabComponent->RotateObjectMode = false;
 }
 
 void APlayerCharacterController::HandlePrimaryActionReleased()

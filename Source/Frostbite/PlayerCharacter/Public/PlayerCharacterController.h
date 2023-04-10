@@ -45,9 +45,13 @@ private:
 	UPROPERTY()
 	UPlayerInteractionComponent* InteractionComponent;
 
-	/** Pointer to the physics grab component of the player character */
+	/** Pointer to the physics grab component of the player character.*/
 	UPROPERTY()
 	UPlayerPhysicsGrabComponent* PhysicsGrabComponent;
+
+	/** Boolean that dictates if the player is rotating the object in hand.*/
+	UPROPERTY()
+	bool RotatePhysicsGrabObjectMode;
 	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
@@ -193,6 +197,14 @@ private:
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
 
+	/** Handles the callback for when the player has pressed the RotateObject button. */
+	UFUNCTION()
+	void HandleRotateGrabbedObjectPressed();
+
+	/** Handles the callback for when the player has released the RotateObject button. */
+	UFUNCTION()
+	void HandleRotateGrabbedObjectReleased();
+	
 	/** Handles the callback for when the player has pressed the PrimaryAction button. */
 	UFUNCTION()
 	void HandlePrimaryActionPressed();
