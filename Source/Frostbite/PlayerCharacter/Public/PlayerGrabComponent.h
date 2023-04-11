@@ -41,7 +41,7 @@ private:
 
 	/** If true, the grab component is currently priming an object for throwing. */
 	UPROPERTY(BlueprintGetter = GetIsPrimingThrow, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
-	bool IsPrimingThrow;
+	bool IsPrimingThrow{false};
 
 	UPROPERTY()
 	bool WillThrowOnRelease;
@@ -65,7 +65,7 @@ private:
 	FVector LastLocation;
 	
 	UPROPERTY()
-	FRotator OriginalRotation;
+	FQuat OriginalRotation;
 	
 	UPROPERTY()
 	FRotator RotationDifference;
@@ -86,7 +86,7 @@ private:
 	float ThrowingTimeLine;
 
 	UPROPERTY()
-	FRotator MouseInputRotation;
+	FQuat MouseInputRotation{0.0,0.0,0.0,1.0};
 
 	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;

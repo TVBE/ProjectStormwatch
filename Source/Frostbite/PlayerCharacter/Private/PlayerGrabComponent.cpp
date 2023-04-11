@@ -37,39 +37,35 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		{
 			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
 			{
-				OnGrabbedObjectReleased.Broadcast(GrabbedComponent->GetOwner());
 				ReleaseObject();
 			}
 		}
-	}
+	
 
 
-	/** The looping function to handle the priming of the throw*/
-	if(IsPrimingThrow)
-	{
-		/** The timer that handles the time it takes before the player starts priming the throw.*/
-		if(PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
+		/** The looping function to handle the priming of the throw*/
+		if(IsPrimingThrow)
 		{
-			PrePrimingThrowTimer += DeltaTime;
-		}
-		else
-		{
-			if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+			/** The timer that handles the time it takes before the player starts priming the throw.*/
+			if(PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
 			{
-				CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+				PrePrimingThrowTimer += DeltaTime;
 			}
-			WillThrowOnRelease = true;
-			if(PrePrimingThrowTimer <= 1.0)
+			else
 			{
-				/**The timeline to be used by various on tick functions that update location.
-				 *We normalize the value here since it otherwise would be need to be normalised multiple times later.*/
-				ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
+				if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+				{
+					CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+				}
+				WillThrowOnRelease = true;
+				if(PrePrimingThrowTimer <= 1.0)
+				{
+					/**The timeline to be used by various on tick functions that update location.
+					 *We normalize the value here since it otherwise would be need to be normalised multiple times later.*/
+					ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
+				}
 			}
 		}
-	}
-
-	{
-		
 	}
 }
 
@@ -84,7 +80,9 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
 
 		/** Get the original rotation of the grabbed . */
-		 OriginalRotation = StaticMeshComponent->GetRelativeRotation();
+
+
+		 OriginalRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
 	
 		/** Start the tick function so that the update for the target location can start updating. */
 		SetComponentTickEnabled(true);
@@ -96,7 +94,7 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 		GrabbedComponent->SetUseCCD(true);
 	}
 	/**Reset the mouse rotation when you grab a new object*/
-	MouseInputRotation = FRotator{0.0,0.0,0.0};
+	MouseInputRotation = FQuat{0.0,0.0,0.0,1.0};
 
 
 	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
@@ -114,6 +112,7 @@ void UPlayerGrabComponent::ReleaseObject()
 		{
 			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
 		}
+		OnGrabbedObjectReleased.Broadcast(GrabbedComponent->GetOwner());
 		ReleaseComponent();
 		UE_LOG(LogTemp,Warning, TEXT("ReleaseObject"))
 		StopPrimingThrow();
@@ -228,29 +227,20 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		TargetLocation = RotatedHandOffset * WillThrowOnReleaseMultiplier + (CurrentZoomLevel * Camera->GetForwardVector());
 
 		FQuat CameraQuat = FQuat::MakeFromRotator(CameraRotation);
-		FQuat MouseInputRotationQuat = FQuat::MakeFromRotator(FRotator(MouseInputRotation.Roll, MouseInputRotation.Pitch, MouseInputRotation.Yaw));
-		//FQuat OriginalRotationQuat = FQuat::MakeFromRotator(FRotator(OriginalRotation.Roll, OriginalRotation.Pitch, OriginalRotation.Yaw));
-
-		FVector CameraUp = Camera->GetUpVector();
-		FVector CameraForward = Camera->GetForwardVector();
-		FVector CameraRight = Camera->GetRightVector();
 		
-		FMatrix RotationMatrix(CameraRight, CameraForward, CameraUp, FVector::ZeroVector);
-		FQuat ObjectRotation(RotationMatrix);
-		/** Calculate the difference between the camera rotation and the original rotation */
-		//RotationDifference = FRotator(0.0, CameraRotation.Yaw, 0.0);
-		//TODO; HELP AAAAAAAAAAAAAAAA
-		/** Update the rotation of the grabbed component based on the camera rotation */
-		FRotator TargetRotation {};
+		FRotator TargetRotation { CameraQuat * MouseInputRotation  * OriginalRotation};
 		
-		SetTargetLocationAndRotation(TargetLocation,TargetRotation);
+		SetTargetLocationAndRotation( TargetLocation,TargetRotation);
 	}
 }
 
 /** Updates on tick when you are manually rotating the object.*/
 void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 {
-	MouseInputRotation += FRotator(MouseInputDelta.X,MouseInputDelta.Y, CurrentZoomAxisValue);
+	//TODO: De rotatie van objecten fixen!
+	FQuat MouseInPutQuatX{FQuat(0.0,0.0,1.0,MouseInputDelta.X*0.01)};
+	FQuat MouseInPutQuatY{FQuat(1.0,0.0,0.0,MouseInputDelta.Y*0.01)};
+	MouseInputRotation =  MouseInPutQuatX * MouseInPutQuatY;
 }
 /** The update loop that scales the zoomaxis value from the mouse input */
 void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
