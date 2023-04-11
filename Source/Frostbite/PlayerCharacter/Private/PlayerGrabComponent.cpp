@@ -4,6 +4,8 @@
 
 #include "PlayerGrabComponent.h"
 
+#include "KineticActorComponent.h"
+#include "LogCategories.h"
 #include "PlayerCharacter.h"
 #include "SWarningOrErrorBox.h"
 #include "Camera/CameraComponent.h"
@@ -91,14 +93,16 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 
 		/** Disable the colission with the player. */
 		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-		
-		/** Enable continous collision detection to prevent the player from being able to clip objects through walls. */
-		GrabbedComponent->SetUseCCD(true);
 	}
-	/**Reset the mouse rotation when you grab a new object*/
+	/** Reset the mouse rotation when you grab a new object*/
 	MouseInputRotation = FRotator{0.0,0.0,0.0};
 
-
+	/** Check if the actor already has a kinetic component. If not, add the component to the grabbed actor. */
+	if (const UActorComponent* KineticComponent {ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass())}; !KineticComponent)
+	{
+		ActorToGrab->AddComponentByClass(UKineticActorComponent::StaticClass(), false, FTransform(), false);
+	}
+	
 	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
 }
@@ -109,13 +113,12 @@ void UPlayerGrabComponent::ReleaseObject()
 	{
 		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
-		GrabbedComponent->SetUseCCD(false);
 		if(WillThrowOnRelease)
 		{
 			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
 		}
 		ReleaseComponent();
-		UE_LOG(LogTemp,Warning, TEXT("ReleaseObject"))
+		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
 		StopPrimingThrow();
 		WillThrowOnReleaseMultiplier = 1.0;
 	}
@@ -127,7 +130,7 @@ void UPlayerGrabComponent::BeginPrimingThrow()
 	IsPrimingThrow = true;
 	PrePrimingThrowTimer = 0.0;
 	ThrowingTimeLine = 0.0f;
-	UE_LOG(LogTemp,Warning, TEXT("PrimeThrow"))
+	UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Started Priming Throw."))
 }
 
 void UPlayerGrabComponent::StopPrimingThrow()
@@ -136,7 +139,7 @@ void UPlayerGrabComponent::StopPrimingThrow()
 	WillThrowOnRelease = false;
 	PrePrimingThrowTimer = 0.0;
 	ThrowingTimeLine = 0.0f;
-	UE_LOG(LogTemp,Warning, TEXT("StopPrimingThrow"))
+	UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Stopped Priming Throw."))
 }
 
 /** Execute a throw if the throw is priming*/
@@ -163,8 +166,8 @@ void UPlayerGrabComponent::PerformThrow()
 		
 		GrabbedComponent->SetPhysicsLinearVelocity(ThrowDirection * ThrowingStrength);
 		GrabbedComponent->WakeRigidBody();
-		FString LogMessage = FString::Printf(TEXT("PerformThrow: %f"), ThrowingTimeLine);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *LogMessage);
+		
+		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("%s"), *FString::Printf(TEXT("PerformThrow: %f"), ThrowingTimeLine));
 		/** Release the grabbed component after the throw */
 		ReleaseObject();
 	}

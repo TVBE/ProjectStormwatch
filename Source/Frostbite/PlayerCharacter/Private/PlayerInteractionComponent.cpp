@@ -293,13 +293,11 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = true;
-	UE_LOG(LogTemp, Warning, TEXT("BEGIN TERTIARY INTERACTION"))
 }
 
 void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = false;
-	UE_LOG(LogTemp, Warning, TEXT("END TERTIARY INTERACTION"))
 }
 
 void UPlayerInteractionComponent::BeginInventoryInteraction()

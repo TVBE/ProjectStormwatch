@@ -304,7 +304,6 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacte
 		return;
 	}
 	
-	// Set character's movement component properties.
 	if (UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
