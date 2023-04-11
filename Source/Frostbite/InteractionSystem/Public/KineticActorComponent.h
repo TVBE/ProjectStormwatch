@@ -10,7 +10,7 @@
 
 /** Component that is temporarily added to a static mesh actor when the player grabs it using the physics handler.
  *	Handles some logic related to physics and collision, and destroys itself after the physics object has successfully gone to sleep. */
-UCLASS(BlueprintType, ClassGroup = "Physics", Meta = (DisplayName = "Grab Handler Component",
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Physics", Meta = (DisplayName = "Grab Handler Component",
 	ShortToolTip = "Component that is added to an actor when the player grabs it."))
 class UKineticActorComponent : public UActorComponent
 {
@@ -25,6 +25,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", Meta = (DisplayName = "Enable Continious Collision Detection"))
 	bool EnableCCD {true};
 
+	/** Pointer to the mesh component of the actor that is simulating physics. */
+	UPROPERTY()
+	UStaticMeshComponent* Mesh;
+
+	/** When true, the actor's bGenerateWakeEvents property should be set to false when this component wants to destroy itself. */
+	UPROPERTY()
+	bool DisableGenerateWakeEventsOnSleep {false};
+
 public:	
 	UKineticActorComponent();
 
@@ -32,6 +40,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnRegister() override;
 
-	
+private:
+	/** Handles the termination of this component when the actor goes to sleep. */
+	UFUNCTION()
+	void HandleActorSleep(UPrimitiveComponent* Component, FName BoneName);
 };

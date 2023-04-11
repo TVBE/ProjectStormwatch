@@ -1,4 +1,6 @@
-// Copyright 2023 Tim Verberne
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne & Nino Saglia
+// This source code is part of the project Frostbite
 
 #pragma once
 
