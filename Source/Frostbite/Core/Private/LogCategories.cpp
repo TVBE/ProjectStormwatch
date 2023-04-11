@@ -11,6 +11,7 @@ DEFINE_LOG_CATEGORY(LogPlayerSubsystem)
 DEFINE_LOG_CATEGORY(LogPlayerCameraController)
 DEFINE_LOG_CATEGORY(LogPlayerFlashlightComponent)
 DEFINE_LOG_CATEGORY(LogInteractableActor)
+DEFINE_LOG_CATEGORY(LogGrabComponent)
 
 DEFINE_LOG_CATEGORY(LogNightstalker)
 DEFINE_LOG_CATEGORY(LogNightstalkerController)

@@ -3,12 +3,37 @@
 // This source code is part of the project Frostbite
 
 #include "KineticActorComponent.h"
+#include "PhysicsEngine/BodyInstance.h"
 
 UKineticActorComponent::UKineticActorComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+}
 
+void UKineticActorComponent::OnRegister()
+{
+	Super::OnRegister();
 
+	if (const AActor* Actor {GetOwner()})
+	{
+		Mesh = Actor->FindComponentByClass<UStaticMeshComponent>();
+		if (Mesh)
+		{
+			if (Mesh->IsSimulatingPhysics())
+			{
+					Mesh->BodyInstance.bUseCCD = true;
+				
+					if (!Mesh->BodyInstance.bGenerateWakeEvents)
+					{
+						Mesh->BodyInstance.bGenerateWakeEvents = true;
+						DisableGenerateWakeEventsOnSleep = true;
+					}
+				
+					Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
+			}
+		}
+	}
 }
 
 void UKineticActorComponent::BeginPlay()
@@ -19,7 +44,23 @@ void UKineticActorComponent::BeginPlay()
 void UKineticActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-
 }
+
+void UKineticActorComponent::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
+{
+	if (!Mesh) { return; }
+	Mesh->OnComponentSleep.RemoveDynamic(this, &UKineticActorComponent::HandleActorSleep);
+
+	if (DisableGenerateWakeEventsOnSleep)
+	{
+		Mesh->BodyInstance.bGenerateWakeEvents = false;
+	}
+	
+	Mesh->BodyInstance.bUseCCD = false;
+	
+	DestroyComponent();
+}
+
+
+
 

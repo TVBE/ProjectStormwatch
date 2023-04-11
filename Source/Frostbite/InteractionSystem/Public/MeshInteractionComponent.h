@@ -5,12 +5,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractableObjectInterface.h"
+#include "GrabbableObjectInterface.h"
+#include "UsableObjectInterface.h"
 #include "InventoryObjectInterface.h"
 #include "MeshInteractionComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, Placeable, ClassGroup = ("Interaction"), Meta = (BlueprintSpawnableComponent))
-class UMeshInteractionComponent : public UActorComponent, public IInteractableObject, public IInventoryObject
+class UMeshInteractionComponent : public UActorComponent, public IGrabbableObject, public IInventoryObject
 {
 	GENERATED_BODY()
 
@@ -27,18 +28,6 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Is Large", EditCondition = "!IsAutoConfigurable", EditConditionHides))
 	bool IsLarge {false};
 	
-	/** The interaction type of this interactable static mesh actor. */
-	UPROPERTY()
-	EInteractionType InteractionType {EInteractionType::Grabbable};
-
-	/** The interaction trigger type of this interactable static mesh actor. */
-	UPROPERTY()
-	EInteractionTriggerType InteractionTriggerType {EInteractionTriggerType::SinglePress};
-
-	/** The interaction trigger type of this interactable static mesh actor. */
-	UPROPERTY()
-	EInteractionHandType InteractionHandType {EInteractionHandType::OneHanded};
-
 	/** The Offset of the interaction widget. */
 	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Widget Offset"))
 	FVector InteractionWidgetOffset {FVector()};
@@ -57,13 +46,10 @@ private:
 	EInventoryTriggerType InventoryTriggerType {EInventoryTriggerType::PressAndHold};
 
 public:
-	/** IInteractableObject interface functions. */
-	FORCEINLINE bool Use_Implementation(const AActor* Interactor) override { return false; }
-	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) override { return false; }
-	FORCEINLINE EInteractionType GetInteractionType_Implementation() const override { return InteractionType; }
-	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const override { return InteractionTriggerType; }
-	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const override { return InteractionHandType; }
-	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const override { return InteractionWidgetOffset; }
+	/** IGrabbableObject interface functions. */
+	FORCEINLINE bool BeginGrab_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE bool EndGrab_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE EGrabType GetGrabType_Implementation() const override { return EGrabType::OneHanded; }
 
 	/** IInventoryObject interface functions. */
 	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const override { return IsInventoryAddable; };

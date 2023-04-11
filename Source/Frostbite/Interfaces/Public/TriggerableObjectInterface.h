@@ -15,7 +15,8 @@ enum class ETriggerableObjectAction : uint8
 	Untrigger		UMETA(DisplayName = "Untrigger"),
 };
 
-UINTERFACE(Blueprintable, Meta = (DisplayName = "Triggerable Object Interface"))
+UINTERFACE(Blueprintable, Meta = (DisplayName = "Triggerable Object Interface",
+	ShortToolTip = "Interface for objects that can be triggered."))
 class UTriggerableObject : public UInterface
 {
 	GENERATED_BODY()
@@ -32,3 +33,4 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "TriggerableObject", Meta = (DisplayName = "Untrigger"))
 	bool Untrigger(const AActor* Initiator);
 };
+
