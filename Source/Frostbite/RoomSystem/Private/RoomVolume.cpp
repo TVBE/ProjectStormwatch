@@ -6,6 +6,30 @@
 #include "Nightstalker.h"
 #include "PlayerCharacter.h"
 #include "LogCategories.h"
+#include "RoomVolumeSubsystem.h"
+
+void ARoomVolume::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	URoomVolumeSubsystem* RoomVolumeSubsystem = GameInstance->GetSubsystem<URoomVolumeSubsystem>();
+
+	if(GameInstance)
+		if(RoomVolumeSubsystem)
+			if(!RoomVolumeSubsystem->RoomVolumes.Contains(this)) { RoomVolumeSubsystem->RoomVolumes.Add(this);}
+}
+
+void ARoomVolume::Destroyed()
+{
+	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	URoomVolumeSubsystem* RoomVolumeSubsystem = GameInstance->GetSubsystem<URoomVolumeSubsystem>();
+	
+	if(RoomVolumeSubsystem)
+		if(RoomVolumeSubsystem->RoomVolumes.Contains(this)) { RoomVolumeSubsystem->RoomVolumes.Remove(this);}
+	
+	Super::Destroyed();
+}
 
 void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -34,6 +58,8 @@ void ARoomVolume::SetLightStatus(const bool Value)
 	IsLit = Value;
 	OnLuminosityChanged.Broadcast(Value);
 }
+
+
 
 void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {

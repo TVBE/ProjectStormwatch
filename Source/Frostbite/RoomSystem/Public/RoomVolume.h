@@ -42,7 +42,7 @@ class ARoomVolume : public ATriggerBox
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	// DELEGATES
 	/** Delegate that is called when the player enters the room volume. */
 	FPlayerEnterDelegate OnPlayerEnter;
@@ -73,6 +73,10 @@ public:
 	void SetLightStatus(const bool Value);
 	
 protected:
+	/*Used for subscribing and desubscribing Volumes to the RoomVolume Subsystem*/
+	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
+	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	
