@@ -63,43 +63,46 @@ void APressableButton::DoTargetActorActions(const bool IsPressedAction)
 
 void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
 {
-	for (const auto& [Actor, PressedAction, ReleasedAction, IsActionLinked] : LinkedButtons)
+	if (!IsPressedAction && TriggerType == EButtonTriggerType::SinglePress) {return; }
+	
+	for (const auto& [Actor, DoActionOnPressed, PressedAction, DoActionOnRelease, ReleasedAction, IsActionLinked] : LinkedButtons)
 	{
 		if (Actor.IsValid())
 		{
-			switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
+			if (IsPressedAction && DoActionOnPressed || !IsPressedAction && DoActionOnRelease)
 			{
-			case ELinkedButtonAction::Press:
+				switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
 				{
-					if (!Actor->GetIsPressed())
+				case ELinkedButtonAction::Press:
 					{
-						Actor->EventOnPress(!IsActionLinked, false);
+						if (!Actor->GetIsPressed())
+						{
+							Actor->EventOnPress(!IsActionLinked, false);
+						}
 					}
+					break;
+				case ELinkedButtonAction::Release:
+					{
+						if (Actor->GetIsPressed())
+						{
+							Actor->EventOnRelease(!IsActionLinked, false);
+						}
+					}
+					break;
+				case ELinkedButtonAction::Toggle:
+					{
+						if (Actor->GetIsPressed())
+						{
+							Actor->EventOnRelease(!IsActionLinked, false);
+						}
+						else
+						{
+							Actor->EventOnPress(!IsActionLinked, false);
+						}
+					}
+					break;
+				default: break;
 				}
-				break;
-			case ELinkedButtonAction::Release:
-				{
-					if (Actor->GetIsPressed())
-					{
-						Actor->EventOnRelease(!IsActionLinked, false);
-					}
-				}
-				break;
-			case ELinkedButtonAction::Toggle:
-				{
-					if (Actor->GetIsPressed())
-					{
-						Actor->EventOnRelease(!IsActionLinked, false);
-					}
-					else
-					{
-						Actor->EventOnPress(!IsActionLinked, false);
-					}
-				}
-				break;
-			case ELinkedButtonAction::Custom: break;
-			case ELinkedButtonAction::Nothing: break;
-			default: break;
 			}
 		}
 	}
