@@ -146,23 +146,36 @@ void AProximitySensor::Poll()
 bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 {
 	FVector StartLocation {GetActorLocation()};
-	FVector EndLocation {Actor->GetActorLocation()};
-	FHitResult HitResult;
+	FVector ActorLocation {Actor->GetActorLocation()};
+	TArray<FVector> EndLocations
+	{
+		ActorLocation,
+		ActorLocation + FVector(0.f, 0.f, 50.f),
+		ActorLocation - FVector(0.f, 0.f, 50.f)
+	};
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(Actor);
-	
-	if (bool IsHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
+
+	uint8 BlockedTraces {0};
+
+	for (const FVector& EndLocation : EndLocations)
 	{
-		AActor* HitActor {HitResult.GetActor()};
-		
-		if (HitActor != Actor)
+		FHitResult HitResult;
+
+		if (bool IsHit {GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams)})
 		{
-			return true;
+			AActor* HitActor {HitResult.GetActor()};
+
+			if (HitActor != Actor)
+			{
+				++BlockedTraces;
+			}
 		}
 	}
-	return false;
+
+	return BlockedTraces == EndLocations.Num();
 }
 
 /** Calculates the cone angle based on the dimensions of the given box component. */
