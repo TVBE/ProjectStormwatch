@@ -26,6 +26,8 @@ class FROSTBITE_API AProximitySensor : public AActor
 { 
 	GENERATED_BODY()
 
+	DECLARE_LOG_CATEGORY_CLASS(LogSensor, Log, All)
+
 public:
 	/** The delegate that is broadcasted when an actor is inside the sensor's range during a poll.*/
 	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Actor Detected"))
@@ -37,7 +39,7 @@ protected:
 	USceneComponent* Root;
 	
 	/** The collision component to use for detection. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor", Meta = (DisplayName = "Detection Cone", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Proximity Sensor", Meta = (DisplayName = "Detection Cone", AllowPrivateAccess = "true"))
 	UBoxComponent* DetectionBox;
 
 	/** The update interval of the sensor. */
@@ -57,7 +59,7 @@ protected:
 	int32 DetectionBoxHeighth {400};
 
 	/** The ignore parameters for the sensor. */
-	UPROPERTY(BlueprintReadOnly, Category = "Proximity Sensor|Ignore Parameters", Meta = (DisplayName = "Ignore Parameters"))
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Proximity Sensor|Ignore Parameters", Meta = (DisplayName = "Ignore Parameters"))
 	TArray<EBProximitySensorIgnoreParameter> IgnoreParameters;
 
 	/** Array of actor pointers that are currently overlapping the sphere. */
@@ -91,6 +93,10 @@ public:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	
 protected:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+	
 	/** Performs a poll for any pawns inside the sensor's range. */
 	UFUNCTION(BlueprintCallable, Category = "Proximity Sensor", Meta = (DisplayName = "Poll For Pawns"))
 	virtual void Poll();

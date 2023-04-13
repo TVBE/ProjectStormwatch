@@ -8,8 +8,8 @@
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -311,7 +311,7 @@
       <workItem from="1681342231945" duration="2200000" />
       <workItem from="1681344501165" duration="1091000" />
       <workItem from="1681376124129" duration="1791000" />
-      <workItem from="1681377975451" duration="4279000" />
+      <workItem from="1681377975451" duration="8724000" />
     </task>
     <servers />
   </component>

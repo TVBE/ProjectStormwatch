@@ -3,9 +3,15 @@
 // This source code is part of the project Frostbite
 
 #include "ProximitySensor.h"
+
+#include "Nightstalker.h"
+#include "PlayerCharacter.h"
+#include "PlayerCharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
+
+DEFINE_LOG_CATEGORY_CLASS(AProximitySensor, LogSensor)
 
 AProximitySensor::AProximitySensor()
 {
@@ -65,14 +71,47 @@ void AProximitySensor::Poll()
 	{
 		for (int32 Index {0}; Index < OverlappingActors.Num(); ++Index)
 		{
-			if (const AActor* Actor = OverlappingActors[Index])
-			{
-				const FVector DirectionToActor {(Actor->GetActorLocation() - this->GetActorLocation()).GetSafeNormal()};
-				const float DotProduct {static_cast<float>(FVector::DotProduct(DirectionToActor, Root->GetForwardVector()))};
+			AActor* Actor {OverlappingActors[Index]};
+			bool ShouldIgnoreActor {false};
 
-				if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))) || IsActorOccluded(Actor))
+			if (Actor)
+			{
+				if (Actor->IsA(APlayerCharacter::StaticClass()))
+				{
+					if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
+					{
+						ShouldIgnoreActor = true;
+					}
+					else if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Crouching))
+					{
+						if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(Actor)};
+							const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+						{
+							if (CharacterMovement->IsCrouching())
+							{
+								ShouldIgnoreActor = true;
+							}
+						}
+					}
+				}
+				else if (Actor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Nightstalker))
+				{
+					ShouldIgnoreActor = true;
+				}
+
+				if (ShouldIgnoreActor)
 				{
 					OverlappingActors[Index] = nullptr;
+				}
+				else
+				{
+					const FVector DirectionToActor {(Actor->GetActorLocation() - this->GetActorLocation()).GetSafeNormal()};
+					const float DotProduct {static_cast<float>(FVector::DotProduct(DirectionToActor, Root->GetForwardVector()))};
+
+					if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))) || IsActorOccluded(Actor))
+					{
+						OverlappingActors[Index] = nullptr;
+					}
 				}
 			}
 		}
@@ -162,6 +201,29 @@ void AProximitySensor::VisualizeCone(const bool IsPersistent) const
 	DrawDebugLine(GetWorld(), BoxLocation, TopLeft, DebugLineColor, IsPersistent, 1.0f);
 	DrawDebugLine(GetWorld(), BoxLocation, BottomRight, DebugLineColor, IsPersistent, 1.0f);
 	DrawDebugLine(GetWorld(), BoxLocation, BottomLeft, DebugLineColor, IsPersistent, 1.0f);
+}
+void AProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	
+	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AProximitySensor, IgnoreParameters))
+	{
+		TSet<EBProximitySensorIgnoreParameter> UniqueIgnoreParameters;
+
+		for (int Index {0}; Index < IgnoreParameters.Num(); ++Index)
+		{
+			if (!UniqueIgnoreParameters.Contains(IgnoreParameters[Index]))
+			{
+				UniqueIgnoreParameters.Add(IgnoreParameters[Index]);
+			}
+			else
+			{
+				IgnoreParameters.RemoveAt(Index);
+				--Index;
+				UE_LOG(LogSensor, Warning, TEXT("Duplicate ignore parameters have been detected and removed."));
+			}
+		}
+	}
 }
 #endif
 
