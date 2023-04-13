@@ -8,7 +8,9 @@
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
 
-// Sets default values for this component's properties
+DEFINE_LOG_CATEGORY_CLASS(UPlayerAudioComponent, LogPlayerAudio)
+
+
 UPlayerAudioComponent::UPlayerAudioComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

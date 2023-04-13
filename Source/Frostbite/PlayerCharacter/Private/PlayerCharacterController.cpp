@@ -17,6 +17,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
+DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
+
 /** Called on construction. */
 APlayerCharacterController::APlayerCharacterController()
 {

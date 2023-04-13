@@ -10,6 +10,15 @@
 class UCapsuleComponent;
 struct FTimerHandle;
 
+/** Defines certain ignore parameters for the sensor. */
+UENUM(BlueprintType)
+enum class EBProximitySensorIgnoreParameter : uint8
+{
+	Player						UMETA(DisplayName = "Player", ToolTip = "The player will be ignored by this sensor."),
+	Nightstalker				UMETA(DisplayName = "Nightstalker", ToolTip = "The Nightstalker will be ignored by this sensor. "),
+	Crouching					UMETA(DisplayName = "Crouching", ToolTip = "The player crouching will be ignored by this sensor. ")
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetected, const AActor*, Actor, const float, Distance);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Proximity Sensor"))
@@ -35,17 +44,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetPollInterval, Category = "Proximity Sensor", Meta = (DisplayName = "Poll Interval"))
 	float PollInterval {0.25f};
 	
-	/** Defines the length of the sensor's detection area.  */
+	/** The length of the sensor's detection area.  */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Length"))	
 	int32 DetectionBoxLength {500};
 	
-	/** Defines the width of the sensor's detection area. */
+	/** The width of the sensor's detection area. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Width"))
 	int32 DetectionBoxWidth {400};
 	
-	/** Defines the height of the sensor's detection area. */
+	/** The height of the sensor's detection area. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Height"))
 	int32 DetectionBoxHeighth {400};
+
+	/** The ignore parameters for the sensor. */
+	UPROPERTY(BlueprintReadOnly, Category = "Proximity Sensor|Ignore Parameters", Meta = (DisplayName = "Ignore Parameters"))
+	TArray<EBProximitySensorIgnoreParameter> IgnoreParameters;
 
 	/** Array of actor pointers that are currently overlapping the sphere. */
 	UPROPERTY()

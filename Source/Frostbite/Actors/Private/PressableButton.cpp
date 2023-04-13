@@ -4,10 +4,30 @@
 
 #include "PressableButton.h"
 
+DEFINE_LOG_CATEGORY_CLASS(APressableButton, LogButton)
+
 APressableButton::APressableButton()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+}
+
+inline bool IsLinkedButtonValid(const FLinkedButton& LinkedButton, const APressableButton* Button)
+{
+	if (LinkedButton.Actor.IsNull())
+	{
+		return false;
+	}
+	if (LinkedButton.Actor.Get() == Button)
+	{
+		return false;
+	}
+	return true;
+}
+
+void APressableButton::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
 }
 
 void APressableButton::BeginPlay()

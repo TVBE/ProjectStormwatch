@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "TriggerableObjectInterface.h"
+#include "UsableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "PressableButton.generated.h"
 
@@ -83,12 +84,13 @@ struct FLinkedButton
 	bool IsActionLinked {true};
 };
 
-/** Base class for button actors. Note that we do not implement the IInteractableObject interface here
- *	as some derived button types may not be pressable by the player. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Button"))
-class APressableButton : public AActor
+/** Base class for button actors. */
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Button"))
+class APressableButton : public AActor, public IUsableObject
 {
 	GENERATED_BODY()
+
+	DECLARE_LOG_CATEGORY_CLASS(LogButton, Log, All)
 
 protected:
 	/** The trigger type of the button. */
@@ -127,8 +129,9 @@ public:
 	APressableButton();
 
 protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
-
+	
 	/** Starts the button's cooldown. */
 	UFUNCTION(BlueprintCallable, Category = "Button", Meta = (DisplayName = "Start Cooldown", BlueprintProtected))
 	void StartCooldown();

@@ -22,6 +22,8 @@ class UPlayerGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_LOG_CATEGORY_CLASS(LogGrabComponent, Log, All)
+
 public:
 	UPROPERTY(BlueprintAssignable, Category = "GrabComponent|Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
 	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;

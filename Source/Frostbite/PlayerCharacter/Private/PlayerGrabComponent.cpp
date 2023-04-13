@@ -12,6 +12,7 @@
 #include "GameFramework/MovementComponent.h"
 #include "Serialization/JsonTypes.h"
 
+DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
 
 void UPlayerGrabComponent::OnRegister()
 {
@@ -21,7 +22,6 @@ void UPlayerGrabComponent::OnRegister()
 	{
 		Camera = PlayerCharacter->GetCamera();
 		Movement = PlayerCharacter->GetPlayerCharacterMovement();
-		
 	}
 }
 
@@ -68,10 +68,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 				ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
 			}
 		}
-	}
-
-	{
-		
 	}
 }
 
