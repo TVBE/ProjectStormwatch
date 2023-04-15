@@ -22,5 +22,6 @@ public class Frostbite : ModuleRules
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/PlayerCharacter/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Nightstalker/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/InteractionSystem/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/ActorComponents/Public");
 	}
 }
