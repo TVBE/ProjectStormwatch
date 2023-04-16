@@ -233,6 +233,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera",
 		Meta = (Displayname = "Gamepad Rotation Rate"))
 	float RotationRate {150.f};
+
+	/** When true, camera rotation smoothing is applied to the player. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
+	bool IsRotationSmoothingEnabled {false};
+
+	/** The rotation smoothing speed. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing",
+		Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
+	float RotationSmoothingSpeed {8};
 	
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()
