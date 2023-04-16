@@ -255,18 +255,20 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 	
 	/** Get the current ground movement type from the PlayerController. */
 	const EPlayerGroundMovementType MovementType {PlayerCharacter->GetPlayerCharacterMovement()->GetGroundMovementType()};
+	
 	/** Get a oscillation multiplier value according to the ground movement type. */
 	float IntensityMultiplier {0.0};
 	if (!PlayerCharacter->GetMovementComponent()->IsFalling())
 	{
 		switch(MovementType)
 		{
-		case EPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.25; // Sprinting
+		case EPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.25;
 			break;
-		default: IntensityMultiplier = 0.5; // Miscellaneous
+		default: IntensityMultiplier = 0.5;
 			break;
 		}
 	}
+	
 	/** Get the delta head socket rotation. */
 	FRotator TargetHeadSocketRotation {(PlayerCharacter->GetMesh()->GetSocketTransform("head", RTS_Actor).GetRotation()
 		- HeadSocketTransform.GetRotation()) * IntensityMultiplier};
@@ -275,10 +277,18 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 	TargetHeadSocketRotation = FRotator(TargetHeadSocketRotation.Pitch, (TargetHeadSocketRotation.Yaw * 0), (TargetHeadSocketRotation.Roll * 1.5));
 
 	/** Interpolate the rotation value to smooth out jerky rotation changes. */
-	if (const UWorld* World {GetWorld()})
+	if (Configuration->IsRotationSmoothingEnabled)
 	{
-		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
+		if (const UWorld* World {GetWorld()})
+		{
+			InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, Configuration->RotationSmoothingSpeed);
+		}
 	}
+	else
+	{
+		InterpolatedHeadSocketRotation = TargetHeadSocketRotation;
+	}
+	
 	Rotator = InterpolatedHeadSocketRotation;
 }
 

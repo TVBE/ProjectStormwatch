@@ -148,6 +148,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera",
 		Meta = (Displayname = "Minimum View Pitch", ClampMin = "-90", ClampMax = "0", UiMin = "-90", UIMax = "0"))
 	float MinimumViewPitch {-75.f};
+
+	/** When true, camera rotation smoothing is applied to the camera. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
+	bool IsRotationSmoothingEnabled {false};
+
+	/** The rotation smoothing speed. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing",
+		Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
+	float RotationSmoothingSpeed {8};
 	
 	/** When enabled, the camera's field of view will scale according to the velocity of the player. This makes higher speeds seem more intense. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Field Of View",
