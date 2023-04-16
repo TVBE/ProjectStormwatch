@@ -6,7 +6,6 @@
 
 #include "MeshInteractionComponent.h"
 
-
 AMouse::AMouse()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,6 +15,7 @@ AMouse::AMouse()
 	RootComponent = MouseMesh;
 
 	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>("Interaction Component");
+	InteractionComponent->SetupAttachment(RootComponent);
 }
 
 void AMouse::PostInitProperties()
@@ -37,6 +37,21 @@ void AMouse::BeginPlay()
 void AMouse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FVector Start {MouseMesh->GetComponentLocation()};
+	FVector End {Start + FVector(0, 0, -15)};
+	FHitResult HitResult;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bTraceComplex = false;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, QueryParams))
+	{
+		FVector Velocity = MouseMesh->GetComponentVelocity();
+		FVector2D MouseVelocity(Velocity.X, Velocity.Y);
+		OnMouseMovement.Broadcast(MouseVelocity);
+	}
 }
 
 void AMouse::HandleOnMeshWake(UPrimitiveComponent* WakingComponent, FName Name)

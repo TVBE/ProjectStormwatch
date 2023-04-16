@@ -62,8 +62,8 @@ bool UMeshInteractionComponent::DetermineInventoryAddibility() const
 			const float Mass {MeshComponent->GetMass()};
 			if (Mass > 10.0f) { return false; }
 
-			const FBoxSphereBounds Bounds {MeshComponent->GetStaticMesh()->GetBounds()};
-			const FVector BoxExtent {Bounds.BoxExtent};
+			const FBoxSphereBounds BoxSphereBounds {MeshComponent->GetStaticMesh()->GetBounds()};
+			const FVector BoxExtent {BoxSphereBounds.BoxExtent};
 			const float Volume {static_cast<float>(BoxExtent.X * BoxExtent.Y * BoxExtent.Z * 8.0f)};
 
 			if (Volume > 1000000.0f) { return false; }

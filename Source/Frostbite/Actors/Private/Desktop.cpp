@@ -21,6 +21,7 @@ ADesktop::ADesktop()
 	CursorMesh->SetupAttachment(RootComponent);
 
 	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>(TEXT("Interaction Component"));
+	InteractionComponent->SetupAttachment(RootComponent);
 }
 
 bool ADesktop::BeginUse_Implementation(const AActor* Interactor)
@@ -44,16 +45,15 @@ void ADesktop::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ADesktop::MoveCursor(FVector InputVelocity)
+void ADesktop::MoveCursor(FVector2D InputVelocity)
 {
-	FVector NewCursorPosition {CursorMesh->GetComponentLocation() + InputVelocity};
+	FVector NewCursorPosition {CursorMesh->GetComponentLocation() + FVector(InputVelocity.X, InputVelocity.Y , 0)};
 	
 	const FVector ScreenSpaceMin {ScreenSpace->GetComponentLocation() - (ScreenSpace->GetScaledBoxExtent())};
 	const FVector ScreenSpaceMax {ScreenSpace->GetComponentLocation() + (ScreenSpace->GetScaledBoxExtent())};
 
 	NewCursorPosition.X = FMath::Clamp(NewCursorPosition.X, ScreenSpaceMin.X, ScreenSpaceMax.X);
 	NewCursorPosition.Y = FMath::Clamp(NewCursorPosition.Y, ScreenSpaceMin.Y, ScreenSpaceMax.Y);
-	NewCursorPosition.Z = FMath::Clamp(NewCursorPosition.Z, ScreenSpaceMin.Z, ScreenSpaceMax.Z);
 
 	CursorMesh->SetWorldLocation(NewCursorPosition);
 }

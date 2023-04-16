@@ -78,7 +78,7 @@ protected:
 
 	/** Moves the cursor over the screen. */
 	UFUNCTION(BlueprintCallable, Category = "Desktop|Cursor", Meta = (DisplayName = "Move Cursor"))
-	void MoveCursor(FVector InputVelocity);
+	void MoveCursor(FVector2D InputVelocity);
 	
 	/** Formats the display text. */
 	UFUNCTION(BlueprintCallable, Category = "Desktop|Keyboard", Meta = (DisplayName = "Format Display Text"))
