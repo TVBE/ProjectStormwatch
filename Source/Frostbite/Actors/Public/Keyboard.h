@@ -9,7 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Keyboard.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Keyboard"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Keyboard"))
 class FROSTBITE_API AKeyboard : public AActor, public IGrabbableObject
 {
 	GENERATED_BODY()

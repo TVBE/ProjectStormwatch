@@ -6,19 +6,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Mouse.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Mouse.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Desktop_Typeable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Desktop_Typeable.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Keyboard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Keyboard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacterController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacterController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Fabric_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Fabric_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Rubber_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Rubber_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Keyboard_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Keyboard_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Laptop_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Laptop_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Monitor_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Monitor_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Mouse_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Mouse_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Mousepad_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Computers/SM_Mousepad_01.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Desktop.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Desktop.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Mouse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Mouse.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Desktop.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Desktop.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Keyboard.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Keyboard.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Mouse.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/Mouse.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/KineticActorComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/KineticActorComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Private/MeshInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/KineticActorComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/InteractionSystem/Public/KineticActorComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerGrabComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerGrabComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerGrabComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -321,7 +330,9 @@
       <workItem from="1681344501165" duration="1091000" />
       <workItem from="1681376124129" duration="1791000" />
       <workItem from="1681377975451" duration="8724000" />
-      <workItem from="1681651949016" duration="5167000" />
+      <workItem from="1681651949016" duration="8588000" />
+      <workItem from="1681670982231" duration="1563000" />
+      <workItem from="1681672801057" duration="1051000" />
     </task>
     <servers />
   </component>
