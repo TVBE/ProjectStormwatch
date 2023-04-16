@@ -30,14 +30,16 @@ public:
 	UPROPERTY()
 	UPlayerPhysicsGrabConfiguration* Configuration;
 
+	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
+	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
+	bool RotationMode;
+
+
 private:
 	/** Pointer to the camera component of the player. */
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
 	
-	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
-	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
-	bool IsRotationModeActive;
 
 	/** If true, the grab component is currently priming an object for throwing. */
 	UPROPERTY(BlueprintGetter = GetIsPrimingThrow, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
@@ -65,13 +67,16 @@ private:
 	FVector LastLocation;
 	
 	UPROPERTY()
-	FQuat OriginalRotation;
+	FQuat CameraRelativeRotation;
 	
 	UPROPERTY()
 	FRotator RotationDifference;
 	
 	UPROPERTY()
 	FRotator CameraRotation;
+
+	UPROPERTY()
+	FQuat CameraQuat;
 	
 	UPROPERTY()
 	FVector RotatedHandOffset;
@@ -84,6 +89,9 @@ private:
 	
 	UPROPERTY()
 	float ThrowingTimeLine;
+
+	UPROPERTY()
+	FVector ReleaseLocation;
 
 	UPROPERTY()
 	FQuat MouseInputRotation{0.0,0.0,0.0,1.0};
@@ -114,6 +122,9 @@ public:
 	/** Called to execute a throw during the priming of a throw*/
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void PerformThrow();
+	
+	UFUNCTION()
+	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity);
 
 	/** Calculate the rotated hand offset based on the camera rotation.*/
 	UFUNCTION(Category = "Player Physics Grab")
@@ -128,6 +139,10 @@ public:
 
 	/** Updates on tick when you are manually rotating the object.*/
 	void UpdateMouseImputRotation(FVector2d MouseDelta);
+
+	/** The third interaction which is currenty rotating the object using mouse input.*/
+	void BeginTetriaryInteraction();
+	void EndTetriaryInteraction();
 
 protected:
 	virtual void OnRegister() override;
@@ -144,7 +159,7 @@ public:
 
 	/** Returns whether the grab component is currently in rotation mode or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
-	FORCEINLINE bool GetIsRotationModeActive() const { return IsRotationModeActive; }
+	FORCEINLINE bool GetIsRotationModeActive() const { return RotationMode; }
 
 	/** Returns whether the grab component is priming throw on an object or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))

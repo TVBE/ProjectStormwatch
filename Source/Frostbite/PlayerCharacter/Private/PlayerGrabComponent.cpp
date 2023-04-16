@@ -42,8 +42,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 				ReleaseObject();
 			}
 		}
-	
-
 
 		/** The looping function to handle the priming of the throw*/
 		if(IsPrimingThrow)
@@ -81,10 +79,10 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
 
-		/** Get the original rotation of the grabbed . */
+		/** Get the GrabbedComponent rotation relative to the camera. */
 
 
-		 OriginalRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
+		 CameraRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
 	
 		/** Start the tick function so that the update for the target location can start updating. */
 		SetComponentTickEnabled(true);
@@ -92,10 +90,7 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 		/** Disable the colission with the player. */
 		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
-	/**Reset the mouse rotation when you grab a new object*/
-	MouseInputRotation = FQuat{0.0,0.0,0.0,1.0};
-	/** Reset the mouse rotation when you grab a new object*/
-	MouseInputRotation = FRotator{0.0,0.0,0.0};
+
 
 	/** Check if the actor already has a kinetic component. If not, add the component to the grabbed actor. */
 	if (const UActorComponent* KineticComponent {ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass())}; !KineticComponent)
@@ -113,10 +108,6 @@ void UPlayerGrabComponent::ReleaseObject()
 	{
 		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
-		if(WillThrowOnRelease)
-		{
-			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
-		}
 		OnGrabbedObjectReleased.Broadcast(GrabbedComponent->GetOwner());
 		ReleaseComponent();
 		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
@@ -151,7 +142,8 @@ void UPlayerGrabComponent::PerformThrow()
 		
 		FVector Target {FVector()};
 		FVector TraceStart {Camera->GetComponentLocation()+RotatedHandOffset};
-		FVector TraceEnd {Camera->GetForwardVector() * 1000 + TraceStart};FHitResult HitResult;
+		FVector TraceEnd {Camera->GetForwardVector() * 100000 + TraceStart};FHitResult HitResult;
+		ReleaseLocation = Camera->GetComponentLocation() + 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector();
 		FCollisionQueryParams CollisionParams;
 		if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
 			{
@@ -161,17 +153,54 @@ void UPlayerGrabComponent::PerformThrow()
 			{
 				Target = TraceEnd;
 			}
-		FVector ThrowDirection = (Target - TraceStart).GetSafeNormal();
+		
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
 		const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
+
+		float ThrowAngle = CalculateThrowAngle(ReleaseLocation,TargetLocation,ThrowingStrength);
 		
-		GrabbedComponent->SetPhysicsLinearVelocity(ThrowDirection * ThrowingStrength);
+		
+		/** Calculate the direction from the player to the target */
+		FVector Direction = Target - TraceStart;
+		Direction.Normalize();
+	
+
+		/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
+		FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
+		FVector FinalDirection = Direction.RotateAngleAxis(ThrowAngle + 45, RotationAxis);
+	
+
+		FinalDirection.Normalize();
+
+		/** Set the physics velocity of the grabbed component to the calculated throwing direction */
+		GrabbedComponent->SetPhysicsLinearVelocity(FinalDirection * ThrowingStrength);
+		
 		GrabbedComponent->WakeRigidBody();
-		
-		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("%s"), *FString::Printf(TEXT("PerformThrow: %f"), ThrowingTimeLine));
 		/** Release the grabbed component after the throw */
+		GrabbedComponent->SetWorldLocation(ReleaseLocation);
 		ReleaseObject();
 	}
+}
+
+
+float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity)
+{
+	// Calculate displacement vector
+	FVector Displacement = Target - StartLocation;
+
+	// Calculate horizontal distance to target location
+	float HorizontalDistance = FVector::DistXY(StartLocation, Target);
+
+	// Calculate initial velocity required to hit the target
+	const float Gravity = 980.0f; // acceleration due to gravity
+	float Theta = atan((Gravity * HorizontalDistance) / (Velocity * Velocity));
+	float InitialVelocity = Velocity / cos(Theta);
+
+	// Solve for the angle theta
+	Theta = atan((InitialVelocity * InitialVelocity - sqrt(InitialVelocity * InitialVelocity * InitialVelocity * InitialVelocity - Gravity * (Gravity * HorizontalDistance * HorizontalDistance + 2 * Displacement.Z * InitialVelocity * InitialVelocity))) / (Gravity * HorizontalDistance));
+
+	// Return angle;
+	return FMath::RadiansToDegrees(Theta);
 }
 
 
@@ -179,6 +208,7 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 {
 	/** Get the camera's world rotation. */
 	CameraRotation = Camera->GetComponentRotation();
+	CameraQuat = Camera->GetComponentQuat();
 
 	const FVector MinValues = FVector(-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize);
 	const FVector MaxValues = FVector(Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize);
@@ -231,26 +261,47 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
 		TargetLocation = RotatedHandOffset * WillThrowOnReleaseMultiplier + (CurrentZoomLevel * Camera->GetForwardVector());
 
-		FQuat CameraQuat = FQuat::MakeFromRotator(CameraRotation);
 		
-		FRotator TargetRotation { CameraQuat * MouseInputRotation  * OriginalRotation};
+		
+		FRotator TargetRotation {CameraQuat * CameraRelativeRotation};
 		
 		SetTargetLocationAndRotation( TargetLocation,TargetRotation);
 	}
 }
 
+
+
 /** Updates on tick when you are manually rotating the object.*/
 void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 {
-	//TODO: De rotatie van objecten fixen!
-	FQuat MouseInPutQuatX{FQuat(0.0,0.0,1.0,MouseInputDelta.X*0.01)};
-	FQuat MouseInPutQuatY{FQuat(1.0,0.0,0.0,MouseInputDelta.Y*0.01)};
-	MouseInputRotation =  MouseInPutQuatX * MouseInPutQuatY;
+	if(RotationMode)
+	{
+		/** Make rotations based on mouse movement and scroll wheel in the perspective of the world.*/
+		FQuat MouseInputQuatX{FQuat(1,0,0,CurrentRotationZoomAxisValue*0.07)};
+		FQuat MouseInPutQuatY{FQuat(0,1,0,-MouseInputDelta.Y*0.01)};
+		FQuat MouseInPutQuatZ{FQuat(0,0,1,MouseInputDelta.X*0.01)};
+		FQuat DeltaRotation = MouseInputQuatX * MouseInPutQuatY * MouseInPutQuatZ;
+		
+		/**Normalize this rotation and apply it to the relative rotation of the object.*/
+		CameraRelativeRotation = DeltaRotation.GetNormalized() * CameraRelativeRotation;
+		
+	}
 }
+
+void UPlayerGrabComponent::BeginTetriaryInteraction()
+{
+	RotationMode = true;
+}
+
+void UPlayerGrabComponent::EndTetriaryInteraction()
+{
+	RotationMode = false;
+}
+
 /** The update loop that scales the zoomaxis value from the mouse input */
 void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 {
-	if(!IsRotationModeActive)
+	if(!RotationMode)
 	{
 		CurrentZoomAxisValue = FMath::Clamp(((CurrentZoomAxisValue + 0.1 * ZoomAxis) * 0.9),-2.0,2.0);
 	}

@@ -293,11 +293,13 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = true;
+	GrabComponent->BeginTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = false;
+	GrabComponent->EndTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::BeginInventoryInteraction()
