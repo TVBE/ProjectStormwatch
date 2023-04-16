@@ -181,7 +181,7 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button", Meta = (DisplayName = "Release Button"))
 	void EventOnRelease(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
-
+	
 	/** Returns whether the button is currently pressed. */
 	UFUNCTION()
 	FORCEINLINE bool GetIsPressed() const { return IsPressed; }
@@ -189,4 +189,6 @@ public:
 	/** Returns whether the button is currently in cooldown. */
 	UFUNCTION(BlueprintGetter, Category = "Button", Meta = (DisplayName = "Is Cooldown Active"))
 	FORCEINLINE bool GetIsCooldownActive() const { return IsCooldownActive; }
+	
+	
 };

@@ -19,9 +19,9 @@ enum class EBProximitySensorIgnoreParameter : uint8
 	Crouching					UMETA(DisplayName = "Crouching", ToolTip = "The player crouching will be ignored by this sensor. ")
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetected, const AActor*, Actor, const float, Distance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetectedDelegate, const AActor*, Actor, const float, Distance);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = Interaction, Meta = (DisplayName = "Proximity Sensor"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Proximity Sensor"))
 class FROSTBITE_API AProximitySensor : public AActor
 { 
 	GENERATED_BODY()
@@ -31,7 +31,7 @@ class FROSTBITE_API AProximitySensor : public AActor
 public:
 	/** The delegate that is broadcasted when an actor is inside the sensor's range during a poll.*/
 	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Actor Detected"))
-	FOnActorDetected OnActorDetectedDelegate;
+	FOnActorDetectedDelegate OnActorDetected;
 
 protected:
 	/** The scene root component for this actor. */
@@ -43,19 +43,20 @@ protected:
 	UBoxComponent* DetectionBox;
 
 	/** The update interval of the sensor. */
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetPollInterval, Category = "Proximity Sensor", Meta = (DisplayName = "Poll Interval"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetPollInterval, Category = "Proximity Sensor", Meta = (DisplayName = "Poll Interval",
+		Units = "Seconds"))
 	float PollInterval {0.25f};
 	
 	/** The length of the sensor's detection area.  */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Length"))	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Length", Units = "cm"))	
 	int32 DetectionBoxLength {500};
 	
 	/** The width of the sensor's detection area. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Width"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Width", Units = "cm"))
 	int32 DetectionBoxWidth {400};
 	
 	/** The height of the sensor's detection area. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Height"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Height", Units = "cm"))
 	int32 DetectionBoxHeighth {400};
 
 	/** The ignore parameters for the sensor. */

@@ -14,7 +14,6 @@ enum class EDoorState : uint8
     Closed      UMETA(DisplayName = "Closed"),
     Opening     UMETA(DisplayName = "Opening"),
     Closing     UMETA(DisplayName = "Closing"),
-    Locked      UMETA(DisplayName = "Locked"),
 };
 
 UINTERFACE(Blueprintable, Meta = (DisplayName = "Door Interface"))
@@ -38,5 +37,5 @@ public:
     
     /** Returns the door's state. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Get Door State"))
-    EDoorState GetDoorState();
+    EDoorState GetDoorState() const;
 };
