@@ -227,33 +227,33 @@ public:
 	
 	// ... PhysicsHandleSettings ... 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
 	uint32 bSoftAngularConstraint : 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PhysicsHandle)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
 	uint32 bSoftLinearConstraint : 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicsHandle)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PhysicsHandle")
 	uint32 bInterpolateTarget : 1;
 
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftLinearConstraint"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
 	float LinearDamping{200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftLinearConstraint"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
 	float LinearStiffness{750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftAngularConstraint"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
 	float AngularDamping{500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bSoftAngularConstraint"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
 	float AngularStiffness{1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=PhysicsHandle, meta = (EditCondition = "bInterpolateTarget"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
 	float InterpolationSpeed{50.0f};
 
 	

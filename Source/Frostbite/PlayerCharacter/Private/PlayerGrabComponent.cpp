@@ -93,14 +93,21 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	/** Reset the mouse rotation when you grab a new object*/
 	MouseInputRotation = FRotator{0.0,0.0,0.0};
 
-	/** Check if the actor already has a kinetic component. If not, add the component to the grabbed actor. */
-	if (const UActorComponent* KineticComponent {ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass())}; !KineticComponent)
+	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
+	 *	If not, add the component to the grabbed actor. */
+	if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass()))})
+	{
+		KineticComponent->HandleOnOwnerGrabbed();
+	}
+	else
 	{
 		ActorToGrab->AddComponentByClass(UKineticActorComponent::StaticClass(), false, FTransform(), false);
 	}
 	
 	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
+
+	
 }
 
 void UPlayerGrabComponent::ReleaseObject()

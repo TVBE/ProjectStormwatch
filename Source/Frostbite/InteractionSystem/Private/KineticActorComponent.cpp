@@ -24,6 +24,8 @@ void UKineticActorComponent::OnRegister()
 			{
 					Mesh->BodyInstance.bUseCCD = true;
 				
+					Mesh->SetNotifyRigidBodyCollision(false);
+				
 					if (!Mesh->BodyInstance.bGenerateWakeEvents)
 					{
 						Mesh->BodyInstance.bGenerateWakeEvents = true;
@@ -39,12 +41,52 @@ void UKineticActorComponent::OnRegister()
 void UKineticActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (const UWorld* World {GetWorld()})
+	{
+		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
+			&UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
+	}
 }
 
 void UKineticActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
+
+void UKineticActorComponent::HandleOnOwnerGrabbed()
+{
+	if (!Mesh) { return; }
+
+	if (Mesh->IsSimulatingPhysics())
+	{
+		Mesh->SetNotifyRigidBodyCollision(false);
+
+		
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(CollisionHitEventEnableTimerHandle))
+			{
+				World->GetTimerManager().ClearTimer(CollisionHitEventEnableTimerHandle);
+			}
+
+			World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
+				&UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
+		}
+	}
+}
+
+void UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner()
+{
+	if (!Mesh) { return; }
+	
+	if (Mesh->IsSimulatingPhysics())
+	{
+		Mesh->SetNotifyRigidBodyCollision(true);
+	}
+}
+
 
 void UKineticActorComponent::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
 {
