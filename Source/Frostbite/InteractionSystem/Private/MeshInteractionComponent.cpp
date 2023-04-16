@@ -14,17 +14,27 @@ void UMeshInteractionComponent::OnComponentCreated()
 void UMeshInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
+
+	UStaticMeshComponent* MeshComponent;
+	
 	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
 	{
-		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
-		{
-			MeshComponent->SetMobility(EComponentMobility::Movable);
-			MeshComponent->SetSimulatePhysics(true);
-			MeshComponent->PutRigidBodyToSleep();
-			MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
-			MeshComponent->SetNotifyRigidBodyCollision(true);
-		}
+		MeshComponent = MeshActor->GetStaticMeshComponent();
 	}
+	else
+	{
+		MeshComponent = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
+	}
+	
+	if (MeshComponent)
+	{
+		MeshComponent->SetMobility(EComponentMobility::Movable);
+		MeshComponent->SetSimulatePhysics(true);
+		MeshComponent->PutRigidBodyToSleep();
+		MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
+		MeshComponent->SetNotifyRigidBodyCollision(true);
+	}
+	
 	if (!OverrideInventoryAutoConfig)
 	{
 		IsInventoryAddable = DetermineInventoryAddibility();
@@ -84,19 +94,29 @@ bool UMeshInteractionComponent::AddToInventory_Implementation(const AActor* Acto
 bool UMeshInteractionComponent::TakeFromInventory_Implementation(const AActor* Actor)
 {
 	if (!Actor) { return false;}
-	if (AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
+
+	UStaticMeshComponent* MeshComponent;
+	
+	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
 	{
-		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
-		{
-			const FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
-			MeshActor->DetachFromActor(DetachmentRules);
-
-			MeshActor->SetActorLocation(Actor->GetActorForwardVector() * 80);
-
-			MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			MeshComponent->SetVisibility(true);
-			MeshComponent->SetSimulatePhysics(true);
-		}
+		MeshComponent = MeshActor->GetStaticMeshComponent();
 	}
+	else
+	{
+		MeshComponent = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
+	}
+
+	if(MeshComponent)
+	{
+		const FDetachmentTransformRules DetachmentRules(EDetachmentRule::KeepWorld, true);
+		GetOwner()->DetachFromActor(DetachmentRules);
+
+		GetOwner()->SetActorLocation(Actor->GetActorForwardVector() * 80);
+
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MeshComponent->SetVisibility(true);
+		MeshComponent->SetSimulatePhysics(true);
+	}
+	
 	return true;
 }

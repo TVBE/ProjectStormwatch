@@ -4,17 +4,33 @@
 
 #include "Desktop.h"
 
+#include "MeshInteractionComponent.h"
 #include "Components/BoxComponent.h"
 
 ADesktop::ADesktop()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	ScreenMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Screen"));
+	RootComponent = ScreenMesh;
+
+	ScreenSpace = CreateDefaultSubobject<UBoxComponent>(TEXT("Screen Space"));
+	ScreenSpace->SetupAttachment(RootComponent);
 	
 	CursorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cursor"));
 	CursorMesh->SetupAttachment(RootComponent);
 
-	ScreenSpace = CreateDefaultSubobject<UBoxComponent>(TEXT("ScreenSpace"));
-	ScreenSpace->SetupAttachment(RootComponent);
+	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>(TEXT("Interaction Component"));
+}
+
+bool ADesktop::BeginUse_Implementation(const AActor* Interactor)
+{
+	return IUsableObject::BeginUse_Implementation(Interactor);
+}
+
+bool ADesktop::EndUse_Implementation(const AActor* Interactor)
+{
+	return IUsableObject::EndUse_Implementation(Interactor);
 }
 
 void ADesktop::PostInitProperties()

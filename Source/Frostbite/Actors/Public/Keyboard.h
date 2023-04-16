@@ -13,7 +13,7 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta 
 class FROSTBITE_API AKeyboard : public AActor, public IGrabbableObject
 {
 	GENERATED_BODY()
-	
+
 public:	
 	AKeyboard();
 
