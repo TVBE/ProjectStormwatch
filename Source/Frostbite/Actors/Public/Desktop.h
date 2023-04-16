@@ -15,7 +15,7 @@ class UStaticMeshComponent;
 
 /** Base class for an all-in-one desktop that can receive keyboard and mouse input.
  *	This class is expected to be extended and fully implemented in a blueprint derived class. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Desktop"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Desktop"))
 class FROSTBITE_API ADesktop : public AActor, public IUsableObject
 {
 	GENERATED_BODY()

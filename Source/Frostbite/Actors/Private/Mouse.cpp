@@ -2,28 +2,54 @@
 // Written by Tim Verberne
 // This source code is part of the project Frostbite
 
-
 #include "Mouse.h"
 
-// Sets default values
+#include "MeshInteractionComponent.h"
+
+
 AMouse::AMouse()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
+	MouseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = MouseMesh;
+
+	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>("Interaction Component");
 }
 
-// Called when the game starts or when spawned
+void AMouse::PostInitProperties()
+{
+	Super::PostInitProperties();
+	if (MouseMesh)
+	{
+		MouseMesh->BodyInstance.bGenerateWakeEvents = true;
+	}
+}
+
 void AMouse::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	MouseMesh->OnComponentWake.AddDynamic(this, &AMouse::HandleOnMeshWake);
+	MouseMesh->OnComponentSleep.AddDynamic(this, &AMouse::HandleOnMeshSleep);
 }
 
-// Called every frame
 void AMouse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
+
+void AMouse::HandleOnMeshWake(UPrimitiveComponent* WakingComponent, FName Name)
+{
+	this->SetActorTickEnabled(true);
+}
+
+void AMouse::HandleOnMeshSleep(UPrimitiveComponent* SleepingComponent, FName Name)
+{
+	this->SetActorTickEnabled(false);
+}
+
+
+
+
 

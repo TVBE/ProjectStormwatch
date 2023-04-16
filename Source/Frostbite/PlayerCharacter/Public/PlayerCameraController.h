@@ -96,10 +96,10 @@ private:
 	void HandleCharacterControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	/** Updates the camera relative location. */
-	void UpdateCameraLocation(UCameraComponent& Camera);
+	void UpdateCameraLocation(UCameraComponent* Camera);
 
 	/** Updates the camera world rotation*/
-	void UpdateCameraRotation(const UCameraComponent& Camera, const float DeltaTime);
+	void UpdateCameraRotation(const UCameraComponent* Camera, const float DeltaTime);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
 	void GetCameraSwayRotation(FRotator& Rotator);
@@ -111,16 +111,16 @@ private:
 	void GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
 	
 	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView(UCameraComponent& Camera, const float DeltaTime);
+	void UpdateCameraFieldOfView(UCameraComponent* Camera, const float DeltaTime);
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(UCameraComponent& Camera, const float DeltaTime);
+	void UpdateCameraVignetteIntensity(UCameraComponent* Camera, const float DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(const UCameraComponent& Camera, const float DeltaTime);
+	void UpdateCameraDepthOfField(UCameraComponent* Camera, const float DeltaTime);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
-	float GetFocalDistance(const UCameraComponent& Camera) const;
+	float GetFocalDistance(UCameraComponent* Camera) const;
 
 public:
 	/** Returns the Camera configuration. */
@@ -148,15 +148,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera",
 		Meta = (Displayname = "Minimum View Pitch", ClampMin = "-90", ClampMax = "0", UiMin = "-90", UIMax = "0"))
 	float MinimumViewPitch {-75.f};
-
-	/** When true, camera rotation smoothing is applied to the camera. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
-	bool IsRotationSmoothingEnabled {false};
-
-	/** The rotation smoothing speed. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing",
-		Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
-	float RotationSmoothingSpeed {8};
 	
 	/** When enabled, the camera's field of view will scale according to the velocity of the player. This makes higher speeds seem more intense. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Field Of View",

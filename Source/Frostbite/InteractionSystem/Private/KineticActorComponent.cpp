@@ -61,9 +61,7 @@ void UKineticActorComponent::HandleOnOwnerGrabbed()
 	if (Mesh->IsSimulatingPhysics())
 	{
 		Mesh->SetNotifyRigidBodyCollision(false);
-
 		
-
 		if (const UWorld* World {GetWorld()})
 		{
 			if (World->GetTimerManager().IsTimerActive(CollisionHitEventEnableTimerHandle))
