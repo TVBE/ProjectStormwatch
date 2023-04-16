@@ -9,12 +9,13 @@
 #include "PlayerCharacterController.generated.h"
 
 class UPlayerInteractionComponent;
-class UPlayerPhysicsGrabComponent;
 class UPlayerSubsystem;
 class APlayerCharacter;
 class UPlayerCharacterConfiguration;
 class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
+
+DECLARE_LOG_CATEGORY_EXTERN(LogPlayerCharacterController, Log, All)
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, ClassGroup = "PlayerCharacter")
@@ -44,10 +45,6 @@ private:
 	/** Pointer to the interaction component of the player character. */
 	UPROPERTY()
 	UPlayerInteractionComponent* InteractionComponent;
-
-	/** Pointer to the physics grab component of the player character */
-	UPROPERTY()
-	UPlayerPhysicsGrabComponent* PhysicsGrabComponent;
 	
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
@@ -64,7 +61,6 @@ private:
 	/** The interpolation speed of the player control rotation.*/
 	UPROPERTY(EditAnywhere, Category = "PlayerCharacterController|ControlRotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
-	
 
 public:
 	APlayerCharacterController();
@@ -192,7 +188,7 @@ private:
 	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
-
+	
 	/** Handles the callback for when the player has pressed the PrimaryAction button. */
 	UFUNCTION()
 	void HandlePrimaryActionPressed();
@@ -208,6 +204,14 @@ private:
 	/** Handles the callback for when the player has released the SecondaryAction button. */
 	UFUNCTION()
 	void HandleSecondaryActionReleased();
+
+	/** Handles the callback for when the player has pressed the RotateObject button. */
+	UFUNCTION()
+	void HandleTertiaryActionPressed();
+
+	/** Handles the callback for when the player has released the RotateObject button. */
+	UFUNCTION()
+	void HandleTertiaryActionReleased();
 
 	/** Handles the callback for when the player has pressed the InventoryAction button. */
 	UFUNCTION()

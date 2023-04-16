@@ -1,9 +1,13 @@
-// Copyright 2023 Tim Verberne
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne & Nino Saglia
+// This source code is part of the project Frostbite
 
 #include "PlayerCharacterMovementComponent.h"
 
+#include "GameFramework/PlayerController.h"
+
 void UPlayerCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
+                                                      FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
@@ -54,14 +58,15 @@ EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementTy
 	return EPlayerGroundMovementType::Idle;
 }
 
-// Called by the player controller.
+/** Called by the player controller. */
 void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const APlayerController* Controller)
 {
 	if (!PawnOwner || IsSprinting == Value)
 	{
 		return;
 	}
-	if (PawnOwner->GetController() == Controller)
+	
+	if (Cast<APlayerController>(PawnOwner->GetController()) == Controller)
 	{
 		IsSprinting = Value;
 	}

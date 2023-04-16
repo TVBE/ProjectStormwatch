@@ -3,7 +3,6 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerSubsystem.h"
-#include "LogCategories.h"
 #include "PlayerCameraController.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"

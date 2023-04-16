@@ -12,6 +12,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+DEFINE_LOG_CATEGORY_CLASS(UPlayerFlashlightComponent, LogPlayerFlashlightComponent)
+
 /** Sets default values for this component's properties. */
 UPlayerFlashlightComponent::UPlayerFlashlightComponent()
 {

@@ -9,16 +9,6 @@
 void UMeshInteractionComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
-
-	if(IsAutoConfigurable)
-	{
-		
-	}
-	else
-	{
-		InteractionType = IsHeavy ? EInteractionType::Draggable : EInteractionType::Grabbable;
-		InteractionHandType = IsLarge ? EInteractionHandType::TwoHanded : EInteractionHandType::OneHanded;
-	}
 }
 
 void UMeshInteractionComponent::OnRegister()

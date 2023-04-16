@@ -3,11 +3,24 @@
 // This source code is part of the project Frostbite
 
 #include "PressableButton.h"
+#include "TriggerableObjectInterface.h"
+
+DEFINE_LOG_CATEGORY_CLASS(APressableButton, LogButton)
 
 APressableButton::APressableButton()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+}
+
+void APressableButton::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+#if WITH_EDITOR
+	ValidateTargetActors();
+	ValidateLinkedButtons();
+#endif
 }
 
 void APressableButton::BeginPlay()
@@ -33,29 +46,32 @@ void APressableButton::HandleCooldownFinished()
 
 void APressableButton::DoTargetActorActions(const bool IsPressedAction)
 {
-	for (const auto& [Actor, PressedAction, ReleasedAction] : TargetActors)
+	for (const auto& [Actor, DoActionOnPress, PressedAction, DoActionOnRelease, ReleasedAction] : TargetActors)
 	{
 		if (Actor.IsValid())
 		{
-			switch (const ETriggerableObjectAction Action {IsPressedAction ? PressedAction : ReleasedAction})
+			if (IsPressedAction && DoActionOnPress || !IsPressedAction && DoActionOnRelease)
 			{
-			case ETriggerableObjectAction::Trigger:
+				switch (const ETriggerableObjectAction Action {IsPressedAction ? PressedAction : ReleasedAction})
 				{
-					if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+				case ETriggerableObjectAction::Trigger:
 					{
-						ITriggerableObject::Execute_Trigger(Actor.Get(), this);
+						if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+						{
+							ITriggerableObject::Execute_Trigger(Actor.Get(), this);
+						}
 					}
-				}
-				break;
-			case ETriggerableObjectAction::Untrigger:
-				{
-					if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+					break;
+				case ETriggerableObjectAction::Untrigger:
 					{
-						ITriggerableObject::Execute_Untrigger(Actor.Get(), this);
+						if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+						{
+							ITriggerableObject::Execute_Untrigger(Actor.Get(), this);
+						}
 					}
+					break;
+				default: break;
 				}
-				break;
-			default: break;
 			}
 		}
 	}
@@ -63,57 +79,125 @@ void APressableButton::DoTargetActorActions(const bool IsPressedAction)
 
 void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
 {
-	for (const auto& [Actor, PressedAction, ReleasedAction, IsActionLinked] : LinkedButtons)
+	if (!IsPressedAction && TriggerType == EButtonTriggerType::SinglePress) {return; }
+	
+	for (const auto& [Actor,  DoActionOnPressed, PressedAction, DoActionOnRelease, ReleasedAction, IsActionLinked] : LinkedButtons)
 	{
 		if (Actor.IsValid())
 		{
-			switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
+			if (IsPressedAction && DoActionOnPressed || !IsPressedAction && DoActionOnRelease)
 			{
-			case ELinkedButtonAction::Press:
+				switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
 				{
-					if (!Actor->GetIsPressed())
+				case ELinkedButtonAction::Press:
 					{
-						Actor->EventOnPress(!IsActionLinked, false);
+						if (!Actor->GetIsPressed())
+						{
+							Actor->EventOnPress(!IsActionLinked, false);
+						}
 					}
+					break;
+				case ELinkedButtonAction::Release:
+					{
+						if (Actor->GetIsPressed())
+						{
+							Actor->EventOnRelease(!IsActionLinked, false);
+						}
+					}
+					break;
+				case ELinkedButtonAction::Toggle:
+					{
+						if (Actor->GetIsPressed())
+						{
+							Actor->EventOnRelease(!IsActionLinked, false);
+						}
+						else
+						{
+							Actor->EventOnPress(!IsActionLinked, false);
+						}
+					}
+					break;
+				default: break;
 				}
-				break;
-			case ELinkedButtonAction::Release:
-				{
-					if (Actor->GetIsPressed())
-					{
-						Actor->EventOnRelease(!IsActionLinked, false);
-					}
-				}
-				break;
-			case ELinkedButtonAction::Toggle:
-				{
-					if (Actor->GetIsPressed())
-					{
-						Actor->EventOnRelease(!IsActionLinked, false);
-					}
-					else
-					{
-						Actor->EventOnPress(!IsActionLinked, false);
-					}
-				}
-				break;
-			case ELinkedButtonAction::Custom: break;
-			case ELinkedButtonAction::Nothing: break;
-			default: break;
 			}
 		}
 	}
 }
 
-void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
+#if WITH_EDITOR
+void APressableButton::ValidateTargetActors()
+{
+	if (TargetActors.IsEmpty()) { return; }
+	for (FButtonTargetActor& TargetActor : TargetActors)
+	{
+		if (!TargetActor.Actor.IsNull())
+		{
+			const AActor* Actor = TargetActor.Actor.Get();
+			
+			if (!Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+			{
+				TargetActor.Actor = nullptr;
+
+				if (GEditor)
+				{
+					const FText Title {FText::FromString("Button")};
+					const FText Message {FText::FromString("Target does not implement UTriggerableObject interface. The button cannot perform any actions on this actor. ")};
+					FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+				}
+			}
+		}
+		if (TriggerType == EButtonTriggerType::SinglePress && TargetActor.DoActionOnRelease)
+		{
+			if (GEditor)
+			{
+				const FText Title {FText::FromString("Button")};
+				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
+				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+			}
+		}
+	}
+}
+
+void APressableButton::ValidateLinkedButtons()
 {
 	if (LinkedButtons.IsEmpty()) { return; }
-	if (CallTargetActors)
+	for (FLinkedButton& LinkedButton : LinkedButtons)
+	{
+		if (LinkedButton.Actor.Get() == this)
+		{
+			const FString DisplayName = this->GetHumanReadableName();
+			UE_LOG(LogButton, Warning, TEXT("%s contains button link to self."), *DisplayName)
+
+			LinkedButton.Actor = nullptr;
+			
+			if (GEditor)
+			{
+				const FText Title {FText::FromString("Button")};
+				const FText Message {FText::FromString("Cannot add button link to self!")};
+				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+			}
+		}
+		if (TriggerType == EButtonTriggerType::SinglePress && LinkedButton.DoActionOnRelease)
+		{
+			if (GEditor)
+			{
+				const FText Title {FText::FromString("Button")};
+				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
+				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+			}
+		}
+	}
+}
+#endif
+
+void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
+{
+	if (!TargetActors.IsEmpty() && CallTargetActors)
 	{
 		DoTargetActorActions(true);
 	}
 	
-	if (CallLinkedButtons)
+	if (!LinkedButtons.IsEmpty() && CallLinkedButtons)
 	{
 		DoLinkedButtonActions(true);
 	}
@@ -122,13 +206,12 @@ void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, 
 
 void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
 {
-	if (LinkedButtons.IsEmpty()) { return; }
-	if (CallTargetActors)
+	if (!TargetActors.IsEmpty() && CallTargetActors)
 	{
 		DoTargetActorActions(false);
 	}
 	
-	if (CallLinkedButtons)
+	if (!LinkedButtons.IsEmpty() && CallLinkedButtons)
 	{
 		DoLinkedButtonActions(false);
 	}
