@@ -5,6 +5,7 @@
 #include "PressableButton.h"
 
 #include "MeshCollisionTriggerComponent.h"
+#include "PowerConsumerComponent.h"
 #include "TriggerableObjectInterface.h"
 
 DEFINE_LOG_CATEGORY_CLASS(APressableButton, LogButton)
@@ -27,19 +28,36 @@ void APressableButton::OnConstruction(const FTransform& Transform)
 	if (CanCollisionTriggerButton && !CollisionTriggerComponent)
 	{
 		CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
-		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), true));
+		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), false));
 	}
 	else if (!CanCollisionTriggerButton && CollisionTriggerComponent)
 	{
 		CollisionTriggerComponent->DestroyComponent();
 	}
-	
+
+	if (RequiresPower && !PowerConsumerComponent && PowerSource.Get())
+	{
+		PowerConsumerComponent = Cast<UPowerConsumerComponent>
+		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+		if (PowerConsumerComponent)
+		{
+			PowerConsumerComponent->PowerSource = PowerSource;
+		}
+	}
+	else if (!RequiresPower && PowerConsumerComponent)
+	{
+		PowerConsumerComponent->DestroyComponent();
+	}
 }
 
 void APressableButton::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (PowerConsumerComponent)
+	{
+		PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
+	}
 }
 
 void APressableButton::StartCooldown()
@@ -201,6 +219,7 @@ void APressableButton::ValidateLinkedButtons()
 		}
 	}
 }
+
 #endif
 
 void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
@@ -228,6 +247,10 @@ void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors
 	{
 		DoLinkedButtonActions(false);
 	}
+}
+
+void APressableButton::EventOnPowerStateChanged_Implementation(bool NewState)
+{
 }
 
 

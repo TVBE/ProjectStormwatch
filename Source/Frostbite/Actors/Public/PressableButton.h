@@ -10,6 +10,7 @@
 #include "GameFramework/Actor.h"
 #include "PressableButton.generated.h"
 
+class APowerSource;
 class UPowerConsumerComponent;
 class UMeshCollisionTriggerComponent;
 struct FTimerHandle;
@@ -156,6 +157,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Requires Power"))
 	bool RequiresPower {false};
 
+	/** Soft object pointer to the power source that this button is connected to. */
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Button|Power", Meta = (DisplayName = "Power Source"))
+	TSoftObjectPtr<APowerSource> PowerSource;
+
 	/** If true, the button can still be pressed when the button has no power.
 	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Pressed Without Power", EditCondition = "RequiresPower"))
@@ -221,7 +226,6 @@ private:
 
 	/** Validates the array of linked buttons. */
 	void ValidateLinkedButtons();
-
 #endif
 	
 public:
@@ -230,7 +234,7 @@ public:
 	 *	@Param CallTargetActorss If true, the event should execute its gameplay actions.
 	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button", Meta = (DisplayName = "Press Button"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button|Events", Meta = (DisplayName = "Press Button"))
 	void EventOnPress(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
 
 	/** Releases the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
@@ -238,8 +242,12 @@ public:
 	 *	@Param CallTargetActors If true, the event should execute its gameplay actions.
 	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button", Meta = (DisplayName = "Release Button"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button|Events", Meta = (DisplayName = "Release Button"))
 	void EventOnRelease(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
+
+	/** Event called when the button's power state changes. */
+	UFUNCTION(BlueprintNativeEvent, Category = "Button|Events", Meta = (DisplayName = "Event On Power State Changed"))
+	void EventOnPowerStateChanged(bool NewState);
 
 	/** Returns whether the button is currently pressed. */
 	UFUNCTION()

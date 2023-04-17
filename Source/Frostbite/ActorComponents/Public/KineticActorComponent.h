@@ -29,6 +29,14 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* Mesh;
 
+	/** The original sleep family of the mesh component. */
+	UPROPERTY()
+	ESleepFamily OriginalSleepFamily;
+
+	/** The original sleep threshold of the mesh component. */
+	UPROPERTY()
+	float OriginalSleepThreshold;
+
 	/** When true, the actor's bGenerateWakeEvents property should be set to false when this component wants to destroy itself. */
 	UPROPERTY()
 	bool DisableGenerateWakeEventsOnSleep {false};
@@ -37,6 +45,14 @@ private:
 	UPROPERTY()
 	float CollisionHitEventEnableDelay {0.3f};
 
+	/** If true, the actor that owns this component is currently grabbed. */
+	UPROPERTY()
+	bool IsGrabbed {false};
+
+	/** The timer handle for re-enabling rigid body sleep on the physics simulating scene component. */
+	UPROPERTY()
+	FTimerHandle RigidBodySleepEnableTimerHandle;
+	
 	/** The timer handle for re-enabling NotifyRigidBodyCollision on the physics simulating scene component. */
 	UPROPERTY()
 	FTimerHandle CollisionHitEventEnableTimerHandle;
@@ -50,6 +66,10 @@ public:
 	UFUNCTION()
 	void HandleOnOwnerGrabbed();
 
+	/** Handles the actor being released. */
+	UFUNCTION()
+	void HandleOnOwnerReleased();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnRegister() override;
@@ -62,4 +82,8 @@ private:
 	/** Re-enables NotifyRigidBodyCollision on the physics simulating scene component. */
 	UFUNCTION()
 	void EnableNotifyRigidBodyCollisionOnOwner();
+
+	/** Re-enables rigid body sleep on the physics simulating scene component. */
+	UFUNCTION()
+	void EnableRigidBodySleep();
 };

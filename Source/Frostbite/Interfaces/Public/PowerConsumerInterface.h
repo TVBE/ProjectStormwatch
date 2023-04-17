@@ -20,8 +20,8 @@ class IPowerConsumer
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Power Consumer", Meta = (DisplayName = "Set Power"))
-	bool SetPower(const bool NewPowerState, const AActor* Initiator);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Power Consumer", Meta = (DisplayName = "Set Power State"))
+	bool SetPowerState(const bool NewPowerState, const AActor* Initiator);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Power Consumer", Meta = (DisplayName = "Get Power State"))
 	bool GetPowerState() const;

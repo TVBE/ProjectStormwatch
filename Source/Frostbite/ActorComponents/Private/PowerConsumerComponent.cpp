@@ -1,34 +1,38 @@
-// // Copyright (c) 2022-present Barrelhouse// Written by // This source code is part of the project Frostbite
-
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #include "PowerConsumerComponent.h"
+#include "PowerSource.h"
 
-// Sets default values for this component's properties
 UPowerConsumerComponent::UPowerConsumerComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
 void UPowerConsumerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	
+	if (APowerSource* ResolvedPowerSource = PowerSource.Get())
+	{
+		ResolvedPowerSource->RegisterPowerConsumer(this);
+	}
 }
 
-
-// Called every frame
-void UPowerConsumerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool UPowerConsumerComponent::SetPowerState_Implementation(const bool NewPowerState, const AActor* Initiator)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	if (IsPowered != NewPowerState)
+	{
+		IsPowered = NewPowerState;
+		OnPowerStateChanged.Broadcast(NewPowerState);
+		return true;
+	}
+	return false;
 }
 
+
+
+
+
+ 

@@ -37,7 +37,7 @@ void AMouse::BeginPlay()
 void AMouse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	FVector Start {MouseMesh->GetComponentLocation()};
 	FVector End {Start + FVector(0, 0, -15)};
 	FHitResult HitResult;

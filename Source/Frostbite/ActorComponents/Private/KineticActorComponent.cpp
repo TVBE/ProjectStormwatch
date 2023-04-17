@@ -14,6 +14,8 @@ UKineticActorComponent::UKineticActorComponent()
 void UKineticActorComponent::OnRegister()
 {
 	Super::OnRegister();
+	
+	IsGrabbed = true;
 
 	if (const AActor* Actor {GetOwner()})
 	{
@@ -32,6 +34,15 @@ void UKineticActorComponent::OnRegister()
 						DisableGenerateWakeEventsOnSleep = true;
 					}
 				
+					OriginalSleepFamily = Mesh->BodyInstance.SleepFamily;
+					OriginalSleepThreshold = Mesh->BodyInstance.CustomSleepThresholdMultiplier;
+				
+					Mesh->BodyInstance.SleepFamily = ESleepFamily::Custom;
+					Mesh->BodyInstance.CustomSleepThresholdMultiplier = 1000.0f;
+
+					Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
+					
+				
 					Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
 			}
 		}
@@ -41,22 +52,37 @@ void UKineticActorComponent::OnRegister()
 void UKineticActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Error, TEXT("I SPAWNED"))
 	
 	if (const UWorld* World {GetWorld()})
 	{
 		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
 			&UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
 	}
+
+	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
+	{
+		Mesh->WakeAllRigidBodies();
+	}
 }
 
 void UKineticActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	/** Temporary implementation to prevent the object from sleeping on release. */
+	// if (Mesh && !Mesh->IsAnyRigidBodyAwake())
+	// {
+	// 	Mesh->WakeAllRigidBodies();
+	// }
 }
 
 void UKineticActorComponent::HandleOnOwnerGrabbed()
 {
 	if (!Mesh) { return; }
+	
+	IsGrabbed = true;
 
 	if (Mesh->IsSimulatingPhysics())
 	{
@@ -75,6 +101,31 @@ void UKineticActorComponent::HandleOnOwnerGrabbed()
 	}
 }
 
+void UKineticActorComponent::HandleOnOwnerReleased()
+{
+	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
+	{
+		if (!Mesh->IsAnyRigidBodyAwake())
+		{
+			Mesh->WakeAllRigidBodies();
+		}
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(RigidBodySleepEnableTimerHandle))
+			{
+				World->GetTimerManager().ClearTimer(RigidBodySleepEnableTimerHandle);
+			}
+
+			World->GetTimerManager().SetTimer(RigidBodySleepEnableTimerHandle, this,
+				&UKineticActorComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
+		}
+		
+	}
+	
+	IsGrabbed = false;
+}
+
 void UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner()
 {
 	if (!Mesh) { return; }
@@ -85,10 +136,18 @@ void UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner()
 	}
 }
 
+void UKineticActorComponent::EnableRigidBodySleep()
+{
+	if (Mesh)
+	{
+		Mesh->BodyInstance.SleepFamily = OriginalSleepFamily;
+		Mesh->BodyInstance.CustomSleepThresholdMultiplier = OriginalSleepThreshold;
+	}
+}
 
 void UKineticActorComponent::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
 {
-	if (!Mesh) { return; }
+	if (!Mesh || IsGrabbed) { return; }
 	Mesh->OnComponentSleep.RemoveDynamic(this, &UKineticActorComponent::HandleActorSleep);
 
 	if (DisableGenerateWakeEventsOnSleep)

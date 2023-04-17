@@ -11,7 +11,7 @@
 #include "InventoryObjectInterface.h"
 #include "MeshInteractionComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, Placeable, ClassGroup = ("Interaction"), Meta = (BlueprintSpawnableComponent,
+UCLASS(NotBlueprintable, BlueprintType, Placeable, ClassGroup = "Interaction", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Mesh Interaction Component", ShortToolTip = "Component that allows the player to grab and throw static mesh and components. "))
 class UMeshInteractionComponent : public USceneComponent, public IInteractableObject, public IGrabbableObject, public IInventoryObject
 {

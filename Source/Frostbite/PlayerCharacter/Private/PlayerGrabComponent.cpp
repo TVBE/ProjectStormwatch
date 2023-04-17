@@ -116,6 +116,12 @@ void UPlayerGrabComponent::ReleaseObject()
 	{
 		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
+
+		if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()))})
+		{
+			KineticComponent->HandleOnOwnerReleased();
+		}
+		
 		if(WillThrowOnRelease)
 		{
 			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());

@@ -1,28 +1,43 @@
-// // Copyright (c) 2022-present Barrelhouse// Written by // This source code is part of the project Frostbite
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PowerConsumerInterface.h"
+#include "PowerSource.h"
 #include "Components/ActorComponent.h"
 #include "PowerConsumerComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerConsumerComponentStateChangedDelegate, bool, NewState);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UPowerConsumerComponent : public UActorComponent
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Power", Meta = (BlueprintSpawnableComponent,
+	DisplayName = "Power Consumer Component", ShortToolTip = "Component that can be added to actors that require power."))
+class UPowerConsumerComponent : public UActorComponent, public IPowerConsumer
 {
 	GENERATED_BODY()
 
+public:
+	/** Delegate that is called when the power state of this power consumer changes. */
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Power Consumer|Delegates", Meta = (DisplayName = "On Power State Changed"))
+	FOnPowerConsumerComponentStateChangedDelegate OnPowerStateChanged;
+
+	/** The target power source this power consumer is dependent on for power. */
+	UPROPERTY(BlueprintReadOnly, Category = "Power Consumer", Meta = (DisplayName = "Target Power Source"))
+	TSoftObjectPtr<APowerSource> PowerSource;
+
+private:
+	/** If true, this object is powered. */
+	UPROPERTY(EditAnywhere, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
+	bool IsPowered {false};
+
 public:	
-	// Sets default values for this component's properties
 	UPowerConsumerComponent();
 
+	bool SetPowerState_Implementation(const bool NewPowerState, const AActor* Initiator) override;
+	bool GetPowerState_Implementation() const override { return IsPowered; }
+
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };
