@@ -1,5 +1,5 @@
 // Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
+// Written by Tim Verberne and Tim Peeters
 // This source code is part of the project Frostbite
 
 #pragma once
@@ -10,6 +10,37 @@
 
 class APlayerCharacter;
 class ANightstalker;
+
+UENUM()
+enum ERoomHeatEvent_Type
+{
+	UNDEFINED,
+	AUDITORY,
+	VISUAL,
+};
+
+/** Struct used to parse event data to the RoomVolume, which increases/decreases the HeatValue.*/
+USTRUCT(BlueprintType)
+struct FRoomHeatEvent
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Soft object pointer to the room. */
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "RoomData", Meta = (DisplayName = "RelevantRoom"))
+	TSoftObjectPtr<ARoomVolume> RelevantRoom {nullptr};
+
+	/** Defines what type of event this is. Is it triggered by audio, sight?*/
+	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventType"))
+	TEnumAsByte<ERoomHeatEvent_Type> EventType;
+
+	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventHeatValue"))
+	uint8 EventHeatValue;
+	
+	/** Constructor with default values. */
+	FRoomHeatEvent()
+	{
+	}
+};
 
 /** Struct for defining connected rooms. */
 USTRUCT(BlueprintType)
@@ -63,13 +94,25 @@ public:
 	TArray<TSoftObjectPtr<ARoomVolume>> ConnectedRooms;
 
 private:
+	/** Room's current 'Heat' (Range 0-100, 100=hot). Variable used by e.g. AI to determine relevancy of room as a travel target*/
+	UPROPERTY(BlueprintGetter = GetHeatValue, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "HeatValue"))
+	float HeatValue = 0;
+	
 	/** Whether the room is currently lit or not. */
-	UPROPERTY(BlueprintGetter =GetIsLit, Category = "RoomVolume", Meta = (DisplayName = "Is Lit"))
+	UPROPERTY(BlueprintGetter = GetIsLit, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Is Lit"))
 	bool IsLit {false};
 
 public:
+	/** Adds Heat to the HeatValue, based on a FRoomHeatEvent.*/
+	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Add Room Heat"))
+	void AddRoomHeat(const FRoomHeatEvent HeatEvent);
+	
+	/** Deducts Heat from the HeatValue, based on a FRoomHeatEvent.*/
+	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Deduct Room Heat"))
+	void DeductRoomHeat(const FRoomHeatEvent HeatEvent);
+	
 	/** Set whether the room should be considered lit or not. */
-	UFUNCTION(BlueprintCallable, Category = "RoomVolume", Meta = (DisplayName = "Set Light Status"))
+	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Set Light Status"))
 	void SetLightStatus(const bool Value);
 	
 protected:
@@ -105,11 +148,14 @@ protected:
 	void EventOnNightstalkerLeave(ANightstalker* Nightstalker);
 
 public:
+	/** Returns the room's current heat value (Range 0-100)**/
+	UFUNCTION(BlueprintGetter, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Get HeatValue"))
+	FORCEINLINE float GetHeatValue() const {return HeatValue; }
+	
 	/** Returns whether the room is currently lit. */
-	UFUNCTION(BlueprintGetter, Category = "RoomVolume", Meta = (DisplayName = "Is Lit"))
+	UFUNCTION(BlueprintGetter, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Get IsLit"))
 	FORCEINLINE bool GetIsLit() const {return IsLit; }
 	
-
 };
 
 

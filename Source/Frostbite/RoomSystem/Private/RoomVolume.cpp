@@ -52,6 +52,24 @@ void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ARoomVolume::AddRoomHeat(const FRoomHeatEvent HeatEvent)
+{
+	float NewHeatVal = (HeatValue + HeatEvent.EventHeatValue);
+	if(NewHeatVal > 100.0) {NewHeatVal = 100.0f;}
+	else if(NewHeatVal < 0) {NewHeatVal = 0.0f;}
+
+	HeatValue = NewHeatVal;
+}
+
+void ARoomVolume::DeductRoomHeat(const FRoomHeatEvent HeatEvent)
+{
+	float NewHeatVal = (HeatValue - HeatEvent.EventHeatValue);
+	if(NewHeatVal > 100.0) {NewHeatVal = 100.0f;}
+	else if(NewHeatVal < 0) {NewHeatVal = 0.0f;}
+
+	HeatValue = NewHeatVal;
+}
+
 void ARoomVolume::SetLightStatus(const bool Value)
 {
 	if (IsLit == Value) { return; }

@@ -2,8 +2,10 @@
 
 #include "PlayerCharacterMovementComponent.h"
 
+#include "GameFramework/PlayerController.h"
+
 void UPlayerCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
+                                                      FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
@@ -61,7 +63,7 @@ void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const A
 	{
 		return;
 	}
-	if (PawnOwner->GetController() == Controller)
+	if (PawnOwner->GetController() == Cast<APlayerController>(Controller))
 	{
 		IsSprinting = Value;
 	}

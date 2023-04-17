@@ -14,7 +14,7 @@ UENUM(BlueprintType)
 enum class EBehaviorMode : uint8
 {
 	RoamMode    UMETA(DisplayName = "Roam Mode", ToolTip = "In roam mode, we assume that the Nightstalker is not implicitly aware about the whereabouts of the player." ),
-	StalkMode    UMETA(DisplayName = "stalk Mode", ToolTip = "In stalk mode, we assume that the Nightstalker is implicitly aware about the whereabouts of the player."),
+	StalkMode    UMETA(DisplayName = "Stalk Mode", ToolTip = "In stalk mode, we assume that the Nightstalker is implicitly aware about the whereabouts of the player."),
 	AmbushMode  UMETA(DisplayName = "Ambush Mode", ToolTip = "In ambush mode, The Nightstalker is near the player and ready to strike.")
 };
 

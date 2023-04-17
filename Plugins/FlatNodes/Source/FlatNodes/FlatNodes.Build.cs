@@ -1,4 +1,4 @@
-// Copyright 2022 Les Androïds Associés. All Rights Reserved.
+// Copyright 2022 Les Androï¿½ds Associï¿½s. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -7,6 +7,7 @@ public class FlatNodes : ModuleRules
 	public FlatNodes(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		bUsePrecompiled = true;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
