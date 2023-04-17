@@ -3,6 +3,8 @@
 // This source code is part of the project Frostbite
 
 #include "PressableButton.h"
+
+#include "MeshCollisionTriggerComponent.h"
 #include "TriggerableObjectInterface.h"
 
 DEFINE_LOG_CATEGORY_CLASS(APressableButton, LogButton)
@@ -21,6 +23,17 @@ void APressableButton::OnConstruction(const FTransform& Transform)
 	ValidateTargetActors();
 	ValidateLinkedButtons();
 #endif
+
+	if (CanCollisionTriggerButton && !CollisionTriggerComponent)
+	{
+		CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
+		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), true));
+	}
+	else if (!CanCollisionTriggerButton && CollisionTriggerComponent)
+	{
+		CollisionTriggerComponent->DestroyComponent();
+	}
+	
 }
 
 void APressableButton::BeginPlay()

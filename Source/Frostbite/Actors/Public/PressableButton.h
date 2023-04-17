@@ -10,6 +10,8 @@
 #include "GameFramework/Actor.h"
 #include "PressableButton.generated.h"
 
+class UPowerConsumerComponent;
+class UMeshCollisionTriggerComponent;
 struct FTimerHandle;
 
 /** Defines the trigger type of the button. */
@@ -19,6 +21,15 @@ enum class EButtonTriggerType : uint8
 	SinglePress				UMETA(DisplayName = "Single Press"),
 	PressAndHold			UMETA(DisplayName = "Press and Hold"),
 	Toggle					UMETA(DisplayName = "Toggle")
+};
+
+/** Defines an action for the button to perform if the power is lost. */
+UENUM(BlueprintType)
+enum class EButtonPowerChangeActionType : uint8
+{
+	Nothing					UMETA(DisplayName = "Nothing"),
+	Release					UMETA(DisplayName = "Release If Pressed"),
+	Press					UMETA(DisplayName = "Press If Pressed Before Power Outage")
 };
 
 /** Defines some actions to execute on linked buttons when the button is pressed or unpressed. */
@@ -103,6 +114,7 @@ class APressableButton : public AActor, public IUsableObject
 	DECLARE_LOG_CATEGORY_CLASS(LogButton, Log, All)
 
 protected:
+	// GENERAL
 	/** The trigger type of the button. */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Button", Meta = (DisplayName = "Type"))
 	EButtonTriggerType TriggerType {EButtonTriggerType::SinglePress};
@@ -126,9 +138,56 @@ protected:
 		NoElementDuplicate, ShowOnlyInnerProperties))
 	TArray<FLinkedButton> LinkedButtons;
 
+	// PHYSICS
+	/** If true, the button can be triggered by colliding physics objects. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Can Be Triggered By Collisions"))
+	bool CanTriggerByCollision {true};
+
+	/** The force threshold required to trigger the button. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", EditCondition = "CanCollisionTriggerButton"))
+	float CanCollisionTriggerButton {1000.0f};
+
+	/** The mesh collision trigger component. */
+	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Collision Trigger Component"))
+	UMeshCollisionTriggerComponent* CollisionTriggerComponent;
+	
+	// POWER
+	/** If true, the button requires power to operate and can be connected to a power source. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Requires Power"))
+	bool RequiresPower {false};
+
+	/** If true, the button can still be pressed when the button has no power.
+	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Pressed Without Power", EditCondition = "RequiresPower"))
+	bool CanBePressedWithoutPower {false};
+
+	/** If true, the button can still be released when the button has no power.
+	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Pressed Without Power",
+		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress"))
+	bool CanBeReleasedWithoutPower {false};
+
+	/** Defines the action the button should perform when power is lost. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Action On Power Loss",
+		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress", ValidEnumValues = "Nothing, Release"))
+	EButtonPowerChangeActionType PowerLossAction {EButtonPowerChangeActionType::Nothing};
+
+	/** Defines the action the button should perform when power is regained. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
+		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress", ValidEnumValues = "Nothing, Press"))
+	EButtonPowerChangeActionType PowerGainAction {EButtonPowerChangeActionType::Nothing};
+
+	/** If true, the button is currently powered. */
+	UPROPERTY(BlueprintReadOnly, Category = "Button|Power", Meta = (DisplayName = "Is Powered"))
+	bool IsPowered {true};
+
+	/** The power consumer component. */
+	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Power Consumer Component"))
+	UPowerConsumerComponent* PowerConsumerComponent;
+
 private:
 	/** If true, the button is currently in cooldown and cannot be pressed. */
-	UPROPERTY(BlueprintGetter = GetIsCooldownActive, Category = "Button", Meta = (DisplayName = "Is Cooldown Active"))
+	UPROPERTY(BlueprintGetter = GetIsCooldownActive, Category = "Button", Meta = (DisplayName = "Is Cooldown Active", EditCondition = "RequiresPower"))
 	bool IsCooldownActive {false};
 	
 	/** Timer handle for the cooldown timer. */
