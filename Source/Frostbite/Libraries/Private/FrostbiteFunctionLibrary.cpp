@@ -48,7 +48,7 @@ UObject* FindInteractableObject(AActor* Actor)
 	return InteractableObject;
 }
 
-UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(bool& Successful,
+UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(EFunctionResult& Result,
 	AActor* Actor, EFrostbiteInterfaceType Interface)
 {
 	if (!Actor) { return nullptr; }
@@ -76,11 +76,11 @@ UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(
 
 	if (InterfaceObject)
 	{
-		Successful = true;
+		Result = EFunctionResult::Successful;
 	}
 	else
 	{
-		Successful = false;
+		Result = EFunctionResult::Unsuccessful;
 	}
 
 	return InterfaceObject;
