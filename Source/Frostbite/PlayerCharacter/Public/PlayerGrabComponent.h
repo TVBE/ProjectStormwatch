@@ -124,7 +124,7 @@ public:
 	void PerformThrow();
 	
 	UFUNCTION()
-	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity);
+	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool ThrowOverHands);
 
 	/** Calculate the rotated hand offset based on the camera rotation.*/
 	UFUNCTION(Category = "Player Physics Grab")
@@ -164,6 +164,10 @@ public:
 	/** Returns whether the grab component is priming throw on an object or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
 	FORCEINLINE bool GetIsPrimingThrow() const { return IsPrimingThrow; }
+	
+	/** Returns whether the grab component will throw an object on release or not. */
+	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
+	FORCEINLINE bool GetWillThrowOnRelease() const { return WillThrowOnRelease; }
 };
 
 /** Configuration asset to fine tune all variables within the physics grab component*/
@@ -207,13 +211,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float PrePrimingThrowDelayTime{0.5f};
 
-	/** The minimum impulse applied when you throw an object.*/
+	/** The curve to set the minimum and maximum strength the player can throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float MinThrowingStrength{0.0f};
-
-	/** The maximum impulse applied when you throw an object.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float MaxThrowingStrength{100.0f};
+	UCurveFloat* ThrowingStrengthCure;
 	
 	/** The time it will take to fully charge a throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")

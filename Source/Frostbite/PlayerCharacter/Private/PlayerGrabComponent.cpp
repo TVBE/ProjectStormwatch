@@ -34,7 +34,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		UpdateTargetLocationWithRotation(DeltaTime);
 		
 		/** If the distance between the location and target location is too big, let the object go. */
-		//TODO: Release is triggered here immediately the first time the player grabs an object.
+		
 		if (!IsPrimingThrow) 
 		{
 			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
@@ -112,7 +112,6 @@ void UPlayerGrabComponent::ReleaseObject()
 		ReleaseComponent();
 		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
 		StopPrimingThrow();
-		WillThrowOnReleaseMultiplier = 1.0;
 	}
 }
 
@@ -137,40 +136,61 @@ void UPlayerGrabComponent::StopPrimingThrow()
 /** Execute a throw if the throw is priming*/
 void UPlayerGrabComponent::PerformThrow()
 {
-	if(IsPrimingThrow)
+	if(WillThrowOnRelease)
 	{
+		bool ThrowOverHands{false};
+		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
+		// old: const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
+
+		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
+		if(ThrowingTimeLine >0.40)
+		{
+			ReleaseLocation = Camera->GetComponentLocation() + 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector();
+			ThrowOverHands = true;
+		}
+		else
+		{
+			ReleaseLocation = RotatedHandOffset;
+		}
 		
 		FVector Target {FVector()};
-		FVector TraceStart {Camera->GetComponentLocation()+RotatedHandOffset};
-		FVector TraceEnd {Camera->GetForwardVector() * 100000 + TraceStart};FHitResult HitResult;
-		ReleaseLocation = Camera->GetComponentLocation() + 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector();
+		FVector TraceStart {ReleaseLocation + Camera->GetForwardVector()};
+		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
 		if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
-			{
-				Target = HitResult.ImpactPoint;
-			}
-			else
-			{
-				Target = TraceEnd;
-			}
-		
-		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
+		{
+			Target = HitResult.ImpactPoint;
+		}
+		else
+		{
+			Target = TraceEnd;
+		}
 
-		float ThrowAngle = CalculateThrowAngle(ReleaseLocation,TargetLocation,ThrowingStrength);
-		
-		
 		/** Calculate the direction from the player to the target */
 		FVector Direction = Target - TraceStart;
 		Direction.Normalize();
-	
 
-		/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
-		FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
-		FVector FinalDirection = Direction.RotateAngleAxis(ThrowAngle + 45, RotationAxis);
-	
 
-		FinalDirection.Normalize();
+		FVector FinalDirection{0,0,0};
+		if(Target != TraceEnd)
+		{
+			/** Calculate the angle to throw the object using a ballistic trajectory.*/
+			float ThrowAngle = CalculateThrowAngle(TraceStart,Target,ThrowingStrength, ThrowOverHands);
+			
+			/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
+			FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
+			RotationAxis.Normalize();
+			FinalDirection = Direction.RotateAngleAxis(ThrowAngle, RotationAxis);
+			FinalDirection.Normalize();
+		}
+		else
+		{
+			FinalDirection = Direction;
+		}
+		
+		
+
+		
 
 		/** Set the physics velocity of the grabbed component to the calculated throwing direction */
 		GrabbedComponent->SetPhysicsLinearVelocity(FinalDirection * ThrowingStrength);
@@ -183,24 +203,31 @@ void UPlayerGrabComponent::PerformThrow()
 }
 
 
-float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity)
+float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool overhands)
 {
-	// Calculate displacement vector
-	FVector Displacement = Target - StartLocation;
+	/** Calculate displacement vector D */
+	FVector D{Target - StartLocation};
 
-	// Calculate horizontal distance to target location
-	float HorizontalDistance = FVector::DistXY(StartLocation, Target);
+	/** Calculate horizontal distance HD to target location */
+	float HD{float (FVector::DistXY(StartLocation, Target))};
 
-	// Calculate initial velocity required to hit the target
-	const float Gravity = 980.0f; // acceleration due to gravity
-	float Theta = atan((Gravity * HorizontalDistance) / (Velocity * Velocity));
-	float InitialVelocity = Velocity / cos(Theta);
+	/** Calculate initial velocity as I required to hit the target */
+	const float G{981.0f}; // acceleration due to gravity as G.
+	float Theta{atan((G * HD) / (Velocity * Velocity))};
+	float I{Velocity / cos(Theta)};
 
-	// Solve for the angle theta
-	Theta = atan((InitialVelocity * InitialVelocity - sqrt(InitialVelocity * InitialVelocity * InitialVelocity * InitialVelocity - Gravity * (Gravity * HorizontalDistance * HorizontalDistance + 2 * Displacement.Z * InitialVelocity * InitialVelocity))) / (Gravity * HorizontalDistance));
+	/** Solve for the angle theta for a balistic trajectory hitting target location with the given velocity.
+	 * ThetaOver and ThetaUnder respectively are the high angle and low angle that solve this equation.
+	 */
+	float ThetaOver = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
+	float ThetaUnder = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
 
-	// Return angle;
-	return FMath::RadiansToDegrees(Theta);
+	/** Return the throw angle.*/
+	if(overhands)
+	{
+		return FMath::RadiansToDegrees(ThetaOver);
+	}
+	return FMath::RadiansToDegrees(ThetaUnder);
 }
 
 
@@ -259,11 +286,15 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 	if (Camera)
 	{
 		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
-		TargetLocation = RotatedHandOffset * WillThrowOnReleaseMultiplier + (CurrentZoomLevel * Camera->GetForwardVector());
+		TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
 
+		FRotator TargetRotation{FRotator(CameraQuat * CameraRelativeRotation)};
+		if (CurrentZoomLevel > Configuration->BeginHandOffsetDistance)
+		{
+			//TODO; Slerp the rotation to a surface.
+		}
 		
 		
-		FRotator TargetRotation {CameraQuat * CameraRelativeRotation};
 		
 		SetTargetLocationAndRotation( TargetLocation,TargetRotation);
 	}
@@ -284,8 +315,8 @@ void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 		
 		/**Normalize this rotation and apply it to the relative rotation of the object.*/
 		CameraRelativeRotation = DeltaRotation.GetNormalized() * CameraRelativeRotation;
-		
 	}
+	
 }
 
 void UPlayerGrabComponent::BeginTetriaryInteraction()

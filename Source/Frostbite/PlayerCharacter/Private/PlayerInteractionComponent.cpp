@@ -284,9 +284,16 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 
 void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
-	if (GrabComponent && GrabComponent->GetIsPrimingThrow())
+	if (GrabComponent && GrabComponent->GetWillThrowOnRelease())
 	{
 		GrabComponent->PerformThrow();
+	}
+	else
+	{
+		if(GrabComponent->GetIsPrimingThrow())
+		{
+			GrabComponent->ReleaseObject();
+		}
 	}
 }
 
