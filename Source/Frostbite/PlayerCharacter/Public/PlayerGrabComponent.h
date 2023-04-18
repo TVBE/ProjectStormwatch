@@ -32,18 +32,20 @@ public:
 	UPROPERTY()
 	UPlayerPhysicsGrabConfiguration* Configuration;
 
+	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
+	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
+	bool RotationMode;
+
+
 private:
 	/** Pointer to the camera component of the player. */
 	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
 	UCameraComponent* Camera;
 	
-	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
-	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
-	bool IsRotationModeActive;
 
 	/** If true, the grab component is currently priming an object for throwing. */
 	UPROPERTY(BlueprintGetter = GetIsPrimingThrow, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
-	bool IsPrimingThrow;
+	bool IsPrimingThrow{false};
 
 	UPROPERTY()
 	bool WillThrowOnRelease;
@@ -67,13 +69,16 @@ private:
 	FVector LastLocation;
 	
 	UPROPERTY()
-	FRotator OriginalRotation;
+	FQuat CameraRelativeRotation;
 	
 	UPROPERTY()
 	FRotator RotationDifference;
 	
 	UPROPERTY()
 	FRotator CameraRotation;
+
+	UPROPERTY()
+	FQuat CameraQuat;
 	
 	UPROPERTY()
 	FVector RotatedHandOffset;
@@ -88,13 +93,19 @@ private:
 	float ThrowingTimeLine;
 
 	UPROPERTY()
-	FRotator MouseInputRotation;
+	FVector ReleaseLocation;
+
+	UPROPERTY()
+	FQuat MouseInputRotation{0.0,0.0,0.0,1.0};
 
 	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;
 
 	UPROPERTY()
 	float GrabbedComponentSize;
+
+	UPROPERTY()
+	float Gravity;
 	
 public:
 	/** Grabs an actor. */
@@ -116,10 +127,16 @@ public:
 	/** Called to execute a throw during the priming of a throw*/
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
 	void PerformThrow();
+	
+	UFUNCTION()
+	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool ThrowOverHands);
 
 	/** Calculate the rotated hand offset based on the camera rotation.*/
 	UFUNCTION(Category = "Player Physics Grab")
 	void UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset);
+
+	UFUNCTION()
+	void ApplyToPhysicsHandle();
 	
 	/** Will be updated when a component is being grabbed. */
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
@@ -130,6 +147,10 @@ public:
 
 	/** Updates on tick when you are manually rotating the object.*/
 	void UpdateMouseImputRotation(FVector2d MouseDelta);
+
+	/** The third interaction which is currenty rotating the object using mouse input.*/
+	void BeginTetriaryInteraction();
+	void EndTetriaryInteraction();
 
 protected:
 	virtual void OnRegister() override;
@@ -146,11 +167,15 @@ public:
 
 	/** Returns whether the grab component is currently in rotation mode or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
-	FORCEINLINE bool GetIsRotationModeActive() const { return IsRotationModeActive; }
+	FORCEINLINE bool GetIsRotationModeActive() const { return RotationMode; }
 
 	/** Returns whether the grab component is priming throw on an object or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
 	FORCEINLINE bool GetIsPrimingThrow() const { return IsPrimingThrow; }
+	
+	/** Returns whether the grab component will throw an object on release or not. */
+	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
+	FORCEINLINE bool GetWillThrowOnRelease() const { return WillThrowOnRelease; }
 };
 
 /** Configuration asset to fine tune all variables within the physics grab component*/
@@ -194,13 +219,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float PrePrimingThrowDelayTime{0.5f};
 
-	/** The minimum impulse applied when you throw an object.*/
+	/** The curve to set the minimum and maximum strength the player can throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float MinThrowingStrength{0.0f};
-
-	/** The maximum impulse applied when you throw an object.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float MaxThrowingStrength{100.0f};
+	UCurveFloat* ThrowingStrengthCure;
 	
 	/** The time it will take to fully charge a throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
@@ -227,15 +248,6 @@ public:
 	
 	// ... PhysicsHandleSettings ... 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	uint32 bSoftAngularConstraint : 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	uint32 bSoftLinearConstraint : 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PhysicsHandle")
-	uint32 bInterpolateTarget : 1;
-
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
 	float LinearDamping{200.0f};
@@ -255,12 +267,4 @@ public:
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
 	float InterpolationSpeed{50.0f};
-
-	
-	/** Constructor with default values. */
-	UPlayerPhysicsGrabConfiguration()
-	{
-	}
-	
-	void ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent);
 };
