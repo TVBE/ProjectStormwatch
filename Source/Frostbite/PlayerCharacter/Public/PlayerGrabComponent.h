@@ -103,6 +103,9 @@ private:
 
 	UPROPERTY()
 	float GrabbedComponentSize;
+
+	UPROPERTY()
+	float Gravity;
 	
 public:
 	/** Grabs an actor. */
@@ -131,6 +134,9 @@ public:
 	/** Calculate the rotated hand offset based on the camera rotation.*/
 	UFUNCTION(Category = "Player Physics Grab")
 	void UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset);
+
+	UFUNCTION()
+	void ApplyToPhysicsHandle();
 	
 	/** Will be updated when a component is being grabbed. */
 	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
@@ -242,15 +248,6 @@ public:
 	
 	// ... PhysicsHandleSettings ... 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	uint32 bSoftAngularConstraint : 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	uint32 bSoftLinearConstraint : 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PhysicsHandle")
-	uint32 bInterpolateTarget : 1;
-
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
 	float LinearDamping{200.0f};
@@ -270,12 +267,4 @@ public:
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
 	float InterpolationSpeed{50.0f};
-
-	
-	/** Constructor with default values. */
-	UPlayerPhysicsGrabConfiguration()
-	{
-	}
-	
-	void ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent);
 };

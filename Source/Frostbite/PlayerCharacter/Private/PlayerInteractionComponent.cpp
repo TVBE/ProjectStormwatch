@@ -43,7 +43,7 @@ void UPlayerInteractionComponent::OnRegister()
 		GrabComponent->Configuration = PlayerPhysicsGrabConfiguration.LoadSynchronous();
 		if (GrabComponent->Configuration)
 		{
-			GrabComponent->Configuration->ApplyToPhysicsHandle(GrabComponent);
+			GrabComponent->ApplyToPhysicsHandle();
 		}
 	}
 }

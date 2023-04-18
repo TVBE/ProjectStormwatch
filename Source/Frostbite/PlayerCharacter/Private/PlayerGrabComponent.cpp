@@ -23,6 +23,12 @@ void UPlayerGrabComponent::OnRegister()
 		Camera = PlayerCharacter->GetCamera();
 		Movement = PlayerCharacter->GetPlayerCharacterMovement();
 	}
+
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		Gravity = World->GetGravityZ();
+	}
 }
 
 void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -53,11 +59,13 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			}
 			else
 			{
+				WillThrowOnRelease = true;
+				
 				if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
 				{
 					CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
 				}
-				WillThrowOnRelease = true;
+				
 				if(PrePrimingThrowTimer <= 1.0)
 				{
 					/**The timeline to be used by various on tick functions that update location.
@@ -123,8 +131,13 @@ void UPlayerGrabComponent::ReleaseObject()
 		
 		if(WillThrowOnRelease)
 		{
-			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
+			GrabbedComponent->SetWorldLocation(ReleaseLocation);
 		}
+		else
+		{
+			GrabbedComponent->SetPhysicsLinearVelocity(FVector(0.0,0.0,0.0));
+		}
+		WillThrowOnRelease = false;
 		ReleaseComponent();
 		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
 		StopPrimingThrow();
@@ -154,12 +167,13 @@ void UPlayerGrabComponent::PerformThrow()
 {
 	if(WillThrowOnRelease)
 	{
+		
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
 		// old: const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
 
 		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
-		if(ThrowingTimeLine >0.40)
+		if(ThrowingTimeLine >0.35)
 		{
 			ReleaseLocation = Camera->GetComponentLocation() + 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector();
 			ThrowOverHands = true;
@@ -170,7 +184,7 @@ void UPlayerGrabComponent::PerformThrow()
 		}
 		
 		FVector Target {FVector()};
-		FVector TraceStart {ReleaseLocation + Camera->GetForwardVector()};
+		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
 		if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
@@ -181,28 +195,35 @@ void UPlayerGrabComponent::PerformThrow()
 		{
 			Target = TraceEnd;
 		}
-
+		
+		
 		/** Calculate the direction from the player to the target */
-		FVector Direction = Target - TraceStart;
+		FVector Direction = Target - ReleaseLocation;
 		Direction.Normalize();
-
+		
 
 		FVector FinalDirection{0,0,0};
 		if(Target != TraceEnd)
 		{
 			/** Calculate the angle to throw the object using a ballistic trajectory.*/
-			float ThrowAngle = CalculateThrowAngle(TraceStart,Target,ThrowingStrength, ThrowOverHands);
+			float ThrowAngle = CalculateThrowAngle(ReleaseLocation,Target,ThrowingStrength,ThrowOverHands);
 			
 			/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
 			FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
 			RotationAxis.Normalize();
 			FinalDirection = Direction.RotateAngleAxis(ThrowAngle, RotationAxis);
 			FinalDirection.Normalize();
+
+			float VectorLength = RotationAxis.Size();
+			UE_LOG(LogTemp, Display, TEXT("The length of RotationAxis is: %f"), VectorLength);
+			UE_LOG(LogGrabComponent, Verbose, TEXT("FinalDirection length"))
 		}
 		else
 		{
 			FinalDirection = Direction;
 		}
+
+		
 		
 		
 
@@ -218,32 +239,40 @@ void UPlayerGrabComponent::PerformThrow()
 	}
 }
 
-
+/** Calculate the angle to throw the object using a ballistic trajectory.*/
 float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool overhands)
 {
 	/** Calculate displacement vector D */
 	FVector D{Target - StartLocation};
+	D = D*1.0; //Some scaling to aproximately compensate for air resistance.
+	if(!overhands)
+	{
+		D = D*1.0;// when throwing underhands the item will generally experience more air resistance.
+	}
 
 	/** Calculate horizontal distance HD to target location */
 	float HD{float (FVector::DistXY(StartLocation, Target))};
-
+	
 	/** Calculate initial velocity as I required to hit the target */
-	const float G{981.0f}; // acceleration due to gravity as G.
+	const float G{abs(Gravity)}; // acceleration due to gravity as G.
+	UE_LOG(LogGrabComponent, Warning, TEXT("Gravity %f"),G);
 	float Theta{atan((G * HD) / (Velocity * Velocity))};
 	float I{Velocity / cos(Theta)};
 
 	/** Solve for the angle theta for a balistic trajectory hitting target location with the given velocity.
 	 * ThetaOver and ThetaUnder respectively are the high angle and low angle that solve this equation.
 	 */
-	float ThetaOver = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-	float ThetaUnder = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-
-	/** Return the throw angle.*/
 	if(overhands)
 	{
-		return FMath::RadiansToDegrees(ThetaOver);
+		/** the calculation of the low trajectory that solves the trajecory.*/
+		Theta = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
 	}
-	return FMath::RadiansToDegrees(ThetaUnder);
+	else
+	{
+		/** the calculation of the high trajectory that solves the trajecory.*/
+		Theta = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
+	}
+	return FMath::RadiansToDegrees(Theta);
 }
 
 
@@ -359,16 +388,14 @@ void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 	
 }
 
-void UPlayerPhysicsGrabConfiguration::ApplyToPhysicsHandle(UPhysicsHandleComponent* PhysicsHandleComponent)
+void UPlayerGrabComponent::ApplyToPhysicsHandle()
 {
 	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.
-	this->bSoftAngularConstraint = bSoftAngularConstraint;
-	this->bSoftLinearConstraint = bSoftLinearConstraint;
-	this->bInterpolateTarget = bInterpolateTarget;
-	this->LinearDamping = LinearDamping;
-	this->LinearStiffness = LinearStiffness;
-	this->AngularDamping = AngularDamping;
-	this->AngularStiffness = AngularStiffness;
-	this->InterpolationSpeed = InterpolationSpeed;
+
+	SetLinearDamping(Configuration->LinearDamping);
+	SetLinearStiffness(Configuration->LinearStiffness);
+	SetAngularDamping(Configuration->AngularDamping);
+	SetAngularStiffness(Configuration->AngularStiffness);
+	SetInterpolationSpeed(Configuration->InterpolationSpeed);
 }
 
