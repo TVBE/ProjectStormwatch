@@ -146,7 +146,7 @@ protected:
 
 	/** The force threshold required to trigger the button. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", EditCondition = "CanCollisionTriggerButton"))
-	float CanCollisionTriggerButton {1000.0f};
+	float CanCollisionTriggerButton {100.0f};
 
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Collision Trigger Component"))
@@ -158,28 +158,23 @@ protected:
 	bool RequiresPower {false};
 
 	/** Soft object pointer to the power source that this button is connected to. */
-	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Button|Power", Meta = (DisplayName = "Power Source"))
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Button|Power", Meta = (DisplayName = "Power Source", EditCondition = "RequiresPower"))
 	TSoftObjectPtr<APowerSource> PowerSource;
 
-	/** If true, the button can still be pressed when the button has no power.
+	/** If true, the button can still be toggled when the button has no power.
 	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Pressed Without Power", EditCondition = "RequiresPower"))
-	bool CanBePressedWithoutPower {false};
-
-	/** If true, the button can still be released when the button has no power.
-	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Pressed Without Power",
-		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress"))
-	bool CanBeReleasedWithoutPower {false};
-
-	/** Defines the action the button should perform when power is lost. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Can Be Toggled Without Power",
+		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides))
+	bool CanBeToggledWithoutPower {false};
+	
+	/** Defines the action the button should perform when power is lost. This is only available for toggle buttons. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Action On Power Loss",
-		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress", ValidEnumValues = "Nothing, Release"))
+		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides, ValidEnumValues = "Nothing, Release"))
 	EButtonPowerChangeActionType PowerLossAction {EButtonPowerChangeActionType::Nothing};
 
-	/** Defines the action the button should perform when power is regained. */
+	/** Defines the action the button should perform when power is regained. This is only available for toggle buttons.  */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
-		EditCondition = "RequiresPower && TriggerType != EButtonTriggerType::SinglePress", ValidEnumValues = "Nothing, Press"))
+		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides, ValidEnumValues = "Nothing, Press"))
 	EButtonPowerChangeActionType PowerGainAction {EButtonPowerChangeActionType::Nothing};
 
 	/** If true, the button is currently powered. */

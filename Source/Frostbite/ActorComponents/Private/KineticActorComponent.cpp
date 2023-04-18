@@ -39,11 +39,6 @@ void UKineticActorComponent::OnRegister()
 				
 					Mesh->BodyInstance.SleepFamily = ESleepFamily::Custom;
 					Mesh->BodyInstance.CustomSleepThresholdMultiplier = 1000.0f;
-
-					Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
-					
-				
-					Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
 			}
 		}
 	}
@@ -53,7 +48,10 @@ void UKineticActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Error, TEXT("I SPAWNED"))
+	if (Mesh)
+	{
+		Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
+	}
 	
 	if (const UWorld* World {GetWorld()})
 	{
