@@ -39,6 +39,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "PlayerInteractionComponent|Delegates", Meta = (DisplayName = "On Interactable Actor Found"))
 	FInteractableActorFoundDelegate OnInteractableActorFound;
 
+	/** The length of the initial line trace. */
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
+	uint16 CameraTraceLength {300};
+
+	/** The radius of the interactable object multi sphere trace. */
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
+	uint16 ObjectTraceRadius {50};
+
 private:
 	/** The use component that is used to use actors. */
 	UPROPERTY(BlueprintGetter = GetUseComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Use Component"))
@@ -65,15 +73,7 @@ private:
 	/** If true, the interaction component is currently performing a tertiary interaction. */
 	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Is Performing Tertiary Interaction", AllowPrivateAccess = "true"))
 	bool IsTertiaryInteractionActive {false};
-
-	/** The length of the initial line trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
-	uint16 CameraTraceLength {300};
-
-	/** The radius of the interactable object multi sphere trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
-	uint16 ObjectTraceRadius {50};
-
+	
 	/** The location of the camera. */
 	UPROPERTY()
 	FVector CameraLocation;

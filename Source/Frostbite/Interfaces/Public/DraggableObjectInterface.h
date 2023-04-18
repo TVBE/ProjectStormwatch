@@ -23,13 +23,13 @@ public:
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements a special action on drag.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Use"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Draggable Object", Meta = (DisplayName = "Begin Drag"))
 	bool BeginDrag(const AActor* Interactor);
 
 	/** Stop dragging the object.
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements a special action on release.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Disuse"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Draggable Object", Meta = (DisplayName = "End Drag"))
 	bool EndDrag(const AActor* Interactor);
 };

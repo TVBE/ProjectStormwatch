@@ -4,9 +4,34 @@
 
 #include "Desktop.h"
 
+#include "MeshInteractionComponent.h"
+#include "Components/BoxComponent.h"
+
 ADesktop::ADesktop()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	ScreenMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Screen"));
+	RootComponent = ScreenMesh;
+
+	ScreenSpace = CreateDefaultSubobject<UBoxComponent>(TEXT("Screen Space"));
+	ScreenSpace->SetupAttachment(RootComponent);
+	
+	CursorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cursor"));
+	CursorMesh->SetupAttachment(RootComponent);
+
+	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>(TEXT("Interaction Component"));
+	InteractionComponent->SetupAttachment(RootComponent);
+}
+
+bool ADesktop::BeginUse_Implementation(const AActor* Interactor)
+{
+	return IUsableObject::BeginUse_Implementation(Interactor);
+}
+
+bool ADesktop::EndUse_Implementation(const AActor* Interactor)
+{
+	return IUsableObject::EndUse_Implementation(Interactor);
 }
 
 void ADesktop::PostInitProperties()
@@ -18,6 +43,19 @@ void ADesktop::PostInitProperties()
 void ADesktop::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ADesktop::MoveCursor(FVector2D InputVelocity)
+{
+	FVector NewCursorPosition {CursorMesh->GetComponentLocation() + FVector(InputVelocity.X, InputVelocity.Y , 0)};
+	
+	const FVector ScreenSpaceMin {ScreenSpace->GetComponentLocation() - (ScreenSpace->GetScaledBoxExtent())};
+	const FVector ScreenSpaceMax {ScreenSpace->GetComponentLocation() + (ScreenSpace->GetScaledBoxExtent())};
+
+	NewCursorPosition.X = FMath::Clamp(NewCursorPosition.X, ScreenSpaceMin.X, ScreenSpaceMax.X);
+	NewCursorPosition.Y = FMath::Clamp(NewCursorPosition.Y, ScreenSpaceMin.Y, ScreenSpaceMax.Y);
+
+	CursorMesh->SetWorldLocation(NewCursorPosition);
 }
 
 void ADesktop::FormatDisplayText()
@@ -68,5 +106,8 @@ FString& ADesktop::GetLastLineWithSpace()
 	}
 	return LastLine;
 }
+
+
+
 
 

@@ -15,6 +15,8 @@ class UPlayerCharacterConfiguration;
 class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogPlayerCharacterController, Log, All)
+
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, ClassGroup = "PlayerCharacter")
 class FROSTBITE_API APlayerCharacterController : public APlayerController

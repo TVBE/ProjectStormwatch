@@ -30,17 +30,17 @@ public:
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Use"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object", Meta = (DisplayName = "Begin Use"))
 	bool BeginUse(const AActor* Interactor);
 
 	/** Ends interaction with the object.
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements an interaction.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Disuse"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object", Meta = (DisplayName = "End Use"))
 	bool EndUse(const AActor* Interactor);
 
 	/** Returns whether the object has a single-press interaction, or a press-and-hold interaction. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InteractableObject", Meta = (DisplayName = "Get Interaction Trigger Type"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object", Meta = (DisplayName = "Get Use Type"))
 	EUseType GetUseType() const;
 };

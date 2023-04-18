@@ -11,6 +11,8 @@
 class APlayerCharacter;
 class APlayerCharacterController;
 
+DECLARE_LOG_CATEGORY_CLASS(LogPlayerSubsystem, Log, All)
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, Value);
 

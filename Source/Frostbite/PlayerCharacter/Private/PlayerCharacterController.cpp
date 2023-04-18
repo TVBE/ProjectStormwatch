@@ -6,16 +6,16 @@
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerFlashlightComponent.h"
-#include "LogCategories.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
-#include "PlayerGrabComponent.h"
 #include "PlayerSubsystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+
+DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
 
 /** Called on construction. */
 APlayerCharacterController::APlayerCharacterController()
@@ -127,7 +127,14 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
 {
-	PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, ControlInterpolationSpeed);
+	if (CharacterConfiguration->IsRotationSmoothingEnabled)
+	{
+		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
+	}
+	else
+	{
+		PlayerControlRotation = Rotation;
+	}
 }
 
 void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)
@@ -176,7 +183,7 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 
 bool APlayerCharacterController::GetHasMovementInput() const
 {
-	if (InputComponent != nullptr)
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
 		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
 	}
@@ -185,7 +192,7 @@ bool APlayerCharacterController::GetHasMovementInput() const
 
 float APlayerCharacterController::GetHorizontalRotationInput() const
 {
-	if (InputComponent != nullptr)
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
 		return InputComponent->GetAxisValue("Horizontal Rotation");
 	}

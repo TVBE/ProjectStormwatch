@@ -12,6 +12,7 @@
 #include "GameFramework/MovementComponent.h"
 #include "Serialization/JsonTypes.h"
 
+DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
 
 void UPlayerGrabComponent::OnRegister()
 {
@@ -21,7 +22,6 @@ void UPlayerGrabComponent::OnRegister()
 	{
 		Camera = PlayerCharacter->GetCamera();
 		Movement = PlayerCharacter->GetPlayerCharacterMovement();
-		
 	}
 }
 
@@ -92,14 +92,21 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	}
 
 
-	/** Check if the actor already has a kinetic component. If not, add the component to the grabbed actor. */
-	if (const UActorComponent* KineticComponent {ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass())}; !KineticComponent)
+	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
+	 *	If not, add the component to the grabbed actor. */
+	if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass()))})
+	{
+		KineticComponent->HandleOnOwnerGrabbed();
+	}
+	else
 	{
 		ActorToGrab->AddComponentByClass(UKineticActorComponent::StaticClass(), false, FTransform(), false);
 	}
 	
 	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
+
+	
 }
 
 void UPlayerGrabComponent::ReleaseObject()
@@ -108,7 +115,16 @@ void UPlayerGrabComponent::ReleaseObject()
 	{
 		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
-		OnGrabbedObjectReleased.Broadcast(GrabbedComponent->GetOwner());
+
+		if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()))})
+		{
+			KineticComponent->HandleOnOwnerReleased();
+		}
+		
+		if(WillThrowOnRelease)
+		{
+			GrabbedComponent->SetWorldLocation(Camera->GetComponentLocation() - 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector());
+		}
 		ReleaseComponent();
 		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
 		StopPrimingThrow();

@@ -8,11 +8,12 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerSubsystem.h"
 #include "FrostbiteGameMode.h"
-#include "LogCategories.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Math/Vector.h"
+
+DEFINE_LOG_CATEGORY_CLASS(APlayerCharacter, LogPlayerCharacter);
 
 /** The PlayerCharacter's initialization follows these stages:
  *	1) Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
