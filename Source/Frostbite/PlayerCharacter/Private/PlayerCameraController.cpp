@@ -277,8 +277,14 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 
 	/** Apply scalars. */
 	TargetHeadSocketRotation = FRotator(TargetHeadSocketRotation.Pitch, (TargetHeadSocketRotation.Yaw * 0), (TargetHeadSocketRotation.Roll * 1.5));
+
+	/** Interpolate the rotation value to smooth out jerky rotation changes. */
+	if (const UWorld* World {GetWorld()})
+	{
+		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
+	}
 	
-	Rotator = TargetHeadSocketRotation;
+	Rotator = InterpolatedHeadSocketRotation;
 }
 
 /** Called by TickComponent. */
