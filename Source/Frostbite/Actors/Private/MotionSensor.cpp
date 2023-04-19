@@ -58,7 +58,7 @@ void AMotionSensor::Poll()
 	if (NearestActor)
 	{
 		IsActorDetected = true;
-		OnActorDetectedDelegate.Broadcast(NearestActor, NearestPawnDistance);
+		OnActorDetected.Broadcast(NearestActor, NearestPawnDistance);
 	}
 }
 

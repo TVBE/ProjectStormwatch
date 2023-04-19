@@ -29,7 +29,7 @@ public:
 
 private:
 	/** If true, this object is powered. */
-	UPROPERTY(EditAnywhere, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
+	UPROPERTY(BlueprintGetter = GetIsPowered, EditAnywhere, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
 	bool IsPowered {false};
 
 public:	
@@ -40,4 +40,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	/** Returns whether the component is powered or not. */
+	UFUNCTION(BlueprintPure, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
+	FORCEINLINE bool GetIsPowered() const { return IsPowered; }
 };

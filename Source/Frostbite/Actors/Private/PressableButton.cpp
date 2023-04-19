@@ -72,11 +72,10 @@ void APressableButton::BeginPlay()
 			PowerConsumerComponent->PowerSource = PowerSource;
 			PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
 
-			CollisionTriggerComponent->RegisterComponent();
-			CollisionTriggerComponent->InitializeComponent();
+			PowerConsumerComponent->RegisterComponent();
+			PowerConsumerComponent->InitializeComponent();
 		}
 	}
-	
 }
 
 void APressableButton::StartCooldown()
