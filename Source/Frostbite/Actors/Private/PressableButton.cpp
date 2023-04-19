@@ -39,35 +39,44 @@ void APressableButton::OnConstruction(const FTransform& Transform)
 void APressableButton::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (GetWorld())
+	
+	/** If the button is configured to be able to be triggered by collisions, add the collision trigger component here. */
+	if (CanTriggerByCollision)
 	{
-		/** If the button is configured to be able to be triggered by collisions, add the collision trigger component here. */
-		if (CanTriggerByCollision)
-		{
-			CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
-			(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), true));
-			UE_LOG(LogTemp, Warning, TEXT("Added Collision Comp"))
-			if (CollisionTriggerComponent && ButtonMesh)
-			{
-				CollisionTriggerComponent->SetImpulseForceThreshold(CollisionTriggerThreshold);
-				CollisionTriggerComponent->SetupAttachment(ButtonMesh);
-				CollisionTriggerComponent->OnCollisionTrigger.AddDynamic(this, &APressableButton::EventOnCollisionTrigger);
-			}
-		}
+		CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
+		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), true, FTransform(), true));
 		
-		/** If the button is configured to use power, add the power consumer component here.  */
-		if (RequiresPower)
+		if (CollisionTriggerComponent && ButtonMesh)
 		{
-			PowerConsumerComponent = Cast<UPowerConsumerComponent>
-			(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
-			if (PowerConsumerComponent)
-			{
-				PowerConsumerComponent->PowerSource = PowerSource;
-				PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
-			}
+			CollisionTriggerComponent->SetImpulseForceThreshold(CollisionTriggerThreshold);
+			CollisionTriggerComponent->RestrictCollisionAngle = true;
+			CollisionTriggerComponent->MaxAllowedAngle = 60.0f;
+			
+			CollisionTriggerComponent->SetupAttachment(ButtonMesh);
+			CollisionTriggerComponent->SetRelativeRotation(FRotator(90, 0, 0));
+			
+			CollisionTriggerComponent->OnCollisionTrigger.AddDynamic(this, &APressableButton::EventOnCollisionTrigger);
+
+			CollisionTriggerComponent->RegisterComponent();
+			CollisionTriggerComponent->InitializeComponent();
 		}
 	}
+		
+	/** If the button is configured to use power, add the power consumer component here.  */
+	if (RequiresPower)
+	{
+		PowerConsumerComponent = Cast<UPowerConsumerComponent>
+		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+		if (PowerConsumerComponent)
+		{
+			PowerConsumerComponent->PowerSource = PowerSource;
+			PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
+
+			CollisionTriggerComponent->RegisterComponent();
+			CollisionTriggerComponent->InitializeComponent();
+		}
+	}
+	
 }
 
 void APressableButton::StartCooldown()
@@ -195,6 +204,7 @@ void APressableButton::ValidateTargetActors()
 				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
 				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
 			}
+			TargetActor.DoActionOnRelease = false;
 		}
 	}
 }
@@ -226,6 +236,7 @@ void APressableButton::ValidateLinkedButtons()
 				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
 				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
 			}
+			LinkedButton.DoActionOnRelease = false;
 		}
 	}
 }

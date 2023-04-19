@@ -133,7 +133,7 @@ protected:
 	EButtonTriggerType TriggerType {EButtonTriggerType::SinglePress};
 	
 	/** The cooldown time between presses. When the button is in cooldown, the button cannot be pressed. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button", Meta = (DisplayName = "Cooldown Time"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button", Meta = (DisplayName = "Cooldown Time", Units = "Seconds"))
 	float CooldownTime {1.0f};
 
 	/** When true, the button is currently pressed. This does not mean that the player is currently interacting with the button,
@@ -157,9 +157,10 @@ protected:
 	bool CanTriggerByCollision {true};
 
 	/** The force threshold required to trigger the button. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", EditCondition = "CanTriggerByCollision"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", Units = "Newtons",
+		EditCondition = "CanTriggerByCollision"))
 	float CollisionTriggerThreshold {100.0f};
-
+	
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Collision Trigger Component"))
 	UMeshCollisionTriggerComponent* CollisionTriggerComponent;

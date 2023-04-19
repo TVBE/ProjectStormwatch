@@ -33,12 +33,12 @@ void UMeshCollisionTriggerComponent::OnStaticMeshComponentHit(UPrimitiveComponen
 	}
 
 	const FVector HitDirection {Hit.ImpactNormal.GetSafeNormal()};
-	const float Angle {static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(HitDirection, GetComponentRotation().Vector()))))};
+	const float Angle {static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(HitDirection, -GetComponentRotation().Vector()))))};
 
 	const FVector OtherVelocity {OtherComp->GetComponentVelocity()};
 	const FVector RelativeVelocity {OtherVelocity - MeshComponent->GetComponentVelocity()};
 
-	if (NormalImpulse.Size() >= ImpulseForceThreshold)
+	if (NormalImpulse.Size() >= ImpulseForceThreshold && (!RestrictCollisionAngle || Angle <= MaxAllowedAngle))
 	{
 		OnCollisionTrigger.Broadcast();
 		if (IsTriggerLimitEnabled)

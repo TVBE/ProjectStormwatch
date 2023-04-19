@@ -27,20 +27,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Collision Trigger Component", Meta = (DisplayName = "On Collision Trigger Limit Reached."))
 	FOnCollisionTriggerLimitReachedDelegate OnCollisionTriggerLimitReached;
 
-private:
-	UPROPERTY()
-	UStaticMeshComponent* MeshComponent;
-	
 	/** The impulse force threshold for the collision event to be triggered. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings")
-	float ImpulseForceThreshold {1000.0f};
+	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (Displayname = "Force Threshold", Units = "Newtons"))
+	float ImpulseForceThreshold {100.0f};
 
 	/** If true, We expect the collision to come from a certain direction. */
 	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Restrict Collision Angle", InlineEditConditionToggle))
 	bool RestrictCollisionAngle {false};
 	
 	/** The maximum allowed angle for the collision to be triggered. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Maximum Allowed Angle",
+	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Maximum Allowed Angle", Units = "Degrees",
 		EditCondition = "RestrictCollisionAngle"))
 	float MaxAllowedAngle {45.0f};
 
@@ -50,6 +46,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Enable Trigger Limit"))
 	bool IsTriggerLimitEnabled {false};
 
+private:
+	UPROPERTY()
+	UStaticMeshComponent* MeshComponent;
+	
 	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Trigger Limit",
 		EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
 	int32 TriggerLimit {1};
