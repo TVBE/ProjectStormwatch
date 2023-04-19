@@ -55,6 +55,10 @@ protected:
 		Units = "Seconds", ClampMin = "0"))
 	float AutoCloseDelay {3.0f};
 
+	/** If true, the door will open if a pawn enters it's safety zone while the door is closing. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door", Meta = (DisplayName = "Cancel Close If Pawn Enters Safety Zone"))
+	bool CancelCloseOnSafetyZoneOverlap {false};
+	
 	/** If true, the button requires power to operate and can be connected to a power source. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Requires Power"))
 	bool RequiresPower {false};
@@ -74,7 +78,7 @@ protected:
 	EDoorAction ActionOnPowergain {EDoorAction::Open};
 
 	/** If true, the door should perform an action when power is lost. */
-	UPROPERTY(BlueprintReadOnly, Category = "Door|Power", Meta = (DisplayName = "Do Action On Power Loss", InlineEditConditionToggle))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Do Action On Power Loss", InlineEditConditionToggle))
 	bool DoActionOnPowerLoss {false};
 
 	/** Action the door should perform when power is lost. */
@@ -96,7 +100,7 @@ private:
 	TArray<ETriggerableObjectAction> TriggerQueue;
 
 	/** If true, the door is currently locked and cannot be opened or closed. */
-	UPROPERTY(BlueprintGetter = GetIsLocked, EditInstanceOnly, Category = "Door", Meta = (DisplayName = "Is Locked"))
+	UPROPERTY(BlueprintGetter = GetIsLocked, Category = "Door", Meta = (DisplayName = "Is Locked"))
 	bool IsLocked {false};
 
 	/** If true, the door is currently in a cooldown state, and cannot close or open for the remainder of the cooldown duration. */
@@ -115,6 +119,7 @@ private:
 	/** If true, the actor currently wants to set the safety zone collision box to block pawns,
 	 *	but there is a pawn inside the box preventing the actor from doing so. */
 	bool WantsToSetSafetyZoneToBlocking {false};
+	
 	
 	/** Timer handle for the cooldown timer. */
 	UPROPERTY()

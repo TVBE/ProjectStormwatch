@@ -141,7 +141,7 @@ protected:
 	EButtonTriggerType TriggerType {EButtonTriggerType::SinglePress};
 	
 	/** The cooldown time between presses. When the button is in cooldown, the button cannot be pressed. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button", Meta = (DisplayName = "Cooldown Time", Units = "Seconds"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Button", Meta = (DisplayName = "Cooldown Time", Units = "Seconds"))
 	float CooldownTime {1.0f};
 
 	/** When true, the button is currently pressed. This does not mean that the player is currently interacting with the button,

@@ -52,6 +52,10 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 		SafetyBox->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
 		if (!OverlappingActors.IsEmpty())
 		{
+			if (CancelCloseOnSafetyZoneOverlap)
+			{
+				Execute_Open(this, this);
+			}
 			PushActorsOutOfSafetyBox(OverlappingActors, DeltaSeconds);
 		}
 		else if (WantsToSetSafetyZoneToBlocking)
@@ -61,6 +65,7 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 			WantsToSetSafetyZoneToBlocking = false;
 		}
 	}
+	
 }
 
 void ASlidingDoor::PushActorsOutOfSafetyBox(TArray<AActor*> Actors, const float DeltaTime)
@@ -207,7 +212,7 @@ void ASlidingDoor::EventDoorOpen_Implementation()
 void ASlidingDoor::EventDoorOpened_Implementation()
 {
 	DoorState = EDoorState::Open;
-
+	
 	SetSafetyZoneCollisionEnabled(false);
 	
 	OnDoorStateChanged.Broadcast(EDoorState::Open);
@@ -217,6 +222,8 @@ void ASlidingDoor::EventDoorClose_Implementation()
 {
 	DoorState = EDoorState::Closing;
 	OnDoorStateChanged.Broadcast(EDoorState::Closing);
+
+	SetActorTickEnabled(true);
 }
 
 void ASlidingDoor::EventDoorClosed_Implementation()
