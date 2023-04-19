@@ -69,6 +69,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Collision Trigger Component", Meta = (DisplayName = "Reset Trigger Count"))
 	FORCEINLINE void ResetTriggerCount() { Triggers = 0; }
 
+	/** Sets the force threshold required to cause a collision trigger. */
+	UFUNCTION(BlueprintCallable, Category = "Collision Trigger Component", Meta = (DisplayName = "Set Force Threshold"))
+	FORCEINLINE void SetImpulseForceThreshold(const float Value) { ImpulseForceThreshold = Value; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

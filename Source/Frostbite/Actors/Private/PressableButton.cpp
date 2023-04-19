@@ -5,6 +5,7 @@
 #include "PressableButton.h"
 
 #include "MeshCollisionTriggerComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "PowerConsumerComponent.h"
 #include "TriggerableObjectInterface.h"
 
@@ -14,6 +15,15 @@ APressableButton::APressableButton()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>("Root");
+	RootComponent = RootSceneComponent;
+	
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base"));
+	BaseMesh->SetupAttachment(RootComponent);
+
+	ButtonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button"));
+	ButtonMesh->SetupAttachment(BaseMesh);
 }
 
 void APressableButton::OnConstruction(const FTransform& Transform)
@@ -24,39 +34,39 @@ void APressableButton::OnConstruction(const FTransform& Transform)
 	ValidateTargetActors();
 	ValidateLinkedButtons();
 #endif
-
-	if (CanCollisionTriggerButton && !CollisionTriggerComponent)
-	{
-		CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
-		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), false));
-	}
-	else if (!CanCollisionTriggerButton && CollisionTriggerComponent)
-	{
-		CollisionTriggerComponent->DestroyComponent();
-	}
-
-	if (RequiresPower && !PowerConsumerComponent && PowerSource.Get())
-	{
-		PowerConsumerComponent = Cast<UPowerConsumerComponent>
-		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
-		if (PowerConsumerComponent)
-		{
-			PowerConsumerComponent->PowerSource = PowerSource;
-		}
-	}
-	else if (!RequiresPower && PowerConsumerComponent)
-	{
-		PowerConsumerComponent->DestroyComponent();
-	}
 }
 
 void APressableButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (PowerConsumerComponent)
+	if (GetWorld())
 	{
-		PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
+		/** If the button is configured to be able to be triggered by collisions, add the collision trigger component here. */
+		if (CanTriggerByCollision)
+		{
+			CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
+			(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), false, FTransform(), true));
+			UE_LOG(LogTemp, Warning, TEXT("Added Collision Comp"))
+			if (CollisionTriggerComponent && ButtonMesh)
+			{
+				CollisionTriggerComponent->SetImpulseForceThreshold(CollisionTriggerThreshold);
+				CollisionTriggerComponent->SetupAttachment(ButtonMesh);
+				CollisionTriggerComponent->OnCollisionTrigger.AddDynamic(this, &APressableButton::EventOnCollisionTrigger);
+			}
+		}
+		
+		/** If the button is configured to use power, add the power consumer component here.  */
+		if (RequiresPower)
+		{
+			PowerConsumerComponent = Cast<UPowerConsumerComponent>
+			(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+			if (PowerConsumerComponent)
+			{
+				PowerConsumerComponent->PowerSource = PowerSource;
+				PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
+			}
+		}
 	}
 }
 
@@ -219,7 +229,6 @@ void APressableButton::ValidateLinkedButtons()
 		}
 	}
 }
-
 #endif
 
 void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
@@ -247,6 +256,10 @@ void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors
 	{
 		DoLinkedButtonActions(false);
 	}
+}
+
+void APressableButton::EventOnCollisionTrigger_Implementation()
+{
 }
 
 void APressableButton::EventOnPowerStateChanged_Implementation(bool NewState)

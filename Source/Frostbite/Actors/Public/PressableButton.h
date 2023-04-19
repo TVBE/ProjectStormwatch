@@ -115,6 +115,18 @@ class APressableButton : public AActor, public IUsableObject
 	DECLARE_LOG_CATEGORY_CLASS(LogButton, Log, All)
 
 protected:
+	/** The root component for the actor. */
+	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Root"))
+	USceneComponent* RootSceneComponent;
+	
+	/** The base static mesh for the button. */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Button|Components", Meta = (DisplayName = "Base Mesh"))
+	UStaticMeshComponent* BaseMesh;
+
+	/** The button static mesh for the button. */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Button|Components", Meta = (DisplayName = "Button Mesh"))
+	UStaticMeshComponent* ButtonMesh;
+	
 	// GENERAL
 	/** The trigger type of the button. */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Button", Meta = (DisplayName = "Type"))
@@ -145,8 +157,8 @@ protected:
 	bool CanTriggerByCollision {true};
 
 	/** The force threshold required to trigger the button. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", EditCondition = "CanCollisionTriggerButton"))
-	float CanCollisionTriggerButton {100.0f};
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Collision", Meta = (DisplayName = "Collision Trigger Threshold", EditCondition = "CanTriggerByCollision"))
+	float CollisionTriggerThreshold {100.0f};
 
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Collision Trigger Component"))
@@ -240,8 +252,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Button|Events", Meta = (DisplayName = "Release Button"))
 	void EventOnRelease(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
 
+	/** Event called when the button is triggered by a collision. */
+	UFUNCTION(BlueprintNativeEvent, Category = "Button|Events", Meta = (DisplayName = "On Collision Trigger"))
+	void EventOnCollisionTrigger();
+
 	/** Event called when the button's power state changes. */
-	UFUNCTION(BlueprintNativeEvent, Category = "Button|Events", Meta = (DisplayName = "Event On Power State Changed"))
+	UFUNCTION(BlueprintNativeEvent, Category = "Button|Events", Meta = (DisplayName = "On Power State Changed"))
 	void EventOnPowerStateChanged(bool NewState);
 
 	/** Returns whether the button is currently pressed. */
