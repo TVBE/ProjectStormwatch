@@ -45,7 +45,7 @@ protected:
 	/** The current state of the door. */
 	UPROPERTY(BlueprintReadWrite, Category = "Door", Meta = (DisplayName = "Door State"))
 	EDoorState DoorState;
-
+	
 	/** If true, the door will auto close after a given time when opened. */
 	UPROPERTY(BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close"))
 	bool IsAutoCloseEnabled {false};
@@ -63,19 +63,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Door|Power", Meta = (DisplayName = "Power Source",
 		EditCondition = "RequiresPower"))
 	TSoftObjectPtr<APowerSource> PowerSource;
-
-	/** If true, the door should reset to its state before a power loss. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Reset State On Power Gain"))
-	bool ResetStateOnPowerGain {false};
-
+	
 	/** If true, the door should perform an action when power is regained. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Do Action On Power Gain",
-		EditCondition = "RequiresPower && !ResetStateOnPowerGain"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Do Action On Power Gain", InlineEditConditionToggle))
 	bool DoActionOnPowerGain {false};
 
 	/** Action the door should perform when power is regained. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Power", Meta = (DisplayName = "Action On Power Gain",
-		EditCondition = "DoActionOnPowerGain && RequiresPower && !ResetStateOnPowerGain"))
+		EditCondition = "DoActionOnPowerGain"))
 	EDoorAction ActionOnPowergain {EDoorAction::Open};
 
 	/** If true, the door should perform an action when power is lost. */
@@ -92,6 +87,10 @@ protected:
 	UPowerConsumerComponent* PowerConsumerComponent;
 
 private:
+	/** The root component for the actor. */
+	UPROPERTY(BlueprintReadOnly, Category = "Door", Meta = (DisplayName = "Scene Root Component", AllowPrivateAccess = "true"))
+	USceneComponent* RootSceneComponent;
+	
 	/** Queue of ITriggerableObject function calls made by other objects. */
 	UPROPERTY(BlueprintGetter = GetTriggerQueue, Category = "Door", Meta = (DisplayName = "Trigger Queue"))
 	TArray<ETriggerableObjectAction> TriggerQueue;
@@ -113,13 +112,20 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Door|Cooldown", Meta = (DisplayName = "Cooldown Time", ClampMin = "0", Units = "Seconds"))
 	float CooldownTime {1.0f};
 
+	/** If true, the actor currently wants to set the safety zone collision box to block pawns,
+	 *	but there is a pawn inside the box preventing the actor from doing so. */
+	bool WantsToSetSafetyZoneToBlocking {false};
+	
 	/** Timer handle for the cooldown timer. */
 	UPROPERTY()
 	FTimerHandle CooldownTimerHandle;
 
+	/** Timer handle for the close safety check timer. */
+	UPROPERTY()
+	FTimerHandle CloseCheckTimerHandle;
+
 public:	
 	ASlidingDoor();
-	virtual void Tick(float DeltaTime) override;
 
 	bool Open_Implementation(const AActor* Initiator) override;
 	bool Close_Implementation(const AActor* Initiator) override;
@@ -128,20 +134,39 @@ public:
 	bool Trigger_Implementation(const AActor* Initiator) override;
 	bool Untrigger_Implementation(const AActor* Initiator) override;
 
+	/** Checks whether the door can currently close. If a pawn is inside the safety box, this is not allowed unless overridden. */
+	UFUNCTION(BlueprintPure, Category = "Door", Meta = (DisplayName = "Can Close"))
+	bool CanClose() const;
+
 protected:
 	virtual void BeginPlay() override;
 
-	/** begins the cooldown timer for the door. */
+	/** Begins the cooldown timer for the door. */
 	UFUNCTION(BlueprintCallable, Category = "Door", Meta = (DisplayName = "Start Cooldown"))
 	void StartCooldown();
 
+	/** Sets the collision profile of the safety zone. If we enable the safety zone collision while a pawn is inside,
+	 *	the pawn will be pushed out gradually out of the box before full blocking collision is enabled. */
+	UFUNCTION(BlueprintCallable, Category = "Door", Meta = (DisplayName = "Set Safety Zone Collision Enabled"))
+	void SetSafetyZoneCollisionEnabled(const bool Value);
+
 private:
 	void AddToTriggerQueue(const ETriggerableObjectAction Value);
+	void Tick(float DeltaSeconds) override;
 
 	ETriggerableObjectAction EvaluateAndClearTriggerQueue();
 
 	/** Called when the cooldown timer is finished. */
 	void HandleCooldownFinished();
+
+	/** Tries to close the door if possible. This function is set on a timer if the door wishes to close but is prevented
+	 *	from doing so because a pawn is overlapping the safety zone.*/
+	UFUNCTION()
+	void HandleCloseTimerUpdate();
+
+	/** Pushes any overlapping pawn out of the door safety box. */
+	UFUNCTION()
+	void PushActorsOutOfSafetyBox(TArray<AActor*> Actors, const float DeltaTime);
 
 protected:
 	/** Event called when the door opens. */
@@ -163,6 +188,7 @@ protected:
 	/** Event called when the power state of the door has changed. */
 	UFUNCTION(BlueprintNativeEvent, Category = "Door|Events", Meta = (DisplayName = "On Power State Changed"))
 	void EventOnPowerStateChanged(const bool NewState);
+
 
 public:
 	/** Returns the trigger queue of the door. */

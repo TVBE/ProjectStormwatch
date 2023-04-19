@@ -437,7 +437,6 @@ void APlayerCharacterController::HandlePrimaryActionPressed()
 	if (InteractionComponent)
 	{
 		InteractionComponent->BeginPrimaryInteraction();
-		UE_LOG(LogTemp, Warning, TEXT("AttempingInteraction"))
 	}
 }
 

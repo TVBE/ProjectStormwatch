@@ -12,16 +12,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/Prototyping/PlayerMetrics.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/Prototyping/PlayerMetrics.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestMotionSensor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestMotionSensor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestProximitySensor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestProximitySensor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/PowerConsumerComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/PowerConsumerComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/DoorInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/DoorInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -340,6 +334,9 @@
       <workItem from="1681719144383" duration="6820000" />
       <workItem from="1681759374701" duration="7579000" />
       <workItem from="1681905717112" duration="10019000" />
+      <workItem from="1681931058510" duration="1443000" />
+      <workItem from="1681935825260" duration="5589000" />
+      <workItem from="1681941538244" duration="2080000" />
     </task>
     <servers />
   </component>
