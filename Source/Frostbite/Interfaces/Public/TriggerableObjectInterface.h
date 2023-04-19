@@ -27,10 +27,10 @@ class ITriggerableObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "TriggerableObject", Meta = (DisplayName = "Trigger"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Triggerable Object", Meta = (DisplayName = "Trigger"))
 	bool Trigger(const AActor* Initiator);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "TriggerableObject", Meta = (DisplayName = "Untrigger"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Triggerable Object", Meta = (DisplayName = "Untrigger"))
 	bool Untrigger(const AActor* Initiator);
 };
 

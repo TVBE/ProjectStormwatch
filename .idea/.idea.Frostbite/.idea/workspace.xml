@@ -4,17 +4,62 @@
     <projectFile>Intermediate/ProjectFiles/Frostbite.vcxproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/ProximitySensor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/ProximitySensor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Desktop_Typeable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Desktop_Typeable.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Keyboard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Environment/Computer/BP_Keyboard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbiteBunkerBlockout_PhysicsProps.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel02.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/ObjectTestLevel.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/LandscapeStamps/Maps/Overview.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/CollectionMaps/Untitled.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSciFiMats/Maps/Overview_Materials.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Comm/Maps/Overview_CommandCenter.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Comm/Maps/SciFi_COMM_EX1.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Int/Maps/ColorExample_Interiors.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Int/Maps/Overview_Interiors.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Int/Maps/SciFi_INT_EX1.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Int/Maps/SciFi_INT_EX2.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularSci_Int/Maps/SciFi_INT_EX3.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/Overview_Hallways.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/SciFi_Example_A_Ext.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/SciFi_Example_B_Ext.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/SciFi_Example_C_Ext.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/SciFi_Example_D_Ext.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiHallways/Maps/SciFi_Example_E_Ext.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/ExampleMap_2.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/ExampleMap_3.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/ExampleMap_4.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/Overview_Props.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/Promo.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/ScifiBlockoutBundle/ModularScifiProps/Maps/Promo_2.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPartyContent/StarterContent/Maps/Advanced_Lighting.umap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/KineticActorComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/KineticActorComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/PowerConsumerComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/PowerConsumerComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/PowerSourceComponent.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/KineticActorComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/KineticActorComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/MeshInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/MeshInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/PowerConsumerComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/PowerConsumerComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/PowerSourceComponent.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Mouse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/Mouse.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/PowerConsumerInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/PowerConsumerInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerGrabComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PowerSource.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PowerSource.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PowerSource.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PowerSource.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -28,22 +73,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;RiderCppLiveTemplatesSettingsId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "work-in-progress",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "RiderCppLiveTemplatesSettingsId",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\timve\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\timve\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="C++ Project.Frostbite">
     <configuration name="Frostbite" type="CppProject" factoryName="C++ Project">
       <configuration_1>
@@ -312,6 +362,13 @@
       <workItem from="1681344501165" duration="1091000" />
       <workItem from="1681376124129" duration="1791000" />
       <workItem from="1681377975451" duration="8724000" />
+      <workItem from="1681651949016" duration="8588000" />
+      <workItem from="1681670982231" duration="1563000" />
+      <workItem from="1681672801057" duration="1260000" />
+      <workItem from="1681674152534" duration="5803000" />
+      <workItem from="1681718726484" duration="305000" />
+      <workItem from="1681719144383" duration="6820000" />
+      <workItem from="1681759374701" duration="7579000" />
     </task>
     <servers />
   </component>

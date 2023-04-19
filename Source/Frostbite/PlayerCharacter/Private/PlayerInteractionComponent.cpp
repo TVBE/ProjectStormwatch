@@ -43,7 +43,7 @@ void UPlayerInteractionComponent::OnRegister()
 		GrabComponent->Configuration = PlayerPhysicsGrabConfiguration.LoadSynchronous();
 		if (GrabComponent->Configuration)
 		{
-			GrabComponent->Configuration->ApplyToPhysicsHandle(GrabComponent);
+			GrabComponent->ApplyToPhysicsHandle();
 		}
 	}
 }
@@ -284,20 +284,29 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 
 void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
-	if (GrabComponent && GrabComponent->GetIsPrimingThrow())
+	if (GrabComponent && GrabComponent->GetWillThrowOnRelease())
 	{
 		GrabComponent->PerformThrow();
+	}
+	else
+	{
+		if(GrabComponent->GetIsPrimingThrow())
+		{
+			GrabComponent->ReleaseObject();
+		}
 	}
 }
 
 void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = true;
+	GrabComponent->BeginTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
 	IsTertiaryInteractionActive = false;
+	GrabComponent->EndTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::BeginInventoryInteraction()
