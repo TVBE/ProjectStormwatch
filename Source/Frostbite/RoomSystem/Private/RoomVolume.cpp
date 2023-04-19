@@ -88,15 +88,6 @@ void ARoomVolume::DeductRoomHeat(const float HeatToDeduct)
 	HeatValue = NewHeatVal;
 }
 
-void ARoomVolume::SetLightStatus(const bool Value)
-{
-	if (IsLit == Value) { return; }
-	IsLit = Value;
-	OnLuminosityChanged.Broadcast(Value);
-}
-
-
-
 void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);

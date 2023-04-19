@@ -31,7 +31,8 @@ protected:
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "RoomEvent", Meta = (DisplayName = "TriggerRoomEvent"))
-	void TriggerRoomEvent(ERoomHeatEvent_Type EventType, float HeatValue, float EventRange, FVector TriggerLocation,  TArray<AActor*> ObjectsToIgnore);
+	void TriggerRoomEvent(FRoomHeatEvent HeatEvent,  TArray<AActor*> ObjectsToIgnore);
+	//void TriggerRoomEvent(ERoomHeatEvent_Type EventType, float HeatValue, float EventRange, FVector TriggerLocation,  TArray<AActor*> ObjectsToIgnore);
 	
 	UFUNCTION()
 	void Exec_PrintRegisteredRoomVolumes();

@@ -29,7 +29,7 @@ struct FRoomHeatEvent
 	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventType"))
 	TEnumAsByte<ERoomHeatEvent_Type> EventType = ERoomHeatEvent_Type::UNDEFINED;
 
-	/**Amount to increase/decrease the Room's Heat Value when triggered by this event.*/
+	/**Value that determines the importance of the event, e.g. a horn sound has a high value >50 in contrast to a button click <15*/
 	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventHeatValue"))
 	float EventHeatValue = 5;
 
@@ -37,11 +37,8 @@ struct FRoomHeatEvent
 	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventRange"))
 	float EventRange = 10.0f;
 
-	UPROPERTY(BlueprintReadOnly, Category = "RoomData", Meta = (DisplayName = "EventLocation"))
+	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventLocation"))
 	FVector EventLocation = FVector::ZeroVector;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "RoomData", Meta = (DisplayName = "RelevantRooms"))
-	TArray<ARoomVolume*> RelevantRooms;
 };
 
 /** Struct for defining connected rooms. */
@@ -68,7 +65,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerEnterDelegate, APlayerCharact
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerLeaveDelegate, APlayerCharacter*, PlayerCharacter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNightstalkerEnterDelegate, ANightstalker*, Nightstalker);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNightstalkerLeaveDelegate, ANightstalker*, Nightstalker);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLuminosityChanged, bool, IsLit);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "RoomSystem")
 class ARoomVolume : public ATriggerBox
@@ -88,9 +84,6 @@ public:
 
 	/** Delegate that is called when the nightstalker leaves the room volume. */
 	FNightstalkerLeaveDelegate OnNightstalkerLeave;
-
-	/** Delegate that is called when the luminosity of the room has changed. */
-	FLuminosityChanged OnLuminosityChanged;
 	
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "Actors", Meta = (DisplayName = "Adjacent rooms"))
 	TArray<TSoftObjectPtr<ARoomVolume>> ConnectedRooms;
@@ -99,10 +92,10 @@ private:
 	/** Room's current 'Heat' (Range 0-100, 100=hot). Variable used by e.g. AI to determine relevancy of room as a travel target*/
 	UPROPERTY(BlueprintGetter = GetHeatValue, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "HeatValue"))
 	float HeatValue = 0;
-	
-	/** Whether the room is currently lit or not. */
-	UPROPERTY(BlueprintGetter = GetIsLit, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Is Lit"))
-	bool IsLit {false};
+
+	/** Room's noisefloor, if an auditory event exceeds this value, it adds to the heatmap.*/
+	UPROPERTY(BlueprintGetter = GetNoiseFloor, Category = "RoomVolume|Heatmap|Auditory", Meta = (DisplayName = "NoiseFloor", ForceUnits = "dB"))
+	float NoiseFloor = 12;
 
 public:
 	/** Adds Heat to the HeatValue, based on a FRoomHeatEvent.*/
@@ -114,11 +107,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Deduct Room Heat"))
 	void DeductRoomHeat(const FRoomHeatEvent HeatEvent);
 	void DeductRoomHeat(const float HeatToDeduct);
-	
-	/** Set whether the room should be considered lit or not. */
-	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Set Light Status"))
-	void SetLightStatus(const bool Value);
-	
+
 protected:
 	/*Used for subscribing and desubscribing Volumes to the RoomVolume Subsystem*/
 	virtual void BeginPlay() override;
@@ -155,11 +144,10 @@ public:
 	/** Returns the room's current heat value (Range 0-100)**/
 	UFUNCTION(BlueprintGetter, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Get HeatValue"))
 	FORCEINLINE float GetHeatValue() const {return HeatValue; }
-	
-	/** Returns whether the room is currently lit. */
-	UFUNCTION(BlueprintGetter, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Get IsLit"))
-	FORCEINLINE bool GetIsLit() const {return IsLit; }
-	
+
+	/** Returns the room's current noisefloor in dB**/
+	UFUNCTION(BlueprintGetter, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Get HeatValue"))
+	FORCEINLINE float GetNoiseFloor() const {return NoiseFloor; }
 };
 
 

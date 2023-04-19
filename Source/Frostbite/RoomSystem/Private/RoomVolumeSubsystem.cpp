@@ -38,21 +38,14 @@ void URoomVolumeSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void URoomVolumeSubsystem::TriggerRoomEvent(ERoomHeatEvent_Type EventType, float HeatValue, float EventRange,
-	FVector TriggerLocation, TArray<AActor*> ObjectsToIgnore)
+void URoomVolumeSubsystem::TriggerRoomEvent(FRoomHeatEvent HeatEvent, TArray<AActor*> ObjectsToIgnore)
 {
-	FRoomHeatEvent NewEvent;
-	NewEvent.EventType = EventType;
-	NewEvent.EventHeatValue = HeatValue;
-	NewEvent.EventRange = EventRange;
-	NewEvent.EventLocation = TriggerLocation;
-	
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Visibility));
 
 	TArray<FHitResult> HitResults;
 	
-	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), TriggerLocation, TriggerLocation, EventRange, ObjectTypesArray, false, ObjectsToIgnore,
+	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), HeatEvent.EventLocation, HeatEvent.EventLocation, HeatEvent.EventRange, ObjectTypesArray, false, ObjectsToIgnore,
 		EDrawDebugTrace::ForDuration, HitResults, true, FLinearColor::Green, FLinearColor::Red, 5.0f);
 
 	for (FHitResult HitObject : HitResults)
@@ -60,7 +53,7 @@ void URoomVolumeSubsystem::TriggerRoomEvent(ERoomHeatEvent_Type EventType, float
 		ARoomVolume* HitRoom = Cast<ARoomVolume>(HitObject.GetActor());
 
 		/**Temp calculation for falloff*/
-		float HeatToAdd = HeatValue * (1 - ((TriggerLocation - HitObject.GetActor()->GetActorLocation()).Length() / EventRange));
+		float HeatToAdd = HeatEvent.EventHeatValue * (1 - ((HeatEvent.EventLocation - HitObject.GetActor()->GetActorLocation()).Length() / HeatEvent.EventRange));
 		
 		if(HitRoom){HitRoom->AddRoomHeat(HeatToAdd);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
