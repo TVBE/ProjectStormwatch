@@ -135,7 +135,9 @@ void UPlayerGrabComponent::ReleaseObject()
 		}
 		else
 		{
-			GrabbedComponent->SetPhysicsLinearVelocity(FVector(0.0,0.0,0.0));
+			/** If the object is not thrown, clamp the velocity.*/
+			FVector Velocity = GrabbedComponent->GetComponentVelocity();
+			GrabbedComponent->SetPhysicsLinearVelocity(Velocity.GetClampedToSize(0.0, 500.0));
 		}
 		WillThrowOnRelease = false;
 		ReleaseComponent();

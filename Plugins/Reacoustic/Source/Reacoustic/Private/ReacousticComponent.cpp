@@ -91,11 +91,13 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 	if(Hit.ImpactNormal.Length() > 0.001)
 	{
 		DeltaLocationDistance = FVector::Distance(LatestLocation, Hit.Location);
-		DeltaHitTime =  FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
-		LatestLocation = Hit.Location;
+		DeltaHitTime = FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
+		const double DeltaForwardVector{FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector())};
+		LatestLocation = Hit.ImpactPoint;
 		LatestTime = FPlatformTime::Seconds();
+		LatestForwardVector = this->GetOwner()->GetActorForwardVector();
 		
-		if(DeltaLocationDistance > 0.0001 && DeltaHitTime > 0.0001)
+		if(DeltaLocationDistance > 0.001 && DeltaHitTime > 0.01 && DeltaForwardVector >0.05)
 		{
 			OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		}

@@ -33,11 +33,11 @@ private:
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
 
 	/** These variables are used to calculate the difference in distance and time between hits.*/
-	float DeltaLocationDistance;
 	double DeltaHitTime;
+	double DeltaLocationDistance;
 	FVector LatestLocation;
-	double LatestTime = FPlatformTime::Seconds();
-
+	double LatestTime;
+	FVector LatestForwardVector;
 	
 	
 public:	
