@@ -61,10 +61,28 @@ void ARoomVolume::AddRoomHeat(const FRoomHeatEvent HeatEvent)
 	HeatValue = NewHeatVal;
 }
 
+void ARoomVolume::AddRoomHeat(const float HeatToAdd)
+{
+	float NewHeatVal = (HeatValue + HeatToAdd);
+	if(NewHeatVal > 100.0) {NewHeatVal = 100.0f;}
+	else if(NewHeatVal < 0) {NewHeatVal = 0.0f;}
+
+	HeatValue = NewHeatVal;
+}
+
 void ARoomVolume::DeductRoomHeat(const FRoomHeatEvent HeatEvent)
 {
 	float NewHeatVal = (HeatValue - HeatEvent.EventHeatValue);
 	if(NewHeatVal > 100.0) {NewHeatVal = 100.0f;}
+	else if(NewHeatVal < 0) {NewHeatVal = 0.0f;}
+
+	HeatValue = NewHeatVal;
+}
+
+void ARoomVolume::DeductRoomHeat(const float HeatToDeduct)
+{
+	float NewHeatVal = (HeatValue - HeatToDeduct);
+	if(NewHeatVal > 100.0f) {NewHeatVal = 100.0f;}
 	else if(NewHeatVal < 0) {NewHeatVal = 0.0f;}
 
 	HeatValue = NewHeatVal;

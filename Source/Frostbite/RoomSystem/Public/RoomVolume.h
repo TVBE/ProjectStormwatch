@@ -24,22 +24,24 @@ USTRUCT(BlueprintType)
 struct FRoomHeatEvent
 {
 	GENERATED_USTRUCT_BODY()
-
-	/** Soft object pointer to the room. */
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category = "RoomData", Meta = (DisplayName = "RelevantRoom"))
-	TSoftObjectPtr<ARoomVolume> RelevantRoom {nullptr};
-
+	
 	/** Defines what type of event this is. Is it triggered by audio, sight?*/
 	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventType"))
-	TEnumAsByte<ERoomHeatEvent_Type> EventType;
+	TEnumAsByte<ERoomHeatEvent_Type> EventType = ERoomHeatEvent_Type::UNDEFINED;
 
+	/**Amount to increase/decrease the Room's Heat Value when triggered by this event.*/
 	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventHeatValue"))
-	uint8 EventHeatValue;
+	float EventHeatValue = 5;
+
+	/**Range at which this event is applicable, e.g. this auditory event can be heard for a range of 10m*/
+	UPROPERTY(BlueprintReadWrite, Category = "RoomData", Meta = (DisplayName = "EventRange"))
+	float EventRange = 10.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "RoomData", Meta = (DisplayName = "EventLocation"))
+	FVector EventLocation = FVector::ZeroVector;
 	
-	/** Constructor with default values. */
-	FRoomHeatEvent()
-	{
-	}
+	UPROPERTY(BlueprintReadOnly, Category = "RoomData", Meta = (DisplayName = "RelevantRooms"))
+	TArray<ARoomVolume*> RelevantRooms;
 };
 
 /** Struct for defining connected rooms. */
@@ -106,10 +108,12 @@ public:
 	/** Adds Heat to the HeatValue, based on a FRoomHeatEvent.*/
 	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Add Room Heat"))
 	void AddRoomHeat(const FRoomHeatEvent HeatEvent);
+	void AddRoomHeat(const float HeatToAdd);
 	
 	/** Deducts Heat from the HeatValue, based on a FRoomHeatEvent.*/
 	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Heatmap", Meta = (DisplayName = "Deduct Room Heat"))
 	void DeductRoomHeat(const FRoomHeatEvent HeatEvent);
+	void DeductRoomHeat(const float HeatToDeduct);
 	
 	/** Set whether the room should be considered lit or not. */
 	UFUNCTION(BlueprintCallable, Category = "RoomVolume|Lighting", Meta = (DisplayName = "Set Light Status"))

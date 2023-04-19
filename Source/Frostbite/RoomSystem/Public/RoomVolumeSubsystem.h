@@ -30,6 +30,9 @@ protected:
 	virtual void Deinitialize() override;
 	
 public:
+	UFUNCTION(BlueprintCallable, Category = "RoomEvent", Meta = (DisplayName = "TriggerRoomEvent"))
+	void TriggerRoomEvent(ERoomHeatEvent_Type EventType, float HeatValue, float EventRange, FVector TriggerLocation,  TArray<AActor*> ObjectsToIgnore);
+	
 	UFUNCTION()
 	void Exec_PrintRegisteredRoomVolumes();
 	UFUNCTION()

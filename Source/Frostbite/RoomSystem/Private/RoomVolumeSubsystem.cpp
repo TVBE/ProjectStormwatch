@@ -5,6 +5,9 @@
 
 #include "RoomVolumeSubsystem.h"
 
+#include "Animation/AnimInstanceProxy.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 void URoomVolumeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -33,6 +36,36 @@ void URoomVolumeSubsystem::Deinitialize()
 	IConsoleManager::Get().UnregisterConsoleObject(PrintRoomVolumesCmd);
 	IConsoleManager::Get().UnregisterConsoleObject(ShowRoomVolumeHeatCmd);
 	Super::Deinitialize();
+}
+
+void URoomVolumeSubsystem::TriggerRoomEvent(ERoomHeatEvent_Type EventType, float HeatValue, float EventRange,
+	FVector TriggerLocation, TArray<AActor*> ObjectsToIgnore)
+{
+	FRoomHeatEvent NewEvent;
+	NewEvent.EventType = EventType;
+	NewEvent.EventHeatValue = HeatValue;
+	NewEvent.EventRange = EventRange;
+	NewEvent.EventLocation = TriggerLocation;
+	
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Visibility));
+
+	TArray<FHitResult> HitResults;
+	
+	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), TriggerLocation, TriggerLocation, EventRange, ObjectTypesArray, false, ObjectsToIgnore,
+		EDrawDebugTrace::ForDuration, HitResults, true, FLinearColor::Green, FLinearColor::Red, 5.0f);
+
+	for (FHitResult HitObject : HitResults)
+	{
+		ARoomVolume* HitRoom = Cast<ARoomVolume>(HitObject.GetActor());
+
+		/**Temp calculation for falloff*/
+		float HeatToAdd = HeatValue * (1 - ((TriggerLocation - HitObject.GetActor()->GetActorLocation()).Length() / EventRange));
+		
+		if(HitRoom){HitRoom->AddRoomHeat(HeatToAdd);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
+			FString::SanitizeFloat(HeatToAdd, 0));}
+	}
 }
 
 void URoomVolumeSubsystem::Exec_PrintRegisteredRoomVolumes()
