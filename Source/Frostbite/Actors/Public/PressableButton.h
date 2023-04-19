@@ -70,6 +70,10 @@ struct FButtonTargetActor
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Linked Button", Meta = (DisplayName = "Action When Released", 
 	EditCondition = "DoActionOnRelease"))
 	ETriggerableObjectAction ReleasedAction {ETriggerableObjectAction::Untrigger};
+
+	FButtonTargetActor()
+	{
+	}
 };
 
 /** Struct containing a soft object pointer to another PressableButton actor,
@@ -104,6 +108,10 @@ struct FLinkedButton
 	/** When true, the linked actor will not perform its gameplay action when triggered by this button. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Linked Button", Meta = (DisplayName = "Safe Link"))
 	bool IsActionLinked {true};
+
+	FLinkedButton()
+	{
+	}
 };
 
 /** Base class for button actors. */
@@ -189,11 +197,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
 		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides, ValidEnumValues = "Nothing, Press"))
 	EButtonPowerChangeActionType PowerGainAction {EButtonPowerChangeActionType::Nothing};
-
-	/** If true, the button is currently powered. */
-	UPROPERTY(BlueprintReadOnly, Category = "Button|Power", Meta = (DisplayName = "Is Powered"))
-	bool IsPowered {true};
-
+	
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Button|Components", Meta = (DisplayName = "Power Consumer Component"))
 	UPowerConsumerComponent* PowerConsumerComponent;

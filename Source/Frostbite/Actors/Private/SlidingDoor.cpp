@@ -2,8 +2,8 @@
 // Written by Tim Verberne
 // This source code is part of the project Frostbite
 
-
 #include "SlidingDoor.h"
+#include "PowerConsumerComponent.h"
 
 ASlidingDoor::ASlidingDoor()
 {
@@ -15,7 +15,20 @@ ASlidingDoor::ASlidingDoor()
 void ASlidingDoor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (RequiresPower)
+	{
+		PowerConsumerComponent = Cast<UPowerConsumerComponent>
+		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+		if (PowerConsumerComponent)
+		{
+			PowerConsumerComponent->PowerSource = PowerSource;
+			PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &ASlidingDoor::EventOnPowerStateChanged);
+
+			PowerConsumerComponent->RegisterComponent();
+			PowerConsumerComponent->InitializeComponent();
+		}
+	}
 }
 
 void ASlidingDoor::StartCooldown()
@@ -50,42 +63,72 @@ void ASlidingDoor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASlidingDoor::Open_Implementation()
+bool ASlidingDoor::Open_Implementation(const AActor* Initiator)
 {
-	IDoor::Open_Implementation();
+	if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered())
+	{
+		EventDoorOpen();
+		return true;
+	}
+	if (!RequiresPower)
+	{
+		EventDoorOpen();
+		return true;
+	}
+	return false;
 }
 
-void ASlidingDoor::Close_Implementation()
+bool ASlidingDoor::Close_Implementation(const AActor* Initiator)
 {
-	IDoor::Close_Implementation();
+	if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered())
+	{
+		EventDoorClose();
+		return true;
+	}
+	if (!RequiresPower)
+	{
+		EventDoorClose();
+		return true;
+	}
+	return false;
 }
 
 bool ASlidingDoor::Trigger_Implementation(const AActor* Initiator)
 {
-	return ITriggerableObject::Trigger_Implementation(Initiator);
+	Execute_Open(this, this);
+	return true;
 }
 
 bool ASlidingDoor::Untrigger_Implementation(const AActor* Initiator)
 {
-	return ITriggerableObject::Untrigger_Implementation(Initiator);
+	Execute_Close(this, this);
+	return true;
 }
 
 void ASlidingDoor::EventDoorOpen_Implementation()
 {
-	OnDoorOpen.Broadcast();
+	DoorState = EDoorState::Opening;
+	OnDoorStateChanged.Broadcast(EDoorState::Opening);
 }
 
 void ASlidingDoor::EventDoorOpened_Implementation()
 {
-	OnDoorOpened.Broadcast();
+	DoorState = EDoorState::Open;
+	OnDoorStateChanged.Broadcast(EDoorState::Open);
 }
 
 void ASlidingDoor::EventDoorClose_Implementation()
 {
-	OnDoorClose.Broadcast();
+	DoorState = EDoorState::Closing;
+	OnDoorStateChanged.Broadcast(EDoorState::Closing);
 }
 
 void ASlidingDoor::EventDoorClosed_Implementation()
 {
-	OnDoorClosed.Broadcast();
+	DoorState = EDoorState::Closed;
+	OnDoorStateChanged.Broadcast(EDoorState::Closed);
+}
+
+void ASlidingDoor::EventOnPowerStateChanged_Implementation(const bool NewState)
+{
 }

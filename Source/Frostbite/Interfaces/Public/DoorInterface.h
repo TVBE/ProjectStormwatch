@@ -16,6 +16,13 @@ enum class EDoorState : uint8
     Closing     UMETA(DisplayName = "Closing"),
 };
 
+UENUM(BlueprintType)
+enum class EDoorAction : uint8
+{
+    Open        UMETA(DisplayName = "Open"), 
+    Close      UMETA(DisplayName = "Close"),
+};
+
 UINTERFACE(Blueprintable, Meta = (DisplayName = "Door Interface"))
 class UDoor : public UInterface
 {
@@ -29,11 +36,11 @@ class IDoor
 public:
     /** Attempts to open the door. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Open"))
-    void Open();
+    bool Open(const AActor* Initiator);
 
     /** Attempts to close the door. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Close"))
-    void Close();
+    bool Close(const AActor* Initiator);
     
     /** Returns the door's state. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Get Door State"))
