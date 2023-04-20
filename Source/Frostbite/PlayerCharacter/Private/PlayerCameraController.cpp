@@ -275,9 +275,9 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 		- HeadSocketTransform.GetRotation()) * IntensityMultiplier};
 
 	/** Apply scalars. */
-	const float XScalar {static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.X : Configuration->CrouchedSocketRotationIntensity.X)};
-	const float YScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.Y : Configuration->CrouchedSocketRotationIntensity.Y)};
-	const float ZScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.Z : Configuration->CrouchedSocketRotationIntensity.Z)};
+	const float XScalar {static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->CrouchedSocketRotationIntensity.X : Configuration->SocketRotationIntensity.X)};
+	const float YScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->CrouchedSocketRotationIntensity.Y : Configuration->SocketRotationIntensity.Y)};
+	const float ZScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->CrouchedSocketRotationIntensity.Z : Configuration->SocketRotationIntensity.Z)};
 	
 	TargetHeadSocketRotation = FRotator(TargetHeadSocketRotation.Pitch * XScalar, (TargetHeadSocketRotation.Yaw * ZScalar), (TargetHeadSocketRotation.Roll * YScalar));
 
