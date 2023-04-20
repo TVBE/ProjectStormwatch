@@ -44,21 +44,10 @@ struct FReacousticSoundData
 	float SurfaceDampeningPercentage{0.0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	USoundAttenuation* Attenuation;
+	USoundAttenuation* Attenuation{nullptr};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	USoundConcurrency* Concurrency;
-
-	// Constructor with default values.
-	FReacousticSoundData()
-	: Gain(0.0)
-	, MaxSpeedScalar(1.0)
-	, ImpulseLength(1.5)
-	, SurfaceDampeningPercentage(0.0)
-	, Attenuation(nullptr)
-	, Concurrency(nullptr)
-	{
-	}
+	USoundConcurrency* Concurrency{nullptr};
 };
 
 UCLASS(BlueprintType)
@@ -79,17 +68,10 @@ struct FMeshToAudioMapEntry
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh To Audio Map")
-	UStaticMesh* Mesh;
+	UStaticMesh* Mesh{nullptr};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh To Audio Map")
-	int32 ReacousticSoundDataRef;
-
-	// Constructor with default values.
-	FMeshToAudioMapEntry()
-	: Mesh(nullptr)
-	, ReacousticSoundDataRef(0)
-	{
-	}
+	int32 ReacousticSoundDataRef{0};
 };
 
 USTRUCT(BlueprintType)
@@ -98,17 +80,11 @@ struct FPhysicalMaterialToAudioMapEntry
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EPhysicalSurface To Audio Map")
-	TEnumAsByte<EPhysicalSurface> SurfaceType;
+	TEnumAsByte<EPhysicalSurface> SurfaceType{SurfaceType_Default};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EPhysicalSurface To Audio Map")
-	int32 ReacousticSoundDataRef;
-
-	// Constructor with default values.
-	FPhysicalMaterialToAudioMapEntry()
-		: SurfaceType(EPhysicalSurface::SurfaceType_Default)
-		, ReacousticSoundDataRef(0)
-	{
-	}
+	int32 ReacousticSoundDataRef{0};
+	
 };
 
 // The map with all references to quickly be able to access the right audio data.
@@ -122,11 +98,6 @@ public:
  
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = MaterialToAudioMap)
 	TArray<FPhysicalMaterialToAudioMapEntry> PhysicalMaterialMapEntries;
-
-	// Constructor with default values.
-	UReacousticSoundDataRef_Map()
-	{
-	}
 };
 
 USTRUCT(BlueprintType)
