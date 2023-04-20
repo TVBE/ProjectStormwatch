@@ -157,27 +157,27 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
 	if (IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
 	{
-		if (!CharacterMovement->IsCrouching())
+		if (!PlayerCharacter->bIsCrouched)
 		{
 			StartSprinting();
 		}
 		/** If the character is crouching, stand up before sprinting. */
-		else if (CharacterMovement->IsCrouching() && PlayerCharacter->CanStandUp())
+		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			StopCrouching();
+			// PlayerCharacter->EndCrouch();
 			StartSprinting();
 			IsCrouchPending = false;
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
-	if (IsCrouchPending && !CharacterMovement->IsCrouching() && PlayerCharacter->CanCrouch())
+	if (IsCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 	{
 		if (CharacterMovement->GetIsSprinting())
 		{
 			StopSprinting();
 			IsSprintPending = false;
 		}
-		StartCrouching();
+		// PlayerCharacter->StartCrouch();
 	}
 }
 
@@ -242,16 +242,6 @@ void APlayerCharacterController::StopSprinting()
 	{
 		PlayerCharacterMovement->SetIsSprinting(false, this);	
 	}
-}
-
-void APlayerCharacterController::StartCrouching()
-{
-	GetCharacter()->Crouch();
-}
-
-void APlayerCharacterController::StopCrouching()
-{
-	// Temp
 }
 
 FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
@@ -382,22 +372,22 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	if (!CanProcessMovementInput) { return; }
 	IsCrouchPending = true;
-
+	
 	if (CharacterConfiguration->EnableCrouchToggle)
 	{
-		if (!GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanCrouch())
+		if (!PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 		{
-			StartCrouching();
+			PlayerCharacter->Crouch(false);
 			return;
 		}
-		if (GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanStandUp())
+		if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			StopCrouching();
+			PlayerCharacter->UnCrouch(false);
 		}
 	}
 	else if (PlayerCharacter->CanCrouch())
 	{
-		StartCrouching();
+		PlayerCharacter->Crouch(false);
 	}
 }
 
@@ -405,6 +395,12 @@ void APlayerCharacterController::HandleCrouchActionReleased()
 {
 	if (!CanProcessMovementInput) { return; }
 	IsCrouchPending = false;
+	
+
+	if (PlayerCharacter->bIsCrouched)
+	{
+		PlayerCharacter->UnCrouch(false);
+	}
 }
 
 void APlayerCharacterController::HandleFlashlightActionPressed()

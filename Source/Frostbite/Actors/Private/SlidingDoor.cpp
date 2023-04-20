@@ -27,6 +27,8 @@ void ASlidingDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DoorState = StartingState;
+
 	if (RequiresPower)
 	{
 		PowerConsumerComponent = Cast<UPowerConsumerComponent>
@@ -145,32 +147,38 @@ void ASlidingDoor::HandleCloseTimerUpdate()
 
 bool ASlidingDoor::Open_Implementation(const AActor* Initiator)
 {
-	if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
+	if (DoorState == EDoorState::Closed || DoorState == EDoorState::Closing)
 	{
-		if (GetWorld()->GetTimerManager().IsTimerActive(CloseCheckTimerHandle))
+		if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
 		{
-			GetWorld()->GetTimerManager().ClearTimer(CloseCheckTimerHandle);
-		}
+			if (GetWorld()->GetTimerManager().IsTimerActive(CloseCheckTimerHandle))
+			{
+				GetWorld()->GetTimerManager().ClearTimer(CloseCheckTimerHandle);
+			}
 		
-		EventDoorOpen();
-		return true;
+			EventDoorOpen();
+			return true;
+		}
 	}
 	return false;
 }
 
 bool ASlidingDoor::Close_Implementation(const AActor* Initiator)
 {
-	if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
+	if (DoorState == EDoorState::Open || DoorState == EDoorState::Opening)
 	{
-		if (CanClose())
+		if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
 		{
-			EventDoorClose();
-			return true;
-		}
-		if (const UWorld* World {GetWorld()})
-		{
-			FTimerManager& TimerManager = World->GetTimerManager();
-			TimerManager.SetTimer(CloseCheckTimerHandle, this, &ASlidingDoor::HandleCloseTimerUpdate, 0.5f, false);
+			if (CanClose())
+			{
+				EventDoorClose();
+				return true;
+			}
+			if (const UWorld* World {GetWorld()})
+			{
+				FTimerManager& TimerManager = World->GetTimerManager();
+				TimerManager.SetTimer(CloseCheckTimerHandle, this, &ASlidingDoor::HandleCloseTimerUpdate, 0.5f, false);
+			}
 		}
 	}
 	return false;

@@ -73,6 +73,9 @@ private:
 public:
 	/** Sets default values for this character's properties. */
 	APlayerCharacter();
+
+	virtual void Crouch(bool bClientSimulation) override;
+	virtual void UnCrouch(bool bClientSimulation) override;
 	
 	/** Called every frame. */
 	virtual void Tick(float DeltaTime) override;
@@ -86,7 +89,7 @@ public:
 	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Get Clearance Above Pawn"))
 	float GetClearanceAbovePawn() const;
-
+	
 	/** Checks whether the player can currently jump. */
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Can Jump"))
 	bool CanPerformJump() const;

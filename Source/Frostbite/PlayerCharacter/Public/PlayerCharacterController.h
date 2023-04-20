@@ -92,14 +92,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Stop Sprinting"))
 	void StopSprinting();
 	
-	/** Set the PlayerMovementComponent to crouch. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Start Crouching"))
-	void StartCrouching();
-	
-	/** Set the PlayerMovementComponent to stop crouching. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Sop Crouching"))
-	void StopCrouching();
-	
 	/** Performs a collision query in front of the camera and returns the hit result. */
 	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Camera Look At Query"))
 	FHitResult GetCameraLookAtQuery() const;

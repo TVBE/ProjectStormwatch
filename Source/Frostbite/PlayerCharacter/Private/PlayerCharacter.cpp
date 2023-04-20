@@ -42,6 +42,16 @@ APlayerCharacter::APlayerCharacter()
 	CameraController->bEditableWhenInherited = true;
 }
 
+void APlayerCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+}
+
+void APlayerCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
+}
+
 /** Called after the constructor but before the components are initialized. */
 void APlayerCharacter::PostInitProperties()
 {
@@ -285,7 +295,6 @@ bool APlayerCharacter::CanStandUp() const
 	return (Clearance > RequiredClearance || Clearance == -1.f && GetMovementComponent()->IsCrouching());
 }
 
-
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (const UWorld* World {GetWorld()})
@@ -309,6 +318,7 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacte
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
+		MovementComponent->MaxWalkSpeedCrouched = CrouchSpeed;
 	}
 }
 

@@ -36,6 +36,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (Controller && CharacterMovement)
 		{
 			CheckMovementState(*PlayerCharacter, *Controller, *CharacterMovement);
+			
 		}
 
 		Direction = GetDirection(*PlayerCharacter);
@@ -115,6 +116,7 @@ void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Ch
 {
 	IsMovementPending = Controller.GetHasMovementInput();
 	IsMoving = IsMovementPending && (CharacterMovement.IsMovingOnGround() || CharacterMovement.IsFalling());
+	IsCrouching = CharacterMovement.IsCrouching();
 
 	DoSprintSop = !IsMovementPending && Speed > 275 && (Direction >= -20 && Direction <= 20);
 }

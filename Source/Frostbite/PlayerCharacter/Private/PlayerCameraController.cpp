@@ -212,8 +212,7 @@ void UPlayerCameraController::GetCameraSwayRotation(FRotator& Rotator)
 					UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * 2.4))};
 	
 	/** Calculate the target shake rotation. */
-	float Intensity {Configuration->CameraShakeIntensity};
-	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * Configuration->CameraShakeIntensity};
+	const double TargetRollOffset {UKismetMathLibrary::Cos(UGameplayStatics::GetTimeSeconds(GetWorld()) * Deviation) * IntensityMultiplier * Deviation * Configuration->CameraSwayIntensity};
 	
 	/** Interpolate between the current camera roll and the target camera roll. */
 	CameraShakeRoll = FMath::FInterpTo(CameraShakeRoll, TargetRollOffset, GetWorld()->GetDeltaSeconds(), 3.0);
@@ -276,7 +275,11 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 		- HeadSocketTransform.GetRotation()) * IntensityMultiplier};
 
 	/** Apply scalars. */
-	TargetHeadSocketRotation = FRotator(TargetHeadSocketRotation.Pitch, (TargetHeadSocketRotation.Yaw * 0), (TargetHeadSocketRotation.Roll * 1.5));
+	const float XScalar {static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.X : Configuration->CrouchedSocketRotationIntensity.X)};
+	const float YScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.Y : Configuration->CrouchedSocketRotationIntensity.Y)};
+	const float ZScalar	{static_cast<float>(PlayerCharacter->bIsCrouched ? Configuration->SocketRotationIntensity.Z : Configuration->CrouchedSocketRotationIntensity.Z)};
+	
+	TargetHeadSocketRotation = FRotator(TargetHeadSocketRotation.Pitch * XScalar, (TargetHeadSocketRotation.Yaw * ZScalar), (TargetHeadSocketRotation.Roll * YScalar));
 
 	/** Interpolate the rotation value to smooth out jerky rotation changes. */
 	if (const UWorld* World {GetWorld()})

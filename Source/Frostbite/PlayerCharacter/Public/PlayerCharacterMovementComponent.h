@@ -68,6 +68,8 @@ private:
 	bool IsJumping {false};
 
 public:
+	UPlayerCharacterMovementComponent();
+	
 	virtual bool DoJump(bool bReplayingMoves) override;
 	
 	/** Checks and returns the current player ground movement type.
@@ -79,6 +81,9 @@ public:
 	/** Sets whether the character movement component is sprinting or not. */
 	UFUNCTION(Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (Displayname = "Set Is Sprinting "))
 	void SetIsSprinting(const bool Value, const APlayerController* Controller);
+
+	virtual void Crouch(bool bClientSimulation) override;
+	virtual void UnCrouch(bool bClientSimulation) override;
 
 protected:
 	virtual void BeginPlay() override;
