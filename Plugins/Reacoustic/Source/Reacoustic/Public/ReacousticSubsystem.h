@@ -11,7 +11,7 @@
 /** 
  */
 UCLASS()
-class UReacousticSubsystem : public UWorldSubsystem
+class REACOUSTIC_API  UReacousticSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 

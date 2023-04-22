@@ -9,28 +9,117 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/MaterialFunctions/MF_NormalStrength.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/MaterialFunctions/MF_UVTiling.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Default/DefaultDiffuse_VT.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Default/DefaultNormal_VT.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Default/T_128_Grey_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Default/T_2K_BnW_Spots_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Anisotropic_Noise.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Anisotropic_Noise_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Blue_Noise.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Blue_Noise_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_BnW_Spots_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Cells_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Clouds_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Clouds_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Clouds_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Clouds_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Creased.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Creased_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Crystal_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Crystal_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Crystal_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Crystal_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Noise_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Scratches.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Directional_Scratches_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_Gradient.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Dirt_Gradient_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fibers_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fibers_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fibers_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fibers_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fluid.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fluid_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fractal_Sum_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fur_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fur_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fur_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Fur_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Gaussian_Noise.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Gaussian_Noise_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_03.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_03_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_04.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_04_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_05.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_05_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_06.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Grunge_06_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Liquid.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Liquid_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Perlin_Noise.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Perlin_Noise_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Plasma.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Plasma_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Waveform_01.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Waveform_01_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Waveform_02.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_Waveform_02_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_White_Noise.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/Game/Art/Core/Textures/Noise/T_2K_White_Noise_N.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerFootCollisionComponent.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerFootCollisionComponent.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Animations/BlendSpaces/ABS_Locomotion_Crouching_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Animations/BlendSpaces/ABS_Locomotion_Crouching_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_01_RT.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Animations/Retargeted/AS_Crouch_Walk_Forward_01_RT.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/ABP_PlayerAnimationBlueprint.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/ABP_PlayerAnimationBlueprint.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCameraConfiguration_Default.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Data/Configuration/DA_PlayerCharacterConfiguration_InteriorTest_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/DefaultDiffuse_VT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/DefaultNormal_VT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/MF_NormalStrength.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/MF_UVTiling.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Standard_Virtual_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/M_MasterMaterial_Standard_Virtual_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/T_128_Grey_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Core/MasterMaterials/T_2K_BnW_Spots_01_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/HousePlants/SM_BirdsNestPlant.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/HousePlants/SM_BirdsNestPlant.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Printers/MI_Printer_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Printers/MI_Printer_02.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Art/Meshes/Props/Wires/SM_Wire_A01.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/Prototyping/PlayerMetrics.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/Prototyping/PlayerMetrics.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCameraController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Private/ReacousticSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Reacoustic/Source/Reacoustic/Public/ReacousticSubsystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Frostbite.Build.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterMovementComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerCharacterMovementComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterAnimInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterMovementComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterMovementComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -354,6 +443,8 @@
       <workItem from="1681935825260" duration="5589000" />
       <workItem from="1681941538244" duration="4932000" />
       <workItem from="1682004443680" duration="13120000" />
+      <workItem from="1682080160356" duration="3263000" />
+      <workItem from="1682192333823" duration="494000" />
     </task>
     <servers />
   </component>

@@ -19,11 +19,11 @@ class UPlayerVfxComponent;
 class UPlayerCameraController;
 class UPlayerFlashlightComponent;
 class UPlayerCharacterMovementComponent;
+class UPlayerFootCollisionComponent;
 class UNiagaraComponent;
 enum class ELeftRight : uint8;
 enum class EPlayerLandingType : uint8;
 struct FStepData;
-struct FTimerHandle;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "PlayerCharacter", Meta =
 	(DisplayName = "Player Character", ShortToolTip = "The main player character for Frostbite."))
@@ -55,6 +55,14 @@ private:
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "Player Character", Meta = (DisplayName = "Player Character Controller"))
 	APlayerCharacterController* PlayerCharacterController;
+
+	/** The foot collision component for the left foot. */
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Foot Collision", Meta = (DisplayName = "Left Foot Collision"))
+	UPlayerFootCollisionComponent* LeftFootCollision;
+	
+	/** The foot collision component for the right foot. */
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Foot Collision", Meta = (DisplayName = "Right Foot Collision"))
+	UPlayerFootCollisionComponent* RightFootCollision;
 	
 	// VARIABLES
 	/** If true, the character is currently turning in place. */
@@ -245,6 +253,25 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing",
 		Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
 	float RotationSmoothingSpeed {8};
+
+	/** If true, the player is slowed down when stepping over larger physics bodies. */
+	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Slow Down Character When Stepping Over Physics Bodies"))
+	bool IsStepOverEnabled {true};
+
+	/** The minimum weight of an object required to slow down the player. */
+	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Weight Threshold", Units = "Kilograms",
+		ClampMin = "0", EditCondition = "IsStepOverEnabled"))
+	float StepOverWeightThreshold {10.0f};
+	
+	/** The minimum size of an object required to slow down the player */
+	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Size Threshold", ClampMin = "0",
+	EditCondition = "IsStepOverEnabled"))
+	float StepOverSizeThreshold {100.0f};
+
+	/** The base speed modifier to apply when the player is performing step-overs. */
+	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Base Modifier",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "IsStepOverEnabled"))
+	float StepOverBaseSpeedModifier {0.6};
 	
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()

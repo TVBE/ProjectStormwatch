@@ -1,27 +1,28 @@
 // Copyright 2023 Nino Saglia & Tim Verberne
 
 #include "ReacousticComponent.h"
+
+#include "FileCache.h"
 #include "ReacousticSubsystem.h"
 
 #define LOG_CATEGORY(LogReacousticComponent);
 
-// Sets default values for this component's properties
+
 UReacousticComponent::UReacousticComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+
+	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 	bAutoActivate = true;
 	
 }
-// Called after the component has been fully created and registered, but before it has been initialized and is ready for use.
+
 void UReacousticComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 }
 
-// Called when the game starts
+
 void UReacousticComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -62,7 +63,7 @@ void UReacousticComponent::BeginPlay()
 			}
 		}
 	
-	// Subscribe to the OnComponentHit delegate of the target StaticMeshComponent.
+
 	if(MeshComponent)
 	{
 		MeshComponent->OnComponentHit.AddDynamic(this, &UReacousticComponent::HandleOnComponentHit);
@@ -73,7 +74,7 @@ void UReacousticComponent::BeginPlay()
 	}
 }
 
-// Called when the game ends or the object is marked for destruction.
+
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if(const UWorld* World {GetWorld()})
@@ -86,9 +87,24 @@ void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+float UReacousticComponent::GetScaledImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent,
+	const AActor* OtherActor)
+{
+	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {return 0.0f; }
+
+	const FVector RelativeVelocity {HitComponent->GetComponentVelocity() - OtherActor->GetVelocity()};
+	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity) / HitComponent->GetMass()};
+	return ScaledImpulse.Length();
+}
+
+FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial)
+{
+	return FReacousticSoundData();
+}
+
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if(Hit.ImpactNormal.Length() > 0.001)
+	if(Hit.ImpactNormal.SquaredLength() > 0.00001)
 	{
 		DeltaLocationDistance = FVector::Distance(LatestLocation, Hit.Location);
 		DeltaHitTime = FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
@@ -149,12 +165,4 @@ void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArra
 	}
 }
 
-
-// Called every frame
-void UReacousticComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
 

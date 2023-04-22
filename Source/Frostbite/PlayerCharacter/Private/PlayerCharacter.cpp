@@ -8,6 +8,7 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerSubsystem.h"
 #include "FrostbiteGameMode.h"
+#include "PlayerFootCollisionComponent.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -30,16 +31,23 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	/** Construct Camera. */
+	/** Construct camera. */
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(this->RootComponent);
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
 	
-	/** Construct Camera Controller. */
+	/** Construct camera controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = true;
+
+	/** Construct foot collision components. */
+	LeftFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Left Foot Collision"));
+	LeftFootCollision->SetupAttachment(GetMesh(), FName("foot_l_socket"));
+
+	RightFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Right Foot Collision"));
+	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
 }
 
 void APlayerCharacter::Crouch(bool bClientSimulation)
