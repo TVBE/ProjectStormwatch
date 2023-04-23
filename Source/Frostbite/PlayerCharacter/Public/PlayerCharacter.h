@@ -191,7 +191,7 @@ public:
 	FORCEINLINE float GetYawDelta() const {return YawDelta; }
 };
 
-UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
 class FROSTBITE_API UPlayerCharacterConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
@@ -201,8 +201,18 @@ class FROSTBITE_API UPlayerCharacterConfiguration : public UDataAsset
 public:
 	/** Defines the default movement speed.*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General",
-		Meta = (DisplayName = "Default Movement Speed", ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
+		Meta = (DisplayName = "Default Movement Speed", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
 	float WalkSpeed {300.f};
+
+	/** The maximum allowed slope angle the player character can climb on. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General", Meta = (DisplayName = "Max Walkable Floor Angle", Units = "Degrees",
+		ClampMin = "0", ClampMax = "60", UIMin = "0", UIMax = "60"))
+	float MaxWalkableFloorAngle {35.0f};
+
+	/** The maximum step height the player can perform. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General", Meta = (DisplayName = "Max Step Height", Units = "Centimeters",
+	ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
+	float MaxStepHeight {30.0f};
 	
 	/** When set to enabled, the character is allowed to jump. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Jumping",
@@ -221,7 +231,7 @@ public:
 
 	/** Defines the movement speed when sprinting. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sprinting",
-		Meta = (DisplayName = "Sprint Speed", EditCondition= "IsSprintingEnabled", ClampMin = "400", ClampMax = "800", UiMin = "400", UIMax = "800"))
+		Meta = (DisplayName = "Sprint Speed", ForceUnits = "cm/s", EditCondition= "IsSprintingEnabled", ClampMin = "400", ClampMax = "800", UiMin = "400", UIMax = "800"))
 	float SprintSpeed {600.f};
 
 	/** When set to enabled, the character is allowed to crouch. */
@@ -231,7 +241,7 @@ public:
 
 	/** Defines the characters movement speed while crouched. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Crouching",
-		Meta = (Displayname = "Crouch Speed", EditCondition= "IsCrouchingEnabled", ClampMin = "0", ClampMax = "300", UiMin = "0", UIMax = "300"))
+		Meta = (Displayname = "Crouch Speed", ForceUnits = "cm/s", EditCondition= "IsCrouchingEnabled", ClampMin = "0", ClampMax = "300", UiMin = "0", UIMax = "300"))
 	float CrouchSpeed {200.f};
 
 	/** When set to enabled, The crouch button will act as a toggle for the crouch action.

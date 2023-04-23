@@ -327,6 +327,8 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacte
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
 		MovementComponent->MaxWalkSpeedCrouched = CrouchSpeed;
+		MovementComponent->SetWalkableFloorAngle(MaxWalkableFloorAngle);
+		MovementComponent->MaxStepHeight = MaxStepHeight;
 	}
 }
 
