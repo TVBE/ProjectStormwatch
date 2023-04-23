@@ -84,13 +84,9 @@ void AProximitySensor::Poll()
 					}
 					else if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Crouching))
 					{
-						if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(Actor)};
-							const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
+						if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(Actor)}; PlayerCharacter && PlayerCharacter->bIsCrouched)
 						{
-							if (CharacterMovement->IsCrouching())
-							{
-								ShouldIgnoreActor = true;
-							}
+							ShouldIgnoreActor = true;
 						}
 					}
 				}
