@@ -181,19 +181,20 @@ void APressableButton::ValidateTargetActors()
 	{
 		if (!TargetActor.Actor.IsNull())
 		{
-			const AActor* Actor = TargetActor.Actor.Get();
-			
-			if (!Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
-			{
-				TargetActor.Actor = nullptr;
-
-				if (GEditor)
+			if (const AActor* Actor = TargetActor.Actor.Get())
 				{
-					const FText Title {FText::FromString("Button")};
-					const FText Message {FText::FromString("Target does not implement UTriggerableObject interface. The button cannot perform any actions on this actor. ")};
-					FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+				if (!Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
+				{
+					TargetActor.Actor = nullptr;
+
+					if (GEditor)
+					{
+						const FText Title {FText::FromString("Button")};
+						const FText Message {FText::FromString("Target does not implement UTriggerableObject interface. The button cannot perform any actions on this actor. ")};
+						FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+					}
 				}
-			}
+				}
 		}
 		if (TriggerType == EButtonTriggerType::SinglePress && TargetActor.DoActionOnRelease)
 		{
@@ -213,19 +214,22 @@ void APressableButton::ValidateLinkedButtons()
 	if (LinkedButtons.IsEmpty()) { return; }
 	for (FLinkedButton& LinkedButton : LinkedButtons)
 	{
-		if (LinkedButton.Actor.Get() == this)
+		if (!LinkedButton.Actor.IsNull())
 		{
-			const FString DisplayName = this->GetHumanReadableName();
-			UE_LOG(LogButton, Warning, TEXT("%s contains button link to self."), *DisplayName)
+			if (const AActor* Actor = LinkedButton.Actor.Get(); Actor && Actor == this)
+				{
+				const FString DisplayName = this->GetHumanReadableName();
+				UE_LOG(LogButton, Warning, TEXT("%s contains button link to self."), *DisplayName)
 
-			LinkedButton.Actor = nullptr;
-			
-			if (GEditor)
-			{
-				const FText Title {FText::FromString("Button")};
-				const FText Message {FText::FromString("Cannot add button link to self!")};
-				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
-			}
+				LinkedButton.Actor = nullptr;
+
+				if (GEditor)
+				{
+					const FText Title {FText::FromString("Button")};
+					const FText Message {FText::FromString("Cannot add button link to self!")};
+					FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
+				}
+				}
 		}
 		if (TriggerType == EButtonTriggerType::SinglePress && LinkedButton.DoActionOnRelease)
 		{
