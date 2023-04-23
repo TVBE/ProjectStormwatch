@@ -164,9 +164,9 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 		/** If the character is crouching, stand up before sprinting. */
 		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			// PlayerCharacter->EndCrouch();
-			StartSprinting();
 			IsCrouchPending = false;
+			PlayerCharacter->UnCrouch(false);
+			StartSprinting();
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
@@ -177,7 +177,7 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 			StopSprinting();
 			IsSprintPending = false;
 		}
-		// PlayerCharacter->StartCrouch();
+		PlayerCharacter->Crouch(false);
 	}
 }
 
@@ -217,7 +217,7 @@ void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsyst
 
 bool APlayerCharacterController::CanCharacterSprint() const
 {
-	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
+	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetCharacter()->bIsCrouched
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
@@ -371,23 +371,26 @@ void APlayerCharacterController::HandleSprintActionReleased()
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	if (!CanProcessMovementInput) { return; }
-	IsCrouchPending = true;
+	
 	
 	if (CharacterConfiguration->EnableCrouchToggle)
 	{
 		if (!PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 		{
 			PlayerCharacter->Crouch(false);
+			IsCrouchPending = true;
 			return;
 		}
 		if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
 			PlayerCharacter->UnCrouch(false);
+			IsCrouchPending = false;
 		}
 	}
 	else if (PlayerCharacter->CanCrouch())
 	{
 		PlayerCharacter->Crouch(false);
+		IsCrouchPending = true;
 	}
 }
 
