@@ -23,6 +23,12 @@ void AMotionSensor::PostInitProperties()
 void AMotionSensor::Poll()
 {
 	if (!DetectionBox) { return; }
+
+	if (EnableCooldown && IsCooldownActive)
+	{
+		return;
+	}
+	
 	DetectionBox->GetOverlappingActors(OverlappingActors, AActor::StaticClass());
 
 	for (int32 Index {0}; Index < OverlappingActors.Num(); ++Index)
@@ -74,6 +80,11 @@ void AMotionSensor::Poll()
 		{
 			IsActorDetected = false;
 			OnActorLost.Broadcast();
+
+			if (EnableCooldown)
+			{
+				StartCooldown();
+			}
 		}
 		return;
 	}
@@ -104,6 +115,11 @@ void AMotionSensor::Poll()
 	{
 		IsActorDetected = false;
 		OnActorLost.Broadcast();
+
+		if (EnableCooldown)
+		{
+			StartCooldown();
+		}
 	}
 }
 

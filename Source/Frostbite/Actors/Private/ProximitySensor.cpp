@@ -65,6 +65,12 @@ void AProximitySensor::BeginPlay()
 void AProximitySensor::Poll()
 {
 	if (!DetectionBox) { return; }
+
+	if (EnableCooldown && IsCooldownActive)
+	{
+		return;
+	}
+	
 	DetectionBox->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
 	
 	if (!OverlappingActors.IsEmpty())
@@ -141,6 +147,11 @@ void AProximitySensor::Poll()
 	{
 		IsActorDetected = false;
 		OnActorLost.Broadcast();
+
+		if (EnableCooldown)
+		{
+			StartCooldown();
+		}
 	}
 }
 
@@ -217,6 +228,37 @@ void AProximitySensor::VisualizeCone(const bool IsPersistent) const
 	DrawDebugLine(GetWorld(), BoxLocation, BottomRight, DebugLineColor, IsPersistent, 1.0f);
 	DrawDebugLine(GetWorld(), BoxLocation, BottomLeft, DebugLineColor, IsPersistent, 1.0f);
 }
+
+void AProximitySensor::StartCooldown()
+{
+	IsCooldownActive = true;
+	
+	if (const UWorld* World = GetWorld())
+	{
+		bool BroadcastDelegate {true};
+
+		if (World->GetTimerManager().TimerExists(CooldownTimerHandle))
+		{
+			World->GetTimerManager().ClearTimer(CooldownTimerHandle);
+			BroadcastDelegate = false;
+		}
+
+		World->GetTimerManager().SetTimer(CooldownTimerHandle, this, &AProximitySensor::HandleCooldownFinished, CooldownTime, false);
+		
+		if (BroadcastDelegate)
+		{
+			OnCooldownStateChanged.Broadcast(true);
+		}
+	}
+}
+
+void AProximitySensor::HandleCooldownFinished()
+{
+	IsCooldownActive = false;
+
+	OnCooldownStateChanged.Broadcast(false);
+}
+
 void AProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);

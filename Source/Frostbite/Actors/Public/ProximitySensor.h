@@ -21,6 +21,7 @@ enum class EBProximitySensorIgnoreParameter : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetectedDelegate, const AActor*, Actor, const float, Distance);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActorLostDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownStateChanged, const bool, NewState);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Proximity Sensor"))
 class FROSTBITE_API AProximitySensor : public AActor
@@ -38,6 +39,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Actor Lost"))
 	FOnActorLostDelegate OnActorLost;
 
+	/** The delegate that is broadcasted when the sensor's cooldown state is changed.*/
+	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Cooldown State Changed"))
+	FOnCooldownStateChanged OnCooldownStateChanged;
+
 protected:
 	/** The scene root component for this actor. */
 	UPROPERTY()
@@ -51,6 +56,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetPollInterval, Category = "Proximity Sensor", Meta = (DisplayName = "Poll Interval",
 		Units = "Seconds"))
 	float PollInterval {0.25f};
+
+	/** If enabled, the sensor will have a cooldown interval after being able to detect an actor again. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Cooldown", Meta = (DisplayName = "Cooldown", InlineEditConditionToggle))
+	bool EnableCooldown {false};
+
+	/** The cooldown time before the sensor is able to detect actors again. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Cooldown", Meta = (DisplayName = "Cooldown",
+		Units = "Seconds", EditCondition = "EnableCooldown"))
+	float CooldownTime {3.0f};
+
+	/** If true, the sensor is currently in cooldown and cannot detect actor. */
+	UPROPERTY(BlueprintReadOnly, Category = "Proximity Sensor|Cooldown", Meta = (DisplayName = "Is Cooldown Active"))
+	bool IsCooldownActive {false};
 	
 	/** The length of the sensor's detection area.  */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Length", Units = "cm"))	
@@ -63,7 +81,7 @@ protected:
 	/** The height of the sensor's detection area. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Proximity Sensor|Detection Area", Meta = (DisplayName = "Height", Units = "cm"))
 	int32 DetectionBoxHeighth {400};
-
+	
 	/** The ignore parameters for the sensor. */
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly, Category = "Proximity Sensor|Ignore Parameters", Meta = (DisplayName = "Ignore Parameters"))
 	TArray<EBProximitySensorIgnoreParameter> IgnoreParameters;
@@ -91,6 +109,9 @@ private:
 	UPROPERTY()
 	FTimerHandle PollTimerHandle;
 
+	UPROPERTY()
+	FTimerHandle CooldownTimerHandle;
+
 public:	
 	AProximitySensor();
 
@@ -111,6 +132,10 @@ protected:
 	UFUNCTION()
 	bool IsActorOccluded(const AActor* Actor) const;
 
+	/** Starts the cooldown. */
+	UFUNCTION()
+	void StartCooldown();
+
 private:
 	/** Calculates the cone angle based on the box extends. */
 	UFUNCTION()
@@ -119,6 +144,10 @@ private:
 	/** Draws debug visualisation for the sensor. */
 	UFUNCTION()
 	void VisualizeCone(const bool IsPersistent) const;
+	
+	/** Called when the cooldown is finished. */
+	UFUNCTION()
+	void HandleCooldownFinished();
 
 public:
 	/** Returns if there currently is a pawn inside the sensor's range. */
