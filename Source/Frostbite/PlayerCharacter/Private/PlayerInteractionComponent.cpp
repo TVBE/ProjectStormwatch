@@ -101,6 +101,20 @@ AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 	/** Break off the execution and return a nullptr if the camera trace did not yield a valid blocking hit. */
 	if (!CameraTraceHitResult.IsValidBlockingHit()) { return nullptr; }
 
+	/** If the object the camera is looking at directly responds to the interactable collision channel, return that actor. */
+	if (AActor* HitActor = CameraTraceHitResult.GetActor(); HitActor &&
+		HitActor->GetRootComponent()->GetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1) == ECollisionResponse::ECR_Block)
+	{
+		/** Check if the object is small. Large objects like tables should be ignored. */
+		const FBox BoundingBox {HitActor->GetComponentsBoundingBox(true)};
+		const FVector BoxExtent {BoundingBox.GetExtent()};
+		
+		if (const float BoundingBoxVolume {static_cast<float>(BoxExtent.X * BoxExtent.Y * BoxExtent.Z)}; BoundingBoxVolume < 2000.0f)
+		{
+			return HitActor;
+		}
+	}
+
 	/** Perform a multi sphere sweep for interactable object and get the actor closest to the camera trace hit. */
 	ObjectTraceHitResults.Empty();
 	PerformInteractableObjectTrace(ObjectTraceHitResults, CameraTraceHitResult);
