@@ -19,7 +19,7 @@ enum class EFrostbiteInterfaceType : uint8
 {
 	InteractableObject			UMETA(DisplayName = "Interactable Object Interface"),
 	UsableObject				UMETA(DisplayName = "Usable Object Interface"),
-	GrabbableObject				UMETA(DisplayName = "Grabbalbe Object Interface"),
+	GrabbableObject				UMETA(DisplayName = "Grabbable Object Interface"),
 	DraggableObject				UMETA(DisplayName = "Draggable Object Interface"),
 	InventoryObject				UMETA(DisplayName = "Inventory Object Interface"),
 	PowerConsumer				UMETA(DisplayName = "Power Consumer Interface"),

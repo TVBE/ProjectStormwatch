@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractableObjectInterface.h"
 #include "TriggerableObjectInterface.h"
 #include "UsableObjectInterface.h"
 #include "GameFramework/Actor.h"
@@ -116,7 +117,7 @@ struct FLinkedButton
 
 /** Base class for button actors. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Button"))
-class APressableButton : public AActor, public IUsableObject
+class APressableButton : public AActor, public IInteractableObject, public IUsableObject
 {
 	GENERATED_BODY()
 
@@ -213,6 +214,8 @@ private:
 
 public:	
 	APressableButton();
+
+	FORCEINLINE FVector GetInteractionWidgetLocation_Implementation() const override { return GetActorLocation(); }
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;

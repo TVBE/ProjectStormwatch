@@ -393,10 +393,9 @@ void APlayerCharacterController::HandleCrouchActionPressed()
 
 void APlayerCharacterController::HandleCrouchActionReleased()
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!CanProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
 	IsCrouchPending = false;
 	
-
 	if (PlayerCharacter->bIsCrouched)
 	{
 		PlayerCharacter->UnCrouch(false);

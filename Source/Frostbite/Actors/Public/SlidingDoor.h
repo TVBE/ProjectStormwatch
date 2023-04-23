@@ -47,12 +47,12 @@ protected:
 	EDoorState DoorState;
 	
 	/** If true, the door will auto close after a given time when opened. */
-	UPROPERTY(BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close (Not Available)")) // TODO: Implement this.
 	bool IsAutoCloseEnabled {false};
 
 	/** The time required for the door to close automatically after the last trigger. */
-	UPROPERTY(BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close Delay",
-		Units = "Seconds", ClampMin = "0"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close Delay (Not Available)",
+		Units = "Seconds", ClampMin = "0")) // TODO: Implement this.
 	float AutoCloseDelay {3.0f};
 
 	/** If true, the door will open if a pawn enters it's safety zone while the door is closing. */

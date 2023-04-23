@@ -1,5 +1,5 @@
 // Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne & Nino Saglia
+// Written by Tim Verberne
 // This source code is part of the project Frostbite
 
 #pragma once
@@ -81,9 +81,6 @@ public:
 	/** Sets whether the character movement component is sprinting or not. */
 	UFUNCTION(Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (Displayname = "Set Is Sprinting "))
 	void SetIsSprinting(const bool Value, const APlayerController* Controller);
-
-	virtual void Crouch(bool bClientSimulation) override;
-	virtual void UnCrouch(bool bClientSimulation) override;
 
 protected:
 	virtual void BeginPlay() override;
