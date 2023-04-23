@@ -20,6 +20,7 @@ enum class EBProximitySensorIgnoreParameter : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorDetectedDelegate, const AActor*, Actor, const float, Distance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActorLostDelegate);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Proximity Sensor"))
 class FROSTBITE_API AProximitySensor : public AActor
@@ -32,6 +33,10 @@ public:
 	/** The delegate that is broadcasted when an actor is inside the sensor's range during a poll.*/
 	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Actor Detected"))
 	FOnActorDetectedDelegate OnActorDetected;
+
+	/** The delegate that is broadcasted when the sensor detects no more actors.*/
+	UPROPERTY(BlueprintAssignable, Category = "Proximity Sensor", Meta = (DisplayName = "On Actor Lost"))
+	FOnActorLostDelegate OnActorLost;
 
 protected:
 	/** The scene root component for this actor. */

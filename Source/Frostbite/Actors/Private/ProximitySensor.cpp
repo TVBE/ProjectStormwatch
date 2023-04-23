@@ -116,6 +116,7 @@ void AProximitySensor::Poll()
 			}
 		}
 	}
+	
 
 	if (OverlappingActors.IsEmpty()) { return; }
 
@@ -139,6 +140,11 @@ void AProximitySensor::Poll()
 	{
 		IsActorDetected = true;
 		OnActorDetected.Broadcast(NearestActor, NearestPawnDistance);
+	}
+	else if (IsActorDetected)
+	{
+		IsActorDetected = false;
+		OnActorLost.Broadcast();
 	}
 }
 

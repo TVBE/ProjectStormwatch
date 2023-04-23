@@ -60,6 +60,11 @@ void AMotionSensor::Poll()
 		IsActorDetected = true;
 		OnActorDetected.Broadcast(NearestActor, NearestPawnDistance);
 	}
+	else if (IsActorDetected)
+	{
+		IsActorDetected = false;
+		OnActorLost.Broadcast();
+	}
 }
 
 bool AMotionSensor::IsActorMoving(const AActor* Actor) const
