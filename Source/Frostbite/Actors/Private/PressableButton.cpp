@@ -274,6 +274,10 @@ void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors
 
 void APressableButton::EventOnCollisionTrigger_Implementation()
 {
+	if (!IsPressed && !IsCooldownActive)
+	{
+		EventOnPress(true, true);
+	}
 }
 
 void APressableButton::EventOnPowerStateChanged_Implementation(bool NewState)
