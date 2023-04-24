@@ -42,7 +42,7 @@ public class Reacoustic : ModuleRules
 				"SlateCore",
 				"InputCore", 
 				"PhysicsCore",
-				"unrealEd"
+				"unrealEd", "AudioSynesthesia"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

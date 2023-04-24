@@ -19,6 +19,7 @@ private:
 	/** Array of pointers to all currently active ReacousticComponents. */
 	TArray<class UReacousticComponent*> ReacousticComponents;
 
+
 public:
 	/** The Reacoustic SoundData Data Asset. */
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data array Asset"))
@@ -28,6 +29,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
 
+	/** The function to generate the NRT Assets used to make the runtime data.*/
+	UFUNCTION(Category = "ReacousticSubsystem")
+	void GenerateNRTAssets();
+	
+	/** Generates data that is needed to quickly find the right impulse during runtime.*/
+
+	UFUNCTION(Category = "ReacousticSubsystem")
+	void GenerateRuntimeData();
 	
 	
 public:

@@ -9,6 +9,15 @@
 #include "ReacousticDataTypes.h"
 
 
+
+
+/** ----- Editortime ----- */
+
+
+
+
+/** ----- Runtime ----- */
+
 void UReacousticSubsystem::PostInitProperties()
 {
 	if(!ReacousticSoundDataAsset || !UReacousticSoundDataRefMap)

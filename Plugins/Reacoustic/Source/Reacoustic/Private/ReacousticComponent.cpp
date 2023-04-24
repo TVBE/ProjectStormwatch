@@ -113,15 +113,17 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		LatestTime = FPlatformTime::Seconds();
 		LatestForwardVector = this->GetOwner()->GetActorForwardVector();
 		
-		if(DeltaLocationDistance > 0.001 && DeltaHitTime > 0.01 && DeltaForwardVector >0.05)
+		if(DeltaLocationDistance > 0.001 && DeltaHitTime > 0.001 && DeltaForwardVector >0.005)
 		{
 			OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		}
 	}
-	
-
-
 }
+
+void UReacousticComponent::ManualHit(float Strength)
+{
+}
+
 
 void UReacousticComponent::OnComponentHit_Implementation(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {

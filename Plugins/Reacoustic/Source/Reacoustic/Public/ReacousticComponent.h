@@ -53,6 +53,10 @@ public:
 	UFUNCTION()
 	void HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	
+	UFUNCTION(BlueprintCallable, Category = Default, Meta = (DisplayName = "Call this to trigger a manual hit"))
+	void ManualHit(float HitStrength);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
