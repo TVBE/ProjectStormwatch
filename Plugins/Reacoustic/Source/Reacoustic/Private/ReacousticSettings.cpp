@@ -17,15 +17,6 @@ UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer&
 void UReacousticProjectSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
-	
-	//CanGenerateNRTAssets = true;
-	//CanGenerateRuntimeData = true;
-	
-}
-
-void UReacousticProjectSettings::GenerateRuntimeData()
-{
-	
 }
 
 #endif

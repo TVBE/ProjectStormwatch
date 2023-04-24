@@ -13,6 +13,15 @@
 
 /** ----- Editortime ----- */
 
+void UReacousticSubsystem::GenerateNRTAssets()
+	{
+		
+	}
+
+void UReacousticSubsystem::GenerateRuntimeData()
+	{
+		
+	}
 
 
 
