@@ -51,7 +51,7 @@ void UReacousticComponent::BeginPlay()
 					if (StaticMeshComponent->IsSimulatingPhysics() && StaticMeshComponent->BodyInstance.bNotifyRigidBodyCollision)
 					{
 						MeshComponent = StaticMeshComponent;
-						StaticMeshComponent->SetGenerateOverlapEvents(true);
+						// StaticMeshComponent->SetGenerateOverlapEvents(true);
 						break;
 					}
 				}

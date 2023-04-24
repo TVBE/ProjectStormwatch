@@ -33,6 +33,7 @@ void UMeshInteractionComponent::OnRegister()
 		MeshComponent->PutRigidBodyToSleep();
 		MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
 		MeshComponent->SetNotifyRigidBodyCollision(true);
+		MeshComponent->SetGenerateOverlapEvents(true);
 
 		constexpr float MinBoundingBoxVolume {100.0f};
 		constexpr float MinMass {2.0f};
