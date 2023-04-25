@@ -1,17 +1,17 @@
-// // // Copyright (c) 2022-present Barrelhouse // Written by Tim Peeters // This source code is part of the project Frostbite
+//Copyright (c) 2022-present Barrelhouse // Written by Tim Peeters // This source code is part of the project Frostbite
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "RoomVolume.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "RoomEventSystemFunctionLibrary.generated.h"
+#include "HeatmapFunctionLibrary.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class FROSTBITE_API URoomEventSystemFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(ClassGroup = "Heatmap")
+class FROSTBITE_API UHeatmapFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

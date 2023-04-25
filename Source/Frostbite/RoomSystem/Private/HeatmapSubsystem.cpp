@@ -3,23 +3,28 @@
 // This source code is part of the project Frostbite
 
 
-#include "RoomVolumeSubsystem.h"
+#include "HeatmapSubsystem.h"
 
 #include "Animation/AnimInstanceProxy.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
-void URoomVolumeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UHeatmapSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	//Set Decay Timer
+	GetGameInstance()->GetTimerManager().SetTimer(RoomDecayTimer, this, &UHeatmapSubsystem::DecayHeatmapValues, HeatDecayRate, true, -1);
+
+	/*---------------Register Heatmap Console Commands-----------------*/
+	//Don't forget to unregister in deinit!!!
 	PrintRoomVolumesCmd = IConsoleManager::Get().RegisterConsoleCommand(TEXT("PrintRegisteredRoomVolumes"),
 	                                                                    TEXT(
 		                                                                    "Prints all room volumes in the current level, "
 		                                                                    "which are registered to the RoomVolumeSubsystem"),
 	                                                                    FConsoleCommandDelegate::CreateUObject(
 		                                                                    this,
-		                                                                    &URoomVolumeSubsystem::Exec_PrintRegisteredRoomVolumes),
+		                                                                    &UHeatmapSubsystem::Exec_PrintRegisteredRoomVolumes),
 	                                                                    ECVF_Default);
 
 	ShowRoomVolumeHeatCmd = IConsoleManager::Get().RegisterConsoleCommand(TEXT("ShowRoomVolumeHeat"),
@@ -27,18 +32,22 @@ void URoomVolumeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		                                                                      "Shows heat for all RoomVolumes, by drawing debug boxes."),
 	                                                                      FConsoleCommandDelegate::CreateUObject(
 		                                                                      this,
-		                                                                      &URoomVolumeSubsystem::Exec_ShowRoomVolumesHeatValue),
+		                                                                      &UHeatmapSubsystem::Exec_ShowHeatValue),
 	                                                                      ECVF_Default);
+	/*-----------------------------------------------------------------*/
 }
 
-void URoomVolumeSubsystem::Deinitialize()
+void UHeatmapSubsystem::Deinitialize()
 {
+	GetGameInstance()->GetTimerManager().ClearTimer(RoomDecayTimer);
+
+	//Unregister Heatmap Console Commands
 	IConsoleManager::Get().UnregisterConsoleObject(PrintRoomVolumesCmd);
 	IConsoleManager::Get().UnregisterConsoleObject(ShowRoomVolumeHeatCmd);
 	Super::Deinitialize();
 }
 
-void URoomVolumeSubsystem::TriggerRoomEvent(FRoomHeatEvent HeatEvent, TArray<AActor*> ObjectsToIgnore)
+void UHeatmapSubsystem::TriggerHeatmapEvent(FRoomHeatEvent HeatEvent, TArray<AActor*> ObjectsToIgnore)
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Visibility));
@@ -46,7 +55,7 @@ void URoomVolumeSubsystem::TriggerRoomEvent(FRoomHeatEvent HeatEvent, TArray<AAc
 	TArray<FHitResult> HitResults;
 	
 	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), HeatEvent.EventLocation, HeatEvent.EventLocation, HeatEvent.EventRange, ObjectTypesArray, false, ObjectsToIgnore,
-		EDrawDebugTrace::ForDuration, HitResults, true, FLinearColor::Green, FLinearColor::Red, 5.0f);
+		EDrawDebugTrace::None, HitResults, true, FLinearColor::Green, FLinearColor::Red, 5.0f);
 
 	for (FHitResult HitObject : HitResults)
 	{
@@ -55,13 +64,11 @@ void URoomVolumeSubsystem::TriggerRoomEvent(FRoomHeatEvent HeatEvent, TArray<AAc
 		/**Temp calculation for falloff*/
 		float HeatToAdd = HeatEvent.EventHeatValue * (1 - ((HeatEvent.EventLocation - HitObject.GetActor()->GetActorLocation()).Length() / HeatEvent.EventRange));
 		
-		if(HitRoom){HitRoom->AddRoomHeat(HeatToAdd);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,
-			FString::SanitizeFloat(HeatToAdd, 0));}
+		if(HitRoom){HitRoom->AddRoomHeat(HeatToAdd);}
 	}
 }
 
-void URoomVolumeSubsystem::Exec_PrintRegisteredRoomVolumes()
+void UHeatmapSubsystem::Exec_PrintRegisteredRoomVolumes()
 {
 	if (RoomVolumes.Num() > 0 && GEngine)
 	{
@@ -76,25 +83,25 @@ void URoomVolumeSubsystem::Exec_PrintRegisteredRoomVolumes()
 	}
 }
 
-void URoomVolumeSubsystem::Exec_ShowRoomVolumesHeatValue()
+void UHeatmapSubsystem::Exec_ShowHeatValue()
 {
-	if (GetGameInstance()->GetTimerManager().IsTimerActive(RoomVolumeDebugTimer))
+	if (GetGameInstance()->GetTimerManager().IsTimerActive(HeatmapDebugTimer))
 	{
-		GetGameInstance()->GetTimerManager().PauseTimer(RoomVolumeDebugTimer);
+		GetGameInstance()->GetTimerManager().PauseTimer(HeatmapDebugTimer);
 	}
 	else
 	{
-		if (!GetGameInstance()->GetTimerManager().TimerExists(RoomVolumeDebugTimer))
+		if (!GetGameInstance()->GetTimerManager().TimerExists(HeatmapDebugTimer))
 		{
-			GetGameInstance()->GetTimerManager().SetTimer(RoomVolumeDebugTimer, this,
-			                                              &URoomVolumeSubsystem::DrawRoomVolumeDebugBox,
+			GetGameInstance()->GetTimerManager().SetTimer(HeatmapDebugTimer, this,
+			                                              &UHeatmapSubsystem::DrawRoomVolumeDebugBox,
 			                                              0.1f, true, 0.1f);
 		}
-		GetGameInstance()->GetTimerManager().UnPauseTimer(RoomVolumeDebugTimer);
+		GetGameInstance()->GetTimerManager().UnPauseTimer(HeatmapDebugTimer);
 	}
 }
 
-void URoomVolumeSubsystem::DrawRoomVolumeDebugBox()
+void UHeatmapSubsystem::DrawRoomVolumeDebugBox()
 {
 	if (RoomVolumes.Num() > 0)
 	{
@@ -109,10 +116,20 @@ void URoomVolumeSubsystem::DrawRoomVolumeDebugBox()
 			FColor HeatColor = FColor(100 + HeatValueScaled, 125 - HeatValueScaled, 0, 100);
 			
 			DrawDebugSolidBox(GetWorld(), RoomOrigin, RoomBoundsExtent * 0.99f, HeatColor, false, 0.1f, 0);
-			
+		
 			DrawDebugString(GetWorld(), FVector(RoomOrigin.X, RoomOrigin.Y, RoomOrigin.Z - RoomBoundsExtent.Z)
 				, FString::FromInt(RoomVolumes[i]->GetHeatValue()), NULL,
 				FColor::White, 0.1f, false, 1);
 		}
+	}
+}
+
+void UHeatmapSubsystem::DecayHeatmapValues()
+{
+	if(RoomVolumes.IsEmpty()) return;
+	
+	for(auto Room : RoomVolumes)
+	{
+		if(Room->GetHeatValue() > 0.0f){Room->DeductRoomHeat(1.0f);}
 	}
 }

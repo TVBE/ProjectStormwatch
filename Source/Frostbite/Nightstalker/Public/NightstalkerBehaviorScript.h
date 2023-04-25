@@ -21,11 +21,11 @@ class UNightstalkerBehaviorScript : public UActorComponent
 
 public:
 	/** The delegate that is called when the script is activated. */
-	UPROPERTY(BlueprintAssignable, Category = "BehaviorScrip|Delegates", Meta = (DisplayName = "On Script Activation"))
+	UPROPERTY(BlueprintAssignable, Category = "BehaviorScript|Delegates", Meta = (DisplayName = "On Script Activation"))
 	FOnActivationDelegate OnActivation;
 
 	/** The delegate that is called when the script is deactivated. */
-	UPROPERTY(BlueprintAssignable, Category = "BehaviorScrip|Delegates", Meta = (DisplayName = "On Script Deactivation"))
+	UPROPERTY(BlueprintAssignable, Category = "BehaviorScript|Delegates", Meta = (DisplayName = "On Script Deactivation"))
 	FOnDeactivationDelegate OnDeactivation;
 	
 private:

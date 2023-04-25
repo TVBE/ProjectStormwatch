@@ -5,24 +5,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIController.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
 #include "Nightstalker.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = (Nightstalker))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Nightstalker))
 class ANightstalker : public APawn
 {
 	GENERATED_BODY()
-
+	
 public:
-	// Sets default values for this pawn's properties
 	ANightstalker();
-
 protected:
-	// Called when the game starts or when spawned
+	/** The CapsuleComponent being used for collision.*/
+	UPROPERTY(Category="Collision", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+	
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input

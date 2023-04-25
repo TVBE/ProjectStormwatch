@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "NightstalkerBehaviorScript.h"
 #include "NightstalkerController.generated.h"
 
 struct FTimerHandle;
@@ -22,6 +23,14 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Nightstalker))
 class ANightstalkerController : public AAIController
 {
 	GENERATED_BODY()
+	
+public:
+	UPROPERTY(BlueprintReadWrite, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "RoamMode_BehaviorScripts"))
+	TArray<UNightstalkerBehaviorScript*> RoamModeBehaviorScripts;
+	UPROPERTY(BlueprintReadWrite, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "StalkMode_BehaviorScripts"))
+	TArray<UNightstalkerBehaviorScript*> StalkModeBehaviorScripts;
+	UPROPERTY(BlueprintReadWrite, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "AmbushMode_BehaviorScripts"))
+	TArray<UNightstalkerBehaviorScript*> AmbushModeBehaviorScripts;
 	
 private:
 	/** The current behavior mode of the Nightstalker.*/

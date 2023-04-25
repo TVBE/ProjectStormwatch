@@ -10,6 +10,8 @@ ANightstalker::ANightstalker()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"), false);
+	RootComponent = CapsuleComponent;
 }
 
 // Called when the game starts or when spawned
