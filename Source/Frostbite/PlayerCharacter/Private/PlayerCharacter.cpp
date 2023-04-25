@@ -226,7 +226,8 @@ void APlayerCharacter::StartSprinting()
 {
 	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting() && Configuration)
 	{
-		TargetSpeed = Configuration->SprintSpeed;
+		// TargetSpeed = Configuration->SprintSpeed;
+		PlayerCharacterMovement->MaxWalkSpeed = Configuration->SprintSpeed;
 		PlayerCharacterMovement->SetIsSprinting(true);
 	}
 }
@@ -235,7 +236,8 @@ void APlayerCharacter::StopSprinting()
 {
 	if (PlayerCharacterMovement && PlayerCharacterMovement->GetIsSprinting())
 	{
-		TargetSpeed = Configuration->WalkSpeed;
+		// TargetSpeed = Configuration->WalkSpeed;
+		PlayerCharacterMovement->MaxWalkSpeed = Configuration->WalkSpeed;
 		PlayerCharacterMovement->SetIsSprinting(false);
 	}
 }

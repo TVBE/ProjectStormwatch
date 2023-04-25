@@ -312,7 +312,7 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
 {
-	if (CharacterConfiguration->IsRotationSmoothingEnabled)
+	if (CharacterConfiguration && CharacterConfiguration->IsRotationSmoothingEnabled)
 	{
 		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
 	}

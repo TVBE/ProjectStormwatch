@@ -80,7 +80,7 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 #if WITH_REACOUSTIC
 if (ImpulseStrength > 1)
 {
-	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()));)
+	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass())))
 	{
 		ReacousticComponent->TriggerManualHit(0.5f);
 	}
