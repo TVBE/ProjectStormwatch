@@ -49,6 +49,11 @@ struct FReacousticSoundData
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
 	USoundConcurrency* Concurrency{nullptr};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
+	float SoundSenseVolume{10.0f};
+
+	
+
 	FReacousticSoundData(){}
 	
 };
