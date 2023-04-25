@@ -6,32 +6,20 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "PlayerSubsystem.generated.h"
+#include "FrostbiteWorldSubystem.generated.h"
 
 class APlayerCharacter;
 class APlayerCharacterController;
 
-DECLARE_LOG_CATEGORY_CLASS(LogPlayerSubsystem, Log, All)
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, Value);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, Value);
-
 /** World Subsystem that provides access to the Player Character and its subobjects.
  *	Provides high level functions for changing the PlayerCharacter's behavior. */
-UCLASS(ClassGroup = "PlayerCharacter", Meta = (DisplayName = "Player Subsystem"))
-class FROSTBITE_API UPlayerSubsystem : public UWorldSubsystem
+UCLASS(ClassGroup = "Core", Meta = (DisplayName = "Frostbite World Subsystem"))
+class FROSTBITE_API UFrostbiteWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
-public:
-	/** Delegate for when the player controller should start or stop processing player movement input. */
-	UPROPERTY(BlueprintAssignable, Category = "Player|Input", Meta = (DisplayName = "On Movement Input Lock Changed"))
-	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
+	DECLARE_LOG_CATEGORY_CLASS(LogFrostbiteWorldSubsystem, Log, All)
 
-	/** Delegate for when the player controller should start or stop processing player rotation input. */
-	UPROPERTY(BlueprintAssignable, Category = "Player|Input", Meta = (DisplayName = "On Rotation Input Lock Changed"))
-	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
-	
 private:
 	/** The Player Character in the world. */
 	UPROPERTY()
@@ -73,32 +61,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Player", Meta = (DisplayName = "Unregister Player Controller"))
 	void UnregisterPlayerController(APlayerCharacterController* Controller);
-
-	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 *	@Value Whether a lock should be added or removed.
-	 *	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Player|Input", Meta = (DisplayName = "Set Player Movement Input Lock"))
-	bool SetPlayerMovementInputLock(const bool Value);
-
-	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	*	@Value Whether a lock should be added or removed.
-	*	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Player|Input", Meta = (DisplayName = "Set Player Movement Rotation Lock"))
-	bool SetPlayerRotationInputLock(const bool Value);
-	
-	/** Fades in the screen for the player from black by a specified amount.
-	 *	@Duration The fade-in duration.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Player", Meta = (DisplayName = "Fade From Black"))
-	void FadePlayerCameraFromBlack(const float Duration);
 	
 	/** Returns the Player Character. */
 	UFUNCTION(BlueprintPure, Category = "Player", Meta = (DisplayName = "Get Player Character"))
-	FORCEINLINE APlayerCharacter* GetPlayerCharacter() const {return PlayerCharacter; }
+	FORCEINLINE APlayerCharacter* GetPlayerCharacter() const { return PlayerCharacter; }
 
 	/** Returns the Player Controller. */
 	UFUNCTION(BlueprintPure, Category = "Player", Meta = (DisplayName = "Get Player Controller"))
-	FORCEINLINE APlayerCharacterController* GetPlayerController() const {return PlayerController; }
+	FORCEINLINE APlayerCharacterController* GetPlayerController() const { return PlayerController; }
 };

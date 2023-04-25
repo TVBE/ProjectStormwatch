@@ -5,6 +5,7 @@
 
 #include "DoorInterface.h"
 #include "DraggableObjectInterface.h"
+#include "FrostbiteWorldSubystem.h"
 #include "GrabbableObjectInterface.h"
 #include "InteractableObjectInterface.h"
 #include "InventoryObjectInterface.h"
@@ -84,5 +85,31 @@ UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(
 	}
 
 	return InterfaceObject;
+}
+
+APlayerCharacter* UFrostbiteFunctionLibrary::GetFrostbitePlayerCharacter(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject) { return nullptr; }
+	if (const UWorld* World {WorldContextObject->GetWorld()})
+	{
+		if (const UFrostbiteWorldSubsystem* Subsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
+		{
+			return Subsystem->GetPlayerCharacter();
+		}
+	}
+	return nullptr;
+}
+
+APlayerCharacterController* UFrostbiteFunctionLibrary::GetFrostbitePlayerCharacterController(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject) { return nullptr; }
+	if (const UWorld* World {WorldContextObject->GetWorld()})
+	{
+		if (const UFrostbiteWorldSubsystem* Subsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
+		{
+			return Subsystem->GetPlayerController();
+		}
+	}
+	return nullptr;
 }
 

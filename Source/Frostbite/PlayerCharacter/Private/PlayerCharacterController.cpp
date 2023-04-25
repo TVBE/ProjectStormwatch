@@ -8,7 +8,7 @@
 #include "PlayerFlashlightComponent.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
-#include "PlayerSubsystem.h"
+#include "FrostbiteWorldSubystem.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
@@ -58,7 +58,7 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	/** Registers the controller to the player character subsystem. */
 	if (const UWorld* World {GetWorld()})
 	{
-		if (UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UFrostbiteWorldSubsystem* PlayerSubsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerController(this);
 		}
@@ -108,178 +108,6 @@ void APlayerCharacterController::SetupInputComponent()
 
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &APlayerCharacterController::HandleInventoryActionPressed);
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &APlayerCharacterController::HandleInventoryActionReleased);
-}
-
-void APlayerCharacterController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (PlayerCharacter)
-	{
-		if (const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
-		{
-			UpdateCurrentActions(CharacterMovement);
-			UpdatePendingActions(CharacterMovement);
-		}
-	}
-	UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
-}
-
-void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
-{
-	if (CharacterConfiguration->IsRotationSmoothingEnabled)
-	{
-		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
-	}
-	else
-	{
-		PlayerControlRotation = Rotation;
-	}
-}
-
-void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)
-{
-	if (!CanProcessMovementInput) {return;}
-	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
-	if (CharacterMovement->GetIsSprinting() && !CanCharacterSprint())
-	{
-		StopSprinting();
-	}
-	/** If the character is sprinting but sprinting is no longer pending, stop sprinting. */
-	if (CharacterMovement->GetIsSprinting() && !IsSprintPending)
-	{
-		StopSprinting();
-	}
-}
-
-void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement)
-{
-	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
-	if (IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
-	{
-		if (!PlayerCharacter->bIsCrouched)
-		{
-			StartSprinting();
-		}
-		/** If the character is crouching, stand up before sprinting. */
-		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
-		{
-			IsCrouchPending = false;
-			PlayerCharacter->UnCrouch(false);
-			StartSprinting();
-		}
-	}
-	/** If crouch is pending and the character is not crouching, start crouching. */
-	if (IsCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
-	{
-		if (CharacterMovement->GetIsSprinting())
-		{
-			StopSprinting();
-			IsSprintPending = false;
-		}
-		PlayerCharacter->Crouch(false);
-	}
-}
-
-bool APlayerCharacterController::GetHasMovementInput() const
-{
-	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
-	{
-		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
-	}
-	return 0.0;
-}
-
-float APlayerCharacterController::GetHorizontalRotationInput() const
-{
-	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
-	{
-		return InputComponent->GetAxisValue("Horizontal Rotation");
-	}
-	return 0.0;
-}
-
-void APlayerCharacterController::SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value)
-{
-	if (Subsystem)
-	{
-		CanProcessMovementInput = Value;
-	}
-}
-
-void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value)
-{
-	if (Subsystem)
-	{
-		CanProcessRotationInput = Value;
-	}
-}
-
-bool APlayerCharacterController::CanCharacterSprint() const
-{
-	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetCharacter()->bIsCrouched
-			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
-}
-
-bool APlayerCharacterController::CanInteract() const
-{
-	return false; // Temp
-}
-
-void APlayerCharacterController::StartSprinting()
-{
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->SprintSpeed;
-	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
-	{
-		PlayerCharacterMovement->SetIsSprinting(true, this);	
-	}
-}
-
-void APlayerCharacterController::StopSprinting()
-{
-	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = CharacterConfiguration->WalkSpeed;
-	if (UPlayerCharacterMovementComponent* PlayerCharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()})
-	{
-		PlayerCharacterMovement->SetIsSprinting(false, this);	
-	}
-}
-
-FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
-{
-	constexpr float TraceLength {250.f};
-	const FVector Start {this->PlayerCameraManager->GetCameraLocation()};
-	const FVector End {Start + this->PlayerCameraManager->GetActorForwardVector() * TraceLength};
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
-	{
-		return HitResult;
-	}
-	return FHitResult();
-}
-
-void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (const UWorld* World {GetWorld()})
-	{
-		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
-		{
-			Subsystem->UnregisterPlayerController(this);
-		}
-	}
-	Super::EndPlay(EndPlayReason);
-}
-
-UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteractionComponent()
-{
-	if (!InteractionComponent)
-	{
-		if(GetPawn())
-		{
-			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
-		}
-	}
-	return InteractionComponent;
 }
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
@@ -354,7 +182,7 @@ void APlayerCharacterController::HandleSprintActionPressed()
 	IsSprintPending = true;
 	if (CanCharacterSprint())
 	{
-		StartSprinting();
+		PlayerCharacter->StartSprinting();
 	}
 }
 
@@ -362,16 +190,12 @@ void APlayerCharacterController::HandleSprintActionReleased()
 {
 	if (!CanProcessMovementInput) { return; }
 	IsSprintPending = false;
-	if (PlayerCharacter->GetPlayerCharacterMovement() && PlayerCharacter->GetPlayerCharacterMovement()->GetIsSprinting())
-	{
-		StopSprinting();
-	}
+	PlayerCharacter->StopSprinting();
 }
 
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	if (!CanProcessMovementInput) { return; }
-	
 	
 	if (CharacterConfiguration->EnableCrouchToggle)
 	{
@@ -472,6 +296,174 @@ void APlayerCharacterController::HandleInventoryActionPressed()
 
 void APlayerCharacterController::HandleInventoryActionReleased()
 {
+}
+
+void APlayerCharacterController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (PlayerCharacter)
+	{
+		UpdateCurrentActions();
+		UpdatePendingActions();
+	}
+	UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
+}
+
+void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
+{
+	if (CharacterConfiguration->IsRotationSmoothingEnabled)
+	{
+		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
+	}
+	else
+	{
+		PlayerControlRotation = Rotation;
+	}
+}
+
+void APlayerCharacterController::UpdateCurrentActions()
+{
+	if (!CanProcessMovementInput) {return;}
+	
+	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
+	if (!CanCharacterSprint() || !IsSprintPending)
+	{
+		PlayerCharacter->StopSprinting();
+	}
+}
+
+void APlayerCharacterController::UpdatePendingActions()
+{
+	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
+	if (IsSprintPending && !PlayerCharacter->IsSprinting() && CanCharacterSprint())
+	{
+		if (!PlayerCharacter->bIsCrouched)
+		{
+			PlayerCharacter->StartSprinting();
+		}
+		/** If the character is crouching, stand up before sprinting. */
+		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
+		{
+			IsCrouchPending = false;
+			PlayerCharacter->UnCrouch(false);
+			PlayerCharacter->StartSprinting();
+		}
+	}
+	/** If crouch is pending and the character is not crouching, start crouching. */
+	if (IsCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
+	{
+		if (PlayerCharacter->IsSprinting())
+		{
+			PlayerCharacter->StopSprinting();
+			IsSprintPending = false;
+		}
+		PlayerCharacter->Crouch(false);
+	}
+}
+
+bool APlayerCharacterController::GetHasMovementInput() const
+{
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
+	{
+		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
+	}
+	return 0.0;
+}
+
+float APlayerCharacterController::GetHorizontalRotationInput() const
+{
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
+	{
+		return InputComponent->GetAxisValue("Horizontal Rotation");
+	}
+	return 0.0;
+}
+
+void APlayerCharacterController::SetCanProcessMovementInput(const bool Value)
+{
+		CanProcessMovementInput = Value;
+}
+
+void APlayerCharacterController::SetCanProcessRotationInput(const bool Value)
+{
+		CanProcessRotationInput = Value;
+}
+
+bool APlayerCharacterController::SetPlayerMovementInputLock(const bool Value)
+{
+	MovementInputLockCount += Value ? 1 : -1;
+	const bool CanProcessInput {!MovementInputLockCount};
+	if (GetCanProcessMovementInput() != CanProcessInput)
+	{
+		SetCanProcessMovementInput(CanProcessInput);
+		OnMovementInputLockChanged.Broadcast(CanProcessInput);
+	}
+	return CanProcessInput;
+}
+
+bool APlayerCharacterController::SetPlayerRotationInputLock(const bool Value)
+{
+	RotationInputLockCount += Value ? 1 : -1;
+	const bool CanProcessInput {!RotationInputLockCount};
+	if (GetCanProcessRotationInput() != CanProcessInput)
+	{
+		SetCanProcessRotationInput(CanProcessInput);
+		OnRotationInputLockChanged.Broadcast(CanProcessInput);
+	}
+	return CanProcessInput;
+}
+
+void APlayerCharacterController::FadePlayerCameraFromBlack(const float Duration)
+{
+	if (PlayerCharacter && PlayerCharacter->GetCameraController())
+	{
+		PlayerCharacter->GetCameraController()->FadeFromBlack(Duration);
+	}
+}
+
+bool APlayerCharacterController::CanCharacterSprint() const
+{
+	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetCharacter()->bIsCrouched
+			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
+}
+
+FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
+{
+	constexpr float TraceLength {250.f};
+	const FVector Start {this->PlayerCameraManager->GetCameraLocation()};
+	const FVector End {Start + this->PlayerCameraManager->GetActorForwardVector() * TraceLength};
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
+	{
+		return HitResult;
+	}
+	return FHitResult();
+}
+
+void APlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (UFrostbiteWorldSubsystem* Subsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
+		{
+			Subsystem->UnregisterPlayerController(this);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
+UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteractionComponent()
+{
+	if (!InteractionComponent)
+	{
+		if(GetPawn())
+		{
+			InteractionComponent = Cast<UPlayerInteractionComponent>(GetPawn()->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
+		}
+	}
+	return InteractionComponent;
 }
 
 

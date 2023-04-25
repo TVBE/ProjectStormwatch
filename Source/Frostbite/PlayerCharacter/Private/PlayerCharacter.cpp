@@ -6,8 +6,9 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-#include "PlayerSubsystem.h"
+#include "FrostbiteWorldSubystem.h"
 #include "FrostbiteGameMode.h"
+#include "PlayerBodyCollisionComponent.h"
 #include "PlayerFootCollisionComponent.h"
 
 #include "Camera/CameraComponent.h"
@@ -41,6 +42,13 @@ APlayerCharacter::APlayerCharacter()
 	/** Construct camera controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = true;
+	
+	/** Construct body collision component. */
+	BodyCollision = CreateDefaultSubobject<UPlayerBodyCollisionComponent>(TEXT("Body Collision"));
+	BodyCollision->SetupAttachment(GetMesh());
+	BodyCollision->SetRelativeLocation(FVector(0, 0, 100));
+	BodyCollision->SetCapsuleHalfHeight(72);
+	BodyCollision->SetCapsuleRadius(34);
 
 	/** Construct foot collision components. */
 	LeftFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Left Foot Collision"));
@@ -50,14 +58,9 @@ APlayerCharacter::APlayerCharacter()
 	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
 }
 
-void APlayerCharacter::Crouch(bool bClientSimulation)
+void APlayerCharacter::Jump()
 {
-	Super::Crouch(bClientSimulation);
-}
-
-void APlayerCharacter::UnCrouch(bool bClientSimulation)
-{
-	Super::UnCrouch(bClientSimulation);
+	Super::Jump();
 }
 
 /** Called after the constructor but before the components are initialized. */
@@ -82,7 +85,7 @@ void APlayerCharacter::OnConstruction(const FTransform& Transform)
 	/** Registers this player character to the player character subsystem. */
 	if (const UWorld* World {GetWorld()})
 	{
-		if (UPlayerSubsystem* PlayerSubsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UFrostbiteWorldSubsystem* PlayerSubsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
 		{
 			PlayerSubsystem->RegisterPlayerCharacter(this);
 		}
@@ -118,11 +121,6 @@ void APlayerCharacter::BeginPlay()
 			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
 	}
-
-#if WITH_EDITOR
-		/** Check if all components have been succesfully initialized. */
-		ValidateObject(CameraController, "CameraController");
-#endif
 }
 
 /** Called when the controller is changed. */
@@ -141,6 +139,31 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UpdateYawDelta();
 	UpdateRotation(DeltaTime);
+}
+
+void APlayerCharacter::UpdateMovementSpeed()
+{
+	// Calculate the current speed based on whether we're pushing anything
+	if (!BodyCollision->GetIsPushingObjects())
+	{
+		// We're not pushing anything, use the target speed
+		ScaledSpeed = TargetSpeed;
+	}
+	else
+	{
+		// We're pushing something, adjust the speed based on the total mass of the objects being pushed
+		const float TotalMass = BodyCollision->GetTotalMassOfPushedObjects();
+		if (TotalMass > 0.0f)
+		{
+			// Calculate the scaled speed based on the mass of the objects being pushed
+			ScaledSpeed = TargetSpeed / FMath::Sqrt(TotalMass);
+		}
+		else
+		{
+			// We're pushing something with zero mass, slow down to a stop
+			ScaledSpeed = 0.0f;
+		}
+	}
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -192,16 +215,6 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const
 	return Rotation;
 }
 
-#if WITH_EDITOR
-void APlayerCharacter::ValidateObject(const UObject* Object, const FString ObjectName)
-{
-	if (!Object)
-	{
-		UE_LOG(LogPlayerCharacter, Error, TEXT("%s was not properly initialized during the construction of the PlayerCharacter."), *ObjectName); \
-	}
-}
-#endif
-
 void APlayerCharacter::ValidateConfigurationAssets()
 {
 	/** If the configuration properties are not properly serialized, construct a default instance instead. */
@@ -212,6 +225,32 @@ void APlayerCharacter::ValidateConfigurationAssets()
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
 		}
+	}
+}
+
+void APlayerCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+}
+
+void APlayerCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
+}
+
+void APlayerCharacter::StartSprinting()
+{
+	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting())
+	{
+		PlayerCharacterMovement->SetIsSprinting(true);
+	}
+}
+
+void APlayerCharacter::StopSprinting()
+{
+	if (PlayerCharacterMovement && PlayerCharacterMovement->GetIsSprinting())
+	{
+		PlayerCharacterMovement->SetIsSprinting(false);
 	}
 }
 
@@ -233,10 +272,10 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 
 	if (const UWorld* World {GetWorld()})
 	{
-		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (APlayerCharacterController* PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
 		{
-			Subsystem->SetPlayerMovementInputLock(true);
-			Subsystem->SetPlayerRotationInputLock(true);
+			PlayerController->SetPlayerMovementInputLock(true);
+			PlayerController->SetPlayerRotationInputLock(true);
 		}
 		GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
 	}
@@ -251,10 +290,10 @@ void APlayerCharacter::HandleLandingEnd()
 	{
 		if (const UWorld* World {GetWorld()})
 		{
-			if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+			if (APlayerCharacterController* PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
 			{
-				Subsystem->SetPlayerMovementInputLock(false);
-				Subsystem->SetPlayerRotationInputLock(false);
+				PlayerController->SetPlayerMovementInputLock(false);
+				PlayerController->SetPlayerRotationInputLock(false);
 			}
 		}
 	}
@@ -307,7 +346,7 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (const UWorld* World {GetWorld()})
 	{
-		if (UPlayerSubsystem* Subsystem {World->GetSubsystem<UPlayerSubsystem>()})
+		if (UFrostbiteWorldSubsystem* Subsystem {World->GetSubsystem<UFrostbiteWorldSubsystem>()})
 		{
 			Subsystem->UnregisterPlayerCharacter(this);
 		}

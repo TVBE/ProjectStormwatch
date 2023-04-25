@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "PlayerCharacterController.h"
+#include "PlayerCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -19,6 +20,7 @@ class UPlayerVfxComponent;
 class UPlayerCameraController;
 class UPlayerFlashlightComponent;
 class UPlayerCharacterMovementComponent;
+class UPlayerBodyCollisionComponent;
 class UPlayerFootCollisionComponent;
 class UNiagaraComponent;
 enum class ELeftRight : uint8;
@@ -56,6 +58,10 @@ private:
 	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "Player Character", Meta = (DisplayName = "Player Character Controller"))
 	APlayerCharacterController* PlayerCharacterController;
 
+	/** The body collision component for the player. */
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Body Collision", Meta = (DisplayName = "Body Collision"))
+	UPlayerBodyCollisionComponent* BodyCollision;
+
 	/** The foot collision component for the left foot. */
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Foot Collision", Meta = (DisplayName = "Left Foot Collision"))
 	UPlayerFootCollisionComponent* LeftFootCollision;
@@ -65,6 +71,14 @@ private:
 	UPlayerFootCollisionComponent* RightFootCollision;
 	
 	// VARIABLES
+	/** The target speed of the character. */
+	UPROPERTY(BlueprintGetter = GetTargetSpeed, Category = "Player Character|Locomotion", Meta = (DisplayName = "Target Movement Speed"))
+	float TargetSpeed {0.0f};
+
+	/** The scaled speed of the character. */
+	UPROPERTY(BlueprintGetter = GetScaledSpeed, Category = "Player Character|Locomotion", Meta = (DisplayName = "Scaled Movement Speed"))
+	float ScaledSpeed {0.0f};
+	
 	/** If true, the character is currently turning in place. */
 	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
 	bool IsTurningInPlace {false};
@@ -82,18 +96,30 @@ public:
 	/** Sets default values for this character's properties. */
 	APlayerCharacter();
 
-	virtual void Crouch(bool bClientSimulation) override;
-	virtual void UnCrouch(bool bClientSimulation) override;
-	
 	/** Called every frame. */
 	virtual void Tick(float DeltaTime) override;
-	
+
 	/** Called after the constructor but before BeginPlay. */
 	virtual void PostInitProperties() override;
 
-	/** Ss called after all of the actor's components have been created and initialized, but before the BeginPlay function is called. */
+	/** Is called after all of the actor's components have been created and initialized, but before the BeginPlay function is called. */
 	virtual void PostInitializeComponents() override;
 
+	/** Performs a jump.*/
+	virtual void Jump() override;
+
+	/** Begins crouching. */
+	virtual void Crouch(bool bClientSimulation) override;
+
+	/** Stops crouching. */
+	virtual void UnCrouch(bool bClientSimulation) override;
+
+	/** Begins sprinting. */
+	void StartSprinting();
+
+	/** Stop sprinting. */
+	void StopSprinting();
+	
 	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Get Clearance Above Pawn"))
 	float GetClearanceAbovePawn() const;
@@ -131,6 +157,9 @@ protected:
 	/** Applies the configuration data assets to the character. */
 	void ApplyConfigurationAssets();
 
+	/** Updates the character's movement speed. */
+	void UpdateMovementSpeed();
+
 private:
 	/** Updates the character's yaw delta. */
 	UFUNCTION()
@@ -153,14 +182,6 @@ private:
 	UFUNCTION()
 	void HandleLandingEnd();
 
-#if WITH_EDITOR
-	/** Checks whether an object is properly initialized.
-	 *	@Param Object The object to validate.
-	 *	@Param Objectname The name of the object to be used in the log entry should the object not be properly initialized. 
-	 */
-	static void ValidateObject(const UObject* Object, const FString ObjectName);
-#endif
-
 public:
 	/** Returns the Character configuration. */
 	UFUNCTION(BlueprintGetter, Category = "Player Character|Configuration", Meta = (DisplayName = "Get Character Configuration"))
@@ -181,14 +202,33 @@ public:
 	/** Returns the PlayerCharacterMovementComponent. */
 	UFUNCTION(BlueprintGetter, Category = "Player Character|Components", Meta = (DisplayName = "Player Character Movement Component"))
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const {return PlayerCharacterMovement; }
+
+	/** Returns the target speed of the player character. */
+	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Target Movement Speed"))
+	FORCEINLINE float GetTargetSpeed() const { return TargetSpeed; }
+
+	/** Returns the scaled speed of the player character. */
+	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Scaled Movement Speed"))
+	FORCEINLINE float GetScaledSpeed() const { return ScaledSpeed; }
 	
 	/** Returns if the character is currently turning in place. */
 	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
-	FORCEINLINE bool GetIsTurningInPlace() const {return IsTurningInPlace; }
+	FORCEINLINE bool GetIsTurningInPlace() const { return IsTurningInPlace; }
 
 	/** Returns the character yaw delta between the facing direction of the character and the camera. */
 	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Yaw Delta"))
-	FORCEINLINE float GetYawDelta() const {return YawDelta; }
+	FORCEINLINE float GetYawDelta() const { return YawDelta; }
+
+	/** Returns whether the character is currently sprinting. */
+	UFUNCTION(BlueprintPure, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Sprinting"))
+	FORCEINLINE bool IsSprinting() const
+	{
+		if(PlayerCharacterMovement)
+		{
+			return PlayerCharacterMovement->GetIsSprinting();
+		}
+		return false;
+	}
 };
 
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")

@@ -80,7 +80,7 @@ public:
 
 	/** Sets whether the character movement component is sprinting or not. */
 	UFUNCTION(Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (Displayname = "Set Is Sprinting "))
-	void SetIsSprinting(const bool Value, const APlayerController* Controller);
+	void SetIsSprinting(const bool Value);
 
 protected:
 	virtual void BeginPlay() override;

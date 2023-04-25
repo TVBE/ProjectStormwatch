@@ -63,17 +63,15 @@ EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementTy
 }
 
 /** Called by the player controller. */
-void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value, const APlayerController* Controller)
+void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value)
 {
 	if (!PawnOwner || IsSprinting == Value)
 	{
 		return;
 	}
 	
-	if (Cast<APlayerController>(PawnOwner->GetController()) == Controller)
-	{
-		IsSprinting = Value;
-	}
+	IsSprinting = Value;
+	
 	if (Value)
 	{
 		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintStart);

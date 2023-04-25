@@ -9,7 +9,7 @@
 #include "PlayerCharacterController.generated.h"
 
 class UPlayerInteractionComponent;
-class UPlayerSubsystem;
+class UFrostbiteWorldSubsystem;
 class APlayerCharacter;
 class UPlayerCharacterConfiguration;
 class UPlayerCharacterMovementComponent;
@@ -17,8 +17,12 @@ struct FTimerHandle;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPlayerCharacterController, Log, All)
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, Value);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, Value);
+
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter")
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta =
+	(DisplayName = "Player Character Controller", ShortToolTip = "The controller for the player character."))
 class FROSTBITE_API APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
@@ -28,72 +32,96 @@ public:
 	UPROPERTY()
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
+	/** Delegate for when the player controller should start or stop processing player movement input. */
+	UPROPERTY(BlueprintAssignable, Category = "Controller|Input", Meta = (DisplayName = "On Movement Input Lock Changed"))
+	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
+
+	/** Delegate for when the player controller should start or stop processing player rotation input. */
+	UPROPERTY(BlueprintAssignable, Category = "Controller|Input", Meta = (DisplayName = "On Rotation Input Lock Changed"))
+	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
+
 protected:
 	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Actors", Meta = (DisplayName = "Player Character"))
+	UPROPERTY(BlueprintReadOnly, Category = "Controller|Actors", Meta = (DisplayName = "Player Character"))
 	APlayerCharacter* PlayerCharacter {nullptr};
 
 	/** If true, the player is currently pressing the sprint button. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Intention", Meta = (DisplayName = "Is Sprint Pending"))
+	UPROPERTY(BlueprintReadOnly, Category = "Controller|Intention", Meta = (DisplayName = "Is Sprint Pending"))
 	bool IsSprintPending {false};
 
 	/** If true, the player is currently pressing the crouch button. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerCharacterController|Intention", Meta = (DisplayName = "Is Crouch Pending"))
+	UPROPERTY(BlueprintReadOnly, Category = "Controller|Intention", Meta = (DisplayName = "Is Crouch Pending"))
 	bool IsCrouchPending {false};
  
 private:
 	/** Pointer to the interaction component of the player character. */
 	UPROPERTY()
 	UPlayerInteractionComponent* InteractionComponent;
+
+	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
+	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
+	uint8 MovementInputLockCount {1};
+
+	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
+	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
+	uint8 RotationInputLockCount {1};
 	
 	/** When true, the player can receive user input for movement. */
-	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
+	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "Controller", Meta = (DisplayName = "Can Process Movement Input"))
 	bool CanProcessMovementInput {false};
 
 	/** When true, the player can receive user input for camera rotation. */
-	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
+	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "Controller", Meta = (DisplayName = "Can Process Rotation Input"))
 	bool CanProcessRotationInput {false};
 
 	/** Smoothed control rotation. */
-	UPROPERTY(BlueprintGetter = GetPlayerControlRotation, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
+	UPROPERTY(BlueprintGetter = GetPlayerControlRotation, Category = "Controller", Meta = (DisplayName = "Player Control Rotation"))
 	FRotator PlayerControlRotation;
 
 	/** The interpolation speed of the player control rotation.*/
-	UPROPERTY(EditAnywhere, Category = "PlayerCharacterController|ControlRotation", Meta = (DisplayName = "Interpolation Speed"))
+	UPROPERTY(EditAnywhere, Category = "Controller|Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
 
 public:
 	APlayerCharacterController();
 	
 	/** Returns whether the PlayerController has any movement input or not. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController|Input", Meta = (DisplayName = "Has Any Movement Input"))
+	UFUNCTION(BlueprintPure, Category = "Controller|Input", Meta = (DisplayName = "Has Any Movement Input"))
 	bool GetHasMovementInput() const;
 
 	/** Returns the current horizontal rotation input value from the PlayerController. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController|Input", Meta = (DisplayName = "Get Horizontal Rotation Input"))
+	UFUNCTION(BlueprintPure, Category = "Controller|Input", Meta = (DisplayName = "Get Horizontal Rotation Input"))
 	float GetHorizontalRotationInput() const;
 
 	/** Sets CanProcessMovementInput. This function can only be called by a PlayerSubsystem. */
-	void SetCanProcessMovementInput(const UPlayerSubsystem* Subsystem, const bool Value);
+	void SetCanProcessMovementInput(const bool Value);
 
 	/** Sets CanProcessRotationInput. This function can only be called by a PlayerSubsystem. */
-	void SetCanProcessRotationInput(const UPlayerSubsystem* Subsystem, const bool Value);
+	void SetCanProcessRotationInput(const bool Value);
+
+	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
+	 *	@Value Whether a lock should be added or removed.
+	 *	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Controller|Input", Meta = (DisplayName = "Set Player Movement Input Lock"))
+	bool SetPlayerMovementInputLock(const bool Value);
+
+	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
+	*	@Value Whether a lock should be added or removed.
+	*	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Controller|Input", Meta = (DisplayName = "Set Player Movement Rotation Lock"))
+	bool SetPlayerRotationInputLock(const bool Value);
+	
+	/** Fades in the screen for the player from black by a specified amount.
+	 *	@Duration The fade-in duration.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Controller", Meta = (DisplayName = "Fade From Black"))
+	void FadePlayerCameraFromBlack(const float Duration);
 
 protected:
-	/** Checks whether the player is currently looking at an interactable object. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Interact"))
-	bool CanInteract() const;
-	
-	/** Increases the PlayerMovementComponent maximum forward speed. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Start Sprinting"))
-	void StartSprinting();
-	
-	/** Sets the PlayerMovementComponent maximum forward speed to its default value. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerCharacterController", Meta = (DisplayName = "Stop Sprinting"))
-	void StopSprinting();
-	
 	/** Performs a collision query in front of the camera and returns the hit result. */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterController", Meta = (DisplayName = "Get Camera Look At Query"))
+	UFUNCTION(BlueprintPure, Category = "Controller", Meta = (DisplayName = "Get Camera Look At Query"))
 	FHitResult GetCameraLookAtQuery() const;
 
 private:
@@ -113,11 +141,11 @@ private:
 	
 	/** Checks if any player actions are currently pending and tries to complete them. */
 	UFUNCTION()
-	void UpdatePendingActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+	void UpdatePendingActions();
 
 	/** Checks if the player can continue with any actions they are currently performing. */
 	UFUNCTION()
-	void UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement);
+	void UpdateCurrentActions();
 
 	/** Tries to find an InteractionComponent in the player character. */
 	UFUNCTION()
@@ -125,15 +153,15 @@ private:
 
 public:
 	/** Returns whether the player controller can process movement input. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Movement Input"))
+	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Can Process Movement Input"))
 	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
 
 	/** Returns whether the player controller can process rotation input. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Can Process Rotation Input"))
+	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Can Process Rotation Input"))
 	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
 
 	/** Returns the player control rotation. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterController", Meta = (DisplayName = "Player Control Rotation"))
+	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Player Control Rotation"))
 	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
 
 private:

@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FrostbiteFunctionLibrary.generated.h"
 
+class APlayerCharacter;
 UENUM(BlueprintType, Meta = (DisplayName = "Function Result"))
 enum class EFunctionResult : uint8
 {
@@ -40,6 +41,20 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Interface", Meta = (DisplayName = "Find Object That Implements Interface By Type", ExpandEnumAsExecs = "Result"))
 	static UObject* SearchActorForObjectThatImplementsInterface(EFunctionResult& Result, AActor* Actor, EFrostbiteInterfaceType Interface);
+
+	/** Returns the player character instance if it is already spawned in the world.
+	 *	This function performs no casts and can safely be called every frame without performance repercussions. */
+	UFUNCTION(BlueprintPure, Category = "Frostbite", Meta = (DisplayName = "Get Frostbite Player Character",
+		CompactNodeTitle = "Player Character", Keywords = "Get, Frostbite, Player, Character",
+		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject", HideSelfPin))
+	static APlayerCharacter* GetFrostbitePlayerCharacter(const UObject* WorldContextObject);
+
+	/** Returns the player character controller instance if it is already spawned in the world.
+	 *	This function performs no casts and can safely be called every frame without performance repercussions. */
+	UFUNCTION(BlueprintPure, Category = "Frostbite", Meta = (DisplayName = "Get Frostbite Player Controller", CompactNodeTitle = "Player Controller",
+		Keywords = "Get, Frostbite, Player, Character, Controller",
+		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject", HideSelfPin))
+	static APlayerCharacterController* GetFrostbitePlayerCharacterController(const UObject* WorldContextObject);
 };
 
 
