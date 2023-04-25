@@ -5,26 +5,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractableObjectInterface.h"
+#include "GrabbableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "Keyboard.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Keyboard"))
-class FROSTBITE_API AKeyboard : public AActor, public IInteractableObject
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Keyboard"))
+class FROSTBITE_API AKeyboard : public AActor, public IGrabbableObject
 {
 	GENERATED_BODY()
-	
+
 public:	
 	AKeyboard();
 
 public:
 	/** IInteractableObject interface functions. */
-	FORCEINLINE bool Use_Implementation(const AActor* Interactor) override { return false; }
-	FORCEINLINE bool Disuse_Implementation(const AActor* Interactor) override { return false; }
-	FORCEINLINE EInteractionType GetInteractionType_Implementation() const override { return EInteractionType::Grabbable; }
-	FORCEINLINE EInteractionTriggerType GetInteractionTriggerType_Implementation() const override { return EInteractionTriggerType::SinglePress; }
-	FORCEINLINE EInteractionHandType GetInteractionHandType_Implementation() const override { return EInteractionHandType::OneHanded; }
-	FORCEINLINE FVector GetInteractionWidgetOffset_Implementation() const override { return FVector(); }
+	FORCEINLINE bool BeginGrab_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE bool EndGrab_Implementation(const AActor* Interactor) override { return false; }
+	FORCEINLINE EGrabType GetGrabType_Implementation() const override { return EGrabType::OneHanded; }
 
 protected:
 	virtual void BeginPlay() override;

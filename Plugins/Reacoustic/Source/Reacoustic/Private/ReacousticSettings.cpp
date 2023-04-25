@@ -2,11 +2,15 @@
 
 
 #include "ReacousticSettings.h"
+#include "ReacousticSubsystem.h"
+#include "Reacoustic.h"
+#include "Serialization/JsonTypes.h"
+
+
 
 UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
 }
 
 #if WITH_EDITOR
@@ -14,4 +18,5 @@ void UReacousticProjectSettings::PostEditChangeProperty(FPropertyChangedEvent& P
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+
 #endif

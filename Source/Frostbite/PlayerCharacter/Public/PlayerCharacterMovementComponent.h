@@ -1,4 +1,6 @@
-// Copyright 2023 Tim Verberne
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #pragma once
 
@@ -66,6 +68,8 @@ private:
 	bool IsJumping {false};
 
 public:
+	UPlayerCharacterMovementComponent();
+	
 	virtual bool DoJump(bool bReplayingMoves) override;
 	
 	/** Checks and returns the current player ground movement type.

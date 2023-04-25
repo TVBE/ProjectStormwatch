@@ -23,6 +23,8 @@ class FROSTBITE_API UPlayerFlashlightComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_LOG_CATEGORY_CLASS(LogPlayerFlashlightComponent, Log, All)
+
 private:
 	// COMPONENTS
 	/** The flashlight for the player. */

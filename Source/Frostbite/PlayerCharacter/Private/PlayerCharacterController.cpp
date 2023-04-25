@@ -6,7 +6,6 @@
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerFlashlightComponent.h"
-#include "LogCategories.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
 #include "PlayerSubsystem.h"
@@ -15,6 +14,8 @@
 #include "Math/Rotator.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+
+DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
 
 /** Called on construction. */
 APlayerCharacterController::APlayerCharacterController()
@@ -51,6 +52,8 @@ void APlayerCharacterController::BeginPlay()
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (!InPawn) { return; }
 	
 	/** Registers the controller to the player character subsystem. */
 	if (const UWorld* World {GetWorld()})
@@ -69,6 +72,8 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 			PlayerCameraManager->ViewPitchMin = Configuration->MinimumViewPitch;
 		}
 	}
+	
+	InteractionComponent = Cast<UPlayerInteractionComponent>(InPawn->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
 }
 
 /** Called when the controller is constructed. */
@@ -91,12 +96,15 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAction(TEXT("Crouch"), IE_Released, this, &APlayerCharacterController::HandleCrouchActionReleased);
 	
 	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &APlayerCharacterController::HandleFlashlightActionPressed);
-
+	
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &APlayerCharacterController::HandlePrimaryActionPressed);
 	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &APlayerCharacterController::HandlePrimaryActionReleased);
 
 	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Pressed, this, &APlayerCharacterController::HandleSecondaryActionPressed);
 	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Released, this, &APlayerCharacterController::HandleSecondaryActionReleased);
+
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Pressed, this, &APlayerCharacterController::HandleTertiaryActionPressed);
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Released, this, &APlayerCharacterController::HandleTertiaryActionReleased);
 
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &APlayerCharacterController::HandleInventoryActionPressed);
 	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &APlayerCharacterController::HandleInventoryActionReleased);
@@ -119,7 +127,14 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
 {
-	PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, ControlInterpolationSpeed);
+	if (CharacterConfiguration->IsRotationSmoothingEnabled)
+	{
+		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
+	}
+	else
+	{
+		PlayerControlRotation = Rotation;
+	}
 }
 
 void APlayerCharacterController::UpdateCurrentActions(const UPlayerCharacterMovementComponent* CharacterMovement)
@@ -142,33 +157,33 @@ void APlayerCharacterController::UpdatePendingActions(const UPlayerCharacterMove
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
 	if (IsSprintPending && !CharacterMovement->GetIsSprinting() && CanCharacterSprint())
 	{
-		if (!CharacterMovement->IsCrouching())
+		if (!PlayerCharacter->bIsCrouched)
 		{
 			StartSprinting();
 		}
 		/** If the character is crouching, stand up before sprinting. */
-		else if (CharacterMovement->IsCrouching() && PlayerCharacter->CanStandUp())
+		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			StopCrouching();
-			StartSprinting();
 			IsCrouchPending = false;
+			PlayerCharacter->UnCrouch(false);
+			StartSprinting();
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
-	if (IsCrouchPending && !CharacterMovement->IsCrouching() && PlayerCharacter->CanCrouch())
+	if (IsCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 	{
 		if (CharacterMovement->GetIsSprinting())
 		{
 			StopSprinting();
 			IsSprintPending = false;
 		}
-		StartCrouching();
+		PlayerCharacter->Crouch(false);
 	}
 }
 
 bool APlayerCharacterController::GetHasMovementInput() const
 {
-	if (InputComponent != nullptr)
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
 		return InputComponent->GetAxisValue("Move Longitudinal") || InputComponent->GetAxisValue("Move Lateral");
 	}
@@ -177,7 +192,7 @@ bool APlayerCharacterController::GetHasMovementInput() const
 
 float APlayerCharacterController::GetHorizontalRotationInput() const
 {
-	if (InputComponent != nullptr)
+	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
 		return InputComponent->GetAxisValue("Horizontal Rotation");
 	}
@@ -202,7 +217,7 @@ void APlayerCharacterController::SetCanProcessRotationInput(const UPlayerSubsyst
 
 bool APlayerCharacterController::CanCharacterSprint() const
 {
-	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround()
+	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetCharacter()->bIsCrouched
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
@@ -227,16 +242,6 @@ void APlayerCharacterController::StopSprinting()
 	{
 		PlayerCharacterMovement->SetIsSprinting(false, this);	
 	}
-}
-
-void APlayerCharacterController::StartCrouching()
-{
-	GetCharacter()->Crouch();
-}
-
-void APlayerCharacterController::StopCrouching()
-{
-	// Temp
 }
 
 FHitResult APlayerCharacterController::GetCameraLookAtQuery() const
@@ -280,13 +285,27 @@ UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteract
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
-	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
+	{
+		InteractionComponent->AddYawInput(Value);
+	}
+	else
+	{
+		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	}
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
+	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
+	{
+		InteractionComponent->AddPitchInput(Value);
+	}
+	else
+	{
 		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
+	}
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
@@ -304,15 +323,10 @@ void APlayerCharacterController::HandleLateralMovementInput(float Value)
 }
 void APlayerCharacterController::HandleZoomDirectionInput(float Value)
 {
-	if (!PhysicsGrabComponent)
+	if (InteractionComponent)
 	{
-		if(GetPawn())
-		{
-			PhysicsGrabComponent = Cast<UPlayerPhysicsGrabComponent>(GetPawn()->FindComponentByClass(UPlayerPhysicsGrabComponent::StaticClass()));
-		}
+		InteractionComponent->AddScrollInput(Value);
 	}
-	if (!PhysicsGrabComponent) { return; }
-	PhysicsGrabComponent->UpdateZoomAxisValue(Value);
 }
 
 void APlayerCharacterController::HandleJumpActionPressed()
@@ -344,7 +358,6 @@ void APlayerCharacterController::HandleSprintActionPressed()
 	}
 }
 
-
 void APlayerCharacterController::HandleSprintActionReleased()
 {
 	if (!CanProcessMovementInput) { return; }
@@ -358,30 +371,38 @@ void APlayerCharacterController::HandleSprintActionReleased()
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
 	if (!CanProcessMovementInput) { return; }
-	IsCrouchPending = true;
-
+	
+	
 	if (CharacterConfiguration->EnableCrouchToggle)
 	{
-		if (!GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanCrouch())
+		if (!PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 		{
-			StartCrouching();
+			PlayerCharacter->Crouch(false);
+			IsCrouchPending = true;
 			return;
 		}
-		if (GetCharacter()->GetMovementComponent()->IsCrouching() && PlayerCharacter->CanStandUp())
+		if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			StopCrouching();
+			PlayerCharacter->UnCrouch(false);
+			IsCrouchPending = false;
 		}
 	}
 	else if (PlayerCharacter->CanCrouch())
 	{
-		StartCrouching();
+		PlayerCharacter->Crouch(false);
+		IsCrouchPending = true;
 	}
 }
 
 void APlayerCharacterController::HandleCrouchActionReleased()
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!CanProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
 	IsCrouchPending = false;
+	
+	if (PlayerCharacter->bIsCrouched)
+	{
+		PlayerCharacter->UnCrouch(false);
+	}
 }
 
 void APlayerCharacterController::HandleFlashlightActionPressed()
@@ -393,45 +414,60 @@ void APlayerCharacterController::HandleFlashlightActionPressed()
 	}
 }
 
+void APlayerCharacterController::HandleTertiaryActionPressed()
+{
+	if (InteractionComponent)
+	{
+		InteractionComponent->BeginTertiaryInteraction();
+	}
+}
+
+void APlayerCharacterController::HandleTertiaryActionReleased()
+{
+	if (InteractionComponent)
+	{
+		InteractionComponent->EndTertiaryInteraction();
+	}
+}
+
 void APlayerCharacterController::HandlePrimaryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Primary);
+		InteractionComponent->BeginPrimaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandlePrimaryActionReleased()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->EndInteraction(EInteractionActionType::Primary);
+		InteractionComponent->EndPrimaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleSecondaryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Secondary);
+		InteractionComponent->BeginSecondaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleSecondaryActionReleased()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->EndInteraction(EInteractionActionType::Secondary);
+		InteractionComponent->EndSecondaryInteraction();
 	}
 }
 
 void APlayerCharacterController::HandleInventoryActionPressed()
 {
-	if (UPlayerInteractionComponent* PlayerInteractionComponent {SearchForPlayerInteractionComponent()})
+	if (InteractionComponent)
 	{
-		InteractionComponent->BeginInteraction(EInteractionActionType::Inventory);
+		InteractionComponent->BeginInventoryInteraction();
 	}
-	// TODO: Implement timer for press and hold.
 }
 
 void APlayerCharacterController::HandleInventoryActionReleased()

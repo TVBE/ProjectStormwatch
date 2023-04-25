@@ -8,11 +8,13 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerSubsystem.h"
 #include "FrostbiteGameMode.h"
-#include "LogCategories.h"
+#include "PlayerFootCollisionComponent.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Math/Vector.h"
+
+DEFINE_LOG_CATEGORY_CLASS(APlayerCharacter, LogPlayerCharacter);
 
 /** The PlayerCharacter's initialization follows these stages:
  *	1) Constructor: Creates the actor and sets its default properties. We cannot access default property values at this time.
@@ -29,16 +31,33 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	/** Construct Camera. */
+	/** Construct camera. */
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(this->RootComponent);
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
 	
-	/** Construct Camera Controller. */
+	/** Construct camera controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = true;
+
+	/** Construct foot collision components. */
+	LeftFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Left Foot Collision"));
+	LeftFootCollision->SetupAttachment(GetMesh(), FName("foot_l_socket"));
+
+	RightFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Right Foot Collision"));
+	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
+}
+
+void APlayerCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+}
+
+void APlayerCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
 }
 
 /** Called after the constructor but before the components are initialized. */
@@ -284,7 +303,6 @@ bool APlayerCharacter::CanStandUp() const
 	return (Clearance > RequiredClearance || Clearance == -1.f && GetMovementComponent()->IsCrouching());
 }
 
-
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (const UWorld* World {GetWorld()})
@@ -304,11 +322,13 @@ void UPlayerCharacterConfiguration::ApplyToPlayerCharacter(const APlayerCharacte
 		return;
 	}
 	
-	// Set character's movement component properties.
 	if (UCharacterMovementComponent* MovementComponent {PlayerCharacter->GetCharacterMovement()})
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
 		MovementComponent->JumpZVelocity = JumpVelocity;
+		MovementComponent->MaxWalkSpeedCrouched = CrouchSpeed;
+		MovementComponent->SetWalkableFloorAngle(MaxWalkableFloorAngle);
+		MovementComponent->MaxStepHeight = MaxStepHeight;
 	}
 }
 

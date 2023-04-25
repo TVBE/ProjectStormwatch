@@ -22,13 +22,15 @@ class FROSTBITE_API UPlayerAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_LOG_CATEGORY_CLASS(LogPlayerAudio, Log, All)
+
 private:
 	/** The AudioComponent for general player audio. */
 	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = "PlayerAudioComponent", Meta = (DisplayName = "Body Audio Component"))
 	UAudioComponent* BodyAudioComponent;
 
 	/** The Metasound Asset for the body audio component. */
-	UPROPERTY(EditAnywhere, Category = "PlayerAudioComponent", Meta = (DisplayName = "Body Audio Component Metasound Source"))
+	UPROPERTY(EditAnywhere, Category = "Player Audio", Meta = (DisplayName = "Body Audio Component Metasound Source"))
 	TSoftObjectPtr<UMetaSoundSource> BodyAudioComponentSoundAsset; 
 	
 public:	
@@ -49,7 +51,7 @@ private:
 
 public:
 	/** Returns the body AudioComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Body Audio Component"))
+	UFUNCTION(BlueprintGetter, Category = "Player Audio|Components", Meta = (DisplayName = "Body Audio Component"))
 	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
 	
 };

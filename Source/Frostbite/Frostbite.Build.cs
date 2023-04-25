@@ -10,17 +10,20 @@ public class Frostbite : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara", "Reacoustic" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime", "UnrealEd" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime", "UnrealEd"});
 		
+		PublicDefinitions.Add("WITH_REACOUSTIC=1");
+
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Actors/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Core/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Interfaces/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Libraries/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/RoomSystem/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Audio/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/PlayerCharacter/Public");
 		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Nightstalker/Public");
-		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/InteractionSystem/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/ActorComponents/Public");
 	}
 }

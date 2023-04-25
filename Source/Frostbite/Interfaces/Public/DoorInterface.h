@@ -14,7 +14,13 @@ enum class EDoorState : uint8
     Closed      UMETA(DisplayName = "Closed"),
     Opening     UMETA(DisplayName = "Opening"),
     Closing     UMETA(DisplayName = "Closing"),
-    Locked      UMETA(DisplayName = "Locked"),
+};
+
+UENUM(BlueprintType)
+enum class EDoorAction : uint8
+{
+    Open        UMETA(DisplayName = "Open"), 
+    Close      UMETA(DisplayName = "Close"),
 };
 
 UINTERFACE(Blueprintable, Meta = (DisplayName = "Door Interface"))
@@ -30,13 +36,13 @@ class IDoor
 public:
     /** Attempts to open the door. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Open"))
-    void Open();
+    bool Open(const AActor* Initiator);
 
     /** Attempts to close the door. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Close"))
-    void Close();
+    bool Close(const AActor* Initiator);
     
     /** Returns the door's state. */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Door", Meta = (DisplayName = "Get Door State"))
-    EDoorState GetDoorState();
+    EDoorState GetDoorState() const;
 };

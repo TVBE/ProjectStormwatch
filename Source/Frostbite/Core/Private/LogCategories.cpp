@@ -4,15 +4,12 @@
 
 #include "LogCategories.h"
 
-DEFINE_LOG_CATEGORY(LogPlayerCharacter)
-DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
-DEFINE_LOG_CATEGORY(LogPlayerCharacterConfiguration)
-DEFINE_LOG_CATEGORY(LogPlayerSubsystem)
-DEFINE_LOG_CATEGORY(LogPlayerCameraController)
-DEFINE_LOG_CATEGORY(LogPlayerFlashlightComponent)
-DEFINE_LOG_CATEGORY(LogInteractableActor)
-
 DEFINE_LOG_CATEGORY(LogNightstalker)
 DEFINE_LOG_CATEGORY(LogNightstalkerController)
 
 DEFINE_LOG_CATEGORY(LogRoomVolume)
+
+DEFINE_LOG_CATEGORY(LogUsableObject)
+DEFINE_LOG_CATEGORY(LogGrabbableObject)
+DEFINE_LOG_CATEGORY(LogDraggableObject)
+DEFINE_LOG_CATEGORY(LogInventoryObject)
