@@ -32,7 +32,7 @@ void UPlayerFootCollisionComponent::BeginPlay()
 		CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		CollisionSphere->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 		CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
+		CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap);
 
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &UPlayerFootCollisionComponent::OnOverlapBegin);
 
@@ -80,11 +80,8 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 #if WITH_REACOUSTIC
 if (ImpulseStrength > 1)
 {
-	UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()));
-	
-	if (ReacousticComponent)
+	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()));)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("We Be Triggering Da Hit RN"))
 		ReacousticComponent->TriggerManualHit(0.5f);
 	}
 }

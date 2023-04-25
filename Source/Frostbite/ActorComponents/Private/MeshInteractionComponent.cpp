@@ -32,21 +32,31 @@ void UMeshInteractionComponent::OnRegister()
 		MeshComponent->SetSimulatePhysics(true);
 		MeshComponent->PutRigidBodyToSleep();
 		MeshComponent->SetCollisionProfileName(TEXT("InteractableMesh"));
-		MeshComponent->SetNotifyRigidBodyCollision(true);
+		
 		MeshComponent->SetGenerateOverlapEvents(true);
 
-		constexpr float MinBoundingBoxVolume {100.0f};
-		constexpr float MinMass {2.0f};
-		
-		const FVector BoxExtent {MeshComponent->Bounds.BoxExtent};
-		
+		// constexpr float MinBoundingBoxVolume {1000000.0f};
+		constexpr float MinMass {12.0f};
+
+		// const FVector BoxExtent {MeshComponent->Bounds.BoxExtent};
+
 		/** 8 = 2^3, since BoxExtent represents half of the bounding box size. */
-		const float BoundingBoxVolume {static_cast<float>(BoxExtent.X * BoxExtent.Y * BoxExtent.Z * 8)};
+		// const float BoundingBoxVolume {static_cast<float>(BoxExtent.X * BoxExtent.Y * BoxExtent.Z * 8)};
+
+		const float Mass {MeshComponent->GetMass()};
 		
-		if (const float Mass {MeshComponent->GetMass()}; BoundingBoxVolume <= MinBoundingBoxVolume || Mass <= MinMass)
+		if (Mass > MinMass)
 		{
+			MeshComponent->SetCollisionObjectType(ECC_PhysicsBody);
+		}
+		else
+		{
+			MeshComponent->SetCollisionObjectType(ECC_GameTraceChannel2);
 			MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+			
 			MeshComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+
+			MeshComponent->SetNotifyRigidBodyCollision(true);
 		}
 	}
 	

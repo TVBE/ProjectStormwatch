@@ -121,6 +121,11 @@ void APlayerCharacter::BeginPlay()
 			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
 	}
+
+	if (Configuration)
+	{
+		TargetSpeed = Configuration->WalkSpeed;
+	}
 }
 
 /** Called when the controller is changed. */
@@ -143,27 +148,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 void APlayerCharacter::UpdateMovementSpeed()
 {
-	// Calculate the current speed based on whether we're pushing anything
-	if (!BodyCollision->GetIsPushingObjects())
-	{
-		// We're not pushing anything, use the target speed
-		ScaledSpeed = TargetSpeed;
-	}
-	else
-	{
-		// We're pushing something, adjust the speed based on the total mass of the objects being pushed
-		const float TotalMass = BodyCollision->GetTotalMassOfPushedObjects();
-		if (TotalMass > 0.0f)
-		{
-			// Calculate the scaled speed based on the mass of the objects being pushed
-			ScaledSpeed = TargetSpeed / FMath::Sqrt(TotalMass);
-		}
-		else
-		{
-			// We're pushing something with zero mass, slow down to a stop
-			ScaledSpeed = 0.0f;
-		}
-	}
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -218,9 +202,9 @@ float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const
 void APlayerCharacter::ValidateConfigurationAssets()
 {
 	/** If the configuration properties are not properly serialized, construct a default instance instead. */
-	if (!CharacterConfiguration)
+	if (!Configuration)
 	{
-		CharacterConfiguration = NewObject<UPlayerCharacterConfiguration>();
+		Configuration = NewObject<UPlayerCharacterConfiguration>();
 		if (GIsEditor && FApp::IsGame())
 		{
 			UE_LOG(LogPlayerCharacter, Warning, TEXT("No Character Configuration was selected for player character. Using default settings instead."))
@@ -240,8 +224,9 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::StartSprinting()
 {
-	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting())
+	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting() && Configuration)
 	{
+		TargetSpeed = Configuration->SprintSpeed;
 		PlayerCharacterMovement->SetIsSprinting(true);
 	}
 }
@@ -250,6 +235,7 @@ void APlayerCharacter::StopSprinting()
 {
 	if (PlayerCharacterMovement && PlayerCharacterMovement->GetIsSprinting())
 	{
+		TargetSpeed = Configuration->WalkSpeed;
 		PlayerCharacterMovement->SetIsSprinting(false);
 	}
 }
@@ -301,9 +287,9 @@ void APlayerCharacter::HandleLandingEnd()
 
 void APlayerCharacter::ApplyConfigurationAssets()
 {
-	if (CharacterConfiguration)
+	if (Configuration)
 	{
-		CharacterConfiguration->ApplyToPlayerCharacter(this);
+		Configuration->ApplyToPlayerCharacter(this);
 	}
 }
 
@@ -327,12 +313,12 @@ bool APlayerCharacter::CanPerformJump() const
 {
 	constexpr float RequiredClearance {60};
 	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && CharacterConfiguration->IsJumpingEnabled && !GetMovementComponent()->IsFalling());
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && Configuration->IsJumpingEnabled && !GetMovementComponent()->IsFalling());
 }
 
 bool APlayerCharacter::CanCrouch() const
 {
-	return Super::CanCrouch() && CharacterConfiguration->IsCrouchingEnabled;;
+	return Super::CanCrouch() && Configuration->IsCrouchingEnabled;;
 }
 
 bool APlayerCharacter::CanStandUp() const
