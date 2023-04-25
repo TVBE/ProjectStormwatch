@@ -120,9 +120,7 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 	}
 }
 
-void UReacousticComponent::ManualHit(float Strength)
-{
-}
+void UReacousticComponent::TriggerManualHit_Implementation(float Strength){}
 
 
 void UReacousticComponent::OnComponentHit_Implementation(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

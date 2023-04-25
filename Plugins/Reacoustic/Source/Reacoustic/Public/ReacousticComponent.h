@@ -54,8 +54,8 @@ public:
 	void HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	
-	UFUNCTION(BlueprintCallable, Category = Default, Meta = (DisplayName = "Call this to trigger a manual hit"))
-	void ManualHit(float HitStrength);
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
+	void TriggerManualHit(float HitStrength);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -84,6 +84,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnComponentCreated() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void TriggerManualHit_Implementation(float HitStrength);
 
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
 	static float GetScaledImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);

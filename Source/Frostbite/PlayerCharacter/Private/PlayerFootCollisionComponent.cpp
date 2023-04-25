@@ -78,13 +78,14 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 	OtherComp->AddImpulse(ImpulseDirection * ImpulseStrength);
 
 #if WITH_REACOUSTIC
-if (ImpulseStrength > 100)
+if (ImpulseStrength > 1)
 {
 	UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()));
 	
 	if (ReacousticComponent)
 	{
-		// ReacousticComponent->OnComponentHit(OverlappedComp, GetOwner(), CollisionSphere, FVector(10, 10, 10), FHitResult());
+		UE_LOG(LogTemp, Warning, TEXT("We Be Triggering Da Hit RN"))
+		ReacousticComponent->TriggerManualHit(0.5f);
 	}
 }
 #endif
