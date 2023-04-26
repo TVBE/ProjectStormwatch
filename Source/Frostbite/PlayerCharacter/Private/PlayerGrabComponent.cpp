@@ -264,16 +264,17 @@ float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector T
 	/** Solve for the angle theta for a balistic trajectory hitting target location with the given velocity.
 	 * ThetaOver and ThetaUnder respectively are the high angle and low angle that solve this equation.
 	 */
-	if(overhands)
-	{
-		/** the calculation of the low trajectory that solves the trajecory.*/
+
+	//if(overhands)
+	//{
+		/** the calculation of the low trajectory that solves the requirements.*/
 		Theta = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-	}
-	else
-	{
-		/** the calculation of the high trajectory that solves the trajecory.*/
-		Theta = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-	}
+	//}
+	//else
+	//{
+		/** the calculation of the high trajectory that solves the requirements.*/
+		//Theta = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
+	//}
 	return FMath::RadiansToDegrees(Theta);
 }
 
