@@ -32,13 +32,34 @@ private:
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map", AllowPrivateAccess = "true"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
 
-	/** These variables are used to calculate the difference in distance and time between hits.*/
+	/** These variables are used to calculate the difference in distance and time between hits.
+	 * Used to filter out unwanted hits.
+	 */
 	double DeltaHitTime;
 	double DeltaLocationDistance;
+	double DeltaForwardVector;
 	FVector LatestLocation;
 	double LatestTime;
 	FVector LatestForwardVector;
+	TArray<float> DeltaStateArray;
 	
+	/** This variable is used to choose the impact sound during a hit.*/
+	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "ImapctForce", AllowPrivateAccess = "true"))	
+	float ImpactForce;
+	
+
+	/** Utility function to calculate the sum of elements in an array of floats */
+	UFUNCTION()
+	static float GetArraySum(TArray<float> Array)
+	{
+		float Sum = 0.0;
+		for (float Element : Array)
+		{
+			Sum += Element;
+		}
+		return Sum;
+	}
+
 	
 public:	
 	UReacousticComponent();
@@ -52,7 +73,7 @@ public:
 	 */
 	UFUNCTION()
 	void HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
+	
 	
 	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
 	void TriggerManualHit(float HitStrength);
@@ -64,11 +85,7 @@ public:
 	UFUNCTION(BlueprintGetter, Category = Reacoustic, Meta = (DisplayName = "Get Owner StaticMeshComponent"))
 	FORCEINLINE UStaticMeshComponent* GetOwnerMeshComponent() const {return MeshComponent; }
 
-	/** Returns the impact force of each hit*/
-	UFUNCTION(BlueprintPure)
-	float ReturnImpactForce(UPrimitiveComponent* HitComp, AActor* OtherActor,
-												 UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-												 const FHitResult& Hit);
+
 
 	/** Get the time interval between hits */
 	UFUNCTION(BlueprintPure)

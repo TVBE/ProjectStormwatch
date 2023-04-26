@@ -104,45 +104,70 @@ FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Act
 
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if(Hit.ImpactNormal.SquaredLength() > 0.00001)
+	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
+	if(Hit.ImpactNormal.Length() > 0.0001)
 	{
 		DeltaLocationDistance = FVector::Distance(LatestLocation, Hit.Location);
-		DeltaHitTime = FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
-		const double DeltaForwardVector{FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector())};
-		LatestLocation = Hit.ImpactPoint;
-		LatestTime = FPlatformTime::Seconds();
-		LatestForwardVector = this->GetOwner()->GetActorForwardVector();
 		
-		if(DeltaLocationDistance > 0.001 && DeltaHitTime > 0.001 && DeltaForwardVector >0.005)
+		
+		LatestLocation = Hit.ImpactPoint;
+		
+		
+		
+		/** prevent situations were sounds are hittng in the same location.*/
+		if(DeltaLocationDistance > 0.01)
 		{
-			OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+			/** prevent situations were sounds are hittng in a short timespan.*/
+			DeltaHitTime = FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
+			LatestTime = FPlatformTime::Seconds();
+			if(DeltaHitTime > 0.001)
+			{
+				/** prevent situations were sounds are hittng in the same orientation.*/
+				DeltaForwardVector =FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector());
+				LatestForwardVector = this->GetOwner()->GetActorForwardVector();
+
+				/** If there's a considerable time between hits, remove the hit history.*/
+				if(DeltaHitTime > 0.3)
+				{
+					DeltaStateArray.Empty();
+				}
+				if(DeltaForwardVector >0.0001)
+				{
+					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
+
+					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + DeltaForwardVector);
+					UE_LOG(LogReacousticComponent, Warning, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
+					if(GetArraySum(DeltaStateArray) > 10.0f || DeltaStateArray.Num() <= 5)
+					{
+							// Calculate the impact force
+							ImpactForce = NormalImpulse.Size() / HitComp->GetMass();
+							// Trigger the OnComponentHit event
+							OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+					}
+					else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: STATE ARRAY"))}
+				}
+				else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
+			}
+			else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA HIT TIME"))}
+		}
+		else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: LOCATION DISTANCE"))}
+		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
+		if (DeltaStateArray.Num() > 5)
+		{
+			DeltaStateArray.RemoveAt(0);
 		}
 	}
 }
 
+
+
+
+/** This implementation will likely allways be ovewrriden by a blueprint or function that needs to trigger a custom hit.*/
 void UReacousticComponent::TriggerManualHit_Implementation(float Strength){}
 
 
 void UReacousticComponent::OnComponentHit_Implementation(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-}
-
-float UReacousticComponent::ReturnImpactForce(UPrimitiveComponent* HitComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	/** if the relative speed is fast enough, return the impact force to be used to determine the hit sound timestamp*/
-
-	//FVector RelativeSpeedVector =
-	
-	//if (RelativeSpeedVector > MinimumSpeed)
-	//{
-	//	FVector ImpactForceVector =  ((HitComp->GetComponentVelocity() - OtherActor->GetVelocity()+NormalImpulse) / HitComp->GetMass());
-	//	float ImpactForce =  ImpactForceVector::Size;
-	//}
-	//else
-	//{
-	//	ImpactForce = -1;
-	//}
-return 0;
 }
 
 double UReacousticComponent::ReturnDeltaTime()

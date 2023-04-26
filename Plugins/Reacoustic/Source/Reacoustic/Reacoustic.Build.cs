@@ -42,7 +42,8 @@ public class Reacoustic : ModuleRules
 				"SlateCore",
 				"InputCore", 
 				"PhysicsCore",
-				"unrealEd"
+				"unrealEd",
+				"HeadMountedDisplay"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
