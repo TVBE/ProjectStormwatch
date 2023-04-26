@@ -136,7 +136,7 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
 
 					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + DeltaForwardVector);
-					UE_LOG(LogReacousticComponent, Warning, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
+					UE_LOG(LogReacousticComponent, Verbose, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
 					if(GetArraySum(DeltaStateArray) > 10.0f || DeltaStateArray.Num() <= 5)
 					{
 							// Calculate the impact force
@@ -144,13 +144,13 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 							// Trigger the OnComponentHit event
 							OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 					}
-					else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: STATE ARRAY"))}
+					else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: STATE ARRAY"))}
 				}
-				else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
+				else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
 			}
-			else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA HIT TIME"))}
+			else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA HIT TIME"))}
 		}
-		else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: LOCATION DISTANCE"))}
+		else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: LOCATION DISTANCE"))}
 		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
 		if (DeltaStateArray.Num() > 5)
 		{
