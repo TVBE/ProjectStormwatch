@@ -61,6 +61,18 @@ protected:
 	/** The current state of the door. */
 	UPROPERTY(BlueprintReadWrite, Category = "Door", Meta = (DisplayName = "Door State"))
 	EDoorState DoorState;
+
+	/** If true, the door will start locked. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Lock", Meta = (DisplayName = "Start Locked"))
+	bool StartLocked {false};
+
+	/** If true, the door will close when it is locked. */
+	UPROPERTY(BlueprintReadOnly,  EditAnywhere, Category = "Door|Lock", Meta = (DisplayName = "Close On Lock"))
+	bool CloseOnLock {true};
+
+	/** If true, the door will either open or reset when unlocked. */
+	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
+	bool DoActionOnUnlock {false};
 	
 	/** If true, the door will auto close after a given time when opened. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close (Not Available)")) // TODO: Implement this.
@@ -74,21 +86,9 @@ protected:
 	/** If true, the door will open if a pawn enters it's safety zone while the door is closing. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door", Meta = (DisplayName = "Cancel Close If Pawn Enters Safety Zone"))
 	bool CancelCloseOnSafetyZoneOverlap {false};
-
-	/** If true, the door will start locked. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Lock", Meta = (DisplayName = "Start Locked"))
-	bool StartLocked {false};
-
-	/** If true, the door will close when it is locked. */
-	UPROPERTY(BlueprintReadOnly,  EditAnywhere, Category = "Door|Lock", Meta = (DisplayName = "Close On Lock"))
-	bool CloseOnLock {true};
-
-	/** If true, the door will either open or reset when unlocked. */
-	UPROPERTY(Meta = (InlineEditConditionToggle))
-	bool DoActionOnUnlock {false};
-
+	
 	/** The action to perform when the door is unlocked. */
-	UPROPERTY(BlueprintReadOnly, Category = "Door|Lock", Meta = (DisplayName = "Action On Unlock",
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Door|Lock", Meta = (DisplayName = "Action On Unlock",
 		EditCondition = "DoActionOnUnlock"))
 	EDoorAction ActionOnUnlock {EDoorAction::Reset};
 
@@ -205,11 +205,7 @@ protected:
 
 private:
 	void Tick(float DeltaSeconds) override;
-
-	void AddToTriggerQueue(const ETriggerableObjectAction Value);
 	
-	ETriggerableObjectAction EvaluateAndClearTriggerQueue();
-
 	/** Called when the cooldown timer is finished. */
 	void HandleCooldownFinished();
 

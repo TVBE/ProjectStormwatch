@@ -122,18 +122,6 @@ void ASlidingDoor::SetSafetyZoneCollisionEnabled(const bool Value)
 	}
 }
 
-void ASlidingDoor::AddToTriggerQueue(const ETriggerableObjectAction Value)
-{
-	TriggerQueue.Add(Value);
-}
-
-ETriggerableObjectAction ASlidingDoor::EvaluateAndClearTriggerQueue()
-{
-	const ETriggerableObjectAction LastEntry {TriggerQueue.Last()};
-	TriggerQueue.Empty();
-	return LastEntry;
-}
-
 void ASlidingDoor::HandleCooldownFinished()
 {
 	IsCooldownActive = false;
