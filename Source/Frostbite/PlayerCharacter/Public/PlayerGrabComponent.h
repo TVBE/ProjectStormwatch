@@ -33,7 +33,7 @@ public:
 	UPlayerPhysicsGrabConfiguration* Configuration;
 
 	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
-	UPROPERTY(BlueprintGetter = GetIsRotationModeActive, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
+	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
 	bool RotationMode;
 
 
@@ -44,10 +44,10 @@ private:
 	
 
 	/** If true, the grab component is currently priming an object for throwing. */
-	UPROPERTY(BlueprintGetter = GetIsPrimingThrow, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
+	UPROPERTY(BlueprintGetter = GetIsPrimingThrow)
 	bool IsPrimingThrow{false};
 
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetWillThrowOnRelease)
 	bool WillThrowOnRelease;
 	
 	UPROPERTY()

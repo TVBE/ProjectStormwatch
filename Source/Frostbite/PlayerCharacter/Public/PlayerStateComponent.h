@@ -56,7 +56,7 @@ private:
 	TSoftObjectPtr<UPlayerStateConfiguration> ConfigurationAsset;
 	
 	/** Pointer to the player state configuration. */
-	UPROPERTY(BlueprintGetter = GetConfiguration, Category = "PlayerState|Configuration", Meta = (DisplayName = "Configuration", DisplayPriority = "1"))
+	UPROPERTY(BlueprintGetter = GetConfiguration)
 	UPlayerStateConfiguration* Configuration;
 	
 	// VARIABLES

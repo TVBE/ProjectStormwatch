@@ -1,8 +1,11 @@
-// Copyright Notice
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActorFunctionCaller.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FrostbiteFunctionLibrary.generated.h"
 
@@ -23,8 +26,7 @@ enum class EFrostbiteInterfaceType : uint8
 	GrabbableObject				UMETA(DisplayName = "Grabbable Object Interface"),
 	DraggableObject				UMETA(DisplayName = "Draggable Object Interface"),
 	InventoryObject				UMETA(DisplayName = "Inventory Object Interface"),
-	PowerConsumer				UMETA(DisplayName = "Power Consumer Interface"),
-	Door						UMETA(DisplayName = "Door Interface")
+	PowerConsumer				UMETA(DisplayName = "Power Consumer Interface")
 };
 
 UCLASS()
@@ -41,6 +43,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Interface", Meta = (DisplayName = "Find Object That Implements Interface By Type", ExpandEnumAsExecs = "Result"))
 	static UObject* SearchActorForObjectThatImplementsInterface(EFunctionResult& Result, AActor* Actor, EFrostbiteInterfaceType Interface);
+
+	/** Tries to execute the function of a ActorFunctionCaller struct.
+	 *	@Param FunctionCaller The ActorFunctionCaller struct to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Actor Function Caller", Meta = (DisplayName = "Call Function On Actor"))
+	static void CallFunctionOnActorUsingActorFunctionCaller(FActorFunctionCaller FunctionCaller);
 
 	/** Returns the player character instance if it is already spawned in the world.
 	 *	This function performs no casts and can safely be called every frame without performance repercussions. */

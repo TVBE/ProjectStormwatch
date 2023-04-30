@@ -49,15 +49,15 @@ public:
 
 private:
 	/** The use component that is used to use actors. */
-	UPROPERTY(BlueprintGetter = GetUseComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Use Component"))
+	UPROPERTY(BlueprintGetter = GetUseComponent)
 	UPlayerUseComponent* UseComponent;
 	
 	/** The physics grab component that is used to grab actors. */
-	UPROPERTY(BlueprintGetter = GetGrabComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Grab Component"))
+	UPROPERTY(BlueprintGetter = GetGrabComponent)
 	UPlayerGrabComponent* GrabComponent;
 
 	/** The physics drag component that is used to drag actors. */
-	UPROPERTY(BlueprintGetter = GetDragComponent, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Drag Component"))
+	UPROPERTY(BlueprintGetter = GetDragComponent)
 	UPlayerDragComponent* DragComponent;
 
 	/** The inventory component that is used to store actors in the player's inventory.
@@ -71,7 +71,7 @@ private:
 	UCameraComponent* Camera;
 
 	/** If true, the interaction component is currently performing a tertiary interaction. */
-	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Is Performing Tertiary Interaction", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
 	bool IsTertiaryInteractionActive {false};
 	
 	/** The location of the camera. */

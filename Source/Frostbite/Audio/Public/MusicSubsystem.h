@@ -13,18 +13,18 @@ class UMusicScript;
 class UMetaSoundSource;
 
 /** Subsystem for music. */
-UCLASS(ClassGroup = "Music", Meta = (DisplayName = "Music Subystem"))
+UCLASS(ClassGroup = "Music", Meta = (DisplayName = "Music Subsystem"))
 class FROSTBITE_API UMusicSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogMusic, Log, All);
-	
+
 private:
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetMusicAudioComponent)
 	UAudioComponent* AudioComponent;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetMusicScript)
 	UMusicScript* MusicScript;
 
 public:
@@ -34,10 +34,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Music", Meta = (Displayname = "Activate Music"))
 	void ActivateMusicSubystem(UMusicSettings* Settings);
 	
-	UFUNCTION(BlueprintPure, Category = "Music", Meta = (DisplayName = "Audio Component"))
+	UFUNCTION(BlueprintGetter, Category = "Music", Meta = (DisplayName = "Audio Component"))
 	FORCEINLINE UAudioComponent* GetMusicAudioComponent() const { return AudioComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "Music", Meta = (DisplayName = "Music Script"))
+	UFUNCTION(BlueprintGetter, Category = "Music", Meta = (DisplayName = "Music Script"))
 	FORCEINLINE UMusicScript* GetMusicScript() const { return MusicScript; }
 };
 

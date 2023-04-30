@@ -31,7 +31,6 @@ void APressableButton::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 #if WITH_EDITOR
-	ValidateTargetActors();
 	ValidateLinkedButtons();
 #endif
 }
@@ -95,39 +94,27 @@ void APressableButton::HandleCooldownFinished()
 
 void APressableButton::DoTargetActorActions(const bool IsPressedAction)
 {
-	for (const auto& [Actor, DoActionOnPress, PressedAction, DoActionOnRelease, ReleasedAction] : TargetActors)
+	if (IsPressedAction)
 	{
-		if (Actor.IsValid())
+		if (ActionsOnPressed.IsEmpty()) { return; }
+		for (FActorFunctionCaller& FunctionCaller : ActionsOnPressed)
 		{
-			if (IsPressedAction && DoActionOnPress || !IsPressedAction && DoActionOnRelease)
-			{
-				switch (const ETriggerableObjectAction Action {IsPressedAction ? PressedAction : ReleasedAction})
-				{
-				case ETriggerableObjectAction::Trigger:
-					{
-						if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
-						{
-							ITriggerableObject::Execute_Trigger(Actor.Get(), this);
-						}
-					}
-					break;
-				case ETriggerableObjectAction::Untrigger:
-					{
-						if (Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
-						{
-							ITriggerableObject::Execute_Untrigger(Actor.Get(), this);
-						}
-					}
-					break;
-				default: break;
-				}
-			}
+			FunctionCaller.CallFunction();
+		}
+	}
+	else
+	{
+		if (ActionsOnRelease.IsEmpty()) { return; }
+		for (FActorFunctionCaller& FunctionCaller : ActionsOnRelease)
+		{
+			FunctionCaller.CallFunction();
 		}
 	}
 }
 
 void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
 {
+	if (LinkedButtons.IsEmpty()) { return; }
 	if (!IsPressedAction && TriggerType == EButtonTriggerType::SinglePress) {return; }
 	
 	for (const auto& [Actor,  DoActionOnPressed, PressedAction, DoActionOnRelease, ReleasedAction, IsActionLinked] : LinkedButtons)
@@ -174,41 +161,6 @@ void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
 }
 
 #if WITH_EDITOR
-void APressableButton::ValidateTargetActors()
-{
-	if (TargetActors.IsEmpty()) { return; }
-	for (FButtonTargetActor& TargetActor : TargetActors)
-	{
-		if (!TargetActor.Actor.IsNull())
-		{
-			if (const AActor* Actor = TargetActor.Actor.Get())
-				{
-				if (!Actor->GetClass()->ImplementsInterface(UTriggerableObject::StaticClass()))
-				{
-					TargetActor.Actor = nullptr;
-
-					if (GEditor)
-					{
-						const FText Title {FText::FromString("Button")};
-						const FText Message {FText::FromString("Target does not implement UTriggerableObject interface. The button cannot perform any actions on this actor. ")};
-						FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
-					}
-				}
-				}
-		}
-		if (TriggerType == EButtonTriggerType::SinglePress && TargetActor.DoActionOnRelease)
-		{
-			if (GEditor)
-			{
-				const FText Title {FText::FromString("Button")};
-				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
-				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
-			}
-			TargetActor.DoActionOnRelease = false;
-		}
-	}
-}
-
 void APressableButton::ValidateLinkedButtons()
 {
 	if (LinkedButtons.IsEmpty()) { return; }
@@ -247,12 +199,12 @@ void APressableButton::ValidateLinkedButtons()
 
 void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
 {
-	if (!TargetActors.IsEmpty() && CallTargetActors)
+	if (CallTargetActors)
 	{
 		DoTargetActorActions(true);
 	}
 	
-	if (!LinkedButtons.IsEmpty() && CallLinkedButtons)
+	if (CallLinkedButtons)
 	{
 		DoLinkedButtonActions(true);
 	}
@@ -261,12 +213,12 @@ void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, 
 
 void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
 {
-	if (!TargetActors.IsEmpty() && CallTargetActors)
+	if (CallTargetActors)
 	{
 		DoTargetActorActions(false);
 	}
 	
-	if (!LinkedButtons.IsEmpty() && CallLinkedButtons)
+	if (CallLinkedButtons)
 	{
 		DoLinkedButtonActions(false);
 	}

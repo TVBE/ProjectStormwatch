@@ -26,7 +26,7 @@ class FROSTBITE_API UPlayerAudioComponent : public UActorComponent
 
 private:
 	/** The AudioComponent for general player audio. */
-	UPROPERTY(BlueprintGetter = GetBodyAudioComponent, VisibleAnywhere, Category = "PlayerAudioComponent", Meta = (DisplayName = "Body Audio Component"))
+	UPROPERTY(BlueprintGetter = GetBodyAudioComponent)
 	UAudioComponent* BodyAudioComponent;
 
 	/** The Metasound Asset for the body audio component. */

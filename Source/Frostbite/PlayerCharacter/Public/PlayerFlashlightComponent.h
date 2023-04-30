@@ -28,11 +28,11 @@ class FROSTBITE_API UPlayerFlashlightComponent : public UActorComponent
 private:
 	// COMPONENTS
 	/** The flashlight for the player. */
-	UPROPERTY(BlueprintGetter = GetFlashlight, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight"))
+	UPROPERTY(BlueprintGetter = GetFlashlight)
 	USpotLightComponent* Flashlight;
 
 	/** The SpringArmComponent the flashlight is attached to. */
-	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm, Category = "PlayerCharacter|Flashlight", Meta = (DisplayName = "Flashlight Arm"))
+	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm)
 	USpringArmComponent* FlashlightSpringArm;
 
 	// CONFIGURATION

@@ -55,7 +55,7 @@ private:
 	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 	
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterController, Category = "Player Character", Meta = (DisplayName = "Player Character Controller"))
+	UPROPERTY(BlueprintGetter = GetPlayerCharacterController)
 	APlayerCharacterController* PlayerCharacterController;
 
 	/** The body collision component for the player. */
@@ -72,19 +72,19 @@ private:
 	
 	// VARIABLES
 	/** The target speed of the character. */
-	UPROPERTY(BlueprintGetter = GetTargetSpeed, Category = "Player Character|Locomotion", Meta = (DisplayName = "Target Movement Speed"))
+	UPROPERTY(BlueprintGetter = GetTargetSpeed)
 	float TargetSpeed {0.0f};
 
 	/** The scaled speed of the character. */
-	UPROPERTY(BlueprintGetter = GetScaledSpeed, Category = "Player Character|Locomotion", Meta = (DisplayName = "Scaled Movement Speed"))
+	UPROPERTY(BlueprintGetter = GetScaledSpeed)
 	float ScaledSpeed {0.0f};
 	
 	/** If true, the character is currently turning in place. */
-	UPROPERTY(BlueprintGetter = GetIsTurningInPlace, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
+	UPROPERTY(BlueprintGetter = GetIsTurningInPlace)
 	bool IsTurningInPlace {false};
 
 	/** The yaw delta value used for turn-in-place rotation. */
-	UPROPERTY(BlueprintGetter = GetYawDelta, Category = "Player Character|Locomotion", Meta = (DisplayName = "Yaw Delta"))
+	UPROPERTY(BlueprintGetter = GetYawDelta)
 	float YawDelta {0.f};
 
 	// TIMERS

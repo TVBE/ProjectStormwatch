@@ -24,11 +24,11 @@ class FROSTBITE_API UPlayerVfxComponent : public UActorComponent
 private:
 	// COMPONENTS
 	/** The particle emitter for the player's left foot. */
-	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter, Category = "Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
+	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter)
 	UNiagaraComponent* LeftFootEmitter;
 	
 	/** The particle emitter for the player's right foot. */
-	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter, Category = "Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
+	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter)
 	UNiagaraComponent* RightFootEmitter;
 	
 public:	

@@ -32,6 +32,8 @@ void UMusicSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	AudioComponent->bIsUISound = true;
 	AudioComponent->RegisterComponentWithWorld(World);
 
+	IConsoleManager::Get().RegisterConsoleCommand(TEXT("a.SetMusicEnabled"), TEXT("Enable or disable music"), ECVF_Default);
+
 	UE_LOG(LogMusic, Log, TEXT("Successfully initialized music subsystem."));
 }
 
@@ -45,7 +47,7 @@ void UMusicSubsystem::Deinitialize()
 	}
 
 	MusicScript = nullptr;
-
+	
 	Super::Deinitialize();
 }
 
@@ -94,4 +96,6 @@ void UMusicSubsystem::ActivateMusicSubystem(UMusicSettings* Settings)
 	}
 	UE_LOG(LogMusic, Log, TEXT("Activated music subsystem."));
 }
+
+
 

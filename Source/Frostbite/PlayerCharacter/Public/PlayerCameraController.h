@@ -31,7 +31,7 @@ private:
 	TSoftObjectPtr<UPlayerCameraConfiguration> ConfigurationAsset;
 
 	/** Pointer to the configuration asset for this component. */
-	UPROPERTY(BlueprintGetter = GetConfiguration, Category = "Camera|Configuration", Meta = (DisplayName = "Configuration"))
+	UPROPERTY(BlueprintGetter = GetConfiguration)
 	UPlayerCameraConfiguration* Configuration;
 
 	// VARIABLES

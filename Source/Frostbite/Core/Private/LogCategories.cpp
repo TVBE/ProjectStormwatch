@@ -13,3 +13,5 @@ DEFINE_LOG_CATEGORY(LogUsableObject)
 DEFINE_LOG_CATEGORY(LogGrabbableObject)
 DEFINE_LOG_CATEGORY(LogDraggableObject)
 DEFINE_LOG_CATEGORY(LogInventoryObject)
+
+DEFINE_LOG_CATEGORY(LogActorFunctionCaller)

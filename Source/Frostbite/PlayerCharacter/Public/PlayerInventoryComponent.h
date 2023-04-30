@@ -18,11 +18,11 @@ class FROSTBITE_API UPlayerInventoryComponent : public UActorComponent
 
 private:
 	/** The currently selected slot in the Inventory. */
-	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotIndex, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Current Selected Hotbar Slot"))
+	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotIndex)
 	int32 SelectedSlot {0};
 
 	/** The actor in the hotbar at the index of the selected slot. */
-	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotActor, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Current Selected Hotbar Actor"))
+	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotActor)
 	AActor* SelectedActor;
 
 	/** The amount of hotbar slots available for the inventory. */
@@ -31,7 +31,7 @@ private:
 	int32 HotbarSlots {4};
 
 	/** The entry of AActor pointers in the hotbar. This property can be treated as 'the hotbar'. */
-	UPROPERTY(BlueprintGetter = GetHotbar, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Hotbar"))
+	UPROPERTY(BlueprintGetter = GetHotbar)
 	TArray<AActor*> Hotbar;
 
 public:	

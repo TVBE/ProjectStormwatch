@@ -1,9 +1,9 @@
-// Copyright Notice
-
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 #include "FrostbiteFunctionLibrary.h"
 
-#include "DoorInterface.h"
 #include "DraggableObjectInterface.h"
 #include "FrostbiteWorldSubystem.h"
 #include "GrabbableObjectInterface.h"
@@ -70,8 +70,6 @@ UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(
 		break;
 	case EFrostbiteInterfaceType::PowerConsumer: InterfaceObject = FindInteractableObject<UPowerConsumer>(Actor);
 		break;
-	case EFrostbiteInterfaceType::Door: InterfaceObject = FindInteractableObject<UDoor>(Actor);
-		break;
 	default: break;
 	}
 
@@ -85,6 +83,11 @@ UObject* UFrostbiteFunctionLibrary::SearchActorForObjectThatImplementsInterface(
 	}
 
 	return InterfaceObject;
+}
+
+void UFrostbiteFunctionLibrary::CallFunctionOnActorUsingActorFunctionCaller(FActorFunctionCaller FunctionCaller)
+{
+	FunctionCaller.CallFunction();
 }
 
 APlayerCharacter* UFrostbiteFunctionLibrary::GetFrostbitePlayerCharacter(const UObject* WorldContextObject)

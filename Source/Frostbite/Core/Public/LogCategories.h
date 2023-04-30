@@ -16,3 +16,5 @@ DECLARE_LOG_CATEGORY_EXTERN(LogUsableObject, Log, All)
 DECLARE_LOG_CATEGORY_EXTERN(LogGrabbableObject, Log, All)
 DECLARE_LOG_CATEGORY_EXTERN(LogDraggableObject, Log, All)
 DECLARE_LOG_CATEGORY_EXTERN(LogInventoryObject, Log, All)
+
+DECLARE_LOG_CATEGORY_EXTERN(LogActorFunctionCaller, Log, All)

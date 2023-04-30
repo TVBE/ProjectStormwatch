@@ -67,15 +67,15 @@ private:
 	uint8 RotationInputLockCount {1};
 	
 	/** When true, the player can receive user input for movement. */
-	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput, Category = "Controller", Meta = (DisplayName = "Can Process Movement Input"))
+	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput)
 	bool CanProcessMovementInput {false};
 
 	/** When true, the player can receive user input for camera rotation. */
-	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput, Category = "Controller", Meta = (DisplayName = "Can Process Rotation Input"))
+	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput)
 	bool CanProcessRotationInput {false};
 
 	/** Smoothed control rotation. */
-	UPROPERTY(BlueprintGetter = GetPlayerControlRotation, Category = "Controller", Meta = (DisplayName = "Player Control Rotation"))
+	UPROPERTY(BlueprintGetter = GetPlayerControlRotation)
 	FRotator PlayerControlRotation;
 
 	/** The interpolation speed of the player control rotation.*/

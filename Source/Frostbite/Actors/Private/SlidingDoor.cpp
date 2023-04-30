@@ -56,7 +56,7 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 		{
 			if (CancelCloseOnSafetyZoneOverlap)
 			{
-				Execute_Open(this, this);
+				Open();
 			}
 			PushActorsOutOfSafetyBox(OverlappingActors, DeltaSeconds);
 		}
@@ -70,6 +70,7 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 	
 }
 
+/** Pushes actors out of the safety box when the door is closing. */
 void ASlidingDoor::PushActorsOutOfSafetyBox(TArray<AActor*> Actors, const float DeltaTime)
 {
 	constexpr float PushStrength {400.0f};
@@ -141,12 +142,14 @@ void ASlidingDoor::HandleCooldownFinished()
 void ASlidingDoor::HandleCloseTimerUpdate()
 {
 	{
-		Execute_Close(this, this);
+		Close();
 	}
 }
 
-bool ASlidingDoor::Open_Implementation(const AActor* Initiator)
+void ASlidingDoor::Open_Implementation()
 {
+	if (IsLocked) { return; }
+	
 	if (DoorState == EDoorState::Closed || DoorState == EDoorState::Closing)
 	{
 		if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
@@ -156,23 +159,33 @@ bool ASlidingDoor::Open_Implementation(const AActor* Initiator)
 				GetWorld()->GetTimerManager().ClearTimer(CloseCheckTimerHandle);
 			}
 		
-			EventDoorOpen();
-			return true;
+			DoorState = EDoorState::Opening;
+
+			SetSafetyZoneCollisionEnabled(false);
+	
+			OnDoorStateChanged.Broadcast(EDoorState::Opening);
+			
+			return;
 		}
 	}
-	return false;
 }
 
-bool ASlidingDoor::Close_Implementation(const AActor* Initiator)
+void ASlidingDoor::Close_Implementation()
 {
+	if (IsLocked && !CloseOnLock) { return; }
+	
 	if (DoorState == EDoorState::Open || DoorState == EDoorState::Opening)
 	{
 		if (RequiresPower && PowerConsumerComponent && PowerConsumerComponent->GetIsPowered() || !RequiresPower)
 		{
 			if (CanClose())
 			{
-				EventDoorClose();
-				return true;
+				DoorState = EDoorState::Closing;
+				OnDoorStateChanged.Broadcast(EDoorState::Closing);
+
+				SetActorTickEnabled(true);
+				
+				return;
 			}
 			if (const UWorld* World {GetWorld()})
 			{
@@ -181,19 +194,50 @@ bool ASlidingDoor::Close_Implementation(const AActor* Initiator)
 			}
 		}
 	}
-	return false;
 }
 
-bool ASlidingDoor::Trigger_Implementation(const AActor* Initiator)
+void ASlidingDoor::Lock_Implementation()
 {
-	Execute_Open(this, this);
-	return true;
+	if (DoorState == EDoorState::Closed || DoorState ==  EDoorState::Closing)
+	{
+		StateWhenLocked = EDoorState::Closed;		
+	}
+	else if (DoorState == EDoorState::Open || DoorState ==  EDoorState::Opening)
+	{
+		StateWhenLocked = EDoorState::Open;
+	}
+	
+	if (CloseOnLock)
+	{
+		Close();
+	}
+	IsLocked = true;
 }
 
-bool ASlidingDoor::Untrigger_Implementation(const AActor* Initiator)
+void ASlidingDoor::Unlock_Implementation()
 {
-	Execute_Close(this, this);
-	return true;
+	IsLocked = false;
+
+	if (!DoActionOnUnlock) { return; }
+	if (ActionOnUnlock == EDoorAction::Open)
+	{
+		Open();
+	}
+	else if (ActionOnUnlock == EDoorAction::Close)
+	{
+		Close();
+	}
+	else if (ActionOnUnlock == EDoorAction::Reset)
+	{
+		if (StateWhenLocked == EDoorState::Open)
+		{
+			Open();
+		}
+		else
+		{
+			Close();
+		}
+	}
 }
 
 bool ASlidingDoor::CanClose() const
@@ -208,15 +252,6 @@ bool ASlidingDoor::CanClose() const
 	return true;
 }
 
-void ASlidingDoor::EventDoorOpen_Implementation()
-{
-	DoorState = EDoorState::Opening;
-
-	SetSafetyZoneCollisionEnabled(false);
-	
-	OnDoorStateChanged.Broadcast(EDoorState::Opening);
-}
-
 void ASlidingDoor::EventDoorOpened_Implementation()
 {
 	DoorState = EDoorState::Open;
@@ -224,14 +259,6 @@ void ASlidingDoor::EventDoorOpened_Implementation()
 	SetSafetyZoneCollisionEnabled(false);
 	
 	OnDoorStateChanged.Broadcast(EDoorState::Open);
-}
-
-void ASlidingDoor::EventDoorClose_Implementation()
-{
-	DoorState = EDoorState::Closing;
-	OnDoorStateChanged.Broadcast(EDoorState::Closing);
-
-	SetActorTickEnabled(true);
 }
 
 void ASlidingDoor::EventDoorClosed_Implementation()

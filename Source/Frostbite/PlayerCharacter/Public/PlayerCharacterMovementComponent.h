@@ -60,11 +60,11 @@ public:
 
 private:
 	/** When true, the player is currently sprinting. */
-	UPROPERTY(BlueprintGetter = GetIsSprinting, Category = "PlayerCharacterMovementComponent", Meta = (Displayname = "Is Sprinting"))
+	UPROPERTY(BlueprintGetter = GetIsSprinting)
 	bool IsSprinting {false};
 
 	/** When true, the player is currently in the process of jumping. */
-	UPROPERTY(BlueprintGetter = GetIsJumping, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Jumping"))
+	UPROPERTY(BlueprintGetter = GetIsJumping)
 	bool IsJumping {false};
 
 public:
