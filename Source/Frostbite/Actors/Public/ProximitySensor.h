@@ -51,8 +51,8 @@ protected:
 	USceneComponent* Root;
 	
 	/** The collision component to use for detection. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sensor", Meta = (DisplayName = "Detection Sphere", AllowPrivateAccess = "true"))
-	USphereComponent* DetectionArea;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sensor", Meta = (DisplayName = "Detection Area"))
+	UCapsuleComponent* DetectionArea;
 
 	/** The update interval of the sensor. */
 	UPROPERTY(BlueprintGetter = GetPollInterval)

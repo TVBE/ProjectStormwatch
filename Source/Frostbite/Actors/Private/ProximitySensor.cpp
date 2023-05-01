@@ -6,8 +6,8 @@
 
 #include "Nightstalker.h"
 #include "PlayerCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Pawn.h"
 
 DEFINE_LOG_CATEGORY_CLASS(AProximitySensor, LogSensor)
@@ -19,7 +19,8 @@ AProximitySensor::AProximitySensor()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	
-	DetectionArea = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionArea"));
+	DetectionArea = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Detection Area"));
+	DetectionArea->bEditableWhenInherited = true;
 	DetectionArea->SetupAttachment(this->RootComponent);
 	DetectionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	DetectionArea->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);

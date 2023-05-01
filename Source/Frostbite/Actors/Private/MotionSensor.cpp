@@ -4,7 +4,7 @@
 
 #include "MotionSensor.h"
 #include "Components/PrimitiveComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Pawn.h"
 
 AMotionSensor::AMotionSensor()
@@ -21,29 +21,31 @@ void AMotionSensor::PostInitProperties()
 void AMotionSensor::Poll()
 {
 	IsActorDetected = false;
+
+	if (IsBroken) { return; }
 	
-	if (OverlappingActors.IsEmpty())
+	if (!OverlappingActors.IsEmpty())
 	{
-		EventOnPoll();
-		return;
-	}
-	
-	for (const AActor* Actor : OverlappingActors)
-	{
-		if (!IsActorOccluded(Actor) && IsActorMoving(Actor))
+		for (const AActor* Actor : OverlappingActors)
 		{
-			IsActorDetected = true;
-			break;
+			if (!IsActorOccluded(Actor) && IsActorMoving(Actor))
+			{
+				IsActorDetected = true;
+				break;
+			}
 		}
 	}
 	
 	if (IsActorDetected)
 	{
+		
 		if (IsTriggered)
 		{
 			EventOnPoll();
 			return;
 		}
+
+		SetState(ESensorState::Detecting);
 
 		if (const UWorld* World {GetWorld()})
 		{
@@ -58,10 +60,11 @@ void AMotionSensor::Poll()
 		{
 			IsAlerted = true;
 		}
+		
 		if (DetectionLevel >= DetectionThreshold)
 		{
 			IsTriggered = true;
-
+			
 			if (IsManualResetRequired)
 			{
 				if (const UWorld* World {GetWorld()})
@@ -72,12 +75,16 @@ void AMotionSensor::Poll()
 					}
 				}
 			}
+
+			SetState(ESensorState::Triggered);
 		}
 	}
 	else
 	{
 		if (IsAlerted)
 		{
+			SetState(ESensorState::Alerted);
+			
 			if (const UWorld* World {GetWorld()})
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
