@@ -11,29 +11,38 @@
 
 
 
-/** ----- Editortime ----- */
-
-void UReacousticSubsystem::GenerateNRTAssets()
-	{
-		
-	}
-
-void UReacousticSubsystem::GenerateRuntimeData()
-	{
-		
-	}
 
 
 
-/** ----- Runtime ----- */
+UReacousticSubsystem::UReacousticSubsystem()
+{
+	Settings = GetMutableDefault<UReacousticProjectSettings>();
+
+	//TODO: get all the settings from the project settngs and use them to populate wold with reacoustic objects without any functions in the level blueprint.
+}
 
 void UReacousticSubsystem::PostInitProperties()
 {
+	
 	if(!ReacousticSoundDataAsset || !UReacousticSoundDataRefMap)
 	{
 		UE_LOG(LogAssetData, Error, TEXT("Failed to instance data assets."))
 	}
+	
 	Super::PostInitProperties();
+	
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		World->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &UReacousticSubsystem::OnActorSpawned));
+	}
+}
+
+
+
+void UReacousticSubsystem::OnActorSpawned(AActor* Actor)
+{
+	UE_LOG(LogReacousticSubsystem, Warning, TEXT("On Actor spawned"));
 }
 
 void UReacousticSubsystem::RegisterComponent(UReacousticComponent* Component)

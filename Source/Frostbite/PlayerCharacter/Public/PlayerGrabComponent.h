@@ -106,6 +106,12 @@ private:
 
 	UPROPERTY()
 	float Gravity;
+
+	/** The velocity the object wil be thrown in. (Used to calculate the thrwoing trajecory) */
+	UPROPERTY()
+	FVector ThrowVelocity;
+
+	
 	
 public:
 	/** Grabs an actor. */
