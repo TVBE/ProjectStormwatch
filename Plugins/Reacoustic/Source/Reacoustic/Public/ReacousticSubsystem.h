@@ -9,8 +9,6 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "ReacousticSubsystem.generated.h"
 
-/** 
- */
 UCLASS()
 class REACOUSTIC_API  UReacousticSubsystem : public UWorldSubsystem
 {
@@ -22,7 +20,7 @@ private:
 
 
 public:
-	UReacousticSubsystem();
+
 	
 	/** The Reacoustic SoundData Data Asset. */
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data array Asset"))
@@ -36,6 +34,7 @@ public:
 	
 	
 public:
+	UReacousticSubsystem();
 	virtual void PostInitProperties() override;
 	void OnActorSpawned(AActor* Actor);
 
