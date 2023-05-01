@@ -22,7 +22,8 @@ void FActorFunctionCaller::CallFunction()
 			}
 			else
 			{
-				UE_LOG(LogActorFunctionCaller, Warning, TEXT("Function %s not found on actor %s."), *FunctionName.ToString(), *ValidActor->GetName());
+				UE_LOG(LogActorFunctionCaller, Warning, TEXT("Actor '%s' does not have function: '%s'."), *ValidActor->GetName(), *FunctionName.ToString());
+				//UE_LOG(LogActorFunctionCaller, Warning, TEXT("Function '%s' not found on actor '%s'."), *FunctionName.ToString(), *ValidActor->GetName());
 			}
 		}
 		else

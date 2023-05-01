@@ -71,7 +71,7 @@ private:
 	void UpdateDamagePercentage();
 
 	void StartCooldown();
-
+	
 	UFUNCTION()
 	void HandleCooldownFinished();
 	
