@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 using UnrealBuildTool;
 using System.Collections.Generic;

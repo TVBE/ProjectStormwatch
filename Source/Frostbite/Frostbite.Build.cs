@@ -1,4 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2022-present Barrelhouse
+// Written by Tim Verberne
+// This source code is part of the project Frostbite
 
 using UnrealBuildTool;
 
@@ -8,16 +10,20 @@ public class Frostbite : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PhysicsCore", "Niagara", "Reacoustic" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine" });
-
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime", "UnrealEd"});
 		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+		PublicDefinitions.Add("WITH_REACOUSTIC=1");
 
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Actors/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Core/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Interfaces/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Libraries/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/RoomSystem/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Audio/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/PlayerCharacter/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/Nightstalker/Public");
+		PublicIncludePaths.Add("$(ProjectDir)/Source/Frostbite/ActorComponents/Public");
 	}
 }

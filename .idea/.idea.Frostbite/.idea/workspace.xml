@@ -4,22 +4,55 @@
     <projectFile>Intermediate/ProjectFiles/Frostbite.vcxproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/ActorFunctionCaller.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/AuditoryEvent.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/ActorFunctionCaller.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/AuditoryEvent.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Mannequins/Materials/Instances/Quinn/MI_Quinn_02.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Private/PlayerCharacter/PlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Core/BP_FrostbiteGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Core/BP_FrostbiteGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/Thijs/Test_Puzzle.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/Thijs/Test_Puzzle.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestDoor_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/MusicSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Private/MusicSubsystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/MusicSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Audio/Public/MusicSubsystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/LogCategories.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/LogCategories.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/LogCategories.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/LogCategories.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Interfaces/Public/DoorInterface.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Libraries/Private/FrostbiteFunctionLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Libraries/Private/FrostbiteFunctionLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Libraries/Public/FrostbiteFunctionLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Libraries/Public/FrostbiteFunctionLibrary.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerAudioComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerAudioComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCameraController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterMovementComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerCharacterMovementComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerFlashlightComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerFlashlightComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerGrabComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerGrabComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInventoryComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInventoryComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerStateComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerStateComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerVfxComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerVfxComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Private/Core/PlayerSubsystem.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.1/Engine/Source/Runtime/Engine/Private/Components/CharacterMovementComponent.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteWorldSubystem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteWorldSubystem.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -29,22 +62,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;RiderCppLiveTemplatesSettingsId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "work-in-progress",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "RiderCppLiveTemplatesSettingsId",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\timve\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\timve\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="C++ Project.Frostbite">
     <configuration name="Frostbite" type="CppProject" factoryName="C++ Project">
       <configuration_1>
@@ -206,7 +244,141 @@
       <workItem from="1677056500375" duration="22000" />
       <workItem from="1677056726262" duration="12721000" />
       <workItem from="1677072791262" duration="2291000" />
-      <workItem from="1677077925085" duration="1644000" />
+      <workItem from="1677077925085" duration="7188000" />
+      <workItem from="1677144737408" duration="294000" />
+      <workItem from="1677145123405" duration="668000" />
+      <workItem from="1677147711810" duration="3715000" />
+      <workItem from="1677153767154" duration="9895000" />
+      <workItem from="1677182801769" duration="11231000" />
+      <workItem from="1677194182973" duration="2043000" />
+      <workItem from="1677230508101" duration="3146000" />
+      <workItem from="1677319947545" duration="6819000" />
+      <workItem from="1677327627879" duration="213000" />
+      <workItem from="1677327900220" duration="517000" />
+      <workItem from="1677334426002" duration="328000" />
+      <workItem from="1677499033825" duration="12674000" />
+      <workItem from="1677590301970" duration="272000" />
+      <workItem from="1677590646602" duration="853000" />
+      <workItem from="1677673764045" duration="8270000" />
+      <workItem from="1677682915988" duration="13146000" />
+      <workItem from="1677740198577" duration="1708000" />
+      <workItem from="1677751848509" duration="682000" />
+      <workItem from="1677789226027" duration="860000" />
+      <workItem from="1677926761382" duration="18789000" />
+      <workItem from="1678192912562" duration="603000" />
+      <workItem from="1678193575465" duration="4630000" />
+      <workItem from="1678268852022" duration="105000" />
+      <workItem from="1678269024732" duration="946000" />
+      <workItem from="1678270078104" duration="4672000" />
+      <workItem from="1678292986611" duration="1870000" />
+      <workItem from="1678364049613" duration="2463000" />
+      <workItem from="1678433595853" duration="2129000" />
+      <workItem from="1678436039010" duration="641000" />
+      <workItem from="1678437078943" duration="464000" />
+      <workItem from="1678439479168" duration="247000" />
+      <workItem from="1678439782479" duration="720000" />
+      <workItem from="1678532481042" duration="11303000" />
+      <workItem from="1678546347837" duration="747000" />
+      <workItem from="1678653647177" duration="306000" />
+      <workItem from="1678710511234" duration="331000" />
+      <workItem from="1678714947114" duration="750000" />
+      <workItem from="1678715816931" duration="251000" />
+      <workItem from="1678716467681" duration="580000" />
+      <workItem from="1678794277913" duration="38000" />
+      <workItem from="1678794384675" duration="811000" />
+      <workItem from="1678873669981" duration="153000" />
+      <workItem from="1678873929188" duration="629000" />
+      <workItem from="1678895883348" duration="640000" />
+      <workItem from="1679061028108" duration="1915000" />
+      <workItem from="1679064139436" duration="5290000" />
+      <workItem from="1679222277511" duration="9430000" />
+      <workItem from="1679238968920" duration="2372000" />
+      <workItem from="1679241533920" duration="798000" />
+      <workItem from="1679305595939" duration="11510000" />
+      <workItem from="1679399257134" duration="982000" />
+      <workItem from="1679400365284" duration="2475000" />
+      <workItem from="1679408417324" duration="2314000" />
+      <workItem from="1679495174880" duration="597000" />
+      <workItem from="1679523708055" duration="711000" />
+      <workItem from="1679566401789" duration="1462000" />
+      <workItem from="1679777694804" duration="315000" />
+      <workItem from="1679778045565" duration="27000" />
+      <workItem from="1679778099417" duration="1887000" />
+      <workItem from="1679781187962" duration="1829000" />
+      <workItem from="1679783288674" duration="4490000" />
+      <workItem from="1679904093873" duration="4752000" />
+      <workItem from="1679911985949" duration="91000" />
+      <workItem from="1679912125907" duration="7780000" />
+      <workItem from="1679999941329" duration="2499000" />
+      <workItem from="1680002554738" duration="9920000" />
+      <workItem from="1680013100651" duration="2269000" />
+      <workItem from="1680038045837" duration="443000" />
+      <workItem from="1680179630353" duration="1178000" />
+      <workItem from="1680201468819" duration="7308000" />
+      <workItem from="1680247799360" duration="944000" />
+      <workItem from="1680253213109" duration="4387000" />
+      <workItem from="1680291225339" duration="213000" />
+      <workItem from="1680291483948" duration="735000" />
+      <workItem from="1680348657908" duration="5870000" />
+      <workItem from="1680459674704" duration="9361000" />
+      <workItem from="1680469624239" duration="1155000" />
+      <workItem from="1680470838186" duration="1292000" />
+      <workItem from="1680509712065" duration="187000" />
+      <workItem from="1680509968692" duration="11783000" />
+      <workItem from="1680530460530" duration="3833000" />
+      <workItem from="1680534410494" duration="1093000" />
+      <workItem from="1680603036260" duration="4000000" />
+      <workItem from="1680617767943" duration="2136000" />
+      <workItem from="1680784359152" duration="19560000" />
+      <workItem from="1680812901511" duration="1304000" />
+      <workItem from="1680814251130" duration="168000" />
+      <workItem from="1680814719087" duration="722000" />
+      <workItem from="1680815610974" duration="1467000" />
+      <workItem from="1680817137735" duration="746000" />
+      <workItem from="1680852441752" duration="1244000" />
+      <workItem from="1680904505078" duration="280000" />
+      <workItem from="1680948337097" duration="9599000" />
+      <workItem from="1680993917501" duration="1133000" />
+      <workItem from="1681039535879" duration="9152000" />
+      <workItem from="1681054535820" duration="488000" />
+      <workItem from="1681055110043" duration="15846000" />
+      <workItem from="1681143995246" duration="2225000" />
+      <workItem from="1681146272339" duration="5510000" />
+      <workItem from="1681208637625" duration="226000" />
+      <workItem from="1681208928938" duration="4851000" />
+      <workItem from="1681323163556" duration="5930000" />
+      <workItem from="1681342231945" duration="2200000" />
+      <workItem from="1681344501165" duration="1091000" />
+      <workItem from="1681376124129" duration="1791000" />
+      <workItem from="1681377975451" duration="8724000" />
+      <workItem from="1681651949016" duration="8588000" />
+      <workItem from="1681670982231" duration="1563000" />
+      <workItem from="1681672801057" duration="1260000" />
+      <workItem from="1681674152534" duration="5803000" />
+      <workItem from="1681718726484" duration="305000" />
+      <workItem from="1681719144383" duration="6820000" />
+      <workItem from="1681759374701" duration="7579000" />
+      <workItem from="1681905717112" duration="10019000" />
+      <workItem from="1681931058510" duration="1443000" />
+      <workItem from="1681935825260" duration="5589000" />
+      <workItem from="1681941538244" duration="4932000" />
+      <workItem from="1682004443680" duration="13120000" />
+      <workItem from="1682080160356" duration="3263000" />
+      <workItem from="1682192333823" duration="494000" />
+      <workItem from="1682242834183" duration="606000" />
+      <workItem from="1682244034256" duration="1358000" />
+      <workItem from="1682343359291" duration="290000" />
+      <workItem from="1682343785569" duration="5801000" />
+      <workItem from="1682422999057" duration="5194000" />
+      <workItem from="1682433403893" duration="2243000" />
+      <workItem from="1682666624806" duration="2138000" />
+      <workItem from="1682671347574" duration="5909000" />
+      <workItem from="1682683954733" duration="3492000" />
+      <workItem from="1682688887079" duration="29000" />
+      <workItem from="1682689005832" duration="2139000" />
+      <workItem from="1682691220453" duration="985000" />
+      <workItem from="1682838363275" duration="8459000" />
+      <workItem from="1682848581294" duration="6543000" />
     </task>
     <servers />
   </component>
