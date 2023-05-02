@@ -5,7 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "RoomComponentBase.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "Custom", Meta = (BlueprintSpawnableComponent))
 class FROSTBITE_API URoomComponentBase : public UActorComponent
 {
 	GENERATED_BODY()
@@ -29,9 +29,9 @@ protected:
 	bool Enabled{true};
 
 	/** Base events to be called to activate various functionality for room components.*/
-	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "On Activate"))
 	void OnActivate();
-	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "On Deactivate"))
 	void OnDeactivate();
 	
 

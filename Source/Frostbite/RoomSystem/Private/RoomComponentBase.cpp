@@ -1,6 +1,8 @@
 // RoomComponentBase.cpp
 
 #include "RoomComponentBase.h"
+
+#include "PlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
@@ -62,7 +64,7 @@ void URoomComponentBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if (OtherActor->IsA<ACharacter>())
+	if (OtherActor->IsA<APlayerCharacter>())
 		{
 			PlayerInsideCollider = true;
 			if (Enabled)
@@ -75,7 +77,7 @@ void URoomComponentBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 
 void URoomComponentBase::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor->IsA<ACharacter>())
+	if (OtherActor->IsA<APlayerCharacter>())
 	{
 		PlayerInsideCollider = false;
 		if (Enabled)
@@ -87,7 +89,7 @@ void URoomComponentBase::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 
 void URoomComponentBase::OnActorSpawned(AActor* SpawnedActor)
 {
-	if (SpawnedActor->IsA<ACharacter>())
+	if (SpawnedActor->IsA<APlayerCharacter>())
 	{
 		/** Check if player is inside collider and do something if necessary */
 		if (PlayerInsideCollider && Enabled)
