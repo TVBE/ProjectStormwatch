@@ -28,9 +28,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomComponent")
 	bool Enabled{true};
 
-	/** Base functions to be called to activate various functionality for room components.*/
-	virtual void DoSomethingOnBeginOverlap();
-	virtual void DoSomethingOnEndOverlap();
+	/** Base events to be called to activate various functionality for room components.*/
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
+	void OnActivate();
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
+	void OnDeactivate();
 	
 
 private:

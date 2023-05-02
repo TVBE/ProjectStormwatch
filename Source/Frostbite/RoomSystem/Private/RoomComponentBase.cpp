@@ -36,7 +36,7 @@ void URoomComponentBase::BeginPlay()
 		PlayerInsideCollider = OverlappingActors.Num() > 0;
 		if(PlayerInsideCollider)
 		{
-			DoSomethingOnBeginOverlap();
+			OnActivate();
 		}
 		
 	}
@@ -67,7 +67,7 @@ void URoomComponentBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 			PlayerInsideCollider = true;
 			if (Enabled)
 			{
-				DoSomethingOnBeginOverlap();
+				OnActivate();
 			}
 		}
 }
@@ -80,7 +80,7 @@ void URoomComponentBase::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 		PlayerInsideCollider = false;
 		if (Enabled)
 		{
-			DoSomethingOnEndOverlap();
+			OnDeactivate();
 		}
 	}
 }
@@ -94,19 +94,20 @@ void URoomComponentBase::OnActorSpawned(AActor* SpawnedActor)
 		{
 			if(Enabled)
 			{
-				DoSomethingOnBeginOverlap();
+				OnActivate();
 			}
 		}
 	}
 }
 
-void URoomComponentBase::DoSomethingOnBeginOverlap()
+void URoomComponentBase::OnActivate_Implementation()
 {
 	/** Implement the desired behavior here */
 	UE_LOG(LogTemp, Warning, TEXT("Player has overlapped %s"), *ParentBoxCollider->GetName());
 }
 
-void URoomComponentBase::DoSomethingOnEndOverlap()
+
+void URoomComponentBase::OnDeactivate_Implementation()
 {
 	/** Implement the desired behavior here */
 	UE_LOG(LogTemp, Warning, TEXT("Player has stopped overlapping %s"), *ParentBoxCollider->GetName());
