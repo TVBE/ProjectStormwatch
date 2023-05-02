@@ -62,8 +62,7 @@ private:
 
 	
 public:	
-	UReacousticComponent();
-	
+	UReacousticComponent();	
 	/** Callback function for the OnHit event delegate of a physics enabled static mesh component.
 	 *	@HitComp The component that was hit.
 	 *	@OtherActor The other actor that was hit by the component.

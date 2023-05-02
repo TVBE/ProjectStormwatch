@@ -3,14 +3,14 @@
 // This source code is part of the project Frostbite
 
 #include "PlayerGrabComponent.h"
-
 #include "KineticActorComponent.h"
-#include "LogCategories.h"
 #include "PlayerCharacter.h"
-#include "SWarningOrErrorBox.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/MovementComponent.h"
-#include "Serialization/JsonTypes.h"
+#include "Kismet/GameplayStaticsTypes.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+#include "Reacoustic.h"
+
 
 DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
 
@@ -22,6 +22,7 @@ void UPlayerGrabComponent::OnRegister()
 	{
 		Camera = PlayerCharacter->GetCamera();
 		Movement = PlayerCharacter->GetPlayerCharacterMovement();
+		
 	}
 
 	UWorld* World = GetWorld();
@@ -72,6 +73,18 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 					 *We normalize the value here since it otherwise would be need to be normalised multiple times later.*/
 					ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
 				}
+
+				FPredictProjectilePathParams ProjetileParams{FPredictProjectilePathParams(GrabbedComponentSize,ReleaseLocation, ThrowVelocity,10000)};
+				FPredictProjectilePathResult Projectileresults{};
+				if(UGameplayStatics::PredictProjectilePath(this,ProjetileParams,Projectileresults))
+				{
+					DrawDebugSphere(this->GetWorld(),Projectileresults.HitResult.Location,10.0,16,FColor(0,100,0),false,-1.0,0,1.0);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("DIT TANTOE DING DOET HET NIET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????"));
+				}
+				
 			}
 		}
 	}
@@ -230,10 +243,11 @@ void UPlayerGrabComponent::PerformThrow()
 		
 
 		
+		ThrowVelocity = FinalDirection * ThrowingStrength;
 
 		/** Set the physics velocity of the grabbed component to the calculated throwing direction */
-		GrabbedComponent->SetPhysicsLinearVelocity(FinalDirection * ThrowingStrength);
-		
+		GrabbedComponent->SetPhysicsLinearVelocity(ThrowVelocity);
+
 		GrabbedComponent->WakeRigidBody();
 		/** Release the grabbed component after the throw */
 		GrabbedComponent->SetWorldLocation(ReleaseLocation);
