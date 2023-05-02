@@ -28,7 +28,7 @@ public:
 
 protected:
 	/** Called when the player character is ready for use in the world. */
-	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "On Player Spawn"))
-	void OnPlayerSpawn(APlayerCharacter* Character);
+	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Player Spawn"))
+	void EventOnPlayerSpawn(APlayerCharacter* Character);
 	
 };

@@ -75,11 +75,11 @@ public:
 	/** Checks and returns the current player ground movement type.
 	 *	@Return An enumeration describing the current ground movement type of the movement component.
 	 */
-	UFUNCTION(BlueprintPure, Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (DisplayName = "Get Ground Movement Type"))
+	UFUNCTION(BlueprintPure)
 	EPlayerGroundMovementType GetGroundMovementType() const;
 
 	/** Sets whether the character movement component is sprinting or not. */
-	UFUNCTION(Category = "PlayerCharacterMovementComponent|Locomotion", Meta = (Displayname = "Set Is Sprinting "))
+	UFUNCTION()
 	void SetIsSprinting(const bool Value);
 
 protected:
@@ -89,9 +89,9 @@ protected:
 
 public:
 	
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Sprinting"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsSprinting() const {return IsSprinting; }
 
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacterMovementComponent", Meta = (DisplayName = "Is Jumping"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsJumping() const {return IsJumping; }
 };

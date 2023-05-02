@@ -26,7 +26,6 @@ class FROSTBITE_API UPlayerFlashlightComponent : public UActorComponent
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerFlashlightComponent, Log, All)
 
 private:
-	// COMPONENTS
 	/** The flashlight for the player. */
 	UPROPERTY(BlueprintGetter = GetFlashlight)
 	USpotLightComponent* Flashlight;
@@ -34,8 +33,7 @@ private:
 	/** The SpringArmComponent the flashlight is attached to. */
 	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm)
 	USpringArmComponent* FlashlightSpringArm;
-
-	// CONFIGURATION
+	
 	/** The configuration asset to use for this component. */
 	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
 	TSoftObjectPtr<UPlayerFlashlightConfiguration> ConfigurationAsset;
@@ -43,37 +41,34 @@ private:
 	/** Pointer to the configuration asset for this component. */
 	UPROPERTY()
 	UPlayerFlashlightConfiguration* Configuration;
-
-	// VARIABLES
+	
 	/** Pointer to the camera of the owner. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerFlashlightController", Meta = (DisplayName = "Mesh", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* Mesh;
 
 	/** Pointer to the mesh of the owner. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerFlashlightController", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
 
 	/** Pointer to the player character movement component of the owner.*/
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerFlashlightController", Meta = (DisplayName = "Player Character Movement Component", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Player Character Movement Component", AllowPrivateAccess = "true"))
 	UPlayerCharacterMovementComponent* Movement;
 	
 	/** Alpha value for blending the flashlight rotation based on movement. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerFlashlightController", Meta = (DisplayName = "Movement Alpha", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	float MovementAlpha {0.f};
 	
 public:	
-	// Sets default values for this component's properties
 	UPlayerFlashlightComponent();
 	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Enables or disables the flashlight. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerFlashlightController", Meta = (DisplayName = "Set Flashlight Enabled"))
+	UFUNCTION(BlueprintCallable)
 	void SetFlashlightEnabled(const bool Value);
 
 	/** Returns whether the flashlight is enabled or not. */
-	UFUNCTION(BlueprintPure, Category = "PlayerFlashlightController", Meta = (DisplayName = "Is Flashlight Enabled"))
+	UFUNCTION(BlueprintPure)
 	bool IsFlashlightEnabled() const;
 
 	/** Updates the movement alpha value. */
@@ -107,15 +102,15 @@ private:
 
 public:
 	/** Returns the flashlight component. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE USpotLightComponent* GetFlashlight() const {return Flashlight; }
 
 	/** Returns the flashlight SpringArmComponent. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Flashlight Spring Arm"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE USpringArmComponent* GetFlashlightSpringArm() const {return FlashlightSpringArm; }
 
 	/** Returns the Flashlight configuration. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Configuration", Meta = (DisplayName = "Get Flashlight Configuration"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return Configuration; }
 };
 

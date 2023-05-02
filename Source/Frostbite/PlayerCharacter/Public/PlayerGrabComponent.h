@@ -25,7 +25,7 @@ class UPlayerGrabComponent : public UPhysicsHandleComponent
 	DECLARE_LOG_CATEGORY_CLASS(LogGrabComponent, Log, All)
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "GrabComponent|Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
 	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;
 	
 	/** Pointer to the configuration data asset instance for this component. */
@@ -39,10 +39,9 @@ public:
 
 private:
 	/** Pointer to the camera component of the player. */
-	UPROPERTY(EditAnywhere, Category = "PlayerCameraReference", Meta = (DisplayName = "PlayerCamera"))
+	UPROPERTY()
 	UCameraComponent* Camera;
 	
-
 	/** If true, the grab component is currently priming an object for throwing. */
 	UPROPERTY(BlueprintGetter = GetIsPrimingThrow)
 	bool IsPrimingThrow{false};
@@ -109,29 +108,29 @@ private:
 	
 public:
 	/** Grabs an actor. */
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	UFUNCTION(BlueprintCallable)
 	void GrabActor(AActor* ActorToGrab);
 
-	/** Called when you release the object or place the object */
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	/** Called when you release the object or place the object. */
+	UFUNCTION(BlueprintCallable)
 	void ReleaseObject();
 
-	/** Called to start charging a throw*/
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	/** Called to start charging a throw. */
+	UFUNCTION(BlueprintCallable)
 	void BeginPrimingThrow();
 	
-	/** Called to cancel charging a throw*/
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	/** Called to cancel charging a throw. */
+	UFUNCTION(BlueprintCallable)
 	void StopPrimingThrow();
 
-	/** Called to execute a throw during the priming of a throw*/
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab")
+	/** Called to execute a throw during the priming of a throw. */
+	UFUNCTION(BlueprintCallable)
 	void PerformThrow();
 	
 	UFUNCTION()
 	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool ThrowOverHands);
 
-	/** Calculate the rotated hand offset based on the camera rotation.*/
+	/** Calculate the rotated hand offset based on the camera rotation. */
 	UFUNCTION(Category = "Player Physics Grab")
 	void UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset);
 
@@ -139,16 +138,16 @@ public:
 	void ApplyToPhysicsHandle();
 	
 	/** Will be updated when a component is being grabbed. */
-	UFUNCTION(BlueprintCallable, Category="Player Physics Grab")
+	UFUNCTION(BlueprintCallable)
 	void UpdateTargetLocationWithRotation(float DeltaTime);
 
-	/** Gets triggered when the zoom axis value gets changed*/
+	/** Gets triggered when the zoom axis value gets changed. */
 	void UpdateZoomAxisValue(float ZoomAxis);
 
-	/** Updates on tick when you are manually rotating the object.*/
+	/** Updates on tick when you are manually rotating the object. */
 	void UpdateMouseImputRotation(FVector2d MouseDelta);
 
-	/** The third interaction which is currenty rotating the object using mouse input.*/
+	/** The third interaction which is currenty rotating the object using mouse input. */
 	void BeginTetriaryInteraction();
 	void EndTetriaryInteraction();
 

@@ -19,15 +19,15 @@ class UMeshInteractionComponent : public USceneComponent, public IInteractableOb
 
 private:
 	/** When true, the InteractionType and InterationHandType will be set automatically according according to the meshes weight and size. */
-	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Set Automatically"))
+	UPROPERTY(EditInstanceOnly, Meta = (DisplayName = "Set Automatically"))
 	bool IsAutoConfigurable {true};
 	
 	/** When true, the mesh is draggable instead of grabbable. */
-	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Is Heavy", EditCondition = "!IsAutoConfigurable", EditConditionHides))
+	UPROPERTY(EditInstanceOnly, Meta = (EditCondition = "!IsAutoConfigurable", EditConditionHides))
 	bool IsHeavy {false};
 
 	/** When true, the mesh requires two hands to interact with instead of one. */
-	UPROPERTY(EditInstanceOnly, Category = "Interaction", Meta = (DisplayName = "Is Large", EditCondition = "!IsAutoConfigurable", EditConditionHides))
+	UPROPERTY(EditInstanceOnly, Meta = (EditCondition = "!IsAutoConfigurable", EditConditionHides))
 	bool IsLarge {false};
 	
 	/** If true, the CanAddToInventory boolean is not set automatically, but has to be configured manually instead. */

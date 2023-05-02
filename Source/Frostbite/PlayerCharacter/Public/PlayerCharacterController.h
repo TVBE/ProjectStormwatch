@@ -33,24 +33,24 @@ public:
 	UPlayerCharacterConfiguration* CharacterConfiguration;
 
 	/** Delegate for when the player controller should start or stop processing player movement input. */
-	UPROPERTY(BlueprintAssignable, Category = "Controller|Input", Meta = (DisplayName = "On Movement Input Lock Changed"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
 
 	/** Delegate for when the player controller should start or stop processing player rotation input. */
-	UPROPERTY(BlueprintAssignable, Category = "Controller|Input", Meta = (DisplayName = "On Rotation Input Lock Changed"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
 
 protected:
 	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
-	UPROPERTY(BlueprintReadOnly, Category = "Controller|Actors", Meta = (DisplayName = "Player Character"))
+	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* PlayerCharacter {nullptr};
 
 	/** If true, the player is currently pressing the sprint button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Controller|Intention", Meta = (DisplayName = "Is Sprint Pending"))
+	UPROPERTY(BlueprintReadOnly, Category = "Input")
 	bool IsSprintPending {false};
 
 	/** If true, the player is currently pressing the crouch button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Controller|Intention", Meta = (DisplayName = "Is Crouch Pending"))
+	UPROPERTY(BlueprintReadOnly, Category = "Input")
 	bool IsCrouchPending {false};
  
 private:
@@ -79,18 +79,18 @@ private:
 	FRotator PlayerControlRotation;
 
 	/** The interpolation speed of the player control rotation.*/
-	UPROPERTY(EditAnywhere, Category = "Controller|Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
+	UPROPERTY(EditAnywhere, Category = "Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
 
 public:
 	APlayerCharacterController();
 	
 	/** Returns whether the PlayerController has any movement input or not. */
-	UFUNCTION(BlueprintPure, Category = "Controller|Input", Meta = (DisplayName = "Has Any Movement Input"))
+	UFUNCTION(BlueprintPure, Category = "Input", Meta = (DisplayName = "Has Any Movement Input"))
 	bool GetHasMovementInput() const;
 
 	/** Returns the current horizontal rotation input value from the PlayerController. */
-	UFUNCTION(BlueprintPure, Category = "Controller|Input", Meta = (DisplayName = "Get Horizontal Rotation Input"))
+	UFUNCTION(BlueprintPure, Category = "Input")
 	float GetHorizontalRotationInput() const;
 
 	/** Sets CanProcessMovementInput. This function can only be called by a PlayerSubsystem. */
@@ -103,20 +103,20 @@ public:
 	 *	@Value Whether a lock should be added or removed.
 	 *	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Controller|Input", Meta = (DisplayName = "Set Player Movement Input Lock"))
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerMovementInputLock(const bool Value);
 
 	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
 	*	@Value Whether a lock should be added or removed.
 	*	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Controller|Input", Meta = (DisplayName = "Set Player Movement Rotation Lock"))
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerRotationInputLock(const bool Value);
 	
 	/** Fades in the screen for the player from black by a specified amount.
 	 *	@Duration The fade-in duration.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Controller", Meta = (DisplayName = "Fade From Black"))
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Fade From Black"))
 	void FadePlayerCameraFromBlack(const float Duration);
 
 protected:
@@ -150,21 +150,7 @@ private:
 	/** Tries to find an InteractionComponent in the player character. */
 	UFUNCTION()
 	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
-
-public:
-	/** Returns whether the player controller can process movement input. */
-	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Can Process Movement Input"))
-	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
-
-	/** Returns whether the player controller can process rotation input. */
-	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Can Process Rotation Input"))
-	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
-
-	/** Returns the player control rotation. */
-	UFUNCTION(BlueprintGetter, Category = "Controller", Meta = (DisplayName = "Player Control Rotation"))
-	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
-
-private:
+	
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
 	void HandleHorizontalRotation(float Value);
@@ -240,4 +226,17 @@ private:
 	/** Handles the callback for when the player has released the InventoryAction button. */
 	UFUNCTION()
 	void HandleInventoryActionReleased();
+
+public:
+	/** Returns whether the player controller can process movement input. */
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+
+	/** Returns whether the player controller can process rotation input. */
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+
+	/** Returns the player control rotation. */
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
 };

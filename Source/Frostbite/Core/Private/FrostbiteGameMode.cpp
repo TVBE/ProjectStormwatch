@@ -10,11 +10,11 @@ void AFrostbiteGameMode::NotifyPlayerCharacterBeginPlay(APlayerCharacter* Charac
 	if (Character)
 	{
 		IsPlayerActive = true;
-		OnPlayerSpawn(Character);
+		EventOnPlayerSpawn(Character);
 	}
 }
 
-void AFrostbiteGameMode::OnPlayerSpawn_Implementation(APlayerCharacter* Character)
+void AFrostbiteGameMode::EventOnPlayerSpawn_Implementation(APlayerCharacter* Character)
 {
 }
 

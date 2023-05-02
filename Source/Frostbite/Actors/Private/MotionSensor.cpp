@@ -41,7 +41,6 @@ void AMotionSensor::Poll()
 		
 		if (IsTriggered)
 		{
-			EventOnPoll();
 			return;
 		}
 
@@ -89,14 +88,12 @@ void AMotionSensor::Poll()
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 				{
-					EventOnPoll();
 					return;
 				}
 				StartCooldown();
 			}
 		}
 	}
-	EventOnPoll();
 }
 
 bool AMotionSensor::IsActorMoving(const AActor* Actor) const

@@ -20,6 +20,6 @@ class FROSTBITE_API IInteractableObject
 
 public:
 	/** Returns the interaction widget location in world space. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable Object", Meta = (Displayname = "Get Interaction Widget Location"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable Object")
 	FVector GetInteractionWidgetLocation() const;
 };

@@ -56,7 +56,7 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 		{
 			if (CancelCloseOnSafetyZoneOverlap)
 			{
-				Open();
+				EventOpen();
 			}
 			PushActorsOutOfSafetyBox(OverlappingActors, DeltaSeconds);
 		}
@@ -130,11 +130,11 @@ void ASlidingDoor::HandleCooldownFinished()
 void ASlidingDoor::HandleCloseTimerUpdate()
 {
 	{
-		Close();
+		EventClose();
 	}
 }
 
-void ASlidingDoor::Open_Implementation()
+void ASlidingDoor::EventOpen_Implementation()
 {
 	if (IsLocked) { return; }
 	
@@ -158,7 +158,7 @@ void ASlidingDoor::Open_Implementation()
 	}
 }
 
-void ASlidingDoor::Close_Implementation()
+void ASlidingDoor::EventClose_Implementation()
 {
 	if (IsLocked && !CloseOnLock) { return; }
 	
@@ -184,7 +184,7 @@ void ASlidingDoor::Close_Implementation()
 	}
 }
 
-void ASlidingDoor::Lock_Implementation()
+void ASlidingDoor::EventLock_Implementation()
 {
 	if (DoorState == EDoorState::Closed || DoorState ==  EDoorState::Closing)
 	{
@@ -197,33 +197,33 @@ void ASlidingDoor::Lock_Implementation()
 	
 	if (CloseOnLock)
 	{
-		Close();
+		EventClose();
 	}
 	IsLocked = true;
 }
 
-void ASlidingDoor::Unlock_Implementation()
+void ASlidingDoor::EventUnlock_Implementation()
 {
 	IsLocked = false;
 
 	if (!DoActionOnUnlock) { return; }
 	if (ActionOnUnlock == EDoorAction::Open)
 	{
-		Open();
+		EventOpen();
 	}
 	else if (ActionOnUnlock == EDoorAction::Close)
 	{
-		Close();
+		EventClose();
 	}
 	else if (ActionOnUnlock == EDoorAction::Reset)
 	{
 		if (StateWhenLocked == EDoorState::Open)
 		{
-			Open();
+			EventOpen();
 		}
 		else
 		{
-			Close();
+			EventClose();
 		}
 	}
 }

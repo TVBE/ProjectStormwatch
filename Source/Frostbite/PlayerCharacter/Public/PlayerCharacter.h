@@ -36,22 +36,22 @@ class FROSTBITE_API APlayerCharacter : public ACharacter
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCharacter, Log, All)
 
 private:
-	// CONFIGURATION
 	/** The character configuration data asset. */
-	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "Player Character|Configuration", Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
+	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "Configuration",
+		Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
 	UPlayerCharacterConfiguration* Configuration;
 	
-	// COMPONENTS
 	/** The camera for the player. */
-	UPROPERTY(BlueprintGetter = GetCamera, EditAnywhere, Category = "Player Character|Camera", Meta = (DisplayName = "Camera"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetCamera, Category = "Components")
 	UCameraComponent* Camera;
 	
 	/** The CameraController that handles first person camera behavior. */
-	UPROPERTY(BlueprintGetter = GetCameraController, EditAnywhere, Category = "Player Character|Components", Meta = (DisplayName = "Camera Controller"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetCameraController, Category = "Components")
 	UPlayerCameraController* CameraController;
 	
 	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterMovement, EditAnywhere, Category = "Player Character|Components", Meta = (DisplayName = "Player Character Movement Component"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetPlayerCharacterMovement, Category = "Components",
+		Meta = (DisplayName = "Player Character Movement Component"))
 	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
 	
 	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
@@ -59,18 +59,17 @@ private:
 	APlayerCharacterController* PlayerCharacterController;
 
 	/** The body collision component for the player. */
-	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Body Collision", Meta = (DisplayName = "Body Collision"))
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UPlayerBodyCollisionComponent* BodyCollision;
 
 	/** The foot collision component for the left foot. */
-	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Foot Collision", Meta = (DisplayName = "Left Foot Collision"))
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UPlayerFootCollisionComponent* LeftFootCollision;
 	
 	/** The foot collision component for the right foot. */
-	UPROPERTY(EditDefaultsOnly, Category = "Player Character|Foot Collision", Meta = (DisplayName = "Right Foot Collision"))
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UPlayerFootCollisionComponent* RightFootCollision;
 	
-	// VARIABLES
 	/** The target speed of the character. */
 	UPROPERTY(BlueprintGetter = GetTargetSpeed)
 	float TargetSpeed {0.0f};
@@ -86,8 +85,7 @@ private:
 	/** The yaw delta value used for turn-in-place rotation. */
 	UPROPERTY(BlueprintGetter = GetYawDelta)
 	float YawDelta {0.f};
-
-	// TIMERS
+	
 	/** The timer handle for the hard and heavy landing stun duration. */
 	UPROPERTY()
 	FTimerHandle FallStunTimer;
@@ -121,18 +119,18 @@ public:
 	void StopSprinting();
 	
 	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
-	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Get Clearance Above Pawn"))
+	UFUNCTION(BlueprintPure)
 	float GetClearanceAbovePawn() const;
 	
 	/** Checks whether the player can currently jump. */
-	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Can Jump"))
+	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Can Jump"))
 	bool CanPerformJump() const;
 	
 	/** Checks whether the player can currently enter crouch. */
 	bool CanCrouch() const override;
 	
 	/** Checks whether the player can stand up and stop crouching. */
-	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Can Stand Up"))
+	UFUNCTION(BlueprintPure)
 	bool CanStandUp() const;
 
 protected:
@@ -184,43 +182,43 @@ private:
 
 public:
 	/** Returns the Character configuration. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Configuration", Meta = (DisplayName = "Get Character Configuration"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const {return Configuration; }
 	
 	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "PlayerCharacterController"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE APlayerCharacterController* GetPlayerCharacterController() const {return PlayerCharacterController; }
 	
 	/** Returns the camera component. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Components", Meta = (DisplayName = "Camera"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UCameraComponent* GetCamera() const {return Camera; }
 	
 	/** Returns the Player Camera Controller. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Components", Meta = (DisplayName = "Camera Controller"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerCameraController* GetCameraController() const {return CameraController; }
 	
 	/** Returns the PlayerCharacterMovementComponent. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Components", Meta = (DisplayName = "Player Character Movement Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const {return PlayerCharacterMovement; }
 
 	/** Returns the target speed of the player character. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Target Movement Speed"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetTargetSpeed() const { return TargetSpeed; }
 
 	/** Returns the scaled speed of the player character. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Scaled Movement Speed"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetScaledSpeed() const { return ScaledSpeed; }
 	
 	/** Returns if the character is currently turning in place. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Turning In Place"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsTurningInPlace() const { return IsTurningInPlace; }
 
 	/** Returns the character yaw delta between the facing direction of the character and the camera. */
-	UFUNCTION(BlueprintGetter, Category = "Player Character|Locomotion", Meta = (DisplayName = "Yaw Delta"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetYawDelta() const { return YawDelta; }
 
 	/** Returns whether the character is currently sprinting. */
-	UFUNCTION(BlueprintPure, Category = "Player Character|Locomotion", Meta = (DisplayName = "Is Sprinting"))
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsSprinting() const
 	{
 		if(PlayerCharacterMovement)

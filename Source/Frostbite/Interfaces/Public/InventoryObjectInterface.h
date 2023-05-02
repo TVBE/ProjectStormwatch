@@ -38,7 +38,7 @@ public:
 	 *	@Param Actor The actor that owns this item when its added to an inventory.
 	 *	@Return Whether the item was successfully added to the inventory.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Object", Meta = (Displayname = "Add To Inventory"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Object")
 	bool AddToInventory(const AActor* Actor);
 
 	/** Takes the item from the player's inventory.

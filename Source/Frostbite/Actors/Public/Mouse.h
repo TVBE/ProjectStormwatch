@@ -22,16 +22,16 @@ class AMouse : public AActor
 
 public:
 	/** Delegate called when the mouse registers movement. */
-	UPROPERTY(BlueprintAssignable, Category = "Mouse|Delegates", Meta = (DisplayName = "On Mouse Movement"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Mouse Movement"))
 	FOnMouseMovementDelegate OnMouseMovement;
 	
 protected:
 	/** The static mesh component for the mouse. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Mouse|Components", Meta = (DisplayName = "Static Mesh"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", Meta = (DisplayName = "Static Mesh"))
 	UStaticMeshComponent* MouseMesh;
 
 	/** The mesh interaction component for the mouse. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Mouse|Components", Meta = (DisplayName = "Interaction Component"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	UMeshInteractionComponent* InteractionComponent;
 
 public:	

@@ -20,16 +20,16 @@ class UPowerConsumerComponent : public UActorComponent, public IPowerConsumer
 
 public:
 	/** Delegate that is called when the power state of this power consumer changes. */
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Power Consumer|Delegates", Meta = (DisplayName = "On Power State Changed"))
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Delegates")
 	FOnPowerConsumerComponentStateChangedDelegate OnPowerStateChanged;
 
 	/** The target power source this power consumer is dependent on for power. */
-	UPROPERTY(BlueprintReadOnly, Category = "Power Consumer", Meta = (DisplayName = "Target Power Source"))
+	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Target Power Source"))
 	TSoftObjectPtr<APowerSource> PowerSource;
 
 private:
 	/** If true, this object is powered. */
-	UPROPERTY(BlueprintGetter = GetIsPowered, EditAnywhere, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetIsPowered)
 	bool IsPowered {false};
 
 public:	
@@ -43,6 +43,6 @@ protected:
 
 public:
 	/** Returns whether the component is powered or not. */
-	UFUNCTION(BlueprintPure, Category = "Power Consumer", Meta = (DisplayName = "Is Powered"))
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool GetIsPowered() const { return IsPowered; }
 };

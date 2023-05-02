@@ -23,16 +23,15 @@ void FActorFunctionCaller::CallFunction()
 			else
 			{
 				UE_LOG(LogActorFunctionCaller, Warning, TEXT("Actor '%s' does not have function: '%s'."), *ValidActor->GetName(), *FunctionName.ToString());
-				//UE_LOG(LogActorFunctionCaller, Warning, TEXT("Function '%s' not found on actor '%s'."), *FunctionName.ToString(), *ValidActor->GetName());
 			}
 		}
 		else
 		{
-			UE_LOG(LogActorFunctionCaller, Warning, TEXT("Failed to get a valid actor %s."), *Target.ToString());
+			UE_LOG(LogActorFunctionCaller, Warning, TEXT("Failed to get a valid actor: '%s'."), *Target.ToString());
 		}
 	}
 	else
 	{
-		UE_LOG(LogActorFunctionCaller, Warning, TEXT("Actor %s is not loaded or valid."), *Target.ToString());
+		UE_LOG(LogActorFunctionCaller, Warning, TEXT("Actor is not loaded or valid: '%s'."), *Target.ToString());
 	}
 }

@@ -18,11 +18,11 @@ class UMusicScript : public UObject
 
 public:
 	/** The audio component that is used for music playback. */
-	UPROPERTY(BlueprintReadOnly, Category = "Music", Meta = (DisplayName = "Audio Component"))
+	UPROPERTY(BlueprintReadOnly)
 	UAudioComponent* AudioComponent;
 
 protected:
-	UFUNCTION(BlueprintNativeEvent, Category = "Music", Meta = (DisplayName = "Music Begin Play"))
+	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "Music Begin Play"))
 	void EventOnMusicBeginplay();
 	
 public:

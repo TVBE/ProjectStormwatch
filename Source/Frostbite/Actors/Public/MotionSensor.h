@@ -15,7 +15,7 @@ class AMotionSensor : public AProximitySensor
 
 protected:
 	/** Minimum velocity required to trigger the motion sensor. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sensor", Meta = (DisplayName = "Velocity Threshold"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float VelocityThreshold {50.0f};
 	
 public:

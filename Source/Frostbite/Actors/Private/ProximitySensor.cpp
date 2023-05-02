@@ -100,10 +100,8 @@ void AProximitySensor::Poll()
 	
 	if (IsActorDetected)
 	{
-		
 		if (IsTriggered)
 		{
-			EventOnPoll();
 			return;
 		}
 
@@ -151,14 +149,12 @@ void AProximitySensor::Poll()
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 				{
-					EventOnPoll();
 					return;
 				}
 				StartCooldown();
 			}
 		}
 	}
-	EventOnPoll();
 }
 
 /** Determines if the given actor is occluded by another object using a line trace. */
@@ -232,6 +228,19 @@ void AProximitySensor::SetState(const ESensorState NewState)
 	if (SensorState != NewState)
 	{
 		SensorState = NewState;
+
+		switch (NewState)
+		{
+		case ESensorState::Triggered: DoActions(ActionsOnTrigger);
+			break;
+		case ESensorState::Alerted: DoActions(ActionsOnAlerted);
+			break;
+		case ESensorState::Idle: DoActions(ActionsOnIdle);
+			break;
+		case ESensorState::Detecting: DoActions(ActionsOnDetection);
+		default: break;
+		}
+		
 		OnStateChanged.Broadcast(NewState);
 	}
 }
@@ -249,8 +258,14 @@ void AProximitySensor::HandleCooldownFinished()
 	SetState(ESensorState::Idle);
 }
 
-void AProximitySensor::EventOnPoll_Implementation()
+void AProximitySensor::DoActions(TArray<FActorFunctionCaller>& Actions)
 {
+	if (Actions.IsEmpty()) { return; }
+
+	for (FActorFunctionCaller& FunctionCaller : Actions)
+	{
+		FunctionCaller.CallFunction();
+	}
 }
 
 void AProximitySensor::ResetSensor()

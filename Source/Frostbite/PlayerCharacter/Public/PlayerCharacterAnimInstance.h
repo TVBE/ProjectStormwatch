@@ -36,72 +36,71 @@ public:
 
 protected:
 	/** Booleans to be evaluated through Fast-Path in the animation state machine. All data has to be evaluated and copied over to the AnimInstance during runtime. */
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Movement Pending"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsMovementPending {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Moving"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsMoving {false};
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Moving Longitudinally"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsMovingLongitudinally {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Moving Laterally"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsMovingLaterally {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Stop Longitudinal Movement"))
+	UPROPERTY(BlueprintReadWrite)
 	bool StopLongitudinalMovement {false};
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Turning Left"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsTurningLeft {false};
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Turning Right"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsTurningRight {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Jumping"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsJumping {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Falling"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsFalling {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Airborne"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsAirborne {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Do Hard Landing"))
+	UPROPERTY(BlueprintReadWrite)
 	bool DoHardLanding {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Do Heavy Landing"))
+	UPROPERTY(BlueprintReadWrite)
 	bool DoHeavyLanding {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Sprinting"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsSprinting {false};
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Do Sprint Start"))
+	UPROPERTY(BlueprintReadWrite)
 	bool DoSprintStart {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Do Sprint Stop"))
+	UPROPERTY(BlueprintReadWrite)
 	bool DoSprintSop {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Is Crouching"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsCrouching {false};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Speed"))
+	UPROPERTY(BlueprintReadWrite)
 	float Speed {0.0f};
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Turn Speed"))
+	UPROPERTY(BlueprintReadWrite)
 	float TurnSpeed {0.0f};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Direction"))
+	UPROPERTY(BlueprintReadWrite)
 	float Direction {0.0f};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Fall Time"))
+	UPROPERTY(BlueprintReadWrite)
 	float FallTime {0.0f};
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player Character AnimInstance|State Machine", Meta = (DisplayName = "Vertical Alpha"))
+	UPROPERTY(BlueprintReadWrite)
 	float VerticalAlpha {0.0f};
 
-private:
 	/** Pointer to the player character that owns the skeletal mesh component that this anim instance is driving. */
-	UPROPERTY(BlueprintReadOnly, Category = "Player Character AnimInstance", Meta = (Displayname = "Player Character", AllowPrivateAccess = "true", BlueprintProtected))
+	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* PlayerCharacter;
 
 protected:
@@ -121,14 +120,14 @@ protected:
 	 *	@param Foot The foot that is performing the step.
 	 *	@Return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
 	 */
-	UFUNCTION(BlueprintPure, Category = "Player Character AnimInstance", Meta = (DisplayName = "Get Footstep Data"))
+	UFUNCTION(BlueprintPure)
 	FStepData GetFootstepData(const ELeftRight Foot);
 
 	/** Returns data about a 'handstep' at the specified hand, like the object or physical material underneath the hand at the time of the handstep.
 	*	@Param Hand The hand that is performing the step.
 	*	@Return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep. 
 	*/
-	UFUNCTION(BlueprintPure, Category = "Player Character AnimInstance", Meta = (DisplayName = "Get Handstep Data"))
+	UFUNCTION(BlueprintPure)
 	FStepData GetHandstepData(const ELeftRight Hand);
 
 private:

@@ -18,19 +18,19 @@ class UMeshDamageComponent : public USceneComponent
 
 public:
 	/** Delegate that is called when the damage percentage of the component is changed. */
-	UPROPERTY(BlueprintAssignable, Category = "Damage|Delegates", Meta = (DisplayName = "On Damaged"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnDamagePercentageChangedDelegate OnDamaged;
 
 	/** Delegate that is called when the damage threshold of the component is reached. */
-	UPROPERTY(BlueprintAssignable, Category = "Damage|Delegates", Meta = (DisplayName = "On Damage Threshold Reached"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnDamageThresholdReachedDelegate OnDamageThresholdReached;
 
 	/** The damage threshold for the component to broadcast it's OnDamageThresholdReached delegate. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Damage", Meta = (DisplayName = "Threshold", Units = "Newtons"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (Units = "Newtons"))
 	float Threshold {100000.0f};
 
 	/** The minimum impact force required to increment the damage. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Damage", Meta = (DisplayName = "Minimum Required Force", Units = "Newtons"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Minimum Required Force", Units = "Newtons"))
 	float ImpulseForceThreshold {500.0f};
 
 private:
@@ -53,7 +53,7 @@ public:
 	UMeshDamageComponent();
 
 	/** Resets the damage component. */
-	UFUNCTION(BlueprintCallable, Category = "Damage", Meta = (DisplayName = "Reset Damage"))
+	UFUNCTION(BlueprintCallable)
 	void ResetDamage();
 
 protected:
