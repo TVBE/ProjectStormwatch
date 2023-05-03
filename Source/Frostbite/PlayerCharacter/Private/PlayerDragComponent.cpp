@@ -32,7 +32,7 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, FVector Location)
+void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVector& Location)
 {
 	/** check if there's a reference and cast to static mesh component to get a ref to the first static mesh. */
 	if (!ActorToGrab || DraggedComponent) { return; }

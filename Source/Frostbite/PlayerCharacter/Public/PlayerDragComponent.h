@@ -28,7 +28,7 @@ public:
 	class UCameraComponent* Camera;
 
 	UFUNCTION(BlueprintCallable, Category = "Drag")
-	void DragActorAtLocation(AActor* ActorToDrag, FVector Location);
+	void DragActorAtLocation(AActor* ActorToDrag, const FVector& Location);
 
 	UFUNCTION(BlueprintCallable, Category = "Drag")
 	void ReleaseActor();
