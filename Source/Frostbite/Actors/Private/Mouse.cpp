@@ -3,8 +3,7 @@
 // This source code is part of the project Frostbite
 
 #include "Mouse.h"
-
-#include "MeshInteractionComponent.h"
+#include "MeshGrabComponent.h"
 
 AMouse::AMouse()
 {
@@ -14,8 +13,8 @@ AMouse::AMouse()
 	MouseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = MouseMesh;
 
-	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>("Interaction Component");
-	InteractionComponent->SetupAttachment(RootComponent);
+	GrabComponent = CreateDefaultSubobject<UMeshGrabComponent>("Interaction Component");
+	GrabComponent->SetupAttachment(RootComponent);
 }
 
 void AMouse::PostInitProperties()

@@ -9,7 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Desktop.generated.h"
 
-class UMeshInteractionComponent;
+class UMeshGrabComponent;
 class UBoxComponent;
 class UStaticMeshComponent;
 
@@ -35,7 +35,7 @@ protected:
 
 	/** The mesh interaction component for this actor. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UMeshInteractionComponent* InteractionComponent;
+	UMeshGrabComponent* GrabComponent;
 	
 	/** The text displayed on the desktop screen. */
 	UPROPERTY(BlueprintReadWrite, Category = "Text")

@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Mouse.generated.h"
 
-class UMeshInteractionComponent;
+class UMeshGrabComponent;
 class UStaticMeshComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseMovementDelegate, FVector2D, Vector);
@@ -32,7 +32,7 @@ protected:
 
 	/** The mesh interaction component for the mouse. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	UMeshInteractionComponent* InteractionComponent;
+	UMeshGrabComponent* GrabComponent;
 
 public:	
 	AMouse();

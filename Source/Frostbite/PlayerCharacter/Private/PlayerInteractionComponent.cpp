@@ -4,6 +4,7 @@
 
 #include "PlayerInteractionComponent.h"
 
+#include "DraggableObjectInterface.h"
 #include "GrabbableObjectInterface.h"
 #include "InventoryObjectInterface.h"
 #include "UsableObjectInterface.h"
@@ -291,6 +292,10 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 			if (UObject* GrabbableObject {FindInteractableObject<UGrabbableObject>(CurrentInteractableActor)})
 			{
 				GrabComponent->GrabActor(CurrentInteractableActor);
+			}
+			else if (UObject* DraggableObject {FindInteractableObject<UDraggableObject>(CurrentInteractableActor)})
+			{
+				// DragComponent-> CALL FUNCTION HERE
 			}
 		}
 	}
