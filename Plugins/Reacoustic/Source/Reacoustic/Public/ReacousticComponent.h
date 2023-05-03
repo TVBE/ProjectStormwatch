@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
+#include "ReacousticSubsystem.h"
 #include "ReacousticComponent.generated.h"
 
 class ReacousticSoundDataRef_Map;
@@ -31,6 +32,7 @@ private:
 	/** The Reacoustic Sound Data Reference Map.*/
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map", AllowPrivateAccess = "true"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
+
 
 	/** These variables are used to calculate the difference in distance and time between hits.
 	 * Used to filter out unwanted hits.

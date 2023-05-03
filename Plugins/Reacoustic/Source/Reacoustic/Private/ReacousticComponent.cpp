@@ -51,7 +51,14 @@ void UReacousticComponent::BeginPlay()
 					if (StaticMeshComponent->IsSimulatingPhysics() && StaticMeshComponent->BodyInstance.bNotifyRigidBodyCollision)
 					{
 						MeshComponent = StaticMeshComponent;
-						// StaticMeshComponent->SetGenerateOverlapEvents(true);
+						if(MeshAudioData.OnsetDataMap.IsEmpty())
+						{
+							if(UReacousticSubsystem* Subsystem {GetWorld()->GetSubsystem<UReacousticSubsystem>()})
+							{
+								MeshAudioData = Subsystem->ReturnSoundDataForMesh(MeshComponent);
+							}
+							
+						}
 						break;
 					}
 				}
@@ -72,6 +79,8 @@ void UReacousticComponent::BeginPlay()
 	{
 		UE_LOG(LogReacousticComponent, Warning, TEXT("Failed to get mesh component"));
 	}
+
+
 }
 
 

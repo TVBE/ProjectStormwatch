@@ -135,6 +135,24 @@ TArray<AActor*> UReacousticSubsystem::GetCompatibleActorsOfClass(UClass* ClassTy
     return Array;
 }
 
+FReacousticSoundData UReacousticSubsystem::ReturnSoundDataForMesh(UStaticMeshComponent* StaticMeshComponent)
+{
+	/** Find the ReacousticSoundDataRef for the StaticMeshComponent. */
+	for (const auto& [Mesh, SoundDataRef] : UReacousticSoundDataRefMap->MeshMapEntries)
+	{
+		/** Get the mesh and associated sound data reference from the UReacousticSoundDataRefMap. */
+		UStaticMesh* MeshPtr {Mesh};
+		const int32 SoundDataRefValue {SoundDataRef};
+
+		/** If the current mesh is the same as the StaticMeshComponent's mesh, retrieve the row number that matches the sound data reference. */
+		if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
+		{
+			return ReacousticSoundDataAsset->AudioData[SoundDataRefValue];
+		}
+	}
+	/** If no matching mesh was found, return the default sound data.*/
+	return ReacousticSoundDataAsset->AudioData[0];
+}
 
 /** For current use: adds a blueprint component derrived from the reacoustics c++ component. */
 void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<class UReacousticComponent> ComponentClass)
@@ -167,24 +185,12 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 				continue;
 			}
 
-			if (const UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorComponent)})
+			if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorComponent)})
 			{
-				/** Find the ReacousticSoundDataRef for the StaticMeshComponent. */
-				for (const auto& [Mesh, SoundDataRef] : UReacousticSoundDataRefMap->MeshMapEntries)
-				{
-					/** Get the mesh and associated sound data reference from the UReacousticSoundDataRefMap. */
-					UStaticMesh* MeshPtr {Mesh};
-					const int32 SoundDataRefValue {SoundDataRef};
-
-					/** If the current mesh is the same as the StaticMeshComponent's mesh, retrieve the row number that matches the sound data reference. */
-					if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
-					{
-						const FReacousticSoundData MeshSoundData {ReacousticSoundDataAsset->AudioData[SoundDataRefValue]};
-						AddBPReacousticComponentToActor(Actor, ComponentClass, MeshSoundData);
-					}
-				}
+				AddBPReacousticComponentToActor(Actor, ComponentClass, ReturnSoundDataForMesh(StaticMeshComponent));
 			}
 		}
 	}
 }
+
 
