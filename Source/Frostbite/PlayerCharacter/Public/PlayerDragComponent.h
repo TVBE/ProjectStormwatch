@@ -14,6 +14,7 @@ class FROSTBITE_API UPlayerDragComponent : public UActorComponent
 
 public:
 	UPlayerDragComponent();
+	void OnRegister();
 
 protected:
 	virtual void BeginPlay() override;
@@ -22,7 +23,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Configuration")
-	UPlayerDragConfiguration* Configuration;
+	UDragConfiguration* Configuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Camera;
@@ -49,8 +50,13 @@ private:
 	
 	bool ApplyForceOnCenterMass{false};
 
+	UPROPERTY()
 	UPrimitiveComponent* DraggedComponent;
 
+	UPROPERTY()
+	class UPlayerCharacterMovementComponent* Movement;
+
+	float Gravity;
 
 	FVector DraggedLocationOffset;
 
@@ -68,13 +74,13 @@ private:
 };
 /** Configuration asset to fine tune all variables within the drag component*/
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class FROSTBITE_API UPlayerDragConfiguration : public UDataAsset
+class FROSTBITE_API UDragConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab Settings")
-	float LetGoDistance{500.f};
+	float LetGoDistance{50000.f};
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
