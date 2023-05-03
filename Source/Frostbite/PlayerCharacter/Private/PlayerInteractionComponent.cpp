@@ -298,6 +298,7 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 				
 				DragComponent->DragActorAtLocation(CurrentInteractableActor, CameraTraceHitResult.Location);
 			}
+			else{UE_LOG(LogTemp,Warning,TEXT("FininteractableObject returned nothing"))}
 		}
 	}
 }

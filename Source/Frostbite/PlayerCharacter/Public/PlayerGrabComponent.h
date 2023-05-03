@@ -160,6 +160,7 @@ public:
 protected:
 	virtual void OnRegister() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay() override;
 
 public:
 	/** Returns the actor that is currently being grabbed. */
@@ -196,7 +197,7 @@ public:
 
 	/** The distance on which the player will let the prop go*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
-	float LetGoDistance{30.0f};
+	float LetGoDistance{200.0f};
 
 	/** The minimum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -242,10 +243,10 @@ public:
 
 	/**The distance the object will back up when you charge the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	FVector ThrowingBackupVector{0.0,0.0,0.0};
+	FVector ThrowingBackupVector{-10.0,0.0,0.0};
 	/**The strength of the shaking when charging a throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float ThrowingShakeSize{0.1f};
+	float ThrowingShakeSize{0.05f};
 
 	
 

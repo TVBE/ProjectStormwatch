@@ -36,65 +36,85 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Check if GrabbedComponent is not null before updating its location and rotation
 	if (GrabbedComponent)
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
-		
-		/** If the distance between the location and target location is too big, let the object go. */
-		
-		if (!IsPrimingThrow) 
-		{
-			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
-			{
-				ReleaseObject();
-			}
-		}
 
-		/** The looping function to handle the priming of the throw*/
-		if(IsPrimingThrow)
+		// Check if Configuration is not null before using it to update the zoom level
+		if (Configuration)
 		{
-			/** The timer that handles the time it takes before the player starts priming the throw.*/
-			if(PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
+			if (!IsPrimingThrow)
 			{
-				PrePrimingThrowTimer += DeltaTime;
+				// Check if the distance between the location and target location is too big, let the object go
+				if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+				{
+					ReleaseObject();
+				}
 			}
-			else
+			if (IsPrimingThrow)
 			{
-				WillThrowOnRelease = true;
-				
-				if(CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+				if (PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
 				{
-					CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
-				}
-				
-				if(PrePrimingThrowTimer <= 1.0)
-				{
-					/**The timeline to be used by various on tick functions that update location.
-					 *We normalize the value here since it otherwise would be need to be normalised multiple times later.*/
-					ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
-				}
-
-				FPredictProjectilePathParams ProjetileParams{FPredictProjectilePathParams(GrabbedComponentSize,ReleaseLocation, ThrowVelocity,10000)};
-				FPredictProjectilePathResult Projectileresults{};
-				if(UGameplayStatics::PredictProjectilePath(this,ProjetileParams,Projectileresults))
-				{
-					DrawDebugSphere(this->GetWorld(),Projectileresults.HitResult.Location,10.0,16,FColor(0,100,0),false,-1.0,0,1.0);
+					PrePrimingThrowTimer += DeltaTime;
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("DIT TANTOE DING DOET HET NIET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????"));
+					WillThrowOnRelease = true;
+					
+					if (CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+					{
+						CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+					}
+					
+					if (PrePrimingThrowTimer <= 1.0)
+					{
+						/**The timeline to be used by various on tick functions that update location.
+						*We normalize the value here since it otherwise would be need to be normalised multiple times later.
+						*/
+						ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
+						
+					}
+
+					/** Check if Camera is not null before using it to predict projectile path */
+					if (Camera)
+					{
+						FPredictProjectilePathParams ProjetileParams{ FPredictProjectilePathParams(GrabbedComponentSize, ReleaseLocation, ThrowVelocity, 10000) };
+						FPredictProjectilePathResult Projectileresults{};
+						if (UGameplayStatics::PredictProjectilePath(this, ProjetileParams, Projectileresults))
+						{
+							DrawDebugSphere(this->GetWorld(), Projectileresults.HitResult.Location, 10.0, 16, FColor(0, 100, 0), false, -1.0, 0, 1.0);
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("DIT TANTOE DING DOET HET NIET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????"));
+						}
+					}
+					else{UE_LOG(LogGrabComponent,Warning,TEXT("No camera found."))}
 				}
-				
 			}
 		}
+		else{UE_LOG(LogGrabComponent,Warning,TEXT("No configuration added"))}
 	}
+	else{UE_LOG(LogGrabComponent,Warning,TEXT("No grabbed actor found"))}
+}
+
+void UPlayerGrabComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	SetComponentTickEnabled(false);
 }
 
 /** Grab the object pass it to the physicshandle and capture the relative object rotation*/
 void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 {
 	/** check if there's a reference and cast to static mesh component to get a ref to the first static mesh. */
-	if (!ActorToGrab || GrabbedComponent) { return; }
+	if (!ActorToGrab || GrabbedComponent)
+		{
+			UE_LOG(LogGrabComponent, Warning, TEXT("No actor references"));
+			return;
+		}
 	if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))})
 	{
 		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
@@ -110,6 +130,10 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 
 		/** Disable the colission with the player. */
 		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	}
+	else
+	{
+		UE_LOG(LogGrabComponent,Warning,TEXT("NoStaticmeshFound"))
 	}
 
 
@@ -276,19 +300,9 @@ float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector T
 	float I{Velocity / cos(Theta)};
 
 	/** Solve for the angle theta for a balistic trajectory hitting target location with the given velocity.
-	 * ThetaOver and ThetaUnder respectively are the high angle and low angle that solve this equation.
-	 */
+	/** the calculation of the low trajectory that solves the requirements.*/
+	Theta = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
 
-	//if(overhands)
-	//{
-		/** the calculation of the low trajectory that solves the requirements.*/
-		Theta = atan((I * I - sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-	//}
-	//else
-	//{
-		/** the calculation of the high trajectory that solves the requirements.*/
-		//Theta = atan((I * I + sqrt(I * I * I * I - G * (G * HD * HD + 0.0*D.Z * I * I))) / (G * HD));
-	//}
 	return FMath::RadiansToDegrees(Theta);
 }
 
@@ -327,13 +341,12 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 /** The looping function that updates the target location and rotation of the currently grabbed object*/
 void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 {
-	if (!GrabbedComponent) { return; }
+	if (!GrabbedComponent || !Configuration) { return; }
 	AActor* CompOwner = this->GetOwner();
 	
 	if (CompOwner)
 	{
-		/** Update the zoom level dependent on the scroll wheel and the movement type.*/
-		if(Movement && Movement->GetIsSprinting())
+		if (Movement && Movement->GetIsSprinting())
 		{
 			CurrentZoomLevel = CurrentZoomLevel - Configuration->WalkingRetunZoomSpeed * DeltaTime;
 		}
@@ -341,7 +354,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		{
 			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * Configuration->ZoomSpeed * DeltaTime;
 		}
-		/** In any case, clam the zoom level within the min max of configuration*/
+		
 		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
 	}
 	
@@ -355,10 +368,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		{
 			//TODO; Slerp the rotation to a surface.
 		}
-		
-		
-		
-		SetTargetLocationAndRotation( TargetLocation,TargetRotation);
+		SetTargetLocationAndRotation(TargetLocation, TargetRotation);
 	}
 }
 
