@@ -30,7 +30,7 @@ public:
 	
 	/** Pointer to the configuration data asset instance for this component. */
 	UPROPERTY()
-	UPlayerPhysicsGrabConfiguration* Configuration;
+	UPlayerGrabConfiguration* Configuration;
 
 	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
 	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
@@ -185,7 +185,7 @@ public:
 
 /** Configuration asset to fine tune all variables within the physics grab component*/
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class FROSTBITE_API UPlayerPhysicsGrabConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerGrabConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

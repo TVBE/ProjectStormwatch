@@ -8,8 +8,9 @@
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
-class UPlayerPhysicsGrabConfiguration;
+class UPlayerGrabConfiguration;
 class UPlayerDragComponent;
+class UPlayerDragConfiguration;
 class UPlayerUseComponent;
 class UPlayerInventoryComponent;
 class UPlayerGrabComponent;
@@ -116,7 +117,7 @@ private:
 	
 	/** For setting the parameters of the playerPhysicsGrabComponent. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
-	TSoftObjectPtr<UPlayerPhysicsGrabConfiguration> PlayerPhysicsGrabConfiguration;
+	TSoftObjectPtr<UPlayerGrabConfiguration> PlayerPhysicsGrabConfiguration;
 
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */

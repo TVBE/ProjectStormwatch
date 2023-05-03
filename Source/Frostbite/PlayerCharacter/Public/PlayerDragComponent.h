@@ -1,6 +1,3 @@
-// Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
-// This source code is part of the project Frostbite
 
 #pragma once
 
@@ -8,17 +5,90 @@
 #include "Components/ActorComponent.h"
 #include "PlayerDragComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
-	Meta = (DisplayName = "Player Drag Component", ShortToolTip = "Component for dragging physics objects."))
-class UPlayerDragComponent : public UActorComponent
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class FROSTBITE_API UPlayerDragComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	UPlayerDragComponent();
+	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+	UPlayerDragComponent();
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Drag Configuration")
+	UPlayerDragConfiguration* Configuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+	class UCameraComponent* Camera;
+
+	UFUNCTION(BlueprintCallable, Category = "Drag")
+	void DragActorAtLocation(AActor* ActorToDrag, FVector Location);
+
+	UFUNCTION(BlueprintCallable, Category = "Drag")
+	void ReleaseActor();
+
+	UFUNCTION(BlueprintCallable, Category = "Zoom")
+	void UpdateZoomAxisValue(float ZoomAxis);
+
+private:
+	void UpdateTargetForceWithLocation(float DeltaTime);
+	
+	void ApplyTargetForce(FVector TargetLocation, bool ApplyForceOnCenterMass);
+
+
+	void UpdateTargetLocationWithRotation(float DeltaTime);
+
+	void DragComponentAtLocationWithRotation(class UPrimitiveComponent* InComponent, FName InSocketName, FVector InLocation, FRotator InRotation);
+	
+	
+	bool ApplyForceOnCenterMass{false};
+
+	UPrimitiveComponent* DraggedComponent;
+
+
+	FVector DraggedLocationOffset;
+
+
+	float DraggedComponentSize;
+
+	FVector TargetLocation;
+
+
+	float CurrentZoomLevel;
+
+
+	float CurrentZoomAxisValue;
+
+};
+/** Configuration asset to fine tune all variables within the drag component*/
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
+class FROSTBITE_API UPlayerDragConfiguration : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab Settings")
+	float LetGoDistance{500.f};
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	float ZoomSpeed{500.f};
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	float MinZoomLevel{100.f};
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	float MaxZoomLevel{1000.f};
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Force Settings")
+	float ApplyTargetForce{1000.f};
 };
