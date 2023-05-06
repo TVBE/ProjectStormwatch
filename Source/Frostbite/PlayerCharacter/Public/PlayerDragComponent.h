@@ -3,30 +3,48 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerDragComponent.generated.h"
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FROSTBITE_API UPlayerDragComponent : public UActorComponent
+class UCameraComponent;
+class APlayerCharacter;
+
+
+
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	Meta = (DisplayName = "Player Drag Component", ShortToolTip = "Component for dragging physics objects."))
+class FROSTBITE_API UPlayerDragComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
 
 public:
-	UPlayerDragComponent();
-	void OnRegister();
+
 
 protected:
+	void OnRegister() override;
 	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Returns the actor that is currently being grabbed. */
+	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
+	FORCEINLINE AActor* GetDraggedActor() const
+	{
+		if (const UPrimitiveComponent* Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
+		return nullptr; 
+	}
 
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Configuration")
 	UDragConfiguration* Configuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Camera;
+
+	UPROPERTY()
+	float CameraRotationMultiplier{1.0f};
 
 	UFUNCTION(BlueprintCallable, Category = "Drag")
 	void DragActorAtLocation(AActor* ActorToDrag, const FVector& Location);
@@ -38,21 +56,17 @@ public:
 	void UpdateZoomAxisValue(float ZoomAxis);
 
 private:
-	void UpdateTargetForceWithLocation(float DeltaTime);
+
+	void UpdateTargetLocation(float DeltaTime);
+
+	void UpdateCameraRotationSpeed(float DeltaTime);
+
 	
-	void ApplyTargetForce(FVector TargetLocation, bool ApplyForceOnCenterMass);
-
-
-	void UpdateTargetLocationWithRotation(float DeltaTime);
-
-	void DragComponentAtLocationWithRotation(class UPrimitiveComponent* InComponent, FName InSocketName, FVector InLocation, FRotator InRotation);
-	
+	UFUNCTION()
+	void ApplyToPhysicsHandle();
 	
 	bool ApplyForceOnCenterMass{false};
-
-	UPROPERTY()
-	UPrimitiveComponent* DraggedComponent;
-
+	
 	UPROPERTY()
 	class UPlayerCharacterMovementComponent* Movement;
 
@@ -80,21 +94,43 @@ class FROSTBITE_API UDragConfiguration : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab Settings")
-	float LetGoDistance{50000.f};
+	float LetGoDistance{300.f};
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
-	float ZoomSpeed{500.f};
+	float ZoomSpeed{0.0f};
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
-	float MinZoomLevel{100.f};
+	float MinZoomLevel{0.0f};
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
 	float MaxZoomLevel{1000.f};
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float CameraRotationDecreasingStrength{1.0f};
+	
+	
+	// ... PhysicsHandleSettings ... 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Force Settings")
-	float ApplyTargetForce{1000.f};
+	/** Linear damping of the handle spring. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
+	float LinearDamping{1000.0f};
+
+	/** Linear stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
+	float LinearStiffness{1000.0f};
+
+	/** Angular damping of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
+	float AngularDamping{0.0f};
+
+	/** Angular stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
+	float AngularStiffness{0.0f};
+
+	/** How quickly we interpolate the physics target transform */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
+	float InterpolationSpeed{1.0f};
 };
