@@ -118,11 +118,11 @@ public:
 
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearDamping{100.0f};
+	float LinearDamping{10.0f};
 
 	/** Linear stiffness of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearStiffness{100.0f};
+	float LinearStiffness{10.0f};
 
 	/** Angular damping of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
@@ -134,5 +134,5 @@ public:
 
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
-	float InterpolationSpeed{5.0f};
+	float InterpolationSpeed{50.0f};
 };
