@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ReacousticDataTypes.h"
 #include "Engine/DeveloperSettings.h"
 #include "UObject/SoftObjectPath.h"
 #include "ReacousticSettings.generated.h"
@@ -29,6 +30,16 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
 	FSoftObjectPath ReacousticSurfaceSounds;
+
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticComponent))
+	FSoftObjectPath ReacousticComponent;
+
+	/** The GENERATED data used by the reacoustic subsystem.*/
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataAsset))
+	FSoftObjectPath SoundDataAsset;
+	
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataRefMap))
+	FSoftObjectPath SoundDataRefMap;
 
 	/** Calls the GenerateRuntimeData function in the subsystem.*/
 	void GenerateRuntimeData();

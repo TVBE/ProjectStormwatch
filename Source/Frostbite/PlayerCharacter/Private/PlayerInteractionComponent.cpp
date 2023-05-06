@@ -281,7 +281,7 @@ void UPlayerInteractionComponent::EndPrimaryInteraction()
 
 void UPlayerInteractionComponent::BeginSecondaryInteraction()
 {
-	if (GrabComponent)
+	if (GrabComponent && DragComponent)
 	{
 		if (GrabComponent->GetGrabbedActor())
 		{
@@ -295,8 +295,10 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 			}
 			else if (UObject* DraggableObject {FindInteractableObject<UDraggableObject>(CurrentInteractableActor)})
 			{
-				// DragComponent-> CALL FUNCTION HERE
+				
+				DragComponent->DragActorAtLocation(CurrentInteractableActor, CameraTraceHitResult.Location);
 			}
+			else{UE_LOG(LogTemp,Warning,TEXT("FininteractableObject returned nothing"))}
 		}
 	}
 }
@@ -305,7 +307,7 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
 	if (GrabComponent && GrabComponent->GetWillThrowOnRelease())
 	{
-		GrabComponent->PerformThrow();
+		GrabComponent->PerformThrow(false);
 	}
 	else
 	{
@@ -313,6 +315,10 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 		{
 			GrabComponent->ReleaseObject();
 		}
+	}
+	if(DragComponent)
+	{
+		DragComponent->ReleaseActor();
 	}
 }
 

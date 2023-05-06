@@ -3,13 +3,12 @@
 #pragma once
 
 #include "Reacoustic.h"
+#include "ReacousticSettings.h"
 #include "CoreMinimal.h"
 #include "ReacousticDataTypes.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "ReacousticSubsystem.generated.h"
 
-/** 
- */
 UCLASS()
 class REACOUSTIC_API  UReacousticSubsystem : public UWorldSubsystem
 {
@@ -21,6 +20,8 @@ private:
 
 
 public:
+
+	
 	/** The Reacoustic SoundData Data Asset. */
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data array Asset"))
 	UReacousticSoundDataAsset* ReacousticSoundDataAsset {NewObject<UReacousticSoundDataAsset>()};
@@ -29,18 +30,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
 
-	/** The function to generate the NRT Assets used to make the runtime data.*/
-	UFUNCTION(Category = "ReacousticSubsystem")
-	void GenerateNRTAssets();
-	
-	/** Generates data that is needed to quickly find the right impulse during runtime.*/
 
-	UFUNCTION(Category = "ReacousticSubsystem")
-	void GenerateRuntimeData();
 	
 	
 public:
+	UReacousticSubsystem();
 	virtual void PostInitProperties() override;
+	void OnActorSpawned(AActor* Actor);
+
 	
 	/** Registers an component to the Reacoustic subsystem. This function is called by a component OnConstruct
 	 *	@Component The component to register.
@@ -70,6 +67,11 @@ public:
 	bool IsReacousticCompatible(AActor* Actor);
 
 private:
+
+	/** The internal reference of the global reacoustic settings.*/
+	UPROPERTY();
+	UReacousticProjectSettings* Settings;
+	
 	/** Returns all actors in the level of a given class that have Physics and GenerateHitEvents enabled. This is a slow operation, and should not be called often during runtime.
 	 *	@ClassType Which class to look for in the world.
 	 *	@return An array of actor pointers that potentially meet the conditions to be registered by Reacoustic.

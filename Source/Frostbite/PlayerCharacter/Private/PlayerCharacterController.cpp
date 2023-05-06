@@ -9,6 +9,8 @@
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
 #include "FrostbiteWorldSubystem.h"
+#include "PlayerGrabComponent.h"
+#include "PlayerDragComponent.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
@@ -119,7 +121,22 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 	}
 	else
 	{
-		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015);
+		/** The rotation multiplier that can decrease the rotation speed when holding opbjects.*/
+		float Rmulti{1.0f};
+		if(InteractionComponent
+			&& InteractionComponent->GetGrabComponent()->GetGrabbedActor()
+			&& InteractionComponent->GetGrabComponent()->CameraRotationMultiplier < 1.0f)
+		{
+			Rmulti = InteractionComponent->GetGrabComponent()->CameraRotationMultiplier;
+		}
+		else if (InteractionComponent
+			&& InteractionComponent->GetDragComponent()->GetDraggedActor()
+			&& InteractionComponent->GetDragComponent()->CameraRotationMultiplier < 1.0f)
+		{
+			Rmulti = InteractionComponent->GetDragComponent()->CameraRotationMultiplier;
+		}
+		
+		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015 * Rmulti);
 	}
 }
 
@@ -132,7 +149,22 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 	}
 	else
 	{
-		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015);
+		/** The rotation multiplier that can decrease the rotation speed when holding opbjects.*/
+		float Rmulti{1.0f};
+		if(InteractionComponent
+			&& InteractionComponent->GetGrabComponent()->GetGrabbedActor()
+			&& InteractionComponent->GetGrabComponent()->CameraRotationMultiplier < 1.0f)
+		{
+			Rmulti = InteractionComponent->GetGrabComponent()->CameraRotationMultiplier;
+		}
+		else if (InteractionComponent
+			&& InteractionComponent->GetDragComponent()->GetDraggedActor()
+			&& InteractionComponent->GetDragComponent()->CameraRotationMultiplier < 1.0f)
+		{
+			Rmulti = InteractionComponent->GetDragComponent()->CameraRotationMultiplier;
+		}
+
+		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015 * Rmulti);
 	}
 }
 
