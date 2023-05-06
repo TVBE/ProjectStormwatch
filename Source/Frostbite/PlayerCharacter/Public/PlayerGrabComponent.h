@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "Components/ActorComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerGrabComponent.generated.h"
@@ -36,6 +37,9 @@ public:
 	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
 	bool RotationMode;
 
+	
+	UPROPERTY()
+	float CameraRotationMultiplier{1.0f};
 
 private:
 	/** Pointer to the camera component of the player. */
@@ -101,6 +105,9 @@ private:
 	UPlayerCharacterMovementComponent* Movement;
 
 	UPROPERTY()
+	APlayerCharacter* Player;
+
+	UPROPERTY()
 	float GrabbedComponentSize;
 
 	UPROPERTY()
@@ -110,7 +117,11 @@ private:
 	UPROPERTY()
 	FVector ThrowVelocity;
 
+	UFUNCTION()
+	void UpdateCameraRotationSpeed(float DeltaTime);
 	
+	UFUNCTION()
+	void UpdateThrowTimer(float DeltaTime);
 	
 public:
 	/** Grabs an actor. */
@@ -131,7 +142,7 @@ public:
 
 	/** Called to execute a throw during the priming of a throw. */
 	UFUNCTION(BlueprintCallable)
-	void PerformThrow();
+	void PerformThrow(bool OnlyPreviewTrajectory);
 	
 	UFUNCTION()
 	float CalculateThrowAngle(FVector StartLocation, FVector Target, float Velocity, bool ThrowOverHands);
@@ -197,7 +208,7 @@ public:
 
 	/** The distance on which the player will let the prop go*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
-	float LetGoDistance{200.0f};
+	float LetGoDistance{120.0f};
 
 	/** The minimum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -205,7 +216,10 @@ public:
 
 	/** The maximum zoom level in UE units.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float MaxZoomLevel{300.0f};
+	float MaxZoomLevel{200.0f};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
+	float CameraRotationDecreasingStrength{0.5f};
 
 	/** The distance where the object will move towards the hand location.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -217,13 +231,13 @@ public:
 
 	/** The speed at which the object will return to your hand depending on how fast you walk.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float WalkingRetunZoomSpeed{10.0f};
+	float WalkingRetunZoomSpeed{1000.0f};
 
 	// ... Throw variables ... 
 
 	/** The time it takes to start priming the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float PrePrimingThrowDelayTime{0.5f};
+	float PrePrimingThrowDelayTime{0.1f};
 
 	/** The curve to set the minimum and maximum strength the player can throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
@@ -231,15 +245,15 @@ public:
 	
 	/** The time it will take to fully charge a throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float ThrowChargeTime{1.5f};
+	float ThrowChargeTime{1.3f};
 	
 	/** The zoom level for the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float ThrowingZoomLevel{200.0f};
+	float ThrowingZoomLevel{0.0f};
 
 	/** The speed at which the items goes to the throwing zoom level*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float ToThrowingZoomSpeed{0.1f};
+	float ToThrowingZoomSpeed{1000.0f};
 
 	/**The distance the object will back up when you charge the throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
