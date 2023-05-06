@@ -219,8 +219,6 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		// old: const float ThrowingStrength = FMath::Lerp(Configuration->MinThrowingStrength, Configuration->MaxThrowingStrength, FMath::Clamp((ThrowingTimeLine),0.0,1.0));
-
 		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
 		if(ThrowingTimeLine >0.35)
 		{

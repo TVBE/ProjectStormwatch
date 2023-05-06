@@ -43,6 +43,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Camera;
 
+	/** A multiplier used to change the rotation speed of the camera when dragging an object.*/
 	UPROPERTY()
 	float CameraRotationMultiplier{1.0f};
 
@@ -52,6 +53,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Drag")
 	void ReleaseActor();
 
+	
+	/**Not used: Was used to change the distance of the drag location.*/
 	UFUNCTION(BlueprintCallable, Category = "Zoom")
 	void UpdateZoomAxisValue(float ZoomAxis);
 
@@ -110,8 +113,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
 	float MaxZoomLevel{1000.f};
 
+	/** The amount that the rotation speed decreases when dragging objects.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float CameraRotationDecreasingStrength{1.0f};
+	float CameraRotationDecreasingStrength{0.8f};
 	
 	
 	// ... PhysicsHandleSettings ... 

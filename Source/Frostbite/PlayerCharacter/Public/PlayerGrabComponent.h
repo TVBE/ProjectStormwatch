@@ -37,7 +37,7 @@ public:
 	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
 	bool RotationMode;
 
-	
+	/** A multiplier used to change the rotation speed of the camera when grabbing an object.*/
 	UPROPERTY()
 	float CameraRotationMultiplier{1.0f};
 
@@ -208,7 +208,7 @@ public:
 
 	/** The distance on which the player will let the prop go*/
 	UPROPERTY(EditDefaultsOnly,Category="Player Physics Grab")
-	float LetGoDistance{120.0f};
+	float LetGoDistance{150.0f};
 
 	/** The minimum zoom level in UE units. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -217,9 +217,10 @@ public:
 	/** The maximum zoom level in UE units.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
 	float MaxZoomLevel{200.0f};
-	
+
+	/** The amount that the rotation speed decreases when holding objects at a distance.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
-	float CameraRotationDecreasingStrength{0.5f};
+	float CameraRotationDecreasingStrength{0.3f};
 
 	/** The distance where the object will move towards the hand location.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
@@ -260,7 +261,7 @@ public:
 	FVector ThrowingBackupVector{-10.0,0.0,0.0};
 	/**The strength of the shaking when charging a throw.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
-	float ThrowingShakeSize{0.05f};
+	float ThrowingShakeSize{0.07f};
 
 	
 
