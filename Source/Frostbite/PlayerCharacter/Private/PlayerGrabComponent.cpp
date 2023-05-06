@@ -7,9 +7,8 @@
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "DrawDebugHelpers.h"
-#include "Reacoustic.h"
 
 
 DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
@@ -18,10 +17,11 @@ void UPlayerGrabComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetOwner())})
+	if (APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetOwner())})
 	{
 		Camera = PlayerCharacter->GetCamera();
 		Movement = PlayerCharacter->GetPlayerCharacterMovement();
+		Player = PlayerCharacter;
 		
 	}
 
@@ -42,60 +42,10 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
 
-		// Check if Configuration is not null before using it to update the zoom level
-		if (Configuration)
-		{
-			if (!IsPrimingThrow)
-			{
-				// Check if the distance between the location and target location is too big, let the object go
-				if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
-				{
-					ReleaseObject();
-				}
-			}
-			if (IsPrimingThrow)
-			{
-				if (PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
-				{
-					PrePrimingThrowTimer += DeltaTime;
-				}
-				else
-				{
-					WillThrowOnRelease = true;
-					
-					if (CurrentZoomLevel != Configuration->ThrowingZoomLevel)
-					{
-						CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
-					}
-					
-					if (PrePrimingThrowTimer <= 1.0)
-					{
-						/**The timeline to be used by various on tick functions that update location.
-						*We normalize the value here since it otherwise would be need to be normalised multiple times later.
-						*/
-						ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
-						
-					}
+		UpdateCameraRotationSpeed(DeltaTime);
 
-					/** Check if Camera is not null before using it to predict projectile path */
-					if (Camera)
-					{
-						FPredictProjectilePathParams ProjetileParams{ FPredictProjectilePathParams(GrabbedComponentSize, ReleaseLocation, ThrowVelocity, 10000) };
-						FPredictProjectilePathResult Projectileresults{};
-						if (UGameplayStatics::PredictProjectilePath(this, ProjetileParams, Projectileresults))
-						{
-							DrawDebugSphere(this->GetWorld(), Projectileresults.HitResult.Location, 10.0, 16, FColor(0, 100, 0), false, -1.0, 0, 1.0);
-						}
-						else
-						{
-							UE_LOG(LogTemp, Warning, TEXT("DIT TANTOE DING DOET HET NIET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????"));
-						}
-					}
-					else{UE_LOG(LogGrabComponent,Warning,TEXT("No camera found."))}
-				}
-			}
-		}
-		else{UE_LOG(LogGrabComponent,Warning,TEXT("No configuration added"))}
+		UpdateThrowTimer(DeltaTime);
+		
 	}
 	else{UE_LOG(LogGrabComponent,Warning,TEXT("No grabbed actor found"))}
 }
@@ -104,6 +54,66 @@ void UPlayerGrabComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
+}
+
+void UPlayerGrabComponent::UpdateCameraRotationSpeed(float DeltaTime)
+{
+	/** The camera should move slower when the player is holding an object away from himself.*/
+	if(GrabbedComponent)
+	{
+		CameraRotationMultiplier =
+			1 /(((CurrentZoomLevel-Configuration->MinZoomLevel)
+					/Configuration->MaxZoomLevel)
+					* FMath::Clamp(GrabbedComponent->GetMass(), 10.0, 200.0) //Claming the mass so that there's always some noticable difference in speed and never feels too slow.
+					* Configuration->CameraRotationDecreasingStrength);
+	}
+	else
+	{
+		CameraRotationMultiplier = 1.0;
+	}
+}
+
+void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
+{
+	// Check if Configuration is not null before using it to update the zoom level when priming a throw.
+	if (Configuration)
+	{
+		if (!IsPrimingThrow)
+		{
+			// Check if the distance between the location and target location is too big, let the object go
+			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+			{
+				ReleaseObject();
+			}
+		}
+		if (IsPrimingThrow)
+		{
+
+			PerformThrow(true);
+			if (PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
+			{
+				PrePrimingThrowTimer += DeltaTime;
+			}
+			else
+			{
+				WillThrowOnRelease = true;
+					
+				if (CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+				{
+					CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+				}
+					
+				if (PrePrimingThrowTimer <= 1.0)
+				{
+					/**The timeline to be used by various on tick functions that update location.
+					*We normalize the value here since it otherwise would be need to be normalised multiple times later.
+					*/
+					ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
+						
+				}
+			}
+		}
+	}
 }
 
 /** Grab the object pass it to the physicshandle and capture the relative object rotation*/
@@ -202,7 +212,7 @@ void UPlayerGrabComponent::StopPrimingThrow()
 }
 
 /** Execute a throw if the throw is priming*/
-void UPlayerGrabComponent::PerformThrow()
+void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 {
 	if(WillThrowOnRelease)
 	{
@@ -269,13 +279,38 @@ void UPlayerGrabComponent::PerformThrow()
 		
 		ThrowVelocity = FinalDirection * ThrowingStrength;
 
-		/** Set the physics velocity of the grabbed component to the calculated throwing direction */
-		GrabbedComponent->SetPhysicsLinearVelocity(ThrowVelocity);
+		FVector TossVelocity;
+		if(!UGameplayStatics::SuggestProjectileVelocity(
+				this,
+				TossVelocity,
+				ReleaseLocation,
+				Target,
+				ThrowingStrength,
+				false,
+				0,
+				Gravity,
+				ESuggestProjVelocityTraceOption::DoNotTrace,
+				FCollisionResponseParams::DefaultResponseParam,
+				TArray<AActor*>{Player},
+				true))
+		{
+			TossVelocity = ThrowVelocity;
+		}
+		
+		if(!OnlyPreviewTrajectory)
+		{
+			/** Set the physics velocity of the grabbed component to the calculated throwing direction */
 
-		GrabbedComponent->WakeRigidBody();
-		/** Release the grabbed component after the throw */
-		GrabbedComponent->SetWorldLocation(ReleaseLocation);
-		ReleaseObject();
+			// Print TossVelocity to the console
+			UE_LOG(LogTemp, Warning, TEXT("TossVelocity: %s"), *TossVelocity.ToString());
+			
+			GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
+			/** Release the grabbed component after the throw */
+			GrabbedComponent->SetWorldLocation(ReleaseLocation);
+			GrabbedComponent->WakeRigidBody();
+			ReleaseObject();
+			
+		}
 	}
 }
 
