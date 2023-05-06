@@ -307,7 +307,7 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
 	if (GrabComponent && GrabComponent->GetWillThrowOnRelease())
 	{
-		GrabComponent->PerformThrow();
+		GrabComponent->PerformThrow(false);
 	}
 	else
 	{
