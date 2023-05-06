@@ -77,7 +77,9 @@ private:
 
 	float DraggedComponentSize;
 
+	/** Locations used to set the target location of the physicshandle: handle.*/
 	FVector TargetLocation;
+	FVector GrabOffset{0.0,0.0,0.0};
 
 
 	float CurrentZoomLevel;
@@ -116,11 +118,11 @@ public:
 
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearDamping{1000.0f};
+	float LinearDamping{100.0f};
 
 	/** Linear stiffness of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearStiffness{1000.0f};
+	float LinearStiffness{100.0f};
 
 	/** Angular damping of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
@@ -132,5 +134,5 @@ public:
 
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
-	float InterpolationSpeed{1.0f};
+	float InterpolationSpeed{5.0f};
 };

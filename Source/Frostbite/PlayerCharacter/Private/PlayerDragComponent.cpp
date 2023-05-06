@@ -87,10 +87,15 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 	UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))};
 	if (!StaticMeshComponent){UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab does not have a static mesh component"));return;}
 
-	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), ActorToGrab->GetActorLocation());
+	
+	GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
+	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 
+	
+	GrabOffset = StaticMeshComponent->GetCenterOfMass() - (Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector());
 
-	GrabComponentAtLocation(StaticMeshComponent, NAME_None,ActorToGrab->GetActorLocation());
+	UE_LOG(LogTemp, Display, TEXT("GrabOffset %f %f %f"),GrabOffset.X,GrabOffset.Y,GrabOffset.Z);
+	
 	SetComponentTickEnabled(true);
 	//GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 
@@ -125,8 +130,8 @@ void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
 	}
 
-	float TargetLocationZ = GrabbedComponent->GetComponentLocation().Z;
-	FVector TargetLocationPre = Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector();
+	float TargetLocationZ = GrabbedComponent->GetCenterOfMass().Z;
+	FVector TargetLocationPre = Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector() ;
 	TargetLocation = FVector(TargetLocationPre.X,TargetLocationPre.Y, TargetLocationZ);
 	SetTargetLocation(TargetLocation);
 }
