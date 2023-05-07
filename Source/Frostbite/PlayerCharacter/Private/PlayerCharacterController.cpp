@@ -393,8 +393,8 @@ void APlayerCharacterController::CalculateRotationMultiplier()
 
 			// TODO: Move to configuration.
 			
-			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(5, 20), FVector2D(1, 0.6), Mass))};
-			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(500000, 1000000), FVector2D(1, 0.6), BoundingBoxSize))};
+			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(5, 20), FVector2D(1, 0.4), Mass))};
+			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(500000, 1000000), FVector2D(1, 0.4), BoundingBoxSize))};
 			
 			float ZoomMultiplier {1.0f};
 			
@@ -406,11 +406,11 @@ void APlayerCharacterController::CalculateRotationMultiplier()
 					/** We're calculating the absolute distance between the grabbed primitive component and player instead of requesting a zoom level from the component,
 					*	It's a bit lazy, but it's okay for now. */
 					const float Distance {static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()))};
-					ZoomMultiplier = FMath::GetMappedRangeValueClamped(FVector2D(50, 150), FVector2D(1, 0.3), Distance);
+					ZoomMultiplier = FMath::GetMappedRangeValueClamped(FVector2D(50, 150), FVector2D(1, 0.4), Distance);
 				}
 			}
 			
-			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 0.6, 1.0) * ZoomMultiplier;
+			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 0.2, 1.0) * ZoomMultiplier;
 		}
 		InteractionRotationMultiplier = RotationMultiplier;
 		return;

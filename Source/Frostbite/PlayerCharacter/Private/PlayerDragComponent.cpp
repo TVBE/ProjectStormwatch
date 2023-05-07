@@ -56,7 +56,7 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
         if (!Configuration){UE_LOG(LogDragComponent, Warning, TEXT("Configuration is not valid."));return;}
     	
     	UpdateTargetLocation(DeltaTime);
-    	UpdateCameraRotationSpeed(DeltaTime);
+    	// UpdateCameraRotationSpeed(DeltaTime);
         if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
         {
             ReleaseActor();
