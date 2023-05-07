@@ -10,7 +10,9 @@
 #include "FrostbiteGameMode.h"
 #include "PlayerBodyCollisionComponent.h"
 #include "PlayerFootCollisionComponent.h"
-
+#include "PlayerInteractionComponent.h"
+#include "PlayerGrabComponent.h"
+#include "PlayerDragComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Math/Vector.h"
@@ -56,6 +58,10 @@ APlayerCharacter::APlayerCharacter()
 
 	RightFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Right Foot Collision"));
 	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
+
+	/** Construct interaction component. */
+	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("Interaction Component"));
+	CameraController->bEditableWhenInherited = true;
 }
 
 void APlayerCharacter::Jump()
@@ -138,16 +144,49 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-/** Called every frame. */
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	UpdateYawDelta();
 	UpdateRotation(DeltaTime);
+	UpdateMovementSpeed();
 }
 
 void APlayerCharacter::UpdateMovementSpeed()
 {
+	float InteractionMultiplier {1.0f};
+	
+	if (InteractionComponent)
+	{
+		const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
+		const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
+		
+		if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
+		{
+			if (const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
+			{
+				const float Mass {PrimitiveComponent->GetMass()};
+				const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
+				const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
+			
+				const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+					(Configuration->InteractionSpeedWeightRange, Configuration->InteractionSpeedWeightScalars, Mass))};
+			
+				const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+					(Configuration->InteractionSpeedSizeRange, Configuration->InteractionSpeedSizeScalars, BoundingBoxSize))};
+				
+				InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, Configuration->InteractionSpeedFloor, 1.0);
+			}
+		}
+	}
+
+	ScaledSpeed = TargetSpeed * InteractionMultiplier;
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = ScaledSpeed;
+		GetCharacterMovement()->MaxWalkSpeedCrouched = Configuration->CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
+	}
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -226,8 +265,7 @@ void APlayerCharacter::StartSprinting()
 {
 	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting() && Configuration)
 	{
-		// TargetSpeed = Configuration->SprintSpeed;
-		PlayerCharacterMovement->MaxWalkSpeed = Configuration->SprintSpeed;
+		TargetSpeed = Configuration->SprintSpeed;
 		PlayerCharacterMovement->SetIsSprinting(true);
 	}
 }
@@ -236,8 +274,7 @@ void APlayerCharacter::StopSprinting()
 {
 	if (PlayerCharacterMovement && PlayerCharacterMovement->GetIsSprinting())
 	{
-		// TargetSpeed = Configuration->WalkSpeed;
-		PlayerCharacterMovement->MaxWalkSpeed = Configuration->WalkSpeed;
+		TargetSpeed = Configuration->WalkSpeed;
 		PlayerCharacterMovement->SetIsSprinting(false);
 	}
 }

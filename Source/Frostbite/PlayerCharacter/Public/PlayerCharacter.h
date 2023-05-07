@@ -69,6 +69,10 @@ private:
 	/** The foot collision component for the right foot. */
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UPlayerFootCollisionComponent* RightFootCollision;
+
+	/** The interaction component. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", Meta = (AllowPrivateAccess = "true"))
+	UPlayerInteractionComponent* InteractionComponent;
 	
 	/** The target speed of the character. */
 	UPROPERTY(BlueprintGetter = GetTargetSpeed)
@@ -322,40 +326,65 @@ public:
 	float StepOverBaseSpeedModifier {0.6};
 
 	/** The Weight range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
 		ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
 	FVector2D InteractionRotationWeightRange {FVector2D(8, 25)};
 
 	/** The Weight scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Weight Scalars",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight", Meta = (DisplayName = "Weight Scalars",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationWeightScalars {FVector2D(0.4, 1.0)};
+	FVector2D InteractionRotationWeightScalars {FVector2D(1.0, 0.4)};
 	
 	/** The Bounding box range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
 	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
 	FVector2D InteractionRotationSizeRange {FVector2D(500000, 1000000)};
 
 	/** The Bounding box scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Scalars",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size", Meta = (DisplayName = "Size Scalars",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationSizeScalars {FVector2D(0.4, 1.0)};
+	FVector2D InteractionRotationSizeScalars {FVector2D(1.0, 0.4)};
 
 	/** The Object distance range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Distance Range", Units = "Centimeters",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance", Meta = (DisplayName = "Distance Range", Units = "Centimeters",
 	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
 	FVector2D InteractionRotationDistanceRange {FVector2D(25, 150)};
 
 	/** The Distance scaling range. */
 	/** The Bounding box scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Scalars",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance", Meta = (DisplayName = "Size Scalars",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	FVector2D InteractionRotationDistanceScalars {FVector2D(1.0, 0.5)};
 
 	/** The Scaling floor for weight and bounding box sized combined. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation ", Meta = (DisplayName = "Multiplier Floor",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation ", Meta = (DisplayName = "Multiplier Floor",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float InteractionRotationFloor {0.4};
+
+	/** The Weight range in which we apply interaction speed scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
+		ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionSpeedWeightRange {FVector2D(8, 25)};
+
+	/** The Weight scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight", Meta = (DisplayName = "Weight Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionSpeedWeightScalars {FVector2D(1.0, 0.6)};
+	
+	/** The Bounding box range in which we apply interaction speed scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
+	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionSpeedSizeRange {FVector2D(500000, 1000000)};
+
+	/** The Bounding box scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size", Meta = (DisplayName = "Size Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionSpeedSizeScalars {FVector2D(1.0, 0.6)};
+	
+	/** The Scaling floor for weight and bounding box sized combined. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed ", Meta = (DisplayName = "Multiplier Floor",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float InteractionSpeedFloor {0.6};
 	
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()
