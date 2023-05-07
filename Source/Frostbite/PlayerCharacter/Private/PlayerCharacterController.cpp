@@ -372,7 +372,7 @@ void APlayerCharacterController::UpdatePendingActions()
 
 void APlayerCharacterController::CalculateRotationMultiplier()
 {
-	if (!InteractionComponent)
+	if (!InteractionComponent || !CharacterConfiguration)
 	{
 		InteractionRotationMultiplier = 1.0f;
 		return;
@@ -383,18 +383,19 @@ void APlayerCharacterController::CalculateRotationMultiplier()
 
 	if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
 	{
-		float RotationMultiplier {GrabComponent->GetGrabbedComponent() ? GrabComponent->CameraRotationMultiplier : DragComponent->CameraRotationMultiplier};
+		float RotationMultiplier {1.0f};
 		
 		if (const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
 		{
 			const float Mass {PrimitiveComponent->GetMass()};
 			const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
 			const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
-
-			// TODO: Move to configuration.
 			
-			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(5, 20), FVector2D(1, 0.4), Mass))};
-			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(500000, 1000000), FVector2D(1, 0.4), BoundingBoxSize))};
+			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+				(CharacterConfiguration->InteractionRotationWeightRange, CharacterConfiguration->InteractionRotationWeightScalars, Mass))};
+			
+			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+				(CharacterConfiguration->InteractionRotationSizeRange, CharacterConfiguration->InteractionRotationSizeScalars, BoundingBoxSize))};
 			
 			float ZoomMultiplier {1.0f};
 			
@@ -406,11 +407,12 @@ void APlayerCharacterController::CalculateRotationMultiplier()
 					/** We're calculating the absolute distance between the grabbed primitive component and player instead of requesting a zoom level from the component,
 					*	It's a bit lazy, but it's okay for now. */
 					const float Distance {static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()))};
-					ZoomMultiplier = FMath::GetMappedRangeValueClamped(FVector2D(50, 150), FVector2D(1, 0.4), Distance);
+					ZoomMultiplier = FMath::GetMappedRangeValueClamped
+					(CharacterConfiguration->InteractionRotationDistanceRange, CharacterConfiguration->InteractionRotationDistanceScalars, Distance);
 				}
 			}
 			
-			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 0.2, 1.0) * ZoomMultiplier;
+			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, CharacterConfiguration->InteractionRotationFloor, 1.0) * ZoomMultiplier;
 		}
 		InteractionRotationMultiplier = RotationMultiplier;
 		return;

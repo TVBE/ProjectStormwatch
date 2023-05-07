@@ -37,7 +37,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// Check if GrabbedComponent is not null before updating its location and rotation
 	if (GrabbedComponent)
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
@@ -75,12 +74,12 @@ void UPlayerGrabComponent::UpdateCameraRotationSpeed(float DeltaTime)
 
 void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 {
-	// Check if Configuration is not null before using it to update the zoom level when priming a throw.
+
 	if (Configuration)
 	{
 		if (!IsPrimingThrow)
 		{
-			// Check if the distance between the location and target location is too big, let the object go
+			/** Check if the distance between the location and target location is too big, let the object go. */
 			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
 			{
 				ReleaseObject();

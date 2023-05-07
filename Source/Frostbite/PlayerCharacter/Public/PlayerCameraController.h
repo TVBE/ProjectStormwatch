@@ -288,7 +288,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Centripetal Rotation",
 		Meta = (DisplayName = "Sprint Multiplier", EditCondition = "IsCentripetalRotationEnabled"))
 	float CentripetalRotationNonSprintMultiplier {1.25f};
- 
+	
 	/** Constructor with default values. */
 	UPlayerCameraConfiguration()
 	{

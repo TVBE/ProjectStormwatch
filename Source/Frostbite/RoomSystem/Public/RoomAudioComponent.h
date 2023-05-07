@@ -51,6 +51,4 @@ struct FRoomReverbSettings : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, Category = "Room", Meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax ="1"))
 	float Reflectivity {0.5f};
-
-	FRoomReverbSettings();
 };

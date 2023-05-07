@@ -238,67 +238,67 @@ class FROSTBITE_API UPlayerCharacterConfiguration : public UDataAsset
 
 public:
 	/** Defines the default movement speed.*/
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General",
 		Meta = (DisplayName = "Default Movement Speed", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
 	float WalkSpeed {300.f};
 
 	/** The maximum allowed slope angle the player character can climb on. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General", Meta = (DisplayName = "Max Walkable Floor Angle", Units = "Degrees",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", Meta = (DisplayName = "Max Walkable Floor Angle", Units = "Degrees",
 		ClampMin = "0", ClampMax = "60", UIMin = "0", UIMax = "60"))
 	float MaxWalkableFloorAngle {35.0f};
 
 	/** The maximum step height the player can perform. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "General", Meta = (DisplayName = "Max Step Height", Units = "Centimeters",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", Meta = (DisplayName = "Max Step Height", Units = "Centimeters",
 	ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
 	float MaxStepHeight {30.0f};
 	
 	/** When set to enabled, the character is allowed to jump. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Jumping",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
 		Meta = (DisplayName = "Enable Jumping"))
 	bool IsJumpingEnabled {true};
 
 	/** Defines the jump velocity of the character. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Jumping",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
 		Meta = (DisplayName = "Jump Velocity", ClampMin = "0.0", UIMin = "0.0", ClampMax = "1000.0", UIMax = "1000.0"))
 	float JumpVelocity {440.f};
 
 	/** When set to enabled, the character is allowed to sprint. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sprinting",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
 		Meta = (DisplayName = "Enable Sprinting"))
 	bool IsSprintingEnabled {true};
 
 	/** Defines the movement speed when sprinting. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sprinting",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
 		Meta = (DisplayName = "Sprint Speed", ForceUnits = "cm/s", EditCondition= "IsSprintingEnabled", ClampMin = "400", ClampMax = "800", UiMin = "400", UIMax = "800"))
 	float SprintSpeed {600.f};
 
 	/** When set to enabled, the character is allowed to crouch. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Crouching",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
 		Meta = (Displayname = "Enable Crouching"))
 	bool IsCrouchingEnabled {true};
 
 	/** Defines the characters movement speed while crouched. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Crouching",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
 		Meta = (Displayname = "Crouch Speed", ForceUnits = "cm/s", EditCondition= "IsCrouchingEnabled", ClampMin = "0", ClampMax = "300", UiMin = "0", UIMax = "300"))
 	float CrouchSpeed {200.f};
 
 	/** When set to enabled, The crouch button will act as a toggle for the crouch action.
 	 *	Enable this if you do not want the player to have to hold down the crouch button to remain crouched. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Crouching",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
 		Meta = (Displayname = "Crouch Toggle Mode", EditCondition= "IsCrouchingEnabled" , AdvancedDisplay = "true"))
 	bool EnableCrouchToggle {false};
 	
 	/** Defines the rotation rate when using a gamepad.*/
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Camera",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera",
 		Meta = (Displayname = "Gamepad Rotation Rate"))
 	float RotationRate {150.f};
 
 	/** When true, camera rotation smoothing is applied to the player. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
 	bool IsRotationSmoothingEnabled {false};
 
 	/** The rotation smoothing speed. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Rotation Smoothing",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing",
 		Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
 	float RotationSmoothingSpeed {8};
 
@@ -320,6 +320,42 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Base Modifier",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "IsStepOverEnabled"))
 	float StepOverBaseSpeedModifier {0.6};
+
+	/** The Weight range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
+		ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionRotationWeightRange {FVector2D(8, 25)};
+
+	/** The Weight scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Weight Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationWeightScalars {FVector2D(0.4, 1.0)};
+	
+	/** The Bounding box range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
+	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionRotationSizeRange {FVector2D(500000, 1000000)};
+
+	/** The Bounding box scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationSizeScalars {FVector2D(0.4, 1.0)};
+
+	/** The Object distance range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Distance Range", Units = "Centimeters",
+	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
+	FVector2D InteractionRotationDistanceRange {FVector2D(25, 150)};
+
+	/** The Distance scaling range. */
+	/** The Bounding box scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation", Meta = (DisplayName = "Size Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationDistanceScalars {FVector2D(1.0, 0.5)};
+
+	/** The Scaling floor for weight and bounding box sized combined. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Rotation ", Meta = (DisplayName = "Multiplier Floor",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float InteractionRotationFloor {0.4};
 	
 	/** Constructor with default values. */
 	UPlayerCharacterConfiguration()
