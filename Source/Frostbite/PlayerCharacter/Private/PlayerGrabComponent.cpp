@@ -42,7 +42,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
 
-		UpdateCameraRotationSpeed(DeltaTime);
+		// UpdateCameraRotationSpeed(DeltaTime);
 
 		UpdateThrowTimer(DeltaTime);
 		

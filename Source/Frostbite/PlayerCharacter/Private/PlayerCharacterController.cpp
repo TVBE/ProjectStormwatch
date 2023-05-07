@@ -11,6 +11,7 @@
 #include "FrostbiteWorldSubystem.h"
 #include "PlayerGrabComponent.h"
 #include "PlayerDragComponent.h"
+#include "Camera/CameraComponent.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
@@ -115,57 +116,31 @@ void APlayerCharacterController::SetupInputComponent()
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
+	
 	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
-		InteractionComponent->AddYawInput(Value);
-	}
-	else
-	{
-		/** The rotation multiplier that can decrease the rotation speed when holding opbjects.*/
-		float Rmulti{1.0f};
-		if(InteractionComponent
-			&& InteractionComponent->GetGrabComponent()->GetGrabbedActor()
-			&& InteractionComponent->GetGrabComponent()->CameraRotationMultiplier < 1.0f)
+		if (InteractionComponent->GetIsTertiaryInteractionActive())
 		{
-			Rmulti = InteractionComponent->GetGrabComponent()->CameraRotationMultiplier;
+			InteractionComponent->AddYawInput(Value);
+			return;
 		}
-		else if (InteractionComponent
-			&& InteractionComponent->GetDragComponent()->GetDraggedActor()
-			&& InteractionComponent->GetDragComponent()->CameraRotationMultiplier < 1.0f)
-		{
-			Rmulti = InteractionComponent->GetDragComponent()->CameraRotationMultiplier;
-		}
-		
-		AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015 * Rmulti);
 	}
+	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015 * InteractionRotationMultiplier);
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
 	if (!CanProcessRotationInput) { return; }
+	
 	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
-		InteractionComponent->AddPitchInput(Value);
-	}
-	else
-	{
-		/** The rotation multiplier that can decrease the rotation speed when holding opbjects.*/
-		float Rmulti{1.0f};
-		if(InteractionComponent
-			&& InteractionComponent->GetGrabComponent()->GetGrabbedActor()
-			&& InteractionComponent->GetGrabComponent()->CameraRotationMultiplier < 1.0f)
+		if (InteractionComponent->GetIsTertiaryInteractionActive())
 		{
-			Rmulti = InteractionComponent->GetGrabComponent()->CameraRotationMultiplier;
+			InteractionComponent->AddPitchInput(Value);
+			return;
 		}
-		else if (InteractionComponent
-			&& InteractionComponent->GetDragComponent()->GetDraggedActor()
-			&& InteractionComponent->GetDragComponent()->CameraRotationMultiplier < 1.0f)
-		{
-			Rmulti = InteractionComponent->GetDragComponent()->CameraRotationMultiplier;
-		}
-
-		AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015 * Rmulti);
 	}
+	AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015 * InteractionRotationMultiplier);
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
@@ -333,9 +308,10 @@ void APlayerCharacterController::HandleInventoryActionReleased()
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	
 	if (PlayerCharacter)
 	{
+		CalculateRotationMultiplier();
 		UpdateCurrentActions();
 		UpdatePendingActions();
 	}
@@ -392,6 +368,55 @@ void APlayerCharacterController::UpdatePendingActions()
 		}
 		PlayerCharacter->Crouch(false);
 	}
+}
+
+void APlayerCharacterController::CalculateRotationMultiplier()
+{
+	if (!InteractionComponent)
+	{
+		InteractionRotationMultiplier = 1.0f;
+		return;
+	}
+
+	const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
+	const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
+
+	if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
+	{
+		float RotationMultiplier {GrabComponent->GetGrabbedComponent() ? GrabComponent->CameraRotationMultiplier : DragComponent->CameraRotationMultiplier};
+		
+		if (const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
+		{
+			const float Mass {PrimitiveComponent->GetMass()};
+			const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
+			const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
+
+			// TODO: Move to configuration.
+			
+			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(5, 20), FVector2D(1, 0.6), Mass))};
+			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(500000, 1000000), FVector2D(1, 0.6), BoundingBoxSize))};
+			
+			float ZoomMultiplier {1.0f};
+			
+			/** We only want this behavior for objects that are handled by the grab component, I think. */
+			if (GrabComponent->GetGrabbedComponent())
+			{
+				if (const UCameraComponent* CameraComponent {PlayerCharacter->GetCamera()})
+				{
+					/** We're calculating the absolute distance between the grabbed primitive component and player instead of requesting a zoom level from the component,
+					*	It's a bit lazy, but it's okay for now. */
+					const float Distance {static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()))};
+					ZoomMultiplier = FMath::GetMappedRangeValueClamped(FVector2D(50, 150), FVector2D(1, 0.3), Distance);
+				}
+			}
+			
+			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 0.6, 1.0) * ZoomMultiplier;
+		}
+		InteractionRotationMultiplier = RotationMultiplier;
+		return;
+	}
+	
+	InteractionRotationMultiplier = 1.0f;
 }
 
 bool APlayerCharacterController::GetHasMovementInput() const
@@ -497,5 +522,6 @@ UPlayerInteractionComponent* APlayerCharacterController::SearchForPlayerInteract
 	}
 	return InteractionComponent;
 }
+
 
 

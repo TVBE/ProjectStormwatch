@@ -82,6 +82,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
 	float ControlInterpolationSpeed {10.0f};
 
+	/** The rotation multiplier for the control rotation. */
+	float InteractionRotationMultiplier {1.0f};
+
 public:
 	APlayerCharacterController();
 	
@@ -150,6 +153,8 @@ private:
 	/** Tries to find an InteractionComponent in the player character. */
 	UFUNCTION()
 	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
+	
+	void CalculateRotationMultiplier();
 	
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
