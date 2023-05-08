@@ -494,8 +494,8 @@ void APlayerCharacterController::CalculateRotationMultiplier(const FVector2D Inp
     		}
     	}
     	InteractionRotationMultiplier = RotationMultiplier;
+    	return;
     }
-	UE_LOG(LogTemp, Warning,)
 	InteractionRotationMultiplier = 1.0f;
 }
 
