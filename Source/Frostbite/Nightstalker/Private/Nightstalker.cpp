@@ -4,29 +4,47 @@
 
 #include "Nightstalker.h"
 
-// Sets default values
+#include "NightstalkerDirector.h"
+
 ANightstalker::ANightstalker()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
 void ANightstalker::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (const UWorld* World {GetWorld()})
+	{
+		if (UNightstalkerDirector* Director {World->GetSubsystem<UNightstalkerDirector>()})
+		{
+			Director->RegisterNightstalker(this);
+		}
+	}
 }
 
-// Called every frame
+void ANightstalker::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (UNightstalkerDirector* Director {World->GetSubsystem<UNightstalkerDirector>()})
+		{
+			Director->UnregisterNightstalker(this);
+		}
+	}
+	
+	Super::EndPlay(EndPlayReason);
+}
+
 void ANightstalker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
 void ANightstalker::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

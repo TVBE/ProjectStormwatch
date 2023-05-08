@@ -8,7 +8,7 @@
 #include "GameFramework/Pawn.h"
 #include "Nightstalker.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "Nightstalker")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Nightstalker")
 class ANightstalker : public APawn
 {
 	GENERATED_BODY()
@@ -21,7 +21,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 };
