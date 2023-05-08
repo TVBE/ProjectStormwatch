@@ -244,6 +244,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Get Current Interactable Actor"))
 	FORCEINLINE AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
 
+	/** Returns the most recent camera trace result. */
+	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Get Camera Trace Hit Result"))
+	FORCEINLINE FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
+
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "Begin Interaction"))
 	void EventBeginInteraction(const EInteractionActionType Type, const UObject* Object);

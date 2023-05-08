@@ -49,7 +49,6 @@ void UPlayerInteractionComponent::OnRegister()
 	}
 }
 
-/** Called when the game starts. */
 void UPlayerInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -57,9 +56,12 @@ void UPlayerInteractionComponent::BeginPlay()
 	{
 		InventoryComponent = Cast<UPlayerInventoryComponent>(GetOwner()->FindComponentByClass(UPlayerInventoryComponent::StaticClass()));
 	}
+	if (DragComponent)
+	{
+		DragComponent->InteractionComponent = this;
+	}
 }
 
-/** Called every frame. */
 void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -248,6 +250,40 @@ UActorComponent* UPlayerInteractionComponent::FindInteractableComponent(const AA
 	return nullptr;
 }
 
+inline FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* Actor)
+{
+	FVector TargetLocation {FVector()};
+	
+	if (!Actor) { return TargetLocation; }
+	
+	if (const UStaticMeshComponent* MeshComponent {Cast<UStaticMeshComponent>(Actor->FindComponentByClass(UStaticMeshComponent::StaticClass()))}; HitResult.IsValidBlockingHit())
+	{
+		const FVector MeshCenter {MeshComponent->Bounds.Origin};
+		const FVector Start {HitResult.ImpactPoint};
+		const FVector End {MeshCenter};
+
+		TArray<FHitResult> HitResults;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(HitResult.GetActor());
+		
+		/** We treat the mesh component as our world context object. */
+		const UWorld* World {MeshComponent->GetWorld()};
+		
+		if (bool IsHit = World->LineTraceMultiByChannel(HitResults, Start, End, ECC_Visibility, CollisionParams))
+		{
+			for (const FHitResult& MultiHitResult : HitResults)
+			{
+				if (MultiHitResult.GetComponent() == MeshComponent)
+				{
+					TargetLocation = MultiHitResult.ImpactPoint;
+					break;
+				}
+			}
+		}
+	}
+	return TargetLocation;
+}
+
 AActor* UPlayerInteractionComponent::GetActorFromObject(UObject* Object) const
 {
 	if (AActor* Actor {Cast<AActor>(Object)})
@@ -295,10 +331,17 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 			}
 			else if (UObject* DraggableObject {FindInteractableObject<UDraggableObject>(CurrentInteractableActor)})
 			{
-				
-				DragComponent->DragActorAtLocation(CurrentInteractableActor, CameraTraceHitResult.Location);
+				FVector GrabLocation {FVector()};
+				if (CameraTraceHitResult.GetActor() == CurrentInteractableActor)
+				{
+					GrabLocation = CameraTraceHitResult.ImpactPoint;
+				}
+				else if (CameraTraceHitResult.GetActor() != CurrentInteractableActor)
+				{
+					GrabLocation = GetNearestPointOnMesh(CameraTraceHitResult, CurrentInteractableActor);
+				}
+				DragComponent->DragActorAtLocation(CurrentInteractableActor, GrabLocation);
 			}
-			else{UE_LOG(LogTemp,Warning,TEXT("FininteractableObject returned nothing"))}
 		}
 	}
 }

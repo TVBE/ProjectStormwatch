@@ -264,13 +264,13 @@ void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& 
 	
 	for (int i {0}; i < TemporalFrames; i++)
 	{
-		constexpr float YawIncrement = 22.5f;
+		constexpr float YawIncrement {22.5f};
 		FRotator YawRotation(0, i * YawIncrement, 0);
 		FQuat YawQuat(YawRotation);
 		
 		for (const FVector& TraceVector : SingleFrameTraceVectors)
 		{
-			const FVector RotatedVector = YawQuat.RotateVector(TraceVector);
+			const FVector RotatedVector {YawQuat.RotateVector(TraceVector)};
 			
 			const double Azimuth {FMath::Atan2(RotatedVector.Y, RotatedVector.X)};
 			double Elevation {FMath::Acos(RotatedVector.Z / Radius)};

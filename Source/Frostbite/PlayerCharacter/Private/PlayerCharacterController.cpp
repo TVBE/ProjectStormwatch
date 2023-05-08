@@ -4,7 +4,6 @@
 
 #include "PlayerCharacterController.h"
 #include "PlayerCharacter.h"
-#include "PlayerCharacterMovementComponent.h"
 #include "PlayerFlashlightComponent.h"
 #include "PlayerCameraController.h"
 #include "PlayerInteractionComponent.h"
@@ -16,6 +15,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/InputSettings.h"
 #include "GameFramework/PawnMovementComponent.h"
 
 DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
@@ -125,7 +125,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 			return;
 		}
 	}
-	AddYawInput(Value * CharacterConfiguration->RotationRate * 0.015 * InteractionRotationMultiplier);
+	InputRotation.X = Value * CharacterConfiguration->RotationRate * 0.015;
 }
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
@@ -140,7 +140,7 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 			return;
 		}
 	}
-	AddPitchInput(Value * CharacterConfiguration->RotationRate * 0.015 * InteractionRotationMultiplier);
+	InputRotation.Y = Value * CharacterConfiguration->RotationRate * 0.015;
 }
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
@@ -305,21 +305,70 @@ void APlayerCharacterController::HandleInventoryActionReleased()
 {
 }
 
+void APlayerCharacterController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
+{
+	CalculateRotationMultiplier(InputRotation);
+	
+	AddYawInput(InputRotation.X * InteractionRotationMultiplier);
+	AddPitchInput(InputRotation.Y * InteractionRotationMultiplier);
+
+	InputRotation.Zero();
+	
+	Super::ProcessPlayerInput(DeltaTime, bGamePaused);
+}
+
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
 	if (PlayerCharacter)
 	{
-		CalculateRotationMultiplier();
 		UpdateCurrentActions();
 		UpdatePendingActions();
+		UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
 	}
-	UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
 }
 
 void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
 {
+
+	if (InteractionComponent && PlayerCharacter)
+	{
+		const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
+
+		if (DragComponent && DragComponent->GetGrabbedComponent())
+		{
+			const FVector PlayerForwardVector {PlayerCharacter->GetVelocity().GetSafeNormal()};
+			const float PlayerForwardSpeed {static_cast<float>(FVector::DotProduct(PlayerForwardVector, PlayerCharacter->GetActorForwardVector()))};
+			const float PlayerSidewardSpeed {static_cast<float>(FVector::CrossProduct(PlayerForwardVector, PlayerCharacter->GetActorForwardVector()).Size())};
+			
+			const FVector CameraLocation {PlayerCameraManager->GetCameraLocation()};
+			const FVector DraggedObjectLocation {DragComponent->GetDragLocation()};
+			const FVector CameraToDraggedObjectVector {(DraggedObjectLocation - CameraLocation).GetSafeNormal()};
+	
+			const float DistanceToDraggedObject {static_cast<float>(FVector::Distance(CameraLocation, DraggedObjectLocation))};
+			const float AngleThreshold
+			{static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(80, 150), FVector2D(1, 0), DistanceToDraggedObject) * 45)};
+			
+			const float AngleBetweenVectors {FMath::RadiansToDegrees(acosf(FVector::DotProduct(CameraToDraggedObjectVector, GetControlRotation().Vector())))};
+
+			if (PlayerForwardSpeed <= -1 && AngleBetweenVectors > AngleThreshold)
+			{
+				FVector NewForwardVector {CameraToDraggedObjectVector * FMath::Cos(FMath::DegreesToRadians(AngleThreshold))
+					+ GetControlRotation().Vector() * FMath::Sin(FMath::DegreesToRadians(AngleThreshold))};
+				NewForwardVector.Normalize();
+		
+				FRotator TargetRotation {NewForwardVector.Rotation()};
+				TargetRotation.Pitch = ControlRotation.Pitch;
+		
+				ControlRotation = FMath::RInterpTo(ControlRotation, TargetRotation, DeltaSeconds, 1.5);
+			}
+	
+			PlayerControlRotation = ControlRotation;
+			return;
+		}
+	}
+	
 	if (CharacterConfiguration && CharacterConfiguration->IsRotationSmoothingEnabled)
 	{
 		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
@@ -370,54 +419,81 @@ void APlayerCharacterController::UpdatePendingActions()
 	}
 }
 
-void APlayerCharacterController::CalculateRotationMultiplier()
+void APlayerCharacterController::CalculateRotationMultiplier(const FVector2D InputDirection)
 {
 	if (!InteractionComponent || !CharacterConfiguration)
-	{
-		InteractionRotationMultiplier = 1.0f;
-		return;
-	}
+    {
+        InteractionRotationMultiplier = 1.0f;
+        return;
+    }
 
-	const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
-	const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
+    const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
+    const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
 
-	if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
-	{
-		float RotationMultiplier {1.0f};
-		
-		if (const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
-		{
-			const float Mass {PrimitiveComponent->GetMass()};
-			const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
-			const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
-			
-			const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+    if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
+    {
+	    float RotationMultiplier {1.0f};
+
+    	if (const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
+    	{
+    		const float Mass {PrimitiveComponent->GetMass()};
+    		const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
+    		const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
+
+    		const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
 				(CharacterConfiguration->InteractionRotationWeightRange, CharacterConfiguration->InteractionRotationWeightScalars, Mass))};
-			
-			const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+
+    		const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
 				(CharacterConfiguration->InteractionRotationSizeRange, CharacterConfiguration->InteractionRotationSizeScalars, BoundingBoxSize))};
-			
-			float ZoomMultiplier {1.0f};
-			
-			/** We only want this behavior for objects that are handled by the grab component, I think. */
-			if (GrabComponent->GetGrabbedComponent())
-			{
-				if (const UCameraComponent* CameraComponent {PlayerCharacter->GetCamera()})
-				{
-					/** We're calculating the absolute distance between the grabbed primitive component and player instead of requesting a zoom level from the component,
-					*	It's a bit lazy, but it's okay for now. */
-					const float Distance {static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()))};
-					ZoomMultiplier = FMath::GetMappedRangeValueClamped
+
+    		float DistanceMultiplier;
+
+    		if (GrabComponent->GetGrabbedComponent())
+    		{
+    			if (const UCameraComponent* CameraComponent {PlayerCharacter->GetCamera()})
+    			{
+    				const float Distance {static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()))};
+    				
+    				DistanceMultiplier = FMath::GetMappedRangeValueClamped
 					(CharacterConfiguration->InteractionRotationDistanceRange, CharacterConfiguration->InteractionRotationDistanceScalars, Distance);
-				}
-			}
-			
-			RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, CharacterConfiguration->InteractionRotationFloor, 1.0) * ZoomMultiplier;
-		}
-		InteractionRotationMultiplier = RotationMultiplier;
-		return;
-	}
-	
+
+    				RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, CharacterConfiguration->InteractionRotationFloor, 1.0) * DistanceMultiplier;
+    			}
+    		}
+    		else if (DragComponent->GetGrabbedComponent())
+    		{
+    			if (const UCameraComponent* CameraComponent {PlayerCharacter->GetCamera()})
+    			{
+    				const FVector CameraLocation {CameraComponent->GetComponentLocation()};
+    				const FVector CameraForwardVector {CameraComponent->GetForwardVector()};
+    				const FVector DragLocation {DragComponent->GetDragLocation()};
+    				const FVector DistanceToComponent {DragLocation - CameraLocation};
+
+    				const float Angle {static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CameraForwardVector, DistanceToComponent.GetSafeNormal()))))};
+
+    				DistanceMultiplier = FMath::GetMappedRangeValueClamped(
+						CharacterConfiguration->InteractionRotationOffsetRange, CharacterConfiguration->InteractionRotationOffsetScalars, Angle);
+
+    				const FVector CameraToComponentDirection {DragComponent->GetDragLocation() - PlayerCameraManager->GetCameraLocation()};
+    				const FVector InputDirection3D {FVector(InputDirection, 0.0f)};
+    				const float DotProduct {static_cast<float>(FVector::DotProduct(InputDirection3D, CameraToComponentDirection.GetSafeNormal()))};
+
+    				constexpr float DragMultiplier {0.2};
+
+    				if (DotProduct > 0.0f)
+    				{
+    					RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, CharacterConfiguration->InteractionRotationFloor, 1.0) * DragMultiplier;
+    				}
+    				else
+    				{
+    					RotationMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, CharacterConfiguration->InteractionRotationFloor, 1.0) * DistanceMultiplier * DragMultiplier;
+    				}
+    			}
+    		}
+    	}
+    	InteractionRotationMultiplier = RotationMultiplier;
+    	return;
+    }
 	InteractionRotationMultiplier = 1.0f;
 }
 
