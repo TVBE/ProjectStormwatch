@@ -308,8 +308,6 @@ void APlayerCharacterController::HandleInventoryActionReleased()
 void APlayerCharacterController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
 {
 	CalculateRotationMultiplier(InputRotation);
-
-	UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), InteractionRotationMultiplier);
 	
 	AddYawInput(InputRotation.X * InteractionRotationMultiplier);
 	AddPitchInput(InputRotation.Y * InteractionRotationMultiplier);

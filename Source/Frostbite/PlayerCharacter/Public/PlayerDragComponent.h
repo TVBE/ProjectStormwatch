@@ -128,11 +128,11 @@ public:
 	
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	float LinearDamping{100.0f};
+	float LinearDamping{60.0f};
 
 	/** Linear stiffness of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	float LinearStiffness{80.0f};
+	float LinearStiffness{40.0f};
 
 	/** Angular damping of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
