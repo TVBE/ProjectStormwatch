@@ -10,7 +10,6 @@
 
 #include "DrawDebugHelpers.h"
 
-
 DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
 
 void UPlayerGrabComponent::OnRegister()
