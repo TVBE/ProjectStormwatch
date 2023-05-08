@@ -26,7 +26,7 @@ void UReacousticSubsystem::PostInitProperties()
 	
 	if(!ReacousticSoundDataAsset || !UReacousticSoundDataRefMap)
 	{
-		UE_LOG(LogAssetData, Error, TEXT("Failed to instance data assets."))
+		
 	}
 	
 	Super::PostInitProperties();
@@ -42,7 +42,7 @@ void UReacousticSubsystem::PostInitProperties()
 
 void UReacousticSubsystem::OnActorSpawned(AActor* Actor)
 {
-	UE_LOG(LogReacousticSubsystem, Warning, TEXT("On Actor spawned"));
+	
 }
 
 void UReacousticSubsystem::RegisterComponent(UReacousticComponent* Component)

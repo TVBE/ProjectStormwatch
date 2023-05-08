@@ -63,7 +63,7 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 		const FName MatchedRowName {RowNames[Index]};
 		if (const FRoomReverbSettings* MatchedRow {DataTable->FindRow<FRoomReverbSettings>(MatchedRowName, FString(""))})
 		{
-			return MatchedRow->ImpulseResponse;
+			return MatchedRow->ImpulseResponseA;
 		}
 	}
 	return nullptr;

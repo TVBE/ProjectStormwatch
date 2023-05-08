@@ -46,7 +46,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		UpdateThrowTimer(DeltaTime);
 		
 	}
-	else{UE_LOG(LogGrabComponent,Warning,TEXT("No grabbed actor found"))}
 }
 
 void UPlayerGrabComponent::BeginPlay()
@@ -130,8 +129,7 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
 
 		/** Get the GrabbedComponent rotation relative to the camera. */
-
-
+		
 		 CameraRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
 	
 		/** Start the tick function so that the update for the target location can start updating. */
@@ -261,8 +259,6 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 			FinalDirection.Normalize();
 
 			float VectorLength = RotationAxis.Size();
-			UE_LOG(LogTemp, Display, TEXT("The length of RotationAxis is: %f"), VectorLength);
-			UE_LOG(LogGrabComponent, Verbose, TEXT("FinalDirection length"))
 		}
 		else
 		{
@@ -297,9 +293,6 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		if(!OnlyPreviewTrajectory)
 		{
 			/** Set the physics velocity of the grabbed component to the calculated throwing direction */
-
-			// Print TossVelocity to the console
-			UE_LOG(LogTemp, Warning, TEXT("TossVelocity: %s"), *TossVelocity.ToString());
 			
 			GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
 			/** Release the grabbed component after the throw */
@@ -327,7 +320,6 @@ float UPlayerGrabComponent::CalculateThrowAngle(FVector StartLocation, FVector T
 	
 	/** Calculate initial velocity as I required to hit the target */
 	const float G{abs(Gravity)}; // acceleration due to gravity as G.
-	UE_LOG(LogGrabComponent, Warning, TEXT("Gravity %f"),G);
 	float Theta{atan((G * HD) / (Velocity * Velocity))};
 	float I{Velocity / cos(Theta)};
 
