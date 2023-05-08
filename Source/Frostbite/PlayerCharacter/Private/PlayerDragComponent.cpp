@@ -6,11 +6,11 @@
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
+#include "PlayerInteractionComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PhysicsProxy/SingleParticlePhysicsProxy.h"
 
-
 DEFINE_LOG_CATEGORY_CLASS(UPlayerDragComponent, LogDragComponent)
-
 
 void UPlayerDragComponent::OnRegister()
 {
@@ -25,13 +25,11 @@ void UPlayerDragComponent::OnRegister()
     {
         UE_LOG(LogDragComponent, Warning, TEXT("Player character is not valid."));
     }
-
-    const UWorld* World = GetWorld();
-    if (World != nullptr)
+	
+    if (const UWorld* World = GetWorld())
     {
         Gravity = World->GetGravityZ();
     }
-    else{UE_LOG(LogDragComponent, Warning, TEXT("World is not valid."));}
 
 	if(!Configuration)
 	{
@@ -52,8 +50,12 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (GrabbedComponent)
     {
-    	/** Some nullpointer checks.*/
-        if (!Configuration){UE_LOG(LogDragComponent, Warning, TEXT("Configuration is not valid."));return;}
+		// UpdateLocalConstraint();
+    	
+        if (!Configuration)
+        {
+        	return;
+        }
     	
     	UpdateTargetLocation(DeltaTime);
     	// UpdateCameraRotationSpeed(DeltaTime);
@@ -62,7 +64,6 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
             ReleaseActor();
         }
     }
-    else{UE_LOG(LogDragComponent, Warning, TEXT("Dragged component is not valid."));}
 }
 
 void UPlayerDragComponent::UpdateCameraRotationSpeed(float DeltaTime)
@@ -78,6 +79,24 @@ void UPlayerDragComponent::UpdateCameraRotationSpeed(float DeltaTime)
 	}
 }
 
+void UPlayerDragComponent::UpdateLocalConstraint()
+{
+	if (InteractionComponent)
+	{
+		const FHitResult HitResult {InteractionComponent->GetCameraTraceHitResult()};
+		if (HitResult.IsValidBlockingHit() && HitResult.GetComponent() == GrabbedComponent)
+		{
+			if (FVector::DistSquared(HitResult.ImpactPoint, GetDragLocation()) >= 1225)
+			{
+				/** TODO: Find method to prevent physics jump when re-grabbing object. */
+				InterpolationSpeed = 0.0f;
+				GrabComponentAtLocation(HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint);
+				InterpolationSpeed = 50.0f;
+			}
+		}
+	}
+}
+
 
 void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVector& Location)
 {
@@ -86,11 +105,11 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 
 	UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))};
 	if (!StaticMeshComponent){UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab does not have a static mesh component"));return;}
-
 	
-	GrabComponentAtLocation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass());
-	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 
+	TargetLocationZ = Location.Z;
+	GrabComponentAtLocation(StaticMeshComponent, NAME_None, Location);
+	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), Location);
 	
 	GrabOffset = StaticMeshComponent->GetCenterOfMass() - (Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector());
 
@@ -129,11 +148,20 @@ void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 		/** Clamp the zoom level within the min max of configuration*/
 		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
 	}
-
-	float TargetLocationZ = GrabbedComponent->GetCenterOfMass().Z;
+	
+	
 	FVector TargetLocationPre = Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector() ;
 	TargetLocation = FVector(TargetLocationPre.X,TargetLocationPre.Y, TargetLocationZ);
-	SetTargetLocation(TargetLocation);
+	SetTargetLocation(TargetLocation );
+}
+
+FVector UPlayerDragComponent::GetDragLocation() const
+{
+	if (!GrabbedComponent) { return FVector(); }
+	
+	const FTransform ComponentTransform {GrabbedComponent->GetComponentTransform()};
+	
+	return ComponentTransform.TransformPosition(ConstraintLocalPosition);
 }
 
 
@@ -153,3 +181,5 @@ void UPlayerDragComponent::ApplyToPhysicsHandle()
 	SetAngularStiffness(Configuration->AngularStiffness);
 	SetInterpolationSpeed(Configuration->InterpolationSpeed);
 }
+
+

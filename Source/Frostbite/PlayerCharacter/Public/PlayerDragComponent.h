@@ -6,6 +6,7 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerDragComponent.generated.h"
 
+class UPlayerInteractionComponent;
 class UCameraComponent;
 class APlayerCharacter;
 
@@ -29,7 +30,9 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-
+	UPROPERTY()
+	UPlayerInteractionComponent* InteractionComponent;
+	
 	/** Returns the actor that is currently being grabbed. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
 	FORCEINLINE AActor* GetDraggedActor() const
@@ -63,6 +66,7 @@ private:
 
 	void UpdateCameraRotationSpeed(float DeltaTime);
 
+	void UpdateLocalConstraint();
 	
 	UFUNCTION()
 	void ApplyToPhysicsHandle();
@@ -76,19 +80,22 @@ private:
 
 	FVector DraggedLocationOffset;
 
+	float TargetLocationZ;
+
 
 	float DraggedComponentSize;
 
 	/** Locations used to set the target location of the physicshandle: handle.*/
 	FVector TargetLocation;
 	FVector GrabOffset{0.0,0.0,0.0};
-
-
+	
 	float CurrentZoomLevel;
-
-
+	
 	float CurrentZoomAxisValue;
 
+public:
+	/** Returns the location the drag component is dragging the mesh from. */
+	FVector GetDragLocation() const;
 };
 /** Configuration asset to fine tune all variables within the drag component*/
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
@@ -121,11 +128,11 @@ public:
 	
 	/** Linear damping of the handle spring. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	float LinearDamping{10.0f};
+	float LinearDamping{100.0f};
 
 	/** Linear stiffness of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	float LinearStiffness{10.0f};
+	float LinearStiffness{80.0f};
 
 	/** Angular damping of the handle spring */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
@@ -137,5 +144,5 @@ public:
 
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle")
-	float InterpolationSpeed{50.0f};
+	float InterpolationSpeed{300.0f};
 };

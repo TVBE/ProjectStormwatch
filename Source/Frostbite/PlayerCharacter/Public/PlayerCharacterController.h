@@ -85,6 +85,8 @@ private:
 	/** The rotation multiplier for the control rotation. */
 	float InteractionRotationMultiplier {1.0f};
 
+	FVector2D InputRotation;
+
 public:
 	APlayerCharacterController();
 	
@@ -131,8 +133,10 @@ private:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void SetupInputComponent() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	
 
 	/** Updates the player control rotation. */
 	UFUNCTION()
@@ -154,7 +158,7 @@ private:
 	UFUNCTION()
 	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
 	
-	void CalculateRotationMultiplier();
+	void CalculateRotationMultiplier(const FVector2D InputDirection);
 	
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()

@@ -326,7 +326,7 @@ public:
 	float StepOverBaseSpeedModifier {0.6};
 
 	/** The Weight range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight", Meta = (DisplayName = "Weight Range",
 		ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
 	FVector2D InteractionRotationWeightRange {FVector2D(8, 25)};
 
@@ -336,8 +336,8 @@ public:
 	FVector2D InteractionRotationWeightScalars {FVector2D(1.0, 0.4)};
 	
 	/** The Bounding box range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
-	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size", Meta = (DisplayName = "Size Range", 
+	ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
 	FVector2D InteractionRotationSizeRange {FVector2D(500000, 1000000)};
 
 	/** The Bounding box scaling range. */
@@ -346,23 +346,32 @@ public:
 	FVector2D InteractionRotationSizeScalars {FVector2D(1.0, 0.4)};
 
 	/** The Object distance range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance", Meta = (DisplayName = "Distance Range", Units = "Centimeters",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance", Meta = (DisplayName = "Distance Range", 
 	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
 	FVector2D InteractionRotationDistanceRange {FVector2D(25, 150)};
-
-	/** The Distance scaling range. */
-	/** The Bounding box scaling range. */
+	
+	/** The distance scaling range. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance", Meta = (DisplayName = "Size Scalars",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	FVector2D InteractionRotationDistanceScalars {FVector2D(1.0, 0.5)};
+
+	/** The offset range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset", Meta = (DisplayName = "Offset Range", 
+	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
+	FVector2D InteractionRotationOffsetRange {FVector2D(8, 20)};
+	
+	/** The offset scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset", Meta = (DisplayName = "Offset Scalars",
+		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationOffsetScalars {FVector2D(1.0, 0.1)};
 
 	/** The Scaling floor for weight and bounding box sized combined. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation ", Meta = (DisplayName = "Multiplier Floor",
 		ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float InteractionRotationFloor {0.4};
-
+	
 	/** The Weight range in which we apply interaction speed scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight", Meta = (DisplayName = "Weight Range", Units = "Kilograms",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight", Meta = (DisplayName = "Weight Range",
 		ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
 	FVector2D InteractionSpeedWeightRange {FVector2D(8, 25)};
 
@@ -372,8 +381,8 @@ public:
 	FVector2D InteractionSpeedWeightScalars {FVector2D(1.0, 0.6)};
 	
 	/** The Bounding box range in which we apply interaction speed scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size", Meta = (DisplayName = "Size Range", ForceUnits = "cm3",
-	ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size", Meta = (DisplayName = "Size Range",
+	ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
 	FVector2D InteractionSpeedSizeRange {FVector2D(500000, 1000000)};
 
 	/** The Bounding box scaling range. */
