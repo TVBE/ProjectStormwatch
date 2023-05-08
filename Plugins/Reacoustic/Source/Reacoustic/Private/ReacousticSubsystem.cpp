@@ -8,12 +8,6 @@
 #include "Components/SceneComponent.h"
 #include "ReacousticDataTypes.h"
 
-
-
-
-
-
-
 UReacousticSubsystem::UReacousticSubsystem()
 {
 	Settings = GetMutableDefault<UReacousticProjectSettings>();
@@ -37,8 +31,6 @@ void UReacousticSubsystem::PostInitProperties()
 		World->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &UReacousticSubsystem::OnActorSpawned));
 	}
 }
-
-
 
 void UReacousticSubsystem::OnActorSpawned(AActor* Actor)
 {
