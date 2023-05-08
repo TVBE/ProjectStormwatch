@@ -3,6 +3,8 @@
 // This source code is part of the project Frostbite
 
 #include "MeshDamageComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 UMeshDamageComponent::UMeshDamageComponent()
 {
@@ -17,9 +19,15 @@ void UMeshDamageComponent::BeginPlay()
 	if (UStaticMeshComponent* Component {Cast<UStaticMeshComponent>(GetAttachParent())})
 	{
 		Component->OnComponentHit.AddDynamic(this, &UMeshDamageComponent::OnStaticMeshComponentHit);
-		Component->SetGenerateOverlapEvents(false);
-		Component->SetNotifyRigidBodyCollision(true);
 
+		if (const FBodyInstance* BodyInstance = Component->GetBodyInstance())
+		{
+			if (BodyInstance->bNotifyRigidBodyCollision)
+			{
+				Component->SetNotifyRigidBodyCollision(true);
+			}
+		}
+		
 		MeshComponent = Component;
 	}
 }
@@ -27,7 +35,6 @@ void UMeshDamageComponent::BeginPlay()
 void UMeshDamageComponent::ResetDamage()
 {
 	DamageLevel = 0.0f;
-	
 }
 
 void UMeshDamageComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -45,11 +52,11 @@ void UMeshDamageComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UMeshDamageComponent::OnStaticMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!OtherComp->IsSimulatingPhysics() || IsCooldownActive)
+	if ((!OtherComp->IsSimulatingPhysics() && !MeshComponent->IsSimulatingPhysics()) || IsCooldownActive)
 	{
 		return;
 	}
-
+	
 	const float ImpulseForce {static_cast<float>(NormalImpulse.Size())};
 	
 	if (ImpulseForce >= ImpulseForceThreshold)
@@ -93,8 +100,30 @@ void UMeshDamageComponent::UpdateDamagePercentage()
 		if (!IsThresholdReached)
 		{
 			OnDamageThresholdReached.Broadcast();
+			HandleDamageThresholdReached();
 		}
 		IsThresholdReached = true;
+	}
+}
+
+void UMeshDamageComponent::HandleDamageThresholdReached()
+{
+	if (AActor* Owner {GetOwner()})
+	{
+		if (PlayAudioEffects)
+		{
+			UGameplayStatics::SpawnSoundAtLocation(this, DestructionSound, Owner->GetActorLocation());
+		}
+		
+		if (PlayParticleEffects)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DestructionNiagaraSystem, Owner->GetActorLocation(), Owner->GetActorRotation());
+		}
+		
+		if (DestroyOwnerOnThresholdReached)
+		{
+			Owner->Destroy();
+		}
 	}
 }
 

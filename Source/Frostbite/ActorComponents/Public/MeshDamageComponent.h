@@ -8,6 +8,9 @@
 #include "Components/ActorComponent.h"
 #include "MeshDamageComponent.generated.h"
 
+class UNiagaraSystem;
+class USoundBase;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamagePercentageChangedDelegate, const float, NewPercentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageThresholdReachedDelegate);
 
@@ -25,19 +28,37 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnDamageThresholdReachedDelegate OnDamageThresholdReached;
 
+private:
 	/** The damage threshold for the component to broadcast it's OnDamageThresholdReached delegate. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (Units = "Newtons"))
+	UPROPERTY(EditAnywhere, Meta = (Units = "Newtons"))
 	float Threshold {100000.0f};
 
 	/** The minimum impact force required to increment the damage. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Minimum Required Force", Units = "Newtons"))
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Minimum Required Force", Units = "Newtons"))
 	float ImpulseForceThreshold {500.0f};
 
-private:
-	/** The current damage level. */
-	float DamageLevel {0.0f};
+	/** If enabled, we destroy the actor this component is part of when the damage threshold is reached. */
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Destroy Owner When Threshold Is Reached"))
+	bool DestroyOwnerOnThresholdReached {false};
+	
+	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
+	bool PlayParticleEffects {false};
 
-	/** The current damage percentage. */
+	/** If enabled, we play a particle effect when the mesh gets destroyed. */
+	UPROPERTY(EditAnywhere, Category = "VFX", Meta = (DisplayName = "Destruction Particle Effect",
+		EditCondition = "PlayParticleEffects"))
+	UNiagaraSystem* DestructionNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
+	bool PlayAudioEffects {false};
+
+	/** If enabled, we play a sound effect when the mesh gets destroyed. */
+	UPROPERTY(EditAnywhere, Category = "Audio", Meta = (DisplayName = "Destruction Sound Effect",
+		EditCondition = "PlayAudioEffects"))
+	USoundBase* DestructionSound;
+	
+	float DamageLevel {0.0f};
+	
 	float DamagePercentage {0.0f};
 
 	bool IsThresholdReached {false};
@@ -47,6 +68,7 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* MeshComponent;
 
+	UPROPERTY()
 	FTimerHandle CooldownTimerHandle;
 	
 public:	
@@ -69,6 +91,8 @@ private:
 	void SetDamageLevel(const float Value);
 
 	void UpdateDamagePercentage();
+
+	void HandleDamageThresholdReached();
 
 	void StartCooldown();
 	
