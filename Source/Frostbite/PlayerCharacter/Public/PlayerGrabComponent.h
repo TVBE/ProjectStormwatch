@@ -122,6 +122,9 @@ private:
 	
 	UFUNCTION()
 	void UpdateThrowTimer(float DeltaTime);
+
+	void VisualizeProjectilePath(AActor* ProjectileActor, FVector StartLocation, FVector LaunchVelocity);
+	
 	
 public:
 	/** Grabs an actor. */
