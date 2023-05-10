@@ -284,11 +284,11 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 				ESuggestProjVelocityTraceOption::DoNotTrace,
 				FCollisionResponseParams::DefaultResponseParam,
 				TArray<AActor*>{Player},
-				true))
+				false))
 		{
 			TossVelocity = ThrowVelocity;
 		}
-		
+		VisualizeProjectilePath(GrabbedComponent->GetOwner(),ReleaseLocation,TossVelocity);
 		if(!OnlyPreviewTrajectory)
 		{
 			/** Set the physics velocity of the grabbed component to the calculated throwing direction */
@@ -301,6 +301,44 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 			
 		}
 	}
+}
+
+void UPlayerGrabComponent::VisualizeProjectilePath(AActor* ProjectileActor, FVector StartLocation, FVector LaunchVelocity)
+{
+	/** Define the parameters for the prediction */
+	TArray<FVector> OutPathPositions;
+	FPredictProjectilePathResult OutPath;
+	FPredictProjectilePathParams PredictParams{};
+	PredictParams.StartLocation = StartLocation;
+	PredictParams.LaunchVelocity = LaunchVelocity;
+	PredictParams.bTraceComplex = false;
+	PredictParams.bTraceWithCollision = true;
+	PredictParams.DrawDebugType = EDrawDebugTrace::None;
+	PredictParams.DrawDebugTime = 2.0f;
+	PredictParams.SimFrequency = 30.0f;
+	PredictParams.MaxSimTime = 2.0f;
+	PredictParams.OverrideGravityZ = Gravity;
+	bool bTraceComplex{false};
+	TArray<AActor*> ActorsToIgnore{Player}; 
+
+	/** Call the prediction function */
+	UGameplayStatics::PredictProjectilePath(ProjectileActor,PredictParams,OutPath);
+
+	if (OutPath.HitResult.bBlockingHit)
+	{
+		FVector HitLocation = OutPath.HitResult.Location;
+		float SphereRadius = 10.0f;
+		FColor SphereColor = FColor::Red;
+		float SphereLifeTime = 0.0f;
+		DrawDebugSphere(GetWorld(), HitLocation, SphereRadius, 32, SphereColor, false, SphereLifeTime);
+	}
+
+	
+	/** for (int32 i = 0; i < OutPathPositions.Num(); ++i)
+	{
+		const FVector& PathPosition = OutPathPositions[i];
+		const FPredictProjectilePathPointData& PathPointData = OutPath.PathData[i];
+	} */
 }
 
 /** Calculate the angle to throw the object using a ballistic trajectory.*/
