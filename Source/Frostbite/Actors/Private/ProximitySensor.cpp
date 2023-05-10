@@ -228,18 +228,6 @@ void AProximitySensor::SetState(const ESensorState NewState)
 	if (SensorState != NewState)
 	{
 		SensorState = NewState;
-
-		switch (NewState)
-		{
-		case ESensorState::Triggered: DoActions(ActionsOnTrigger);
-			break;
-		case ESensorState::Alerted: DoActions(ActionsOnAlerted);
-			break;
-		case ESensorState::Idle: DoActions(ActionsOnIdle);
-			break;
-		case ESensorState::Detecting: DoActions(ActionsOnDetection);
-		default: break;
-		}
 		
 		OnStateChanged.Broadcast(NewState);
 	}
@@ -256,16 +244,6 @@ void AProximitySensor::HandleCooldownFinished()
 	if (IsBroken) { return; }
 	
 	SetState(ESensorState::Idle);
-}
-
-void AProximitySensor::DoActions(TArray<FActorFunctionCaller>& Actions)
-{
-	if (Actions.IsEmpty()) { return; }
-
-	for (FActorFunctionCaller& FunctionCaller : Actions)
-	{
-		FunctionCaller.CallFunction();
-	}
 }
 
 void AProximitySensor::ResetSensor()
@@ -302,7 +280,8 @@ void AProximitySensor::ActivateSensor()
 		DetectionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		
 		IsSensorActive = true;
-		
+
+		OnActivation.Broadcast();
 		SetState(ESensorState::Idle);
 
 		Poll();

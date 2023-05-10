@@ -23,6 +23,10 @@ AFrostbiteGameMode::AFrostbiteGameMode()
 	const TSharedRef<FPropertySection> Button
 	{PropertyModule.FindOrCreateSection("PressableButton", "Button", LOCTEXT("Button", "Button"))};
 	Button->AddCategory("Button");
+
+	const TSharedRef<FPropertySection> Sensor
+		{PropertyModule.FindOrCreateSection("ProximitySensor", "Sensor", LOCTEXT("Sensor", "Sensor"))};
+	Sensor->AddCategory("Sensor");
 #undef LOCTEXT_NAMESPACE
 	
 #endif

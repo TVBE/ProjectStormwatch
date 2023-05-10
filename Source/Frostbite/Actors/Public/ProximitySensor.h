@@ -33,6 +33,7 @@ enum class ESensorState : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSensorStateChangedDelegate, const ESensorState, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSensorActivatedDelegate);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Sensors", Meta = (DisplayName = "Proximity Sensor"))
 class FROSTBITE_API AProximitySensor : public AActor
@@ -46,13 +47,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Sensor State Changed"))
 	FOnSensorStateChangedDelegate OnStateChanged;
 
+	/** Delegate that is broadcasted when the sensor's cooldown state is changed.*/
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Sensor Activated"))
+	FOnSensorActivatedDelegate OnActivation;
+
 protected:
 	/** The scene root component for this actor. */
 	UPROPERTY()
 	USceneComponent* Root;
 	
 	/** The collision component to use for detection. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection Area")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Detection Area")
 	UCapsuleComponent* DetectionArea;
 
 	/** The update interval of the sensor. */
@@ -60,40 +65,24 @@ protected:
 	float PollInterval {0.2f};
 
 	/** If true, the sensor's reset function needs to be called to have the sensor forfeit its triggered state. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection", Meta = (DisplayName = "Requires Manual Reset"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Detection", Meta = (DisplayName = "Requires Manual Reset"))
 	bool IsManualResetRequired {true};
 
 	/** How long the proximity sensor needs to detect an object before triggering. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Detection",
 		Meta = (Units = "Seconds", ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
 	float DetectionThreshold {1.5f};
 	
 	float DetectionLevel {0.0f};
 	
 	/** The cooldown time before the sensor is able to detect actors again. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooldown", Meta = (DisplayName = "Cooldown",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Cooldown", Meta = (DisplayName = "Cooldown",
 		Units = "Seconds"))
 	float CooldownTime {3.0f};
 
 	/** If true, the sensor is currently in cooldown and cannot detect actor. */
-	UPROPERTY(BlueprintReadOnly, Category = "Cooldown")
+	UPROPERTY(BlueprintReadOnly, Category = "Sensor|Cooldown")
 	bool IsCooldownActive {false};
-
-	/** Functions to call when the sensor is triggered. */
-	UPROPERTY(EditInstanceOnly, Category = "Actions", DisplayName = "On Trigger")
-	TArray<FActorFunctionCaller> ActionsOnTrigger;
-
-	/** Functions to call when the sensor is detecting something. */
-	UPROPERTY(EditInstanceOnly, Category = "Actions", DisplayName = "On Detection")
-	TArray<FActorFunctionCaller> ActionsOnDetection;
-
-	/** Functions to call when the sensor is alerted. */
-	UPROPERTY(EditInstanceOnly, Category = "Actions", DisplayName = "On Alerted")
-	TArray<FActorFunctionCaller> ActionsOnAlerted;
-
-	/** Functions to call when the sensor is idle. */
-	UPROPERTY(EditInstanceOnly, Category = "Actions", DisplayName = "On Idle")
-	TArray<FActorFunctionCaller> ActionsOnIdle;
 	
 	/** The ignore parameters for the sensor. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Ignore Parameters")
@@ -183,8 +172,6 @@ private:
 	/** Called when the cooldown is finished. */
 	UFUNCTION()
 	void HandleCooldownFinished();
-
-	void DoActions(TArray<FActorFunctionCaller>& Actions);
 
 public:
 	/** Returns if there currently is a pawn inside the sensor's range. */
