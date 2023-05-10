@@ -23,6 +23,8 @@ private:
 	bool IsPlayerActive {false};
 
 public:
+	AFrostbiteGameMode();
+	
 	/** Notifies the gamemode that a player character is fully initialized and is ready for use. */
 	void NotifyPlayerCharacterBeginPlay(APlayerCharacter* Character);
 
@@ -30,5 +32,4 @@ protected:
 	/** Called when the player character is ready for use in the world. */
 	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Player Spawn"))
 	void EventOnPlayerSpawn(APlayerCharacter* Character);
-	
 };

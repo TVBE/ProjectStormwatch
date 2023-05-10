@@ -33,7 +33,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDoorStateChangedDelegate, EDoorSt
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCooldownFinishedDelegate);
 
 /** Abstract base class for sliding door actors. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Sliding Door"))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Sliding Door", PrioritizeCategories = "Door"))
 class ASlidingDoor : public AActor
 {
 	GENERATED_BODY()
@@ -54,7 +54,7 @@ protected:
 	class UBoxComponent* SafetyBox;
 
 	/** The starting state of the door. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ValidEnumValues = "Open, Closed"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door", Meta = (ValidEnumValues = "Open, Closed"))
 	EDoorState StartingState {EDoorState::Closed};
 
 	/** The current state of the door. */
@@ -62,23 +62,29 @@ protected:
 	EDoorState DoorState;
 
 	/** If true, the door will start locked. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lock")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Lock")
 	bool StartLocked {false};
 
 	/** If true, the door will close when it is locked. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lock")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Lock")
 	bool CloseOnLock {true};
 
 	/** If true, the door will either open or reset when unlocked. */
 	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
 	bool DoActionOnUnlock {false};
+
+	/** The action to perform when the door is unlocked. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Lock", Meta = (EditCondition = "DoActionOnUnlock"))
+	EDoorAction ActionOnUnlock {EDoorAction::Reset};
+
+	EDoorState StateWhenLocked;
 	
 	/** If true, the door will auto close after a given time when opened. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Auto Close", Meta = (DisplayName = "Auto Close (Not Available)")) // TODO: Implement this.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close (Not Available)")) // TODO: Implement this.
 	bool IsAutoCloseEnabled {false};
 
 	/** The time required for the door to close automatically after the last trigger. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Auto Close", Meta = (DisplayName = "Auto Close Delay (Not Available)",
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close Delay (Not Available)",
 		Units = "Seconds", ClampMin = "0")) // TODO: Implement this.
 	float AutoCloseDelay {3.0f};
 
@@ -86,34 +92,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (DisplayName = "Cancel Close If Pawn Enters Safety Zone"))
 	bool CancelCloseOnSafetyZoneOverlap {false};
 	
-	/** The action to perform when the door is unlocked. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lock", Meta = (EditCondition = "DoActionOnUnlock"))
-	EDoorAction ActionOnUnlock {EDoorAction::Reset};
-
-	EDoorState StateWhenLocked;
-	
 	/** If true, the button requires power to operate and can be connected to a power source. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Power")
 	bool RequiresPower {false};
 	
 	/** Soft object pointer to the power source that this button is connected to. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Power", Meta = (EditCondition = "RequiresPower"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "RequiresPower"))
 	TSoftObjectPtr<APowerSource> PowerSource;
 	
 	/** If true, the door should perform an action when power is regained. */
-	UPROPERTY(BlueprintReadOnly, Meta = (InlineEditConditionToggle))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (InlineEditConditionToggle))
 	bool DoActionOnPowerGain {false};
 
 	/** Action the door should perform when power is regained. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power", Meta = (EditCondition = "DoActionOnPowerGain"))
-	EDoorAction ActionOnPowergain {EDoorAction::Open};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "DoActionOnPowerGain"))
+	EDoorAction ActionOnPowerGain {EDoorAction::Open};
 
 	/** If true, the door should perform an action when power is lost. */
-	UPROPERTY(BlueprintReadOnly, Meta = (InlineEditConditionToggle))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (InlineEditConditionToggle))
 	bool DoActionOnPowerLoss {false};
 
 	/** Action the door should perform when power is lost. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power", Meta = (EditCondition = "DoActionOnPowerLoss"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "DoActionOnPowerLoss"))
 	EDoorAction ActionOnPowerLoss {EDoorAction::Open};
 
 	/** The power consumer component. */
@@ -194,19 +194,19 @@ private:
 
 public:
 	/** Attempts to open the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Open"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Open", Keywords = "Open"))
 	void EventOpen();
 
 	/** Attempts to close the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Close"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Close", Keywords = "Close"))
 	void EventClose();
 	
 	/** Locks the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Lock"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Lock", Keywords = "Lock"))
 	void EventLock();
 	
 	/** Unlocks the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Unlock"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Unlock", Keywords = "Unlock"))
 	void EventUnlock();
 
 protected:
@@ -219,7 +219,7 @@ protected:
 	void EventDoorClosed();
 
 	/** Event called when the power state of the door has changed. */
-	UFUNCTION(BlueprintNativeEvent, Category = "Door|Events", Meta = (DisplayName = "On Power State Changed"))
+	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Power State Changed"))
 	void EventOnPowerStateChanged(const bool NewState);
 
 public:
@@ -239,3 +239,5 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE EDoorState GetDoorState() const { return DoorState; }
 };
+
+
