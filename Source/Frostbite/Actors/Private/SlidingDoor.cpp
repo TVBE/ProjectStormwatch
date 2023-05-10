@@ -56,7 +56,7 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 		{
 			if (CancelCloseOnSafetyZoneOverlap)
 			{
-				EventOpen();
+				Open();
 			}
 			PushActorsOutOfSafetyBox(OverlappingActors, DeltaSeconds);
 		}
@@ -130,11 +130,11 @@ void ASlidingDoor::HandleCooldownFinished()
 void ASlidingDoor::HandleCloseTimerUpdate()
 {
 	{
-		EventClose();
+		Close();
 	}
 }
 
-void ASlidingDoor::EventOpen_Implementation()
+void ASlidingDoor::Open_Implementation()
 {
 	if (IsLocked) { return; }
 	
@@ -158,7 +158,7 @@ void ASlidingDoor::EventOpen_Implementation()
 	}
 }
 
-void ASlidingDoor::EventClose_Implementation()
+void ASlidingDoor::Close_Implementation()
 {
 	if (IsLocked && !CloseOnLock) { return; }
 	
@@ -184,7 +184,7 @@ void ASlidingDoor::EventClose_Implementation()
 	}
 }
 
-void ASlidingDoor::EventLock_Implementation()
+void ASlidingDoor::Lock_Implementation()
 {
 	if (DoorState == EDoorState::Closed || DoorState ==  EDoorState::Closing)
 	{
@@ -197,33 +197,33 @@ void ASlidingDoor::EventLock_Implementation()
 	
 	if (CloseOnLock)
 	{
-		EventClose();
+		Close();
 	}
 	IsLocked = true;
 }
 
-void ASlidingDoor::EventUnlock_Implementation()
+void ASlidingDoor::Unlock_Implementation()
 {
 	IsLocked = false;
 
 	if (!DoActionOnUnlock) { return; }
 	if (ActionOnUnlock == EDoorAction::Open)
 	{
-		EventOpen();
+		Open();
 	}
 	else if (ActionOnUnlock == EDoorAction::Close)
 	{
-		EventClose();
+		Close();
 	}
 	else if (ActionOnUnlock == EDoorAction::Reset)
 	{
 		if (StateWhenLocked == EDoorState::Open)
 		{
-			EventOpen();
+			Open();
 		}
 		else
 		{
-			EventClose();
+			Close();
 		}
 	}
 }
@@ -240,7 +240,7 @@ bool ASlidingDoor::CanClose() const
 	return true;
 }
 
-void ASlidingDoor::EventDoorOpened_Implementation()
+void ASlidingDoor::EventOpened_Implementation()
 {
 	DoorState = EDoorState::Open;
 	
@@ -249,7 +249,7 @@ void ASlidingDoor::EventDoorOpened_Implementation()
 	OnDoorStateChanged.Broadcast(EDoorState::Open);
 }
 
-void ASlidingDoor::EventDoorClosed_Implementation()
+void ASlidingDoor::EventClosed_Implementation()
 {
 	DoorState = EDoorState::Closed;
 	

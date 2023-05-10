@@ -194,29 +194,29 @@ private:
 
 public:
 	/** Attempts to open the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Open", Keywords = "Open"))
-	void EventOpen();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (DisplayName = "Open", Keywords = "Open"))
+	void Open();
 
 	/** Attempts to close the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Close", Keywords = "Close"))
-	void EventClose();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (DisplayName = "Close", Keywords = "Close"))
+	void Close();
 	
 	/** Locks the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Lock", Keywords = "Lock"))
-	void EventLock();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (DisplayName = "Lock", Keywords = "Lock"))
+	void Lock();
 	
 	/** Unlocks the door. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Unlock", Keywords = "Unlock"))
-	void EventUnlock();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (DisplayName = "Unlock", Keywords = "Unlock"))
+	void Unlock();
 
 protected:
 	/** Event called when the door has opened. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Door Opened"))
-	void EventDoorOpened();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Opened"))
+	void EventOpened();
 	
 	/** Event called when the door has closed. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Door Closed"))
-	void EventDoorClosed();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Closed"))
+	void EventClosed();
 
 	/** Event called when the power state of the door has changed. */
 	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Power State Changed"))

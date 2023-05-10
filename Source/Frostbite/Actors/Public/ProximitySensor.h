@@ -174,6 +174,10 @@ private:
 	void HandleCooldownFinished();
 
 public:
+	/** Returns the current sensor state. */
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE ESensorState GetSensorState() const { return SensorState; }
+	
 	/** Returns if there currently is a pawn inside the sensor's range. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsActorDetected() const { return IsActorDetected; }
