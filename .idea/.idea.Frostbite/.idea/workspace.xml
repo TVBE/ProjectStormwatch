@@ -10,17 +10,14 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/Door/BP_TestDoor_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/Door/BP_TestDoor_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/BarrelhouseUtilities.Build.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Private/InteractableActor.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Private/SurfaceTrackerComponent.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Public/InteractableActor.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/BarrelhouseUtilities/Public/SurfaceTrackerComponent.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/SlidingDoor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/SlidingDoor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/Tim/TimVTestLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/Tim/TimVTestLevel.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_PressAndHold.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_SinglePress.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/BP_TestButton_Toggle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Private/PressableButton.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Actors/Public/PressableButton.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Private/FrostbiteGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Core/Public/FrostbiteGameMode.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -383,6 +380,7 @@
       <workItem from="1683697000606" duration="2689000" />
       <workItem from="1683700131858" duration="409000" />
       <workItem from="1683700584049" duration="1702000" />
+      <workItem from="1683702361309" duration="1898000" />
     </task>
     <servers />
   </component>

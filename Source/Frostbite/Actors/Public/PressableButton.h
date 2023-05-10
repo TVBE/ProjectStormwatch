@@ -83,6 +83,9 @@ struct FLinkedButton
 	}
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonPressedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonReleasedDelegate);
+
 /** Base class for button actors. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Button"))
 class APressableButton : public AActor, public IInteractableObject, public IUsableObject
@@ -90,6 +93,15 @@ class APressableButton : public AActor, public IInteractableObject, public IUsab
 	GENERATED_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogButton, Log, All)
+
+public:
+	/** Delegate that is called when the button is pressed. */
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Button Pressed"))
+	FOnButtonPressedDelegate OnButtonPressed;
+
+	/** Delegate that is called when the button is released. */
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Button Released"))
+	FOnButtonReleasedDelegate OnButtonReleased;
 
 protected:
 	/** The root component for the actor. */
@@ -110,39 +122,22 @@ protected:
 	EButtonTriggerType TriggerType {EButtonTriggerType::SinglePress};
 	
 	/** The cooldown time between presses. When the button is in cooldown, the button cannot be pressed. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (Units = "Seconds"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button", Meta = (Units = "Seconds"))
 	float CooldownTime {1.0f};
 
 	/** When true, the button is currently pressed. This does not mean that the player is currently interacting with the button,
 	 *	just that the button is in it's 'pressed-down' state. */
 	UPROPERTY(BlueprintReadWrite)
 	bool IsPressed {false};
-
-	/** Functions to call when the button is pressed.*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Meta = (DisplayName = "Actions When Pressed",
-		NoElementDuplicate, ShowOnlyInnerProperties))
-	TArray<FActorFunctionCaller> ActionsOnPressed;
-
-	/** Functions to call when the button is pressed.*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Meta = (DisplayName = "Actions When Released",
-		NoElementDuplicate, ShowOnlyInnerProperties,
-		EditCondition = "TriggerType != EButtonTriggerType::SinglePress", EditConditionHides))
-	TArray<FActorFunctionCaller> ActionsOnRelease;
 	
-	/** Array of soft object pointers to other button instances.
-	 *	This allows us to affect other button instances when this button is pressed. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Linked Actors",
-		Meta = (NoElementDuplicate, ShowOnlyInnerProperties))
-	TArray<FLinkedButton> LinkedButtons;
-
 	// PHYSICS
 	/** If true, the button can be triggered by colliding physics objects. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Collision Trigger",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Collision Trigger",
 		Meta = (DisplayName = "Can Be Triggered By Collisions"))
 	bool CanTriggerByCollision {true};
 
 	/** The force threshold required to trigger the button. */ 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Collision Trigger",
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Collision Trigger",
 		Meta = (DisplayName = "Collision Trigger Threshold", Units = "Newtons", EditCondition = "CanTriggerByCollision"))
 	float CollisionTriggerThreshold {100.0f};
 	
@@ -152,28 +147,28 @@ protected:
 	
 	// POWER
 	/** If true, the button requires power to operate and can be connected to a power source. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power")
 	bool RequiresPower {false};
 
 	/** Soft object pointer to the power source that this button is connected to. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Power", Meta = (EditCondition = "RequiresPower"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Button|Power", Meta = (EditCondition = "RequiresPower"))
 	TSoftObjectPtr<APowerSource> PowerSource;
 
 	/** If true, the button can still be toggled when the button has no power.
 	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power",
-		Meta = (EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power",
+		Meta = (EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle"))
 	bool CanBeToggledWithoutPower {false};
 	
 	/** Defines the action the button should perform when power is lost. This is only available for toggle buttons. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Power", Meta = (DisplayName = "Action On Power Loss",
-		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides,
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Button|Power", Meta = (DisplayName = "Action On Power Loss",
+		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Release"))
 	EButtonPowerChangeActionType PowerLossAction {EButtonPowerChangeActionType::Nothing};
 
 	/** Defines the action the button should perform when power is regained. This is only available for toggle buttons.  */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power", Meta = (DisplayName = "Action On Power Gain",
-		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle", EditConditionHides,
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
+		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Press"))
 	EButtonPowerChangeActionType PowerGainAction {EButtonPowerChangeActionType::Nothing};
 	
@@ -193,6 +188,19 @@ private:
 public:	
 	APressableButton();
 
+	/** Presses the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
+	*	This functions should only be called by linked objects.
+	*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Press Button", Keywords = "Press Button"))
+	void EventOnPress();
+
+	/** Releases the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
+	 *	This functions should only be called by linked objects.
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Release Button", Keywords = "Release Button"))
+	void EventOnRelease();
+
+	/** IInteractable Object implementation. */
 	FORCEINLINE FVector GetInteractionWidgetLocation_Implementation() const override { return GetActorLocation(); }
 
 protected:
@@ -207,34 +215,7 @@ private:
 	/** Called when the cooldown timer is finished. */
 	void HandleCooldownFinished();
 
-	/** calls the corresponding actions on target actors. */
-	void DoTargetActorActions(const bool IsPressedAction);
-
-	/** Calls the corresponding actions on linked button instances. */
-	void DoLinkedButtonActions(const bool IsPressedAction);
-
-#if WITH_EDITOR
-	/** Validates the array of linked buttons. */
-	void ValidateLinkedButtons();
-#endif
-	
 public:
-	/** Presses the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
-	 *	This functions should only be called by linked objects.
-	 *	@Param CallTargetActorss If true, the event should execute its gameplay actions.
-	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Press Button"))
-	void EventOnPress(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
-
-	/** Releases the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
-	 *	This functions should only be called by linked objects.
-	 *	@Param CallTargetActors If true, the event should execute its gameplay actions.
-	 *	@Param CallLinkedButtons If true, the button should perform the specified actions on other buttons.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Events", Meta = (DisplayName = "Release Button"))
-	void EventOnRelease(const bool CallTargetActors = true, const bool CallLinkedButtons = true);
-
 	/** Event called when the button is triggered by a collision. */
 	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Collision Trigger"))
 	void EventOnCollisionTrigger();

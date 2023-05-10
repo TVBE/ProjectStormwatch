@@ -16,9 +16,13 @@ AFrostbiteGameMode::AFrostbiteGameMode()
 	FPropertyEditorModule& PropertyModule {FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor)};
 
 #define LOCTEXT_NAMESPACE "PropertySection"
-	const TSharedRef<FPropertySection> Section
+	const TSharedRef<FPropertySection> Door
 	{PropertyModule.FindOrCreateSection("SlidingDoor", "Door", LOCTEXT("Door", "Door"))};
-	Section->AddCategory("Door");
+	Door->AddCategory("Door");
+	
+	const TSharedRef<FPropertySection> Button
+	{PropertyModule.FindOrCreateSection("PressableButton", "Button", LOCTEXT("Button", "Button"))};
+	Button->AddCategory("Button");
 #undef LOCTEXT_NAMESPACE
 	
 #endif
