@@ -4,6 +4,7 @@
 
 #include "ProximitySensor.h"
 
+#include "AutomationTestModule.h"
 #include "Nightstalker.h"
 #include "PlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
@@ -72,7 +73,7 @@ void AProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 		}
 	}
 
-	if (IsAlerted)
+	if (IsAlerted && !IsTriggered)
 	{
 		SetState(ESensorState::Alerted);
 		StartCooldown();
@@ -235,6 +236,8 @@ void AProximitySensor::SetState(const ESensorState NewState)
 
 void AProximitySensor::HandleCooldownFinished()
 {
+	DetectionLevel = 0.0f;
+	
 	IsCooldownActive = false;
 	
 	IsAlerted = false;
