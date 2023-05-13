@@ -21,7 +21,7 @@ void UKineticActorComponent::OnRegister()
 
 	if (const AActor* Actor {GetOwner()})
 	{
-		if (const UMeshInteractionComponent* MeshInteractionComponent {Actor->FindComponentByClass<UMeshInteractionComponent>()};)
+		if (const UMeshInteractionComponent* MeshInteractionComponent {Actor->FindComponentByClass<UMeshInteractionComponent>()})
 		{
 			Mesh = Cast<UStaticMeshComponent>(MeshInteractionComponent->GetAttachParent());
 			if (Mesh)
