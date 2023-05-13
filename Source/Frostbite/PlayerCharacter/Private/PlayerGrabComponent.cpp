@@ -48,7 +48,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	if (GrabbedComponent && Configuration)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Zoom Axis Value is: %f"), CurrentZoomAxisValue)
 		UpdateTargetLocationWithRotation(DeltaTime);
 
 		if (CurrentZoomLevel != PreviousZoomLevel)

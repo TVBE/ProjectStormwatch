@@ -9,19 +9,8 @@
 void UMeshInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
-
-	UStaticMeshComponent* MeshComponent;
 	
-	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
-	{
-		MeshComponent = MeshActor->GetStaticMeshComponent();
-	}
-	else
-	{
-		MeshComponent = Cast<UStaticMeshComponent>(GetOwner()->FindComponentByClass(UStaticMeshComponent::StaticClass()));
-	}
-	
-	if (MeshComponent)
+	if (UStaticMeshComponent* MeshComponent {Cast<UStaticMeshComponent>(GetAttachParent())})
 	{
 		MeshComponent->SetMobility(EComponentMobility::Movable);
 		MeshComponent->SetSimulatePhysics(true);
