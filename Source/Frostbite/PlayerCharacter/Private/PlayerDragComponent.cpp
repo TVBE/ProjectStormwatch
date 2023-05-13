@@ -113,7 +113,7 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 	
 	GrabOffset = StaticMeshComponent->GetCenterOfMass() - (Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector());
 
-	UE_LOG(LogTemp, Display, TEXT("GrabOffset %f %f %f"),GrabOffset.X,GrabOffset.Y,GrabOffset.Z);
+	// UE_LOG(LogTemp, Display, TEXT("GrabOffset %f %f %f"),GrabOffset.X,GrabOffset.Y,GrabOffset.Z);
 	
 	SetComponentTickEnabled(true);
 	//GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -124,7 +124,7 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 
 void UPlayerDragComponent::ReleaseActor()
 {
-	if (!GrabbedComponent){UE_LOG(LogDragComponent, Warning, TEXT("No component is currently being dragged"));return;}
+	if (!GrabbedComponent){ return; }
 
 	//GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	SetComponentTickEnabled(false);

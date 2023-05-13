@@ -61,6 +61,8 @@ private:
 	
 	UPROPERTY()
 	float CurrentZoomLevel;
+
+	float PreviousZoomLevel;
 	
 	UPROPERTY()
 	float CurrentZoomAxisValue;
@@ -156,6 +158,8 @@ public:
 
 	UFUNCTION()
 	void ApplyToPhysicsHandle();
+
+	void UpdatePhysicsHandle();
 	
 	/** Will be updated when a component is being grabbed. */
 	UFUNCTION(BlueprintCallable)
@@ -266,29 +270,43 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Throw")
 	float ThrowingShakeSize{0.07f};
 
-	
-
-
-	
-	// ... PhysicsHandleSettings ... 
-
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearDamping{200.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Linear Damping"))
+	float MaxZoomLinearDamping {200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftLinearConstraint"))
-	float LinearStiffness{750.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Linear Stiffness"))
+	float MaxZoomLinearStiffness {750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
-	float AngularDamping{500.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Angular Damping"))
+	float MaxZoomAngularDamping {500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bSoftAngularConstraint"))
-	float AngularStiffness{1500.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Angular Stiffness"))
+	float MaxZoomAngularStiffness {1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PhysicsHandle", Meta = (EditCondition = "bInterpolateTarget"))
-	float InterpolationSpeed{50.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Interpolation Speed"))
+	float MaxZoomInterpolationSpeed {50.0f};
+
+	/** Linear damping of the handle spring. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Linear Damping"))
+	float MinZoomLinearDamping {200.0f};
+
+	/** Linear stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Linear Stiffness"))
+	float MinZoomLinearStiffness {750.0f};
+
+	/** Angular damping of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Angular Damping"))
+	float MinZoomAngularDamping {500.0f};
+
+	/** Angular stiffness of the handle spring */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Angular Stiffness"))
+	float MinZoomAngularStiffness {1500.0f};
+
+	/** How quickly we interpolate the physics target transform */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Interpolation Speed"))
+	float MinZoomInterpolationSpeed {50.0f};
 };

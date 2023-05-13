@@ -7,8 +7,14 @@
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
-
 #include "DrawDebugHelpers.h"
+#include "EngineDefines.h"
+#include "Components/PrimitiveComponent.h"
+#include "PhysicsPublic.h"
+#include "Physics/PhysicsInterfaceCore.h"
+#include "Chaos/PBDJointConstraintTypes.h"
+#include "Chaos/PBDJointConstraintData.h"
+#include "ChaosCheck.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UPlayerGrabComponent, LogGrabComponent)
 
@@ -40,10 +46,45 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
 
-		// UpdateCameraRotationSpeed(DeltaTime);
+		if (CurrentZoomLevel != PreviousZoomLevel)
+		{
+			UpdatePhysicsHandle();
+		}
+		PreviousZoomLevel = CurrentZoomLevel;
 
 		UpdateThrowTimer(DeltaTime);
 		
+	}
+}
+
+void UPlayerGrabComponent::UpdatePhysicsHandle()
+{
+	const float Alpha {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(FVector2D(Configuration->MinZoomLevel, Configuration->MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
+
+	
+	
+	LinearDamping = FMath::Lerp(Configuration->MinZoomLinearDamping, Configuration->MaxZoomLinearDamping, Alpha);
+	LinearStiffness = FMath::Lerp(Configuration->MinZoomLinearStiffness, Configuration->MaxZoomLinearStiffness, Alpha);
+	AngularDamping = FMath::Lerp(Configuration->MinZoomAngularDamping, Configuration->MaxZoomAngularDamping, Alpha);
+	AngularStiffness = FMath::Lerp(Configuration->MinZoomAngularStiffness, Configuration->MaxZoomAngularStiffness, Alpha);
+	InterpolationSpeed = FMath::Lerp(Configuration->MinZoomInterpolationSpeed, Configuration->MaxZoomInterpolationSpeed, Alpha);
+
+	if (ConstraintHandle.IsValid() && ConstraintHandle.Constraint->IsType(Chaos::EConstraintType::JointConstraintType))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("This is called"))
+		FPhysicsCommand::ExecuteWrite(ConstraintHandle, [&](const FPhysicsConstraintHandle& InConstraintHandle)
+		{
+			if (Chaos::FJointConstraint* Constraint {static_cast<Chaos::FJointConstraint*>(ConstraintHandle.Constraint)})
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Updating"))
+				Constraint->SetLinearDriveStiffness(Chaos::FVec3(LinearStiffness));
+				Constraint->SetLinearDriveDamping(Chaos::FVec3(LinearDamping));
+
+				Constraint->SetAngularDriveStiffness(Chaos::FVec3(AngularStiffness));
+				Constraint->SetAngularDriveDamping(Chaos::FVec3(AngularDamping));
+			}
+		});
 	}
 }
 
@@ -396,7 +437,6 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 
 
 	RotatedHandOffset = Camera->GetComponentLocation() + RotatedScaledHandOffset;
-	
 }
 
 /** The looping function that updates the target location and rotation of the currently grabbed object*/
@@ -432,8 +472,6 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		SetTargetLocationAndRotation(TargetLocation, TargetRotation);
 	}
 }
-
-
 
 /** Updates on tick when you are manually rotating the object.*/
 void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
@@ -480,10 +518,14 @@ void UPlayerGrabComponent::ApplyToPhysicsHandle()
 {
 	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.
 
-	SetLinearDamping(Configuration->LinearDamping);
-	SetLinearStiffness(Configuration->LinearStiffness);
-	SetAngularDamping(Configuration->AngularDamping);
-	SetAngularStiffness(Configuration->AngularStiffness);
-	SetInterpolationSpeed(Configuration->InterpolationSpeed);
+	SetLinearDamping(Configuration->MaxZoomLinearDamping);
+	SetLinearStiffness(Configuration->MaxZoomLinearStiffness);
+	SetAngularDamping(Configuration->MaxZoomAngularDamping);
+	SetAngularStiffness(Configuration->MaxZoomAngularStiffness);
+	SetInterpolationSpeed(Configuration->MaxZoomInterpolationSpeed);
 }
+
+
+
+
 
