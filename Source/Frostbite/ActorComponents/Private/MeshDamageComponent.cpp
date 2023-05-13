@@ -5,6 +5,7 @@
 #include "MeshDamageComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "GameFramework/Character.h"
 
 UMeshDamageComponent::UMeshDamageComponent()
 {
@@ -52,6 +53,11 @@ void UMeshDamageComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UMeshDamageComponent::OnStaticMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (Cast<ACharacter>(OtherActor))
+	{
+		return;
+	}
+	
 	if ((!OtherComp->IsSimulatingPhysics() && !MeshComponent->IsSimulatingPhysics()) || IsCooldownActive)
 	{
 		return;
