@@ -122,6 +122,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 		if (InteractionComponent->GetIsTertiaryInteractionActive())
 		{
 			InteractionComponent->AddYawInput(Value);
+			InputRotation.X = 0;
 			return;
 		}
 	}
@@ -137,6 +138,7 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 		if (InteractionComponent->GetIsTertiaryInteractionActive())
 		{
 			InteractionComponent->AddPitchInput(Value);
+			InputRotation.Y = 0;
 			return;
 		}
 	}
