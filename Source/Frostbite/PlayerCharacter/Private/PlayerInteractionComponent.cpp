@@ -68,22 +68,30 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		return;
 	}
 	
-	CurrentInteractableActor = CheckForInteractableActor();
+	if (AActor* InteractableActor {CheckForInteractableActor()})
+	{
+		if (InteractableActor != CurrentInteractableActor)
+		{
+			CurrentInteractableActor = InteractableActor;
+			UpdateInteractableObjectData(InteractableActor);
+		}
+	}
+	else 
+	{
+		if (!CurrentInteractableObjects.IsEmpty())
+		{
+			CurrentInteractableObjects.Empty();
+		}
+		CurrentInteractableActor = nullptr;
+	}
+
+	GetClosestObjectToLocation(ClosestInteractableObject, CameraTraceHitResult.Location, CurrentInteractableObjects);
 	
 	if (UseComponent && UseComponent->GetActorInUse() != CurrentInteractableActor)
 	{
 		UseComponent->EndUse();
 	}
-
-	/** Check if the current interactable actor is different from the previous interactable actor.
-	 *	Call OnInteractableActorFound if this is the case.
-	 *	This allows other objects to perform a check once a new interactable actor is found. */
-	if (CurrentInteractableActor && CurrentInteractableActor != PreviousInteractableActor)
-	{
-		OnInteractableActorFound.Broadcast(CurrentInteractableActor);
-	}
 	
-	PreviousInteractableActor = CurrentInteractableActor;
 }
 
 AActor* UPlayerInteractionComponent::CheckForInteractableActor()
@@ -118,7 +126,7 @@ AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 	ObjectTraceHitResults.Empty();
 	PerformInteractableObjectTrace(ObjectTraceHitResults, CameraTraceHitResult);
 	if (ObjectTraceHitResults.IsEmpty()) { return nullptr; }
-	AActor* ClosestActor {GetClosestObject(ObjectTraceHitResults, CameraTraceHitResult)};
+	AActor* ClosestActor {GetClosestActor(ObjectTraceHitResults, CameraTraceHitResult)};
 
 	/** We reset the occlusion trace hit result instead of constructing a new one every check to prevent unnecessary memory allocation every frame. */
 	OcclusionTraceHitResult.Reset(0, false);
@@ -171,7 +179,7 @@ void UPlayerInteractionComponent::PerformInteractableObjectTrace(TArray<FHitResu
 }
 
 /** Returns the actor closest to the hit location of a hit result. */
-AActor* UPlayerInteractionComponent::GetClosestObject(const TArray<FHitResult>& Array, const FHitResult& HitResult)
+AActor* UPlayerInteractionComponent::GetClosestActor(const TArray<FHitResult>& Array, const FHitResult& HitResult)
 {
 	AActor* ClosestActor = nullptr;
 	float MinDistance = MAX_FLT;
@@ -186,6 +194,30 @@ AActor* UPlayerInteractionComponent::GetClosestObject(const TArray<FHitResult>& 
 		}
 	}
 	return ClosestActor;
+}
+
+template <typename TInterface>
+void UPlayerInteractionComponent::AddInteractableObjectsOfType(AActor* Actor, EInteractionType InteractionType)
+{
+	TArray<UObject*> InteractableObjects {FindInteractableObjects<TInterface>(Actor)};
+	if (!InteractableObjects.IsEmpty())
+	{
+		for (UObject* InteractableObject : InteractableObjects)
+		{
+			CurrentInteractableObjects.Add(FInteractableObjectData(InteractableObject, InteractionType));
+		}
+	}
+}
+
+void UPlayerInteractionComponent::UpdateInteractableObjectData(AActor* NewInteractableActor)
+{
+	if (!NewInteractableActor) { return; }
+
+	CurrentInteractableObjects.Empty();
+
+	AddInteractableObjectsOfType<UUsableObject>(NewInteractableActor, EInteractionType::Usable);
+	AddInteractableObjectsOfType<UGrabbableObject>(NewInteractableActor, EInteractionType::Grabbable);
+	AddInteractableObjectsOfType<UDraggableObject>(NewInteractableActor, EInteractionType::Draggable);
 }
 
 bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
@@ -228,6 +260,33 @@ UObject* UPlayerInteractionComponent::FindInteractableObject(AActor* Actor) cons
 	}
 	
 	return InteractableObject;
+}
+
+template <typename TInterface>
+TArray<UObject*> UPlayerInteractionComponent::FindInteractableObjects(AActor* Actor) const
+{
+	TArray<UObject*> InteractableObjects;
+
+	if (!Actor) { return InteractableObjects; }
+
+	/** Check if the actor implements the specified interface. */
+	if (Actor->GetClass()->ImplementsInterface(TInterface::StaticClass()))
+	{
+		InteractableObjects.Add(Actor);
+	}
+
+	/** Iterate through the actor's components, checking if any of them implement the specified interface. */
+	TArray<UActorComponent*> Components;
+	Actor->GetComponents(Components);
+	for (UActorComponent* Component : Components)
+	{
+		if (Component->GetClass()->ImplementsInterface(TInterface::StaticClass()))
+		{
+			InteractableObjects.Add(Component);
+		}
+	}
+
+	return InteractableObjects;
 }
 
 template <typename TInterface>
@@ -292,6 +351,53 @@ AActor* UPlayerInteractionComponent::GetActorFromObject(UObject* Object) const
 		return Component->GetOwner();
 	}
 	return nullptr;
+}
+
+bool UPlayerInteractionComponent::GetClosestObjectToLocation(FInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FInteractableObjectData> Objects)
+{
+	if (Objects.IsEmpty())
+	{
+		OutInteractableObjectData.Object = nullptr;
+		return false;
+	}
+
+	const UObject* ClosestObject {nullptr};
+	float MinDistance {FLT_MAX};
+	FInteractableObjectData ClosestObjectData;
+
+	for (const FInteractableObjectData& ObjectData : Objects)
+	{
+		UObject* Object {ObjectData.Object};
+		FVector ObjectLocation;
+
+		if (const AActor* Actor {Cast<AActor>(Object)})
+		{
+			ObjectLocation = Actor->GetActorLocation();
+		}
+		else if (const USceneComponent* Component {Cast<USceneComponent>(Object)})
+		{
+			ObjectLocation = Component->GetComponentLocation();
+		}
+		else
+		{
+			continue;
+		}
+
+		if (const float Distance {static_cast<float>(FVector::DistSquared(Location, ObjectLocation))}; Distance < MinDistance)
+		{
+			MinDistance = Distance;
+			ClosestObject = Object;
+			ClosestObjectData = ObjectData;
+		}
+	}
+
+	if (ClosestObject)
+	{
+		OutInteractableObjectData = ClosestObjectData;
+		return true;
+	}
+
+	return false;
 }
 
 void UPlayerInteractionComponent::BeginPrimaryInteraction()

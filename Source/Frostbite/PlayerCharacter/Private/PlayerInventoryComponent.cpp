@@ -27,14 +27,6 @@ void UPlayerInventoryComponent::OnComponentCreated()
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if(const AActor* PlayerCharacter {GetOwner()})
-	{
-		if (UPlayerInteractionComponent* InteractionComponent =
-			Cast<UPlayerInteractionComponent>(PlayerCharacter->FindComponentByClass(UPlayerInteractionComponent::StaticClass())))
-		{
-			InteractionComponent->OnInteractableActorFound.AddDynamic(this, &UPlayerInventoryComponent::HandleInteractableActorChanged);
-		}
-	}
 }
 
 UObject* UPlayerInventoryComponent::FindInventoryObject(AActor* Actor) const

@@ -17,6 +17,15 @@ class UPlayerGrabComponent;
 class UCameraComponent;
 struct FCollisionQueryParams;
 
+/** The interaction type. */
+UENUM(BlueprintType)
+enum class EInteractionType : uint8
+{
+	Usable					UMETA(DisplayName = "Usable"),
+	Grabbable				UMETA(DisplayName = "Grabbable"),
+	Draggable				UMETA(DisplayName = "Draggable")
+};
+
 /** The interaction action type. */
 UENUM(BlueprintType)
 enum class EInteractionActionType : uint8
@@ -26,7 +35,28 @@ enum class EInteractionActionType : uint8
 	Inventory				UMETA(DisplayName = "Inventory", ToolTip = "The inventory action is used to add or take objects from the inventory.")
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractableActorFoundDelegate, AActor*, InteractableActor);
+USTRUCT(BlueprintType)
+struct FInteractableObjectData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	UObject* Object {nullptr};
+
+	UPROPERTY(BlueprintReadOnly)
+	EInteractionType InteractionType {EInteractionType::Grabbable};
+
+	FInteractableObjectData()
+	{
+	}
+
+	FInteractableObjectData(UObject* InObject, EInteractionType InInteractionType)
+		: Object(InObject)
+		, InteractionType(InInteractionType)
+	{
+	}
+};
+
 
 /** PlayerCharacter component that checks for interactable objects in front of the player character. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
@@ -36,10 +66,6 @@ class FROSTBITE_API UPlayerInteractionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	/** Delegate called when the CurrentInteractableActor property is changed. */
-	UPROPERTY(BlueprintAssignable, Category = "PlayerInteractionComponent|Delegates", Meta = (DisplayName = "On Interactable Actor Found"))
-	FInteractableActorFoundDelegate OnInteractableActorFound;
-
 	/** The length of the initial line trace. */
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
 	uint16 CameraTraceLength {300};
@@ -93,17 +119,21 @@ private:
 	FVector OcclusionOffset {FVector(0, 0, 5)};
 
 	/** The array of hit results for the interactable object multi sphere trace. */
-	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	TArray<FHitResult> ObjectTraceHitResults;
 
 	/** The actor that currently can be interacted with. Will be a nullptr if no object can be interacted with at the moment. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interactable Actor", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintGetter = GetCurrentInteractableActor)
 	AActor* CurrentInteractableActor;
 
-	/** The actor that could be interacted with during the previous frame. */
-	UPROPERTY()
-	AActor* PreviousInteractableActor;
+	/** The interactable objects for the current interactable actor. */
+	UPROPERTY(BlueprintGetter = GetCurrentInteractableObjects)
+	TArray<FInteractableObjectData> CurrentInteractableObjects;
 
+	/** The closest interactable object to the camera. */
+	UPROPERTY()
+	FInteractableObjectData ClosestInteractableObject;
+	
 	/** The actor that is currently being interacted with. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
 	AActor* CurrentInteractingActor;
@@ -173,11 +203,6 @@ public:
 	/** Adds yaw input to the interaction component. */
 	UFUNCTION()
 	void AddYawInput(const float Input);
-	
-	/** Checks if an actor or one of its components implements the IInteractableObject interface.
-	*	Returns the first UObject that implements the interface that it finds. */
-	template <typename TInterface>
-	UObject* FindInteractableObject(AActor* Actor) const;
 
 protected:
 	virtual void OnRegister() override;
@@ -187,6 +212,12 @@ protected:
 	/** Checks if any interactable objects are in front of the player. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Check For Interactable Objects", BlueprintProtected))
 	AActor* CheckForInteractableActor();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "Begin Interaction"))
+	void EventBeginInteraction(const EInteractionActionType Type, const UObject* Object);
+    
+	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "End Interaction"))
+	void EventEndInteraction(const EInteractionActionType Type, const UObject* Object);
 
 private:
 	/** Performs a line trace from the camera. */
@@ -199,60 +230,87 @@ private:
 
 	/** Returns the closest object to the specified hit hit result from an array of hit results. */
 	UFUNCTION()
-	static AActor* GetClosestObject(const TArray<FHitResult>& Array, const FHitResult& HitResult);
+	static AActor* GetClosestActor(const TArray<FHitResult>& Array, const FHitResult& HitResult);
+
+	/** Checks if an actor or one of its components implements the IInteractableObject interface.
+	 *	Returns the first UObject that implements the interface that it finds. */
+	template <typename TInterface>
+	UObject* FindInteractableObject(AActor* Actor) const;
+
+	/** Tries to find a component that implements the IInteractableObject interface in a specified actor.*/
+	template <typename TInterface>
+	UActorComponent* FindInteractableComponent(const AActor* Actor) const;
+
+	/** Checks if an actor or one of its components implements the IInteractableObject interface.
+	*	Returns all UObjects that implements the interface that it finds. */
+	template <typename TInterface>
+	TArray<UObject*> FindInteractableObjects(AActor* Actor) const;
+	
+	template <class TInterface>
+	void AddInteractableObjectsOfType(AActor* Actor, EInteractionType InteractionType);
+
+	/** Updates the current interactable actor data. */
+	UFUNCTION()
+	void UpdateInteractableObjectData(AActor* NewInteractableActor);
 
 	/** Checks whether an actor is occluded. Is used to prevent the interaction component from highlighting objects behind walls or other objects. */
 	UFUNCTION()
 	bool IsActorOccluded(const AActor* Actor);
 	
-	/** Tries to find a component that implements the IInteractableObject interface in a specified actor.*/
-	template <typename TInterface>
-	UActorComponent* FindInteractableComponent(const AActor* Actor) const;
-
 	/** Converts a UObject pointer to an AActor pointer.
 	 *	Either by checking if the UObject is an AActor,
 	 *	or by casting the UObject to an UActorComponent and retrieving the owner from the component. */
 	UFUNCTION()
 	AActor* GetActorFromObject(UObject* Object) const;
 
+	/** Returns the closest USceneComponent to the player's look-at location. */
+	bool GetClosestObjectToLocation(FInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FInteractableObjectData> Objects);
+
 public:
 	/** Returns a pointer to the use component. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Use Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerUseComponent* GetUseComponent() const { return UseComponent; }
 
 	/** Returns a pointer to the grab component. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Grab Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerGrabComponent* GetGrabComponent() const { return GrabComponent; }
 
 	/** Returns a pointer to the drag component. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Drag Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerDragComponent* GetDragComponent() const { return DragComponent; }
 	
 	/** Returns the object the interaction component is currently interacting with. */
-	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interaction Object"))
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
 
 	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
-	UFUNCTION(BlueprintGetter, Category = "PlayerInteraction", Meta = (DisplayName = "Is Tertiary Interaction Active"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsTertiaryInteractionActive() const { return IsTertiaryInteractionActive; }
 
 	/** Returns whether there is an object in front of the player that can be interacted with. */
-	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Can Interact"))
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
 
 	/** Returns a pointer to an object that is currently available for interaction. Returns a nullptr if no interactable object is in front of the player. */
-	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Get Current Interactable Actor"))
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
 
-	/** Returns the most recent camera trace result. */
-	UFUNCTION(BlueprintPure, Category = "PlayerInteraction", Meta = (DisplayName = "Get Camera Trace Hit Result"))
-	FORCEINLINE FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
+	/** Returns data about all interactable objects in an actor. This could be the actor itself as well. */
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE TArray<FInteractableObjectData> GetCurrentInteractableObjects() const { return CurrentInteractableObjects; }
 
-protected:
-	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "Begin Interaction"))
-	void EventBeginInteraction(const EInteractionActionType Type, const UObject* Object);
-    
-	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "End Interaction"))
-	void EventEndInteraction(const EInteractionActionType Type, const UObject* Object);
+	/** Returns data about the the closest interactable object */
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetClosestInteractableObject(FInteractableObjectData& InteractableObjectData)
+	{
+		if (!CurrentInteractableActor) { return false; }
+
+		InteractableObjectData = ClosestInteractableObject;
+		return true;
+	}
+
+	/** Returns the most recent camera trace result. */
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
 };
 
