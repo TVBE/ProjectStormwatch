@@ -19,15 +19,19 @@ void UMeshInteractionComponent::OnRegister()
 		
 		MeshComponent->SetGenerateOverlapEvents(true);
 
-		// constexpr float MinBoundingBoxVolume {1000000.0f};
-		constexpr float MinMass {12.0f};
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+}
 
-		// const FVector BoxExtent {MeshComponent->Bounds.BoxExtent};
+void UMeshInteractionComponent::BeginPlay()
+{
+	Super::BeginPlay();
 
-		/** 8 = 2^3, since BoxExtent represents half of the bounding box size. */
-		// const float BoundingBoxVolume {static_cast<float>(BoxExtent.X * BoxExtent.Y * BoxExtent.Z * 8)};
-
+	if (UStaticMeshComponent* MeshComponent {Cast<UStaticMeshComponent>(GetAttachParent())})
+	{
 		const float Mass {MeshComponent->GetMass()};
+
+		constexpr float MinMass {12.0f};
 		
 		if (Mass > MinMass)
 		{
@@ -42,17 +46,7 @@ void UMeshInteractionComponent::OnRegister()
 
 			MeshComponent->SetNotifyRigidBodyCollision(true);
 		}
-	}
-}
-
-void UMeshInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	if (const AStaticMeshActor* MeshActor {Cast<AStaticMeshActor>(GetOwner())})
-	{
-		if (UStaticMeshComponent* MeshComponent {MeshActor->GetStaticMeshComponent()})
-		{
-			MeshComponent->PutRigidBodyToSleep();
-		}
+		
+		MeshComponent->PutRigidBodyToSleep();
 	}
 }
