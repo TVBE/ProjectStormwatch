@@ -41,7 +41,12 @@ void UPlayerInteractionComponent::OnRegister()
 	
 	if (GrabComponent)
 	{
-		GrabComponent->Configuration = PlayerPhysicsGrabConfiguration.LoadSynchronous();
+		GrabComponent->Configuration = PlayerGrabConfiguration.LoadSynchronous();
+	}
+
+	if (DragComponent)
+	{
+		DragComponent->Configuration = PlayerDragConfiguration.LoadSynchronous();
 	}
 }
 

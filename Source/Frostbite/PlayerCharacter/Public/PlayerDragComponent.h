@@ -42,7 +42,7 @@ public:
 	}
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Configuration")
-	UDragConfiguration* Configuration;
+	UPlayerDragConfiguration* Configuration;
 	
 	/** A multiplier used to change the rotation speed of the camera when dragging an object.*/
 	UPROPERTY()
@@ -99,7 +99,7 @@ public:
 };
 /** Configuration asset to fine tune all variables within the drag component*/
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class FROSTBITE_API UDragConfiguration : public UDataAsset
+class FROSTBITE_API UPlayerDragConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 

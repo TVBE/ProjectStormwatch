@@ -34,7 +34,7 @@ void UPlayerDragComponent::OnRegister()
 	if(!Configuration)
 	{
 		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
-		Configuration = NewObject<UDragConfiguration>();
+		Configuration = NewObject<UPlayerDragConfiguration>();
 	}
 	ApplyToPhysicsHandle();
 }

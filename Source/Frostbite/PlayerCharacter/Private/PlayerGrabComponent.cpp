@@ -63,6 +63,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			{
 				ReleaseObject();
 			}
+			
 		}
 		else
 		{
@@ -183,7 +184,8 @@ void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 
 void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 {
-	PerformThrow(true);
+    /** Preview the target location*/
+	PerformThrow(1);
 	if (PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
 	{
 		PrePrimingThrowTimer += DeltaTime;
@@ -322,16 +324,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
 		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
-		if(ThrowingTimeLine >0.35)
-		{
-			ReleaseLocation = Camera->GetComponentLocation() + 10 * Camera->GetForwardVector() + 10 * Camera->GetUpVector();
-			ThrowOverHands = true;
-		}
-		else
-		{
-			ReleaseLocation = RotatedHandOffset;
-		}
-		
+		ReleaseLocation = RotatedHandOffset;
 		FVector Target {FVector()};
 		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
@@ -367,6 +360,9 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		{
 			FinalDirection = Direction;
 		}
+
+		/** for now, we won't use the manual calculation for throwing angle if there isn't any solution*/
+		FinalDirection = Direction;
 		
 		ThrowVelocity = FinalDirection * ThrowingStrength;
 
@@ -382,12 +378,13 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 				GetWorld()->GetGravityZ(),
 				ESuggestProjVelocityTraceOption::DoNotTrace,
 				FCollisionResponseParams::DefaultResponseParam,
-				TArray<AActor*>{GetOwner()},
+				TArray<AActor*>{GetOwner(),GrabbedComponent->GetAttachParentActor()},
 				false))
 		{
 			TossVelocity = ThrowVelocity;
 		}
 		VisualizeProjectilePath(GrabbedComponent->GetOwner(),ReleaseLocation,TossVelocity);
+
 		if(!OnlyPreviewTrajectory)
 		{
 			/** Set the physics velocity of the grabbed component to the calculated throwing direction */
@@ -416,7 +413,7 @@ void UPlayerGrabComponent::VisualizeProjectilePath(AActor* ProjectileActor, FVec
 	PredictParams.DrawDebugTime = 2.0f;
 	PredictParams.SimFrequency = 30.0f;
 	PredictParams.MaxSimTime = 2.0f;
-	TArray<AActor*> ActorsToIgnore{GetOwner()}; 
+	PredictParams.ActorsToIgnore = TArray<AActor*>{GetOwner(),GrabbedComponent->GetOwner()};
 
 	/** Call the prediction function */
 	UGameplayStatics::PredictProjectilePath(ProjectileActor,PredictParams,OutPath);

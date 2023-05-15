@@ -9,6 +9,7 @@
 #include "PlayerInteractionComponent.generated.h"
 
 class UPlayerGrabConfiguration;
+class UPlayerDragConfiguration;
 class UPlayerDragComponent;
 class UPlayerDragConfiguration;
 class UPlayerUseComponent;
@@ -145,9 +146,14 @@ private:
 	UPROPERTY()
 	FTimerHandle UpdateTimerHandle;
 	
-	/** For setting the parameters of the playerPhysicsGrabComponent. */
-	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player physics grab compoent"))
-	TSoftObjectPtr<UPlayerGrabConfiguration> PlayerPhysicsGrabConfiguration;
+	/** For setting the parameters of the PlayerGrabComponent. */
+	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player grab compoent"))
+	TSoftObjectPtr<UPlayerGrabConfiguration> PlayerGrabConfiguration;
+
+	/** For setting the parameters of the PlayerDragComponent. */
+	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player drag compoent"))
+	TSoftObjectPtr<UPlayerDragConfiguration> PlayerDragConfiguration;
+
 
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
