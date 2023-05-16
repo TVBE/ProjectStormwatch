@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SensoryEventManager.h"
 #include "HeatPointManager.generated.h"
 
 class AHeatPoint;
@@ -46,6 +47,10 @@ public:
 	 *	The lifetime of a heat point is managed by the heat point manager, so this function should only be called in special occasions. */
 	void UnregisterHeatPoint(AHeatPoint* Instance);
 
+	/** Updates the size and heat of existing heat points. */
+	void UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapData);
+	void UpdateHeatPoint(FHeatPointOverlapData& OverlapData);
+
 private:
 	/** Updates the lifetime of every heat point instance in the world. */
 	UFUNCTION()
@@ -53,4 +58,25 @@ private:
 
 public:
 	FORCEINLINE TArray<AHeatPoint*> GetHeatPoints() const { return HeatPoints; }
+};
+
+USTRUCT()
+struct FHeatPointOverlapData
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	AHeatPoint* HeatPoint;
+
+	UPROPERTY()
+	FHeatEvent Event;
+	
+	FHeatPointOverlapData()
+	{
+	}
+
+	FHeatPointOverlapData(AHeatPoint* InHeatPoint, const FHeatEvent& InEvent)
+		: HeatPoint(InHeatPoint), Event(InEvent)
+	{
+	}
 };

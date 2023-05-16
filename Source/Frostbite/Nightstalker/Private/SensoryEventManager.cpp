@@ -53,7 +53,7 @@ inline void AttenuateLoudness(float& Loudness, const FVector& Origin, const FVec
 
 	const float AttenuationFactor {20.0f * FMath::LogX(10.0f, 1.0f + Distance / 300.0f)};
 
-	Loudness -= AttenuationFactor;
+	Loudness = FMath::Max(0.0f, Loudness - AttenuationFactor);
 }
 
 inline float LoudnessToHeat(float Loudness)
@@ -75,9 +75,74 @@ inline float GetHeatPointRadius(const FVector& VectorA, const FVector& VectorB)
 	return Radius;
 }
 
+inline AHeatPoint* CheckForOverlaps(const FHeatEvent& HeatAtLocation, const FVector& ListenerLocation, UWorld* World)
+{
+	FCollisionQueryParams Params;
+	Params.bTraceComplex = false;
+	Params.TraceTag = "HeatOverlapCheck";
+
+	const float TraceRadius {GetHeatPointRadius(HeatAtLocation.Location, ListenerLocation)};
+
+	TArray<FOverlapResult> Overlaps;
+	const bool IsOverlapping = World->OverlapMultiByChannel(Overlaps, HeatAtLocation.Location, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(0.1f), Params);
+
+	AHeatPoint* OverlappingHeatPoint {nullptr};
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		if (AHeatPoint* HeatPoint {Cast<AHeatPoint>(Overlap.GetActor())})
+		{
+			OverlappingHeatPoint = HeatPoint;
+			break;
+		}
+	}
+
+	return OverlappingHeatPoint;
+}
+
+inline FHeatEvent CombineHeatEvents(const FHeatEvent& HeatEventA, const FHeatEvent& HeatEventB)
+{
+	FHeatEvent CombinedHeatEvent;
+	CombinedHeatEvent.Location = (HeatEventA.Location + HeatEventB.Location) / 2.0f;
+	CombinedHeatEvent.Heat = FMath::Max(HeatEventA.Heat, HeatEventB.Heat);
+
+	const float Distance = FVector::Dist(HeatEventA.Location, HeatEventB.Location);
+	const float CombinedRadius = Distance + FMath::Max(HeatEventA.Radius, HeatEventB.Radius);
+	CombinedHeatEvent.Radius = CombinedRadius;
+
+	return CombinedHeatEvent;
+}
+
+inline TArray<FHeatEvent> ConsolidateHeatEvents(const TArray<FHeatEvent>& HeatEvents, const FVector& ListenerLocation)
+{
+	TArray<FHeatEvent> NonOverlappingHeatEvents;
+	
+	for (const FHeatEvent& HeatEvent : HeatEvents)
+	{
+		const float HeatPointRadiusSquared = FMath::Square(GetHeatPointRadius(HeatEvent.Location, ListenerLocation));
+		bool IsOverlapping {false};
+
+		for (FHeatEvent& ExistingHeatEvent : NonOverlappingHeatEvents)
+		{
+			if (FVector::DistSquared(HeatEvent.Location, ExistingHeatEvent.Location) <= HeatPointRadiusSquared)
+			{
+				ExistingHeatEvent = CombineHeatEvents(ExistingHeatEvent, HeatEvent);
+				IsOverlapping = true;
+				break;
+			}
+		}
+
+		if (!IsOverlapping)
+		{
+			NonOverlappingHeatEvents.Add(HeatEvent);
+		}
+	}
+
+	return NonOverlappingHeatEvents;
+}
+
 void USensoryEventManager::ProcessAuditoryEvents()
 {
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Processor Update:"))
+	if (!Director || !Director->GetHeatPointManager()) { return; }
 	
 	if (!Nightstalker)
 	{
@@ -92,13 +157,18 @@ void USensoryEventManager::ProcessAuditoryEvents()
 
 	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Processing auditory events."))
 
-	TArray<FAuditoryEvent> CombinedEvents;
-	constexpr float CombineRadiusSquared {FMath::Square(300.0f)};
+	
+	/* For each event, we attempt to combine it with an existing event in the `ProcessedEvents` array.
+	 * This combination is performed if the current event is within a certain distance from an existing event.
+	 * If the current event cannot be combined with any existing event, it's added as a new event in `ProcessedEvents`.
+	 * This process ensures that auditory events occurring close together are handled as a single combined event for the rest of the process. */
+	TArray<FAuditoryEvent> ProcessedEvents;
+	constexpr float CombineRadiusSquared {FMath::Square(400.0f)};
 
 	for (const FAuditoryEvent& CurrentEvent : AuditoryEventQueue)
 	{
 		bool IsCombined {false};
-		for (FAuditoryEvent& ExistingEvent : CombinedEvents)
+		for (FAuditoryEvent& ExistingEvent : ProcessedEvents)
 		{
 			if (const float DistanceSquared {static_cast<float>(FVector::DistSquared(CurrentEvent.Location, ExistingEvent.Location))};
 				DistanceSquared <= CombineRadiusSquared)
@@ -109,72 +179,66 @@ void USensoryEventManager::ProcessAuditoryEvents()
 			}
 		}
 
+		/** If the event was not merged with an already existing event, we add it to the array of combined events*/
 		if (!IsCombined)
 		{
-			CombinedEvents.Add(CurrentEvent);
+			ProcessedEvents.Add(CurrentEvent);
 		}
 	}
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Combined '%d' auditory events to '%d' events."), AuditoryEventQueue.Num(), ProcessedEvents.Num())
 
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Combined '%d' auditory events to '%d' events."), AuditoryEventQueue.Num(), CombinedEvents.Num())
-
+	/** We empty the auditory event queue here as we only need the 'ProcessedEvents' array from this point forward. */
 	AuditoryEventQueue.Empty();
 
-	TArray<FHeatAtLocation> HeatAtLocations;
+	TArray<FHeatEvent> HeatEvents;
 	
-	for (FAuditoryEvent& AuditoryEvent : CombinedEvents)
+	for (FAuditoryEvent& AuditoryEvent : ProcessedEvents)
 	{
 		AttenuateLoudness(AuditoryEvent.Loudness, AuditoryEvent.Location, Nightstalker->GetActorLocation());
 
-		HeatAtLocations.Add(FHeatAtLocation(LoudnessToHeat(AuditoryEvent.Loudness), AuditoryEvent.Location));
+		if (AuditoryEvent.Loudness > 30)
+		{
+			HeatEvents.Add(FHeatEvent(LoudnessToHeat(AuditoryEvent.Loudness), GetHeatPointRadius(AuditoryEvent.Location, Nightstalker->GetActorLocation()), AuditoryEvent.Location));
+		}
 	}
 
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Attenuated auditory events to heat points: '%d'"), CombinedEvents.Num())
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Attenuated auditory events to heat points: '%d'"), ProcessedEvents.Num())
 
-	TArray<FHeatAtLocation> IsolatedHeatAtLocations;
+	TArray<FHeatPointOverlapData> OverlapData;
+	TArray<FHeatEvent> IsolatedHeatAtLocations;
 
-	for (const FHeatAtLocation& HeatLocation : HeatAtLocations)
+	for (const FHeatEvent& HeatEvent : HeatEvents)
 	{
-		FCollisionQueryParams Params;
-		Params.bTraceComplex = false;
-		Params.TraceTag = "HeatOverlapCheck";
-	
-		TArray<FOverlapResult> Overlaps;
-		const bool IsOverlapping = GetWorld()->OverlapMultiByChannel(Overlaps, HeatLocation.Location, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(0.1f), Params);
-	
-		AHeatPoint* OverlappingHeatPoint {nullptr};
-		for (const FOverlapResult& Overlap : Overlaps)
+		if (AHeatPoint* OverlappingHeatPoint {CheckForOverlaps(HeatEvent, Nightstalker->GetActorLocation(), GetWorld())})
 		{
-			if (AHeatPoint* HeatPoint {Cast<AHeatPoint>(Overlap.GetActor())})
-			{
-				OverlappingHeatPoint = HeatPoint;
-				break;
-			}
-		}
-
-		if (OverlappingHeatPoint)
-		{
-			OverlappingHeatPoint->AddHeat(HeatLocation.Heat);
+			FHeatPointOverlapData NewOverlapDataEntry {FHeatPointOverlapData(OverlappingHeatPoint, HeatEvent)};
+			OverlapData.Add(NewOverlapDataEntry);
 		}
 		else
 		{
-			IsolatedHeatAtLocations.Add(HeatLocation);
+			IsolatedHeatAtLocations.Add(HeatEvent);
 		}
 	}
 
-	HeatAtLocations = MoveTemp(IsolatedHeatAtLocations);
+	/** Update the existing heat points. */
+	Director->GetHeatPointManager()->UpdateHeatPoints(OverlapData);
 
-	if (!HeatAtLocations.Num() == 0)
+	HeatEvents = MoveTemp(IsolatedHeatAtLocations);
+
+	if (HeatEvents.Num() == 0) { return; }
+	
+
+	TArray<FHeatEvent> ConsolidatedEvents = ConsolidateHeatEvents(HeatEvents, Nightstalker->GetActorLocation());
+		
+	for (const FHeatEvent& HeatEvent : ConsolidatedEvents)
 	{
-		for (const FHeatAtLocation& HeatLocation : HeatAtLocations)
+		if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator)})
 		{
-			if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatLocation.Location, FRotator::ZeroRotator)})
-			{
-				NewHeatPoint->InitializeHeatPoint(GetHeatPointRadius(HeatLocation.Location, Nightstalker->GetActorLocation()), 60, HeatLocation.Heat);
+			NewHeatPoint->InitializeHeatPoint(HeatEvent.Radius, 60, HeatEvent.Heat);
 				
-				if (Director)
-				{
-					Director->RegisterHeatPoint(NewHeatPoint);
-				}
+			if (Director)
+			{
+				Director->RegisterHeatPoint(NewHeatPoint);
 			}
 		}
 	}

@@ -10,30 +10,8 @@
 #include "SensoryEventManager.generated.h"
 
 class UNightstalkerDirector;
-
-USTRUCT()
-struct FHeatAtLocation
-{
-	GENERATED_BODY()
-	
-	float Heat;
-	
-	FVector Location;
-	
-	FHeatAtLocation()
-		: Heat(0.0f)
-		, Location(FVector::ZeroVector)
-	{
-	}
-	
-	FHeatAtLocation(float InHeat, FVector InLocation)
-		: Heat(InHeat)
-		, Location(InLocation)
-	{
-	}
-};
-
 class ANightstalker;
+
 UCLASS()
 class USensoryEventManager : public UObject
 {
@@ -66,4 +44,30 @@ public:
 private:
 	UFUNCTION()
 	void ProcessAuditoryEvents();
+};
+
+USTRUCT()
+struct FHeatEvent
+{
+	GENERATED_BODY()
+	
+	float Heat;
+
+	float Radius;
+	
+	FVector Location;
+	
+	FHeatEvent()
+		: Heat(0.0f)
+		, Radius(0.0f)
+		, Location(FVector::ZeroVector)
+	{
+	}
+
+	FHeatEvent(float InHeat, float InRadius, const FVector& InLocation)
+		: Heat(InHeat)
+		, Radius(InRadius)
+		, Location(InLocation)
+	{
+	}
 };

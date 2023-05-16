@@ -48,6 +48,21 @@ void UHeatPointManager::UnregisterHeatPoint(AHeatPoint* Instance)
 	HeatPoints.Remove(Instance);
 }
 
+inline float CombineHeatValues(float HeatValueA, float HeatValueB)
+{
+	const float CombinedHeatValue {FMath::Loge(FMath::Exp(HeatValueA) + FMath::Exp(HeatValueB))};
+	return CombinedHeatValue;
+}
+
+void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapData)
+{
+	
+}
+
+void UHeatPointManager::UpdateHeatPoint(FHeatPointOverlapData& OverlapData)
+{
+}
+
 void UHeatPointManager::UpdateHeatPointLifeTime()
 {
 	if (HeatPoints.IsEmpty()) { return; }
