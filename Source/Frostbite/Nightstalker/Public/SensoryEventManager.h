@@ -32,6 +32,9 @@ private:
 	UPROPERTY()
 	TArray<FAuditoryEvent> AuditoryEventQueue;
 
+	/** The update interval for the auditory even processor. */
+	float AuditoryEventProcessorUpdateInterval {1.0f};
+
 	/** Timer handle for the auditory event processor. */
 	FTimerHandle AuditoryEventProcessorTimerHandle;
 
