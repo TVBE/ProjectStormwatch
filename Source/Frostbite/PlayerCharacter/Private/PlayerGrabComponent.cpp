@@ -196,7 +196,7 @@ void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 			
 		if (CurrentZoomLevel != Configuration->ThrowingZoomLevel)
 		{
-			CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel);
+			CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel) *0.001;
 		}
 			
 		if (PrePrimingThrowTimer <= 1.0)
