@@ -229,17 +229,13 @@ void USensoryEventManager::ProcessAuditoryEvents()
 	if (HeatEvents.Num() == 0) { return; }
 	
 	TArray<FHeatEvent> ConsolidatedEvents = ConsolidateHeatEvents(HeatEvents, Nightstalker->GetActorLocation());
-
-	UE_LOG(LogTemp, Display, TEXT("TEST"));
-		
+	
 	for (const FHeatEvent& HeatEvent : ConsolidatedEvents)
 	{
 		if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator)})
 		{
 			NewHeatPoint->InitializeHeatPoint(HeatEvent.Radius, 60, HeatEvent.Heat);
-
-			UE_LOG(LogTemp, Display, TEXT("HeatPoint Radius: %f"), HeatEvent.Radius);
-				
+			
 			if (Director)
 			{
 				Director->RegisterHeatPoint(NewHeatPoint);

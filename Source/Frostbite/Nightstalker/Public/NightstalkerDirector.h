@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "HeatPointManager.h"
+#include "Nightstalker.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "NightstalkerDirector.generated.h"
 
@@ -43,6 +44,13 @@ public:
 	{
 		if (!Instance || !HeatPointmanager) { return; }
 		HeatPointmanager->UnregisterHeatPoint(Instance);
+	}
+
+	float GetDistanceToNightstalker(const FVector& Location)
+	{
+		if (!Nightstalker) { return -1.0f; }
+
+		return FVector::Dist(Location, Nightstalker->GetActorLocation());
 	}
 
 private:

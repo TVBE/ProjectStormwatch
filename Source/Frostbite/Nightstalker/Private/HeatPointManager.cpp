@@ -66,8 +66,9 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 		{
 			if (CombinedOverlap.HeatPoint == Overlap.HeatPoint)
 			{
-				
 				CombinedOverlap.Event.Heat = CombineHeatValues(CombinedOverlap.Event.Heat, Overlap.Event.Heat);
+				CombinedOverlap.Event.Location = (CombinedOverlap.Event.Location + Overlap.Event.Location) / 2.0f;
+				CombinedOverlap.Event.Radius = (CombinedOverlap.Event.Radius + Overlap.Event.Radius) / 2.0f;
 				FoundExistingHeatPoint = true;
 				break;
 			}
@@ -81,11 +82,14 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 
 	for (AHeatPoint* HeatPoint : HeatPoints)
 	{
-		for (const FHeatPointOverlapData& CombinedOverlap : CombinedOverlapData)
+		for (FHeatPointOverlapData& CombinedOverlap : CombinedOverlapData)
 		{
 			if (CombinedOverlap.HeatPoint == HeatPoint)
 			{
 				HeatPoint->AddHeat(CombinedOverlap.Event.Heat);
+				HeatPoint->SetActorLocation(CombinedOverlap.Event.Location);
+				
+				HeatPoint->SetRadius(CombinedOverlap.Event.Radius);
 				break;
 			}
 		}
