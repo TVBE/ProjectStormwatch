@@ -17,7 +17,7 @@ void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 	
 	if (const UWorld* World {GetWorld()})
 	{
-		World->GetTimerManager().SetTimer(AuditoryEventProcessorTimerHandle, this, &USensoryEventManager::ProcessAuditoryEvents, 5.0f, true);
+		World->GetTimerManager().SetTimer(AuditoryEventProcessorTimerHandle, this, &USensoryEventManager::ProcessAuditoryEvents, AuditoryEventProcessorUpdateInterval, true);
 		UE_LOG(LogSensoryEventManager, Log, TEXT("Initialized sensory event manager."))
 	}
 }
