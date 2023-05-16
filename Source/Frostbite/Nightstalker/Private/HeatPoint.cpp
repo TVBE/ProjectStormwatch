@@ -38,13 +38,11 @@ AHeatPoint::AHeatPoint()
 #endif
 }
 
-void AHeatPoint::InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue)
+void AHeatPoint::InitializeHeatPoint(const int RadiusValue, const int ExpirationValue, const float HeatValue)
 {
-	Radius = RadiusValue;
-	Lifetime = LifeTimeValue;
-	Heat = HeatValue;
-
-	SetRadius(Radius);
+	ExpirationTime = ExpirationValue;
+	SetHeat(HeatValue);
+	SetRadius(RadiusValue);
 }
 
 void AHeatPoint::BeginPlay()
@@ -89,6 +87,8 @@ void AHeatPoint::UpdateLifeTime(const int DeltaTime)
 
 void AHeatPoint::SetRadius(const int NewRadius)
 {
+	Radius = NewRadius;
+	
 	if (SphereComponent)
 	{
 		SphereComponent->SetSphereRadius(Radius);

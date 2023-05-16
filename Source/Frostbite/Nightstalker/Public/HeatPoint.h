@@ -46,7 +46,7 @@ private:
 public:	
 	AHeatPoint();
 	
-	void InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue);
+	void InitializeHeatPoint(const int RadiusValue, const int ExpirationValue, const float HeatValue);
 
 	void UpdateLifeTime(const int DeltaTime);
 	

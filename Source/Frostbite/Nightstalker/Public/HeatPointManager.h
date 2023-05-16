@@ -49,7 +49,6 @@ public:
 
 	/** Updates the size and heat of existing heat points. */
 	void UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapData);
-	void UpdateHeatPoint(FHeatPointOverlapData& OverlapData);
 
 private:
 	/** Updates the lifetime of every heat point instance in the world. */
@@ -66,7 +65,7 @@ struct FHeatPointOverlapData
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	AHeatPoint* HeatPoint;
+	AHeatPoint* HeatPoint {nullptr};
 
 	UPROPERTY()
 	FHeatEvent Event;

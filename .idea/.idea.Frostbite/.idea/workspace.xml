@@ -10,13 +10,12 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/MeshGrabComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Private/MeshGrabComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/MeshGrabComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/ActorComponents/Public/MeshGrabComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/M_HeatPointDebugMaterial_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/M_HeatPointDebugMaterial_01.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPoint.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPoint.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPointManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPointManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/SensoryEventManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/SensoryEventManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPoint.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPointManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPointManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/SensoryEventManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/SensoryEventManager.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

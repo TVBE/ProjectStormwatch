@@ -56,11 +56,40 @@ inline float CombineHeatValues(float HeatValueA, float HeatValueB)
 
 void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapData)
 {
+	TArray<FHeatPointOverlapData> CombinedOverlapData;
 	
-}
+	for (const FHeatPointOverlapData& Overlap : OverlapData)
+	{
+		bool FoundExistingHeatPoint {false};
+		
+		for (FHeatPointOverlapData& CombinedOverlap : CombinedOverlapData)
+		{
+			if (CombinedOverlap.HeatPoint == Overlap.HeatPoint)
+			{
+				
+				CombinedOverlap.Event.Heat = CombineHeatValues(CombinedOverlap.Event.Heat, Overlap.Event.Heat);
+				FoundExistingHeatPoint = true;
+				break;
+			}
+		}
+		
+		if (!FoundExistingHeatPoint)
+		{
+			CombinedOverlapData.Add(Overlap);
+		}
+	}
 
-void UHeatPointManager::UpdateHeatPoint(FHeatPointOverlapData& OverlapData)
-{
+	for (AHeatPoint* HeatPoint : HeatPoints)
+	{
+		for (const FHeatPointOverlapData& CombinedOverlap : CombinedOverlapData)
+		{
+			if (CombinedOverlap.HeatPoint == HeatPoint)
+			{
+				HeatPoint->AddHeat(CombinedOverlap.Event.Heat);
+				break;
+			}
+		}
+	}
 }
 
 void UHeatPointManager::UpdateHeatPointLifeTime()

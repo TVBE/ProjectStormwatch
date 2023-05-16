@@ -106,7 +106,8 @@ inline FHeatEvent CombineHeatEvents(const FHeatEvent& HeatEventA, const FHeatEve
 	CombinedHeatEvent.Heat = FMath::Max(HeatEventA.Heat, HeatEventB.Heat);
 
 	const float Distance = FVector::Dist(HeatEventA.Location, HeatEventB.Location);
-	const float CombinedRadius = Distance + FMath::Max(HeatEventA.Radius, HeatEventB.Radius);
+	float CombinedRadius = FMath::Max(Distance + HeatEventA.Radius, HeatEventB.Radius);
+	CombinedRadius = FMath::Clamp(CombinedRadius, 0.0f, 1500.0f);
 	CombinedHeatEvent.Radius = CombinedRadius;
 
 	return CombinedHeatEvent;
@@ -227,14 +228,17 @@ void USensoryEventManager::ProcessAuditoryEvents()
 
 	if (HeatEvents.Num() == 0) { return; }
 	
-
 	TArray<FHeatEvent> ConsolidatedEvents = ConsolidateHeatEvents(HeatEvents, Nightstalker->GetActorLocation());
+
+	UE_LOG(LogTemp, Display, TEXT("TEST"));
 		
 	for (const FHeatEvent& HeatEvent : ConsolidatedEvents)
 	{
 		if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator)})
 		{
 			NewHeatPoint->InitializeHeatPoint(HeatEvent.Radius, 60, HeatEvent.Heat);
+
+			UE_LOG(LogTemp, Display, TEXT("HeatPoint Radius: %f"), HeatEvent.Radius);
 				
 			if (Director)
 			{
