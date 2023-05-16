@@ -9,6 +9,8 @@
 #include "UObject/NoExportTypes.h"
 #include "SensoryEventManager.generated.h"
 
+class UNightstalkerDirector;
+
 USTRUCT()
 struct FHeatAtLocation
 {
@@ -44,6 +46,10 @@ public:
 	ANightstalker* Nightstalker;
 
 private:
+	/** Pointer to the subsystem that owns this object. */
+	UPROPERTY()
+	UNightstalkerDirector* Director {nullptr};
+	
 	/** Array of auditory events that are waiting to be processed. */
 	UPROPERTY()
 	TArray<FAuditoryEvent> AuditoryEventQueue;
@@ -52,12 +58,12 @@ private:
 	FTimerHandle AuditoryEventProcessorTimerHandle;
 
 public:
-	void Initialize();
+	void Initialize(UNightstalkerDirector* Subsystem);
+	void Deinitialize();
 	
 	void AddAuditoryEventAtLocation(FAuditoryEvent Event, const FVector& Location);
 
 private:
-	
 	UFUNCTION()
 	void ProcessAuditoryEvents();
 };

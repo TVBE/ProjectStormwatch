@@ -5,15 +5,31 @@
 #include "SensoryEventManager.h"
 #include "HeatPoint.h"
 #include "Nightstalker.h"
+#include "NightstalkerDirector.h"
 
 DEFINE_LOG_CATEGORY_CLASS(USensoryEventManager, LogSensoryEventManager);
 
-void USensoryEventManager::Initialize()
+void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 {
+	if (!Subsystem) { return; }
+
+	Director = Subsystem;
+	
 	if (const UWorld* World {GetWorld()})
 	{
 		World->GetTimerManager().SetTimer(AuditoryEventProcessorTimerHandle, this, &USensoryEventManager::ProcessAuditoryEvents, 5.0f, true);
 		UE_LOG(LogSensoryEventManager, Log, TEXT("Initialized sensory event manager."))
+	}
+}
+
+void USensoryEventManager::Deinitialize()
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (World->GetTimerManager().IsTimerActive(AuditoryEventProcessorTimerHandle))
+		{
+			World->GetTimerManager().ClearTimer(AuditoryEventProcessorTimerHandle);
+		}
 	}
 }
 
@@ -61,18 +77,20 @@ inline float GetHeatPointRadius(const FVector& VectorA, const FVector& VectorB)
 
 void USensoryEventManager::ProcessAuditoryEvents()
 {
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Processor Update:"))
+	
 	if (!Nightstalker)
 	{
-		UE_LOG(LogSensoryEventManager, Log, TEXT("Skipped processing auditory events as no Nightstalker instance exists."))
+		UE_LOG(LogSensoryEventManager, Verbose, TEXT("Skipped processing auditory events as no Nightstalker instance exists."))
 		return;
 	}
 	if (AuditoryEventQueue.Num() == 0)
 	{
-		UE_LOG(LogSensoryEventManager, Log, TEXT("Skipped processing auditory events as queue is empty."))
+		UE_LOG(LogSensoryEventManager, Verbose, TEXT("Skipped processing auditory events as queue is empty."))
 		return;
 	}
 
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Processing auditory events."));
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Processing auditory events."))
 
 	TArray<FAuditoryEvent> CombinedEvents;
 	constexpr float CombineRadiusSquared {FMath::Square(300.0f)};
@@ -97,7 +115,7 @@ void USensoryEventManager::ProcessAuditoryEvents()
 		}
 	}
 
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Combined '%d' auditory events to '%d' events."), AuditoryEventQueue.Num(), CombinedEvents.Num());
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Combined '%d' auditory events to '%d' events."), AuditoryEventQueue.Num(), CombinedEvents.Num())
 
 	AuditoryEventQueue.Empty();
 
@@ -110,7 +128,7 @@ void USensoryEventManager::ProcessAuditoryEvents()
 		HeatAtLocations.Add(FHeatAtLocation(LoudnessToHeat(AuditoryEvent.Loudness), AuditoryEvent.Location));
 	}
 
-	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Attenuated auditory events to heat points: '%d'"), CombinedEvents.Num());
+	UE_LOG(LogSensoryEventManager, Verbose, TEXT("Attenuated auditory events to heat points: '%d'"), CombinedEvents.Num())
 
 	TArray<FHeatAtLocation> IsolatedHeatAtLocations;
 
@@ -152,6 +170,11 @@ void USensoryEventManager::ProcessAuditoryEvents()
 			if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatLocation.Location, FRotator::ZeroRotator)})
 			{
 				NewHeatPoint->InitializeHeatPoint(GetHeatPointRadius(HeatLocation.Location, Nightstalker->GetActorLocation()), 60, HeatLocation.Heat);
+				
+				if (Director)
+				{
+					Director->RegisterHeatPoint(NewHeatPoint);
+				}
 			}
 		}
 	}

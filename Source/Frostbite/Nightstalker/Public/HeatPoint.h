@@ -27,12 +27,9 @@ private:
 
 	UPROPERTY(BlueprintGetter = GetLifetime)
 	int Lifetime;
-	
-	UPROPERTY()
-	FTimerHandle LifetimeTimerHandle;
 
 #if WITH_EDITORONLY_DATA
-	bool IsDebugVisEnabled {false};
+	bool IsDebugVisEnabled {true};
 	
 	UPROPERTY(Transient)
 	UStaticMeshComponent* DebugSphereMesh;
@@ -51,9 +48,6 @@ private:
 	UFUNCTION()
 	void Update();
 
-	UFUNCTION()
-	void HandleLifeTimeUpdate();
-
 public:
 	void InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue);
 	
@@ -68,6 +62,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddHeat(const float AddedHeat);
+
+	UFUNCTION()
+	float DecrementLifeTime (const float Value);
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int GetRadius() const { return Radius; }

@@ -33,6 +33,7 @@ AHeatPoint::AHeatPoint()
 		if (MaterialFinder.Succeeded())
 		{
 		DebugSphereMesh->SetMaterial(0, DebugMaterial);
+			UE_LOG(LogTemp, Warning, TEXT("Couldn't find material!"))
 		}
 	}
 #endif
@@ -45,16 +46,6 @@ void AHeatPoint::InitializeHeatPoint(const int RadiusValue, const int LifeTimeVa
 	Heat = HeatValue;
 
 	SetRadius(Radius);
-	
-	if (const UWorld* World = GetWorld())
-	{
-		if (UNightstalkerDirector* DirectorSubsystem = World->GetSubsystem<UNightstalkerDirector>())
-		{
-			DirectorSubsystem->RegisterHeatPoint(this);
-		}
-
-		World->GetTimerManager().SetTimer(LifetimeTimerHandle, this, &AHeatPoint::HandleLifeTimeUpdate, 1, true);
-	}
 }
 
 void AHeatPoint::BeginPlay()
@@ -96,23 +87,6 @@ void AHeatPoint::Update()
 {
 }
 
-void AHeatPoint::HandleLifeTimeUpdate()
-{
-	Lifetime -= 1;
-	if (Lifetime <= 0)
-	{
-		if (const UWorld* World = GetWorld())
-		{
-			if (World->GetTimerManager().IsTimerActive(LifetimeTimerHandle))
-			{
-				World->GetTimerManager().ClearTimer(LifetimeTimerHandle);
-			}
-		}
-		
-		Destroy(0);
-	}
-}
-
 void AHeatPoint::SetRadius(const int NewRadius)
 {
 	if (SphereComponent)
@@ -149,6 +123,12 @@ void AHeatPoint::AddHeat(const float AddedHeat)
 {
 	const float HeatTotal {Heat + AddedHeat};
 	SetHeat(HeatTotal);
+}
+
+float AHeatPoint::DecrementLifeTime(const float Value)
+{
+	Lifetime = FMath::Max(0.0f, Lifetime - Value);
+	return Lifetime;
 }
 
 #if WITH_EDITORONLY_DATA

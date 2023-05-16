@@ -4,6 +4,7 @@
 
 #include "NightstalkerDirector.h"
 
+#include "HeatPointManager.h"
 #include "Nightstalker.h"
 #include "SensoryEventManager.h"
 
@@ -12,7 +13,14 @@ DEFINE_LOG_CATEGORY_CLASS(UNightstalkerDirector, LogNightstalkerDirector);
 void UNightstalkerDirector::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	
 	SensoryEventManager = NewObject<USensoryEventManager>(this);
+	HeatPointmanager = NewObject<UHeatPointManager>(this);
+
+	if (HeatPointmanager)
+	{
+		HeatPointmanager->Initialize(this);
+	}
 
 	UE_LOG(LogNightstalkerDirector, Log, TEXT("Initialized Nightstalker Director."))
 }
@@ -23,8 +31,15 @@ void UNightstalkerDirector::Deinitialize()
 
 	if (SensoryEventManager)
 	{
+		SensoryEventManager->Deinitialize();
 		SensoryEventManager->MarkAsGarbage();
 		SensoryEventManager = nullptr;
+	}
+	if (HeatPointmanager)
+	{
+		HeatPointmanager->Deinitialize();
+		HeatPointmanager->MarkAsGarbage();
+		HeatPointmanager = nullptr;
 	}
 }
 
@@ -41,9 +56,10 @@ void UNightstalkerDirector::RegisterNightstalker(ANightstalker* Instance)
 	if (SensoryEventManager)
 	{
 		SensoryEventManager->Nightstalker = Instance;
-
-		/** We initialize the SensoryEventManager here as it serves no purpose without a Nightstalker instance in the world. */
-		SensoryEventManager->Initialize();
+		
+		/** We initialize the SensoryEventManager here as it serves no purpose without a Nightstalker instance in the world.
+		 *	We might want to change this later as it is slightly more difficult to debug the sensory event manager without a nightstalker instance. */
+		SensoryEventManager->Initialize(this);
 	}
 	UE_LOG(LogNightstalkerDirector, Verbose, TEXT("Registered Nightstalker instance: '%s'"), *Instance->GetName());
 }
@@ -61,23 +77,4 @@ void UNightstalkerDirector::UnregisterNightstalker(ANightstalker* Instance)
 	UE_LOG(LogNightstalkerDirector, Verbose, TEXT("Unregistered Nightstalker instance."))
 }
 
-void UNightstalkerDirector::RegisterHeatPoint(AHeatPoint* Instance)
-{
-	if (!Instance || HeatPoints.Contains(Instance))
-	{
-		return;
-	}
-
-	HeatPoints.Add(Instance);
-}
-
-void UNightstalkerDirector::UnregisterHeatPoint(AHeatPoint* Instance)
-{
-	if (!Instance)
-	{
-		return;
-	}
-
-	HeatPoints.Remove(Instance);
-}
 

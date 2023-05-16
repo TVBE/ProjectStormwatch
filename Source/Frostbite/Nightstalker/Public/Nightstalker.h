@@ -8,6 +8,8 @@
 #include "GameFramework/Pawn.h"
 #include "Nightstalker.generated.h"
 
+class UInputComponent;
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Nightstalker")
 class ANightstalker : public APawn
 {
@@ -18,7 +20,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
