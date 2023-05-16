@@ -17,6 +17,11 @@ class UHeatPointManager : public UObject
 	
 	DECLARE_LOG_CATEGORY_CLASS(LogHeatPointManager, Log, All)
 
+public:
+#if WITH_EDITORONLY_DATA
+	bool IsDebugVisualiationEnabled {true};
+#endif
+
 private:
 	/** Pointer to the subsystem that owns this object. */
 	UPROPERTY()

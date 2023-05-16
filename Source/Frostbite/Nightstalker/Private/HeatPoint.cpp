@@ -29,11 +29,10 @@ AHeatPoint::AHeatPoint()
 		DebugSphereMesh->SetVisibility(false);
 		DebugSphereMesh->SetupAttachment(RootComponent);
 
-		ConstructorHelpers::FObjectFinder<UMaterial> MaterialFinder(TEXT("Material'/Game/Game/Tests/M_HeatPointDebugMaterial_01.M_HeatPointDebugMaterial_01'"));
+		ConstructorHelpers::FObjectFinder<UMaterial> MaterialFinder(TEXT("/Script/Engine.Material'/Game/Game/Tests/M_HeatPointDebugMaterial_01.M_HeatPointDebugMaterial_01'"));
 		if (MaterialFinder.Succeeded())
 		{
-		DebugSphereMesh->SetMaterial(0, DebugMaterial);
-			UE_LOG(LogTemp, Warning, TEXT("Couldn't find material!"))
+		DebugSphereMesh->SetMaterial(0, MaterialFinder.Object);
 		}
 	}
 #endif
@@ -83,8 +82,10 @@ void AHeatPoint::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AHeatPoint::Update()
+void AHeatPoint::UpdateLifeTime(const int DeltaTime)
 {
+	Lifetime += DeltaTime;
+	ExpirationTime = FMath::Max(0.0f, ExpirationTime - DeltaTime);
 }
 
 void AHeatPoint::SetRadius(const int NewRadius)
@@ -114,21 +115,10 @@ void AHeatPoint::SetHeat(const float NewHeat)
 #endif
 }
 
-void AHeatPoint::AddLifeTime(const int Time)
-{
-	Lifetime += Time;
-}
-
 void AHeatPoint::AddHeat(const float AddedHeat)
 {
 	const float HeatTotal {Heat + AddedHeat};
 	SetHeat(HeatTotal);
-}
-
-float AHeatPoint::DecrementLifeTime(const float Value)
-{
-	Lifetime = FMath::Max(0.0f, Lifetime - Value);
-	return Lifetime;
 }
 
 #if WITH_EDITORONLY_DATA

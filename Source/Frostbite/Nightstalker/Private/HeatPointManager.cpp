@@ -55,10 +55,14 @@ void UHeatPointManager::ProcessHeatPoints()
 	/** Reverse for loop to be able to safely remove elements at an index. */
 	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
 	{
-		if (AHeatPoint* HeatPoint {HeatPoints[Index]}; HeatPoint->DecrementLifeTime(1.0f) == 0)
+		if (AHeatPoint* HeatPoint {HeatPoints[Index]})
 		{
-			HeatPoint->Destroy();
-			HeatPoints.RemoveAt(Index);
+			HeatPoint->UpdateLifeTime(1);
+			if (HeatPoint->GetExpirationTime() == 0)
+			{
+				HeatPoint->Destroy();
+				HeatPoints.RemoveAt(Index);
+			}
 		}
 	}
 }

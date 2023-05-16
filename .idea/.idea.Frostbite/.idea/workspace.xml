@@ -10,12 +10,17 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/PlayerCharacter/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Prefabs/BP_Fan_01.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Prefabs/BP_Fan_01.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/FrostbitePlayerPrototypingLevel.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInteractionComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Private/PlayerInventoryComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/PlayerCharacter/Public/PlayerInteractionComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Editor/TestProximitySensorDocumentation.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Editor/TestProximitySensorDocumentation.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/PlayerMetrics.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Levels/TestMaps/PlayerMetrics.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BP_TestProximitySensor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/BrokenGlassMat/87c8aaf9e2d8e03a331c9969d57764a4_Mat.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/Door/BPC_TestDoorAudioComponent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Tests/Door/BPC_TestDoorAudioComponent.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/Door/BPC_TestDoorAudioComponent_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Game/Tests/Door/BP_TestDoor_01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPoint.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPoint.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPointManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/HeatPointManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPoint.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPoint.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPointManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/HeatPointManager.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +53,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;work-in-progress&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;nightstalker-prototype&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -58,8 +63,8 @@
   },
   &quot;keyToStringList&quot;: {
     &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\timve\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\SourcesCache&quot;,
       &quot;C:\\Users\\timve\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
@@ -382,6 +387,8 @@
       <workItem from="1683707205372" duration="5498000" />
       <workItem from="1684069883844" duration="1831000" />
       <workItem from="1684083944493" duration="6883000" />
+      <workItem from="1684226185171" duration="1949000" />
+      <workItem from="1684229804582" duration="5308000" />
     </task>
     <servers />
   </component>
