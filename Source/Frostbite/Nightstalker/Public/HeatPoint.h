@@ -45,12 +45,7 @@ private:
 
 public:	
 	AHeatPoint();
-
-private:
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-public:
+	
 	void InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue);
 
 	void UpdateLifeTime(const int DeltaTime);
@@ -63,7 +58,16 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void AddHeat(const float AddedHeat);
-	
+
+#if WITH_EDITORONLY_DATA
+	void SetDebugVisEnabled(bool IsEnabled);
+#endif
+
+private:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int GetRadius() const { return Radius; }
 
@@ -75,9 +79,4 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int GetExpirationTime() const { return ExpirationTime; }
-
-#if WITH_EDITORONLY_DATA
-	void SetDebugVisEnabled(bool IsEnabled);
-#endif
-	
 };

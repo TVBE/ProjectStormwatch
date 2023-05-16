@@ -20,7 +20,7 @@ void UHeatPointManager::Initialize(UNightstalkerDirector* Subsystem)
 	
 	if (const UWorld* World {GetWorld()})
 	{
-		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::ProcessHeatPoints, 1.0f, true);
+		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::UpdateHeatPointLifeTime, 1.0f, true);
 		UE_LOG(LogHeatPointManager, Log, TEXT("Initialized heat point manager."))
 	}
 }
@@ -48,20 +48,20 @@ void UHeatPointManager::UnregisterHeatPoint(AHeatPoint* Instance)
 	HeatPoints.Remove(Instance);
 }
 
-void UHeatPointManager::ProcessHeatPoints()
+void UHeatPointManager::UpdateHeatPointLifeTime()
 {
 	if (HeatPoints.IsEmpty()) { return; }
 
 	/** Reverse for loop to be able to safely remove elements at an index. */
 	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
 	{
-		if (AHeatPoint* HeatPoint {HeatPoints[Index]})
+		if (AHeatPoint* HeatPoint {HeatPoints[Index]}; IsValid(HeatPoint))
 		{
 			HeatPoint->UpdateLifeTime(1);
 			if (HeatPoint->GetExpirationTime() == 0)
 			{
-				HeatPoint->Destroy();
 				HeatPoints.RemoveAt(Index);
+				HeatPoint->Destroy();
 			}
 		}
 	}

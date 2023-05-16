@@ -46,10 +46,11 @@ public:
 	 *	The lifetime of a heat point is managed by the heat point manager, so this function should only be called in special occasions. */
 	void UnregisterHeatPoint(AHeatPoint* Instance);
 
+private:
 	/** Updates the lifetime of every heat point instance in the world. */
 	UFUNCTION()
-	void ProcessHeatPoints();
+	void UpdateHeatPointLifeTime();
 
-	FORCEINLINE TArray<AHeatPoint*> GetHeatpoints() const { return HeatPoints; }
-	
+public:
+	FORCEINLINE TArray<AHeatPoint*> GetHeatPoints() const { return HeatPoints; }
 };
