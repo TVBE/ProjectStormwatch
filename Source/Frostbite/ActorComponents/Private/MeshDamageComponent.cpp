@@ -118,12 +118,12 @@ void UMeshDamageComponent::HandleDamageThresholdReached()
 	{
 		if (PlayAudioEffects)
 		{
-			UGameplayStatics::SpawnSoundAtLocation(this, DestructionSound, Owner->GetActorLocation());
+			UGameplayStatics::SpawnSoundAtLocation(this, DestructionSound, GetComponentLocation());
 		}
 		
 		if (PlayParticleEffects)
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DestructionNiagaraSystem, Owner->GetActorLocation(), Owner->GetActorRotation());
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DestructionNiagaraSystem, GetComponentLocation(), GetComponentRotation());
 		}
 		
 		if (DestroyOwnerOnThresholdReached)
