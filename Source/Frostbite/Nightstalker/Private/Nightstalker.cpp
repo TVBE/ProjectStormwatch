@@ -51,3 +51,12 @@ void ANightstalker::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
+void ANightstalker::SetPhantomModeEnabled(const bool Value)
+{
+	if (IsPhantomModeEnabled != Value)
+	{
+		IsPhantomModeEnabled = Value;
+		EventSetPhantomModeEnabled(Value);
+	}
+}
+
