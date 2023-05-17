@@ -10,9 +10,8 @@
   <component name="ChangeListManager">
     <list default="true" id="14c26d09-b481-4780-b503-9558732aec85" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frostbite/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Game/Actors/Nightstalker/Blueprints/BP_NightstalkerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Game/Actors/Nightstalker/Blueprints/BP_NightstalkerController.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/NightstalkerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/NightstalkerController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/Nightstalker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Private/Nightstalker.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/Nightstalker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Frostbite/Nightstalker/Public/Nightstalker.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -382,7 +381,7 @@
       <workItem from="1684226185171" duration="1949000" />
       <workItem from="1684229804582" duration="5308000" />
       <workItem from="1684269010135" duration="968000" />
-      <workItem from="1684274652448" duration="7934000" />
+      <workItem from="1684274652448" duration="8797000" />
     </task>
     <servers />
   </component>
