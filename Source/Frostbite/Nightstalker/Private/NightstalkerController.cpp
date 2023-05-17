@@ -3,114 +3,150 @@
 // This source code is part of the project Frostbite
 
 #include "NightstalkerController.h"
-#include "LogCategories.h"
+#include "Nightstalker.h"
+#include "PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
-void ANightstalkerController::Tick(float DeltaSeconds)
+DEFINE_LOG_CATEGORY_CLASS(ANightstalkerController, LogNightstalkerController);
+
+void ANightstalkerController::BeginPlay()
 {
-	Super::Tick(DeltaSeconds);
-	switch(BehaviorMode)
+	Super::BeginPlay();
+
+	ACharacter* ControlledCharacter {UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)};
+	PlayerCharacter = Cast<APlayerCharacter>(ControlledCharacter);
+
+	if (PlayerCharacter)
 	{
-	case EBehaviorMode::RoamMode: TickRoamMode();
-		break;
-	case EBehaviorMode::StalkMode: TickStalkMode();
-		break;
-	case EBehaviorMode::AmbushMode: TickAmbushMode();
-		break;
+		UE_LOG(LogNightstalkerController, Verbose, TEXT("Successfully found player character."));
 	}
-	
-}
-
-void ANightstalkerController::SwitchBehaviorMode(const EBehaviorMode Mode)
-{
-	if (BehaviorMode == Mode)
+	else
 	{
-		return;
+		UE_LOG(LogNightstalkerController, Warning, TEXT("Failed to find player character."));
 	}
-	BehaviorMode = Mode;
-	
-	FTimerManager& TimerManager {GetWorldTimerManager()};
-	/** Clear the update timer. */
-	if (BehaviorUpdateTimerHandle.IsValid())
-	{
-		TimerManager.ClearTimer(BehaviorUpdateTimerHandle);
-	}
-	
-	/** Set the update interval by the behavior mode type. */
-	float Interval {1.0f};
-	switch(BehaviorMode)
-	{
-	case EBehaviorMode::RoamMode:
-		StartRoamMode();
-		Interval = RoamModeUpdateInterval;
-		break;
-	case EBehaviorMode::StalkMode:
-		StartStalkMode();
-		Interval = StalkModeUpdateInterval;
-		break;
-	case EBehaviorMode::AmbushMode:
-		StartAmbushMode();
-		Interval = AmbushModeUpdateInterval;
-		break;
-	}
-	
-	/** Initialize the update timer. */
-	TimerManager.SetTimer(BehaviorUpdateTimerHandle, this, &ANightstalkerController::OnBehaviorModeUpdate, Interval, true);
-}
-
-void ANightstalkerController::OnBehaviorModeUpdate()
-{
-	switch(BehaviorMode)
-	{
-	case EBehaviorMode::RoamMode:
-		UpdateRoamMode();
-		break;
-	case EBehaviorMode::StalkMode:
-		UpdateStalkMode();
-		break;
-	case EBehaviorMode::AmbushMode:
-		UpdateAmbushMode();
-		break;
-	}
-}
-
-void ANightstalkerController::TickAmbushMode_Implementation()
-{
-}
-
-void ANightstalkerController::TickStalkMode_Implementation()
-{
-}
-
-void ANightstalkerController::TickRoamMode_Implementation()
-{
-}
-
-void ANightstalkerController::UpdateAmbushMode_Implementation()
-{
-}
-
-void ANightstalkerController::UpdateStalkMode_Implementation()
-{
-}
-
-void ANightstalkerController::UpdateRoamMode_Implementation()
-{
-}
-
-void ANightstalkerController::StartAmbushMode_Implementation()
-{
-}
-
-void ANightstalkerController::StartStalkMode_Implementation()
-{
-}
-
-void ANightstalkerController::StartRoamMode_Implementation()
-{
 }
 
 void ANightstalkerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
+
+void ANightstalkerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (!InPawn) { return; }
+	Nightstalker = Cast<ANightstalker>(InPawn);
+	UE_LOG(LogNightstalkerController, Log, TEXT("Nightstalker was succesfully possesed by controller: '%s'. "), *Nightstalker->GetName())
+}
+
+inline static const TArray<FVector2D> OcclusionTraceVectors = {
+	FVector2D(-50, 50),
+	FVector2D(50, 50),
+	FVector2D(-50, -50),
+	FVector2D(50, -50)
+};
+
+void ANightstalkerController::IsOccluded(bool& ReturnValue, const FVector& PointA, const FVector& PointB, const bool DrawDebugLines, const float DrawDebugLinesDuration)
+{
+	UWorld* World {GetWorld()};
+	if (!World)
+	{
+		ReturnValue = false;
+		return;
+	}
+
+	FVector Direction { (PointB - PointA).GetSafeNormal() };
+	FRotator Rotation { Direction.Rotation() };
+
+	FCollisionQueryParams TraceParams;
+
+	FHitResult HitResult;
+	for (const FVector2D& TraceVector : OcclusionTraceVectors)
+	{
+		FVector Start { Rotation.RotateVector(FVector{0, TraceVector.X, TraceVector.Y}) + PointA };
+		FVector End { Rotation.RotateVector(FVector{0, TraceVector.X, TraceVector.Y}) + PointB };
+		
+		bool IsHit { World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams) };
+		if (!IsHit)
+		{
+			if (DrawDebugLines)
+			{
+				DrawDebugLine(World, Start, End, FColor::Red, false, DrawDebugLinesDuration);
+			}
+
+			ReturnValue = false;
+
+			if (!DrawDebugLines)
+			{
+				return;
+			}
+		}
+		else if (DrawDebugLines)
+		{
+			DrawDebugLine(World, Start, End, FColor::Green, false, DrawDebugLinesDuration);
+		}
+	}
+
+	ReturnValue = true;
+}
+
+void ANightstalkerController::IsOccludedFast(bool& ReturnValue, const FVector& LocationA, const FVector& LocationB, const bool DrawDebugLines, const float DrawDebugLinesDuration)
+{
+	UWorld* World {GetWorld()};
+	if (!World)
+	{
+		ReturnValue = false;
+		return;
+	}
+
+	FVector SourceTracePoints[2] {LocationA + FVector(0, 0, 50), LocationA - FVector(0, 0, 30)};
+	FVector TargetTracePoints[2] {LocationB + FVector(0, 0, 50), LocationB - FVector(0, 0, 30)};
+
+	FCollisionQueryParams TraceParams {};
+
+	FHitResult HitResult;
+	for (int i = 0; i < 2; ++i)
+	{
+		bool IsHit {World->LineTraceSingleByChannel(HitResult, SourceTracePoints[i], TargetTracePoints[i], ECC_Visibility, TraceParams)};
+		if (DrawDebugLines)
+		{
+			DrawDebugLine(World, SourceTracePoints[i], TargetTracePoints[i], IsHit ? FColor::Red : FColor::Green, false, DrawDebugLinesDuration);
+		}
+		if (IsHit)
+		{
+			ReturnValue = false;
+
+			if (!DrawDebugLines)
+			{
+				return;
+			}
+		}
+	}
+
+	ReturnValue = true;
+}
+
+void ANightstalkerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!Nightstalker || !PlayerCharacter) { return; }
+	
+	DistanceToPlayerCharacter = FVector::Dist(Nightstalker->GetActorLocation(), PlayerCharacter->GetActorLocation());
+	
+	const FVector CurrentLocation {GetPawn()->GetActorLocation()};
+	
+	if (FVector::DistSquared(LastRegisteredLocation, CurrentLocation) > 2500.f)
+	{
+		if (PathHistory.Num() >= MaxPathHistoryLength)
+		{
+			PathHistory.RemoveAt(0);
+		}
+		
+		PathHistory.Add(CurrentLocation);
+		
+		LastRegisteredLocation = CurrentLocation;
+	}
+}
+
