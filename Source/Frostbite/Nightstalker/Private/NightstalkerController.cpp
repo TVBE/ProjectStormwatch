@@ -127,6 +127,30 @@ void ANightstalkerController::IsOccludedFast(bool& ReturnValue, const FVector& L
 	ReturnValue = true;
 }
 
+float ANightstalkerController::GetPlayerViewAngleToNightstalker(bool IgnorePitch) const
+{
+	if (!Nightstalker || !PlayerCharacter)
+	{
+		return 0.0f; 
+	}
+	
+	FVector DirectionToNightstalker {(Nightstalker->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal()};
+	
+	FVector PlayerForwardVector {PlayerCharacter->GetControlRotation().Vector()};
+
+	if (IgnorePitch)
+	{
+		DirectionToNightstalker.Z = 0.0f;
+		PlayerForwardVector.Z = 0.0f;
+		DirectionToNightstalker = DirectionToNightstalker.GetSafeNormal();
+		PlayerForwardVector = PlayerForwardVector.GetSafeNormal();
+	}
+	
+	float Angle {static_cast<float>(FMath::Acos(FVector::DotProduct(DirectionToNightstalker, PlayerForwardVector)) * (180.0f / PI))};
+
+	return Angle;
+}
+
 void ANightstalkerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

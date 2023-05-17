@@ -55,6 +55,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Occlusion", Meta = (DisplayName = "Is Occluded (Fast)", Keywords = "Is Occluded Occlusion Visibility Visible", ExpandBoolAsExecs = "ReturnValue"))
 	void IsOccludedFast(bool& ReturnValue, const  FVector& LocationA, const FVector& LocationB, const bool DrawDebugLines, const float DrawDebugLineDuration);
 
+	/** Returns the angle in which the player is looking at the Nightstalker instance. */
+	UFUNCTION(BlueprintPure, Category = "Visibility", Meta = (DisplayName = "Get Player View Angle"))
+	float GetPlayerViewAngleToNightstalker(bool IgnorePitch) const;
+	
 	UFUNCTION(BlueprintPure, Category = "Nightstalker", Meta = (CompactNodeTitle = "Nightstalker"))
 	FORCEINLINE ANightstalker* GetNightstalker() { return Nightstalker; }
 	
