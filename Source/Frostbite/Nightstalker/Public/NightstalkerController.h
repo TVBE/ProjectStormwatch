@@ -31,6 +31,8 @@ private:
 	/** The tick rate for the behavior tick. */
 	UPROPERTY(EditAnywhere, Category = "Behavior")
 	float BehaviorTickRate {5.0f};
+
+	float BehaviorTickInterval;
 	
 	FTimerHandle BehaviorTickTimerHandle;
 
@@ -48,9 +50,6 @@ private:
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	ENightstalkerBehavior Behavior;
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Behavior", Meta = (DisplayName = "Behavior Tick Delta Seconds"))
-	float BehaviorTickInterval;
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
