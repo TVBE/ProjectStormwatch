@@ -67,7 +67,7 @@ protected:
 
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Absolute Distance To Player"))
 	FORCEINLINE double GetDistanceToPlayerCharacter() const { return DistanceToPlayerCharacter; }
-
+	
 	/** Returns the recent path history of the Nightstalker. */
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE TArray<FVector> GetPathHistory() const { return PathHistory; }

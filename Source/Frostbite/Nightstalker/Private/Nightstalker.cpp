@@ -5,12 +5,25 @@
 #include "Nightstalker.h"
 
 #include "NightstalkerDirector.h"
+#include "NightstalkerMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+DEFINE_LOG_CATEGORY_CLASS(ANightstalker, LogNightstalker);
 
 ANightstalker::ANightstalker()
 {
- 	
 	PrimaryActorTick.bCanEverTick = true;
+}
 
+void ANightstalker::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	NightstalkerMovementComponent = Cast<UNightstalkerMovementComponent>(GetCharacterMovement());
+	if (!NightstalkerMovementComponent)
+	{
+		UE_LOG(LogNightstalker, Error, TEXT("PostInitProperties: Nightstalker does not have 'UNightstalkerMovementComponent' set as character movement component."))
+	}
 }
 
 void ANightstalker::BeginPlay()
