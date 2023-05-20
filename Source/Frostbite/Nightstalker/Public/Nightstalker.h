@@ -52,5 +52,13 @@ public:
 	
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsPhantomModeEnabled() const { return IsPhantomModeEnabled; }
-	
 };
+
+UENUM(BlueprintType)
+enum class ENightstalkerBehavior : uint8
+{
+	Idle			UMETA(DisplayName = "Idle"),
+	Roaming		    UMETA(DisplayName = "Roaming"),
+};
+
+

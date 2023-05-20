@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Nightstalker.h"
 #include "NightstalkerController.generated.h"
 
 class APlayerCharacter;
@@ -27,6 +28,12 @@ private:
 	UPROPERTY(Transient)
 	APlayerCharacter* PlayerCharacter {nullptr};
 
+	/** The tick rate for the behavior tick. */
+	UPROPERTY(EditAnywhere, Category = "Behavior")
+	float BehaviorTickRate {5.0f};
+	
+	FTimerHandle BehaviorTickTimerHandle;
+
 	/** The current distance to the player. */
 	double DistanceToPlayerCharacter {0.0f};
 	
@@ -39,12 +46,27 @@ private:
 	TArray<FVector> PathHistory;
 
 protected:
+	UPROPERTY(BlueprintReadWrite)
+	ENightstalkerBehavior Behavior;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Behavior", Meta = (DisplayName = "Behavior Tick Delta Seconds"))
+	float BehaviorTickInterval;
+
+protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
+	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void BehaviorTick(float DeltaSeconds);
+
 	virtual void OnPossess(APawn* InPawn) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Logging", Meta = (DevelopmentOnly))
+	void LogText(const FString& Text);
 
 	/** Checks if a point is occluded from the perspective of another point. */
 	UFUNCTION(BlueprintCallable, Category = "Occlusion", Meta = (DisplayName = "Is Occluded", Keywords = "Is Occluded Occlusion Visibility Visible", ExpandBoolAsExecs = "ReturnValue"))

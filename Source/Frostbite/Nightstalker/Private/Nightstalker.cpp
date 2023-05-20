@@ -20,10 +20,6 @@ void ANightstalker::PostInitProperties()
 	Super::PostInitProperties();
 
 	NightstalkerMovementComponent = Cast<UNightstalkerMovementComponent>(GetCharacterMovement());
-	if (!NightstalkerMovementComponent)
-	{
-		UE_LOG(LogNightstalker, Error, TEXT("PostInitProperties: Nightstalker does not have 'UNightstalkerMovementComponent' set as character movement component."))
-	}
 }
 
 void ANightstalker::BeginPlay()

@@ -9,6 +9,13 @@
 
 DEFINE_LOG_CATEGORY_CLASS(ANightstalkerController, LogNightstalkerController);
 
+void ANightstalkerController::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	BehaviorTickInterval = 1.0f / BehaviorTickRate;
+}
+
 void ANightstalkerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -24,11 +31,14 @@ void ANightstalkerController::BeginPlay()
 	{
 		UE_LOG(LogNightstalkerController, Warning, TEXT("Failed to find player character."));
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(BehaviorTickTimerHandle, [this]() { BehaviorTick(BehaviorTickInterval); }, BehaviorTickInterval, true);
 }
 
 void ANightstalkerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+	
 }
 
 void ANightstalkerController::OnPossess(APawn* InPawn)
@@ -38,6 +48,11 @@ void ANightstalkerController::OnPossess(APawn* InPawn)
 	if (!InPawn) { return; }
 	Nightstalker = Cast<ANightstalker>(InPawn);
 	UE_LOG(LogNightstalkerController, Log, TEXT("Nightstalker was succesfully possesed by controller: '%s'. "), *Nightstalker->GetName())
+}
+
+void ANightstalkerController::LogText(const FString& Text)
+{
+	UE_LOG(LogNightstalkerController, VeryVerbose, TEXT("%s"), *Text);
 }
 
 inline static const TArray<FVector2D> OcclusionTraceVectors = {
@@ -172,5 +187,9 @@ void ANightstalkerController::Tick(float DeltaSeconds)
 		
 		LastRegisteredLocation = CurrentLocation;
 	}
+}
+
+void ANightstalkerController::BehaviorTick_Implementation(float DeltaSeconds)
+{
 }
 
