@@ -3,71 +3,66 @@
 // This source code is part of the project Frostbite
 
 #include "RoomVolume.h"
-#include "Nightstalker.h"
-#include "PlayerCharacter.h"
 #include "LogCategories.h"
+#include "RoomComponent.h"
+#include "Components/ShapeComponent.h"
+
+ARoomVolume::ARoomVolume()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+void ARoomVolume::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (UShapeComponent* ShapeComponent {GetCollisionComponent()})
+	{
+		ShapeComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+		ShapeComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ShapeComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	}
+}
+
+void ARoomVolume::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+
+	for (UActorComponent* Component : Components)
+	{
+		if (URoomComponent* RoomComponent = Cast<URoomComponent>(Component))
+		{
+			RoomComponent->ConstructComponent();
+		}
+	}
+}
 
 void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if (APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
+	
+	if (APawn* OverlappingPawn {Cast<APawn>(OtherActor)})
 	{
-		OnPlayerEnter.Broadcast(PlayerCharacter);
-		EventOnPlayerEnter(PlayerCharacter);
-
-		UE_LOG(LogRoomVolume, Verbose, TEXT("Player has entered room %s."), *this->GetName())
-		
-		return;
+		OverlappingPawns.AddUnique(OverlappingPawn);
+		OnPawnEnter.Broadcast(OverlappingPawn);
+		UE_LOG(LogRoomVolume, Verbose, TEXT("Pawn '%s' has entered room '%s'."), *OtherActor->GetName(), *this->GetName());
 	}
-	if (ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
-	{
-		OnNightstalkerEnter.Broadcast(Nightstalker);
-		EventOnNightstalkerEnter(Nightstalker);
-
-		UE_LOG(LogRoomVolume, Verbose, TEXT("Nightstalker has entered room %s."), *this->GetName())
-	}
-}
-
-void ARoomVolume::SetLightStatus(const bool Value)
-{
-	if (IsLit == Value) { return; }
-	IsLit = Value;
-	OnLuminosityChanged.Broadcast(Value);
 }
 
 void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
-	if (APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(OtherActor)})
+	
+	if (APawn* OverlappingPawn {Cast<APawn>(OtherActor)})
 	{
-		OnPlayerLeave.Broadcast(PlayerCharacter);
-		EventOnPlayerLeave(PlayerCharacter);
-
-		UE_LOG(LogRoomVolume, Verbose, TEXT("Player has left room %s."), *this->GetName())
-		
-		return;
-	}
-	if (ANightstalker* Nightstalker {Cast<ANightstalker>(OtherActor)})
-	{
-		OnNightstalkerLeave.Broadcast(Nightstalker);
-		EventOnNightstalkerLeave(Nightstalker);
-
-		UE_LOG(LogRoomVolume, Verbose, TEXT("Nightstalker has left room %s."), *this->GetName())
+		OverlappingPawns.Remove(OverlappingPawn);
+		OnPawnLeave.Broadcast(OverlappingPawn);
+		UE_LOG(LogRoomVolume, Verbose, TEXT("Pawn '%s' has left room '%s'."), *OtherActor->GetName(), *this->GetName());
 	}
 }
 
-// BLUEPRINT NATIVE EVENTS
-void ARoomVolume::EventOnPlayerEnter_Implementation(APlayerCharacter* PlayerCharacter)
-{
-}
-void ARoomVolume::EventOnPlayerLeave_Implementation(APlayerCharacter* PlayerCharacter)
-{
-}
-void ARoomVolume::EventOnNightstalkerEnter_Implementation(ANightstalker* Nightstalker)
-{
-}
-void ARoomVolume::EventOnNightstalkerLeave_Implementation(ANightstalker* Nightstalker)
-{
-}
 
 

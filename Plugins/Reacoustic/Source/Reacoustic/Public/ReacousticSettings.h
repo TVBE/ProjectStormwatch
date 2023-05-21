@@ -25,7 +25,7 @@ private:
 
 	
 public:
-	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
+	/*UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
 	FSoftObjectPath ReacousticObjectSounds;
 
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
@@ -34,12 +34,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticComponent))
 	FSoftObjectPath ReacousticComponent;
 
-	/** The GENERATED data used by the reacoustic subsystem.*/
+	/** The GENERATED data used by the reacoustic subsystem.#1#
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataAsset))
 	FSoftObjectPath SoundDataAsset;
 	
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataRefMap))
-	FSoftObjectPath SoundDataRefMap;
+	FSoftObjectPath SoundDataRefMap;*/
 
 	/** Calls the GenerateRuntimeData function in the subsystem.*/
 	void GenerateRuntimeData();

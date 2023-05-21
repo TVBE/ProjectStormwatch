@@ -30,7 +30,7 @@ private:
 	UAudioComponent* BodyAudioComponent;
 
 	/** The Metasound Asset for the body audio component. */
-	UPROPERTY(EditAnywhere, Category = "Player Audio", Meta = (DisplayName = "Body Audio Component Metasound Source"))
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Body Audio Component Metasound Source"))
 	TSoftObjectPtr<UMetaSoundSource> BodyAudioComponentSoundAsset; 
 	
 public:	
@@ -51,7 +51,7 @@ private:
 
 public:
 	/** Returns the body AudioComponent. */
-	UFUNCTION(BlueprintGetter, Category = "Player Audio|Components", Meta = (DisplayName = "Body Audio Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const {return BodyAudioComponent; }
 	
 };

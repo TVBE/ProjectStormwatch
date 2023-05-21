@@ -27,6 +27,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Returns a random character. */
-	UFUNCTION(BlueprintPure, Category = "Keyboard", Meta = (DisplayName = "Get Random Character"))
+	UFUNCTION(BlueprintPure)
 	FString GetRandomCharacter();
 };

@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Mouse.generated.h"
 
-class UMeshInteractionComponent;
+class UMeshGrabComponent;
 class UStaticMeshComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseMovementDelegate, FVector2D, Vector);
@@ -22,17 +22,17 @@ class AMouse : public AActor
 
 public:
 	/** Delegate called when the mouse registers movement. */
-	UPROPERTY(BlueprintAssignable, Category = "Mouse|Delegates", Meta = (DisplayName = "On Mouse Movement"))
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Mouse Movement"))
 	FOnMouseMovementDelegate OnMouseMovement;
 	
 protected:
 	/** The static mesh component for the mouse. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Mouse|Components", Meta = (DisplayName = "Static Mesh"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", Meta = (DisplayName = "Static Mesh"))
 	UStaticMeshComponent* MouseMesh;
 
 	/** The mesh interaction component for the mouse. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Mouse|Components", Meta = (DisplayName = "Interaction Component"))
-	UMeshInteractionComponent* InteractionComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UMeshGrabComponent* GrabComponent;
 
 public:	
 	AMouse();

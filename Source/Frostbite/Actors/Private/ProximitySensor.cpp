@@ -4,11 +4,11 @@
 
 #include "ProximitySensor.h"
 
+#include "AutomationTestModule.h"
 #include "Nightstalker.h"
 #include "PlayerCharacter.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 
 DEFINE_LOG_CATEGORY_CLASS(AProximitySensor, LogSensor)
@@ -20,137 +20,140 @@ AProximitySensor::AProximitySensor()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	
-	DetectionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DetectionBox"));
-	DetectionBox->SetupAttachment(this->RootComponent);
-	DetectionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetectionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	DetectionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	DetectionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-}
-
-void AProximitySensor::PostInitProperties()
-{
-	Super::PostInitProperties();
-}
-
-void AProximitySensor::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-	DetectionBox->SetBoxExtent(FVector(DetectionBoxLength, DetectionBoxWidth, DetectionBoxHeighth), false);
-	DetectionBox->SetRelativeLocation(FVector(DetectionBoxLength, 0, 0));
-	ConeAngle = CalculateConeAngle(DetectionBox);
-
-#if WITH_EDITOR
-	if (EnableDebugVisualisation)
-	{
-		VisualizeCone(false);
-	}
-#endif
+	DetectionArea = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Detection Area"));
+	DetectionArea->bEditableWhenInherited = true;
+	DetectionArea->SetupAttachment(this->RootComponent);
+	DetectionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetectionArea->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetectionArea->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	DetectionArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void AProximitySensor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
-#if WITH_EDITOR
-	if (EnableDebugVisualisation)
+	if (DetectionArea)
 	{
-		VisualizeCone(true);
+		DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AProximitySensor::OnOverlapBegin);
+		DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AProximitySensor::OnOverlapEnd);
 	}
-#endif
+}
+
+void AProximitySensor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA(APlayerCharacter::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
+	{
+		return;
+	}
+	if (OtherActor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Nightstalker))
+	{
+		return;
+	}
+	OverlappingActors.AddUnique(OtherActor);
+
+	Poll();
+	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
+}
+
+void AProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	OverlappingActors.Remove(OtherActor);
+
+	if (OverlappingActors.IsEmpty())
+	{
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
+			{
+				World->GetTimerManager().ClearTimer(PollTimerHandle);
+			}
+		}
+	}
+
+	if (IsAlerted && !IsTriggered)
+	{
+		SetState(ESensorState::Alerted);
+		StartCooldown();
+	}
 }
 
 /** Called at regular intervals to check for overlapping actors and determine the nearest pawn. */
 void AProximitySensor::Poll()
 {
-	if (!DetectionBox) { return; }
+	IsActorDetected = false;
 
-	if (EnableCooldown && IsCooldownActive)
-	{
-		return;
-	}
-	
-	DetectionBox->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
+	if (IsBroken) { return; }
 	
 	if (!OverlappingActors.IsEmpty())
 	{
-		for (int32 Index {0}; Index < OverlappingActors.Num(); ++Index)
+		for (const AActor* Actor : OverlappingActors)
 		{
-			AActor* Actor {OverlappingActors[Index]};
-			bool ShouldIgnoreActor {false};
-
-			if (Actor)
+			if (!IsActorOccluded(Actor))
 			{
-				if (Actor->IsA(APlayerCharacter::StaticClass()))
-				{
-					if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
-					{
-						ShouldIgnoreActor = true;
-					}
-					else if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Crouching))
-					{
-						if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(Actor)}; PlayerCharacter && PlayerCharacter->bIsCrouched)
-						{
-							ShouldIgnoreActor = true;
-						}
-					}
-				}
-				else if (Actor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Nightstalker))
-				{
-					ShouldIgnoreActor = true;
-				}
-
-				if (ShouldIgnoreActor)
-				{
-					OverlappingActors[Index] = nullptr;
-				}
-				else
-				{
-					const FVector DirectionToActor {(Actor->GetActorLocation() - this->GetActorLocation()).GetSafeNormal()};
-					const float DotProduct {static_cast<float>(FVector::DotProduct(DirectionToActor, Root->GetForwardVector()))};
-
-					if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))) || IsActorOccluded(Actor))
-					{
-						OverlappingActors[Index] = nullptr;
-					}
-				}
+				IsActorDetected = true;
+				break;
 			}
 		}
 	}
 	
-
-	if (OverlappingActors.IsEmpty()) { return; }
-
-	AActor* NearestActor {nullptr};
-	float NearestPawnDistance {FLT_MAX};
-	
-	for (AActor* OverlappingActor : OverlappingActors)
+	if (IsActorDetected)
 	{
-		if (OverlappingActor)
+		if (IsTriggered)
 		{
-			const float Distance {static_cast<float>(FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation()))};
-			if (Distance < NearestPawnDistance)
+			return;
+		}
+
+		SetState(ESensorState::Detecting);
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 			{
-				NearestPawnDistance = Distance;
-				NearestActor = OverlappingActor;
+				World->GetTimerManager().ClearTimer(CooldownTimerHandle);
 			}
 		}
-	}
-
-	if (NearestActor)
-	{
-		IsActorDetected = true;
-		OnActorDetected.Broadcast(NearestActor, NearestPawnDistance);
-	}
-	else if (IsActorDetected)
-	{
-		IsActorDetected = false;
-		OnActorLost.Broadcast();
-
-		if (EnableCooldown)
+		
+		DetectionLevel += PollInterval;
+		if (!IsAlerted)
 		{
-			StartCooldown();
+			IsAlerted = true;
+		}
+		
+		if (DetectionLevel >= DetectionThreshold)
+		{
+			IsTriggered = true;
+			
+			if (IsManualResetRequired)
+			{
+				if (const UWorld* World {GetWorld()})
+				{
+					if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
+					{
+						World->GetTimerManager().ClearTimer(PollTimerHandle);
+					}
+				}
+			}
+
+			SetState(ESensorState::Triggered);
+		}
+	}
+	else
+	{
+		if (IsAlerted)
+		{
+			SetState(ESensorState::Alerted);
+			
+			if (const UWorld* World {GetWorld()})
+			{
+				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
+				{
+					return;
+				}
+				StartCooldown();
+			}
 		}
 	}
 }
@@ -158,7 +161,7 @@ void AProximitySensor::Poll()
 /** Determines if the given actor is occluded by another object using a line trace. */
 bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 {
-	FVector StartLocation {GetActorLocation()};
+	FVector StartLocation = GetActorLocation() - FVector(0, 0, 10);
 	FVector ActorLocation {Actor->GetActorLocation()};
 	TArray<FVector> EndLocations
 	{
@@ -191,74 +194,168 @@ bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 	return BlockedTraces == EndLocations.Num();
 }
 
-/** Calculates the cone angle based on the dimensions of the given box component. */
-float AProximitySensor::CalculateConeAngle(const UBoxComponent* BoxComponent) const 
-{
-	const FVector BoxExtent {BoxComponent->GetScaledBoxExtent()};
-	const float BoxDepth {static_cast<float>(BoxExtent.X)};
-	const float Diagonal {static_cast<float>(FMath::Sqrt(FMath::Square(BoxExtent.Y) + FMath::Square(BoxExtent.Z)))};
-	const float HalfConeAngleRad = FMath::Atan((Diagonal / 2.0f) / BoxDepth);
-	return FMath::RadiansToDegrees(HalfConeAngleRad);
-}
-
-#if WITH_EDITOR
-/** Visualizes the detection cone by drawing debug lines in the editor. */
-void AProximitySensor::VisualizeCone(const bool IsPersistent) const
-{
-	const FVector BoxExtent {DetectionBox->GetScaledBoxExtent()};
-	const FVector BoxLocation {Root->GetComponentLocation()};
-	const FVector BoxForward {DetectionBox->GetForwardVector()};
-
-	const float ConeDistance {static_cast<float>(BoxExtent.X * 2.0f)};
-	const float ConeRadius {FMath::Tan(FMath::DegreesToRadians(ConeAngle) * 0.5f) * ConeDistance};
-
-	const FVector ConeCenter {BoxLocation + BoxForward * ConeDistance};
-	const FVector ConeUp {DetectionBox->GetUpVector()};
-	const FVector ConeRight {DetectionBox->GetRightVector()};
-
-	const FVector TopRight {ConeCenter + ConeUp * ConeRadius + ConeRight * ConeRadius};
-	const FVector TopLeft {ConeCenter + ConeUp * ConeRadius - ConeRight * ConeRadius};
-	const FVector BottomRight {ConeCenter - ConeUp * ConeRadius + ConeRight * ConeRadius};
-	const FVector BottomLeft {ConeCenter - ConeUp * ConeRadius - ConeRight * ConeRadius};
-
-	const FColor DebugLineColor {FColor::Red};
-
-	DrawDebugLine(GetWorld(), BoxLocation, TopRight, DebugLineColor, IsPersistent, 1.0f);
-	DrawDebugLine(GetWorld(), BoxLocation, TopLeft, DebugLineColor, IsPersistent, 1.0f);
-	DrawDebugLine(GetWorld(), BoxLocation, BottomRight, DebugLineColor, IsPersistent, 1.0f);
-	DrawDebugLine(GetWorld(), BoxLocation, BottomLeft, DebugLineColor, IsPersistent, 1.0f);
-}
-
 void AProximitySensor::StartCooldown()
 {
+	if (IsBroken) { return; }
+	
 	IsCooldownActive = true;
 	
 	if (const UWorld* World = GetWorld())
 	{
-		bool BroadcastDelegate {true};
-
 		if (World->GetTimerManager().TimerExists(CooldownTimerHandle))
 		{
 			World->GetTimerManager().ClearTimer(CooldownTimerHandle);
-			BroadcastDelegate = false;
+			
 		}
 
 		World->GetTimerManager().SetTimer(CooldownTimerHandle, this, &AProximitySensor::HandleCooldownFinished, CooldownTime, false);
-		
-		if (BroadcastDelegate)
+	}
+}
+
+void AProximitySensor::StopCooldown()
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 		{
-			OnCooldownStateChanged.Broadcast(true);
+			World->GetTimerManager().ClearTimer(CooldownTimerHandle);
+			IsCooldownActive = false;
 		}
+	}
+}
+
+void AProximitySensor::SetState(const ESensorState NewState)
+{
+	if (SensorState != NewState)
+	{
+		SensorState = NewState;
+		
+		OnStateChanged.Broadcast(NewState);
 	}
 }
 
 void AProximitySensor::HandleCooldownFinished()
 {
+	DetectionLevel = 0.0f;
+	
 	IsCooldownActive = false;
+	
+	IsAlerted = false;
+	
+	IsTriggered = false;
 
-	OnCooldownStateChanged.Broadcast(false);
+	if (IsBroken) { return; }
+	
+	SetState(ESensorState::Idle);
 }
 
+void AProximitySensor::ResetSensor()
+{
+	IsAlerted = false;
+	IsTriggered = false;
+	DetectionLevel = 0.0f;
+
+	if (const UWorld* World {GetWorld()})
+	{
+		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
+		{
+			World->GetTimerManager().ClearTimer(CooldownTimerHandle);
+			IsCooldownActive = false;
+		}
+	}
+	else { return;}
+
+	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
+	
+	SetState(ESensorState::Idle);
+}
+
+void AProximitySensor::ActivateSensor()
+{
+	if (!IsSensorActive)
+	{
+		if (DetectionArea)
+		{
+			DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AProximitySensor::OnOverlapEnd);
+		}
+
+		DetectionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		
+		IsSensorActive = true;
+
+		OnActivation.Broadcast();
+		SetState(ESensorState::Idle);
+
+		Poll();
+	}
+}
+
+void AProximitySensor::DeactivateSensor()
+{
+	if (IsSensorActive)
+	{
+		IsSensorActive = false;
+		
+		StopCooldown();
+		
+		if (DetectionArea)
+		{
+			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
+		}
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
+			{
+				World->GetTimerManager().ClearTimer(PollTimerHandle);
+			}
+		}
+		
+		IsAlerted = false;
+		IsTriggered = false;
+		IsActorDetected = false;
+		
+		SetState(ESensorState::Disabled);
+
+		DetectionArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AProximitySensor::BreakSensor()
+{
+	if (!IsBroken)
+	{
+		IsBroken = true;
+
+		StopCooldown();
+		
+		if (DetectionArea)
+		{
+			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
+		}
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
+			{
+				World->GetTimerManager().ClearTimer(PollTimerHandle);
+			}
+		}
+		
+		IsAlerted = false;
+		IsTriggered = false;
+		IsActorDetected = false;
+		
+		SetState(ESensorState::Broken);
+
+		DetectionArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+#if WITH_EDITOR
 void AProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);

@@ -9,8 +9,10 @@
 #include "GrabbableObjectInterface.h"
 #include "InteractableObjectInterface.h"
 #include "InventoryObjectInterface.h"
+#include "NightstalkerDirector.h"
 #include "PowerConsumerInterface.h"
 #include "UsableObjectInterface.h"
+#include "SensoryEventManager.h"
 
 template <typename TInterface>
 UActorComponent* FindInteractableComponent(const AActor* Actor)
@@ -114,5 +116,34 @@ APlayerCharacterController* UFrostbiteFunctionLibrary::GetFrostbitePlayerCharact
 		}
 	}
 	return nullptr;
+}
+
+void UFrostbiteFunctionLibrary::PlayAuditoryEventAtLocation(const UObject* WorldContextObject,
+	const FAuditoryEvent& AuditoryEvent, const FVector& Location)
+{
+	if (!WorldContextObject)
+	{
+		return;
+	}
+
+	const UWorld* World {WorldContextObject->GetWorld()};
+	if (!World)
+	{
+		return;
+	}
+
+	const UNightstalkerDirector* NightstalkerDirector {World->GetSubsystem<UNightstalkerDirector>()};
+	if (!NightstalkerDirector)
+	{
+		return;
+	}
+
+	USensoryEventManager* SensoryEventManager {NightstalkerDirector->GetSensoryEventManager()};
+	if (!SensoryEventManager)
+	{
+		return;
+	}
+
+	SensoryEventManager->AddAuditoryEventAtLocation(AuditoryEvent, Location);
 }
 

@@ -31,17 +31,17 @@ public:
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements a special action on grab.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object", Meta = (DisplayName = "Begin Grab"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
 	bool BeginGrab(const AActor* Interactor);
 
 	/** Stop grabbing the object.
 	 *	@Param Instigator The actor that instigated the interaction.
 	 *	@Return Whether the object implements a special action on release.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object", Meta = (DisplayName = "End Grab"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
 	bool EndGrab(const AActor* Interactor);
 	
 	/** Returns the interaction hand type of the object. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object", Meta = (DisplayName = "Get Grab Type"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
 	EGrabType GetGrabType() const;
 };

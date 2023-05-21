@@ -14,6 +14,10 @@ UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer&
 }
 
 #if WITH_EDITOR
+void UReacousticProjectSettings::GenerateRuntimeData()
+{
+}
+
 void UReacousticProjectSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);

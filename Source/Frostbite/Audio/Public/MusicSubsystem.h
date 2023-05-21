@@ -31,13 +31,13 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Music", Meta = (Displayname = "Activate Music"))
+	UFUNCTION(BlueprintCallable, Meta = (Displayname = "Activate Music"))
 	void ActivateMusicSubystem(UMusicSettings* Settings);
 	
-	UFUNCTION(BlueprintGetter, Category = "Music", Meta = (DisplayName = "Audio Component"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UAudioComponent* GetMusicAudioComponent() const { return AudioComponent; }
 
-	UFUNCTION(BlueprintGetter, Category = "Music", Meta = (DisplayName = "Music Script"))
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UMusicScript* GetMusicScript() const { return MusicScript; }
 };
 

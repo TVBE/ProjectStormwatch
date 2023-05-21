@@ -3,6 +3,8 @@
 // This source code is part of the project Frostbite
 
 #include "KineticActorComponent.h"
+
+#include "MeshInteractionComponent.h"
 #include "PhysicsEngine/BodyInstance.h"
 
 UKineticActorComponent::UKineticActorComponent()
@@ -19,9 +21,10 @@ void UKineticActorComponent::OnRegister()
 
 	if (const AActor* Actor {GetOwner()})
 	{
-		Mesh = Actor->FindComponentByClass<UStaticMeshComponent>();
-		if (Mesh)
+		if (const UMeshInteractionComponent* MeshInteractionComponent {Actor->FindComponentByClass<UMeshInteractionComponent>()})
 		{
+			Mesh = Cast<UStaticMeshComponent>(MeshInteractionComponent->GetAttachParent());
+			if (Mesh)
 			if (Mesh->IsSimulatingPhysics())
 			{
 					Mesh->BodyInstance.bUseCCD = true;

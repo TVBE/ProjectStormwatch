@@ -4,7 +4,7 @@
 
 #include "Desktop.h"
 
-#include "MeshInteractionComponent.h"
+#include "MeshGrabComponent.h"
 #include "Components/BoxComponent.h"
 
 ADesktop::ADesktop()
@@ -20,8 +20,8 @@ ADesktop::ADesktop()
 	CursorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cursor"));
 	CursorMesh->SetupAttachment(RootComponent);
 
-	InteractionComponent = CreateDefaultSubobject<UMeshInteractionComponent>(TEXT("Interaction Component"));
-	InteractionComponent->SetupAttachment(RootComponent);
+	GrabComponent = CreateDefaultSubobject<UMeshGrabComponent>(TEXT("Grab Component"));
+	GrabComponent->SetupAttachment(RootComponent);
 }
 
 bool ADesktop::BeginUse_Implementation(const AActor* Interactor)

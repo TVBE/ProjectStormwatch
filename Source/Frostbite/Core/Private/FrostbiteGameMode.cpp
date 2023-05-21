@@ -5,17 +5,48 @@
 #include "FrostbiteGameMode.h"
 #include "PlayerCharacter.h"
 
+// ---------------------------------------------------------------------------------------------------------------------
+// ************************************************* Editor Utilities **************************************************
+// ---------------------------------------------------------------------------------------------------------------------
+
+AFrostbiteGameMode::AFrostbiteGameMode()
+{
+#if WITH_EDITOR
+	static const FName PropertyEditor("PropertyEditor");
+	FPropertyEditorModule& PropertyModule {FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor)};
+
+#define LOCTEXT_NAMESPACE "PropertySection"
+	const TSharedRef<FPropertySection> Door
+	{PropertyModule.FindOrCreateSection("SlidingDoor", "Door", LOCTEXT("Door", "Door"))};
+	Door->AddCategory("Door");
+	
+	const TSharedRef<FPropertySection> Button
+	{PropertyModule.FindOrCreateSection("PressableButton", "Button", LOCTEXT("Button", "Button"))};
+	Button->AddCategory("Button");
+
+	const TSharedRef<FPropertySection> Sensor
+		{PropertyModule.FindOrCreateSection("ProximitySensor", "Sensor", LOCTEXT("Sensor", "Sensor"))};
+	Sensor->AddCategory("Sensor");
+#undef LOCTEXT_NAMESPACE
+	
+#endif
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// *********************************************************************************************************************
+// ---------------------------------------------------------------------------------------------------------------------
+
+
 void AFrostbiteGameMode::NotifyPlayerCharacterBeginPlay(APlayerCharacter* Character)
 {
 	if (Character)
 	{
 		IsPlayerActive = true;
-		OnPlayerSpawn(Character);
+		EventOnPlayerSpawn(Character);
 	}
 }
 
-void AFrostbiteGameMode::OnPlayerSpawn_Implementation(APlayerCharacter* Character)
+void AFrostbiteGameMode::EventOnPlayerSpawn_Implementation(APlayerCharacter* Character)
 {
 }
-
 

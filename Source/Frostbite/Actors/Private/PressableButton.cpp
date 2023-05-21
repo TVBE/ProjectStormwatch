@@ -29,10 +29,6 @@ APressableButton::APressableButton()
 void APressableButton::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-
-#if WITH_EDITOR
-	ValidateLinkedButtons();
-#endif
 }
 
 void APressableButton::BeginPlay()
@@ -92,143 +88,21 @@ void APressableButton::HandleCooldownFinished()
 	IsCooldownActive = false;
 }
 
-void APressableButton::DoTargetActorActions(const bool IsPressedAction)
+void APressableButton::EventOnPress_Implementation()
 {
-	if (IsPressedAction)
-	{
-		if (ActionsOnPressed.IsEmpty()) { return; }
-		for (FActorFunctionCaller& FunctionCaller : ActionsOnPressed)
-		{
-			FunctionCaller.CallFunction();
-		}
-	}
-	else
-	{
-		if (ActionsOnRelease.IsEmpty()) { return; }
-		for (FActorFunctionCaller& FunctionCaller : ActionsOnRelease)
-		{
-			FunctionCaller.CallFunction();
-		}
-	}
+	OnButtonPressed.Broadcast();
 }
 
-void APressableButton::DoLinkedButtonActions(const bool IsPressedAction)
+void APressableButton::EventOnRelease_Implementation()
 {
-	if (LinkedButtons.IsEmpty()) { return; }
-	if (!IsPressedAction && TriggerType == EButtonTriggerType::SinglePress) {return; }
-	
-	for (const auto& [Actor,  DoActionOnPressed, PressedAction, DoActionOnRelease, ReleasedAction, IsActionLinked] : LinkedButtons)
-	{
-		if (Actor.IsValid())
-		{
-			if (IsPressedAction && DoActionOnPressed || !IsPressedAction && DoActionOnRelease)
-			{
-				switch (const ELinkedButtonAction Action {IsPressedAction ? PressedAction : ReleasedAction})
-				{
-				case ELinkedButtonAction::Press:
-					{
-						if (!Actor->GetIsPressed())
-						{
-							Actor->EventOnPress(!IsActionLinked, false);
-						}
-					}
-					break;
-				case ELinkedButtonAction::Release:
-					{
-						if (Actor->GetIsPressed())
-						{
-							Actor->EventOnRelease(!IsActionLinked, false);
-						}
-					}
-					break;
-				case ELinkedButtonAction::Toggle:
-					{
-						if (Actor->GetIsPressed())
-						{
-							Actor->EventOnRelease(!IsActionLinked, false);
-						}
-						else
-						{
-							Actor->EventOnPress(!IsActionLinked, false);
-						}
-					}
-					break;
-				default: break;
-				}
-			}
-		}
-	}
-}
-
-#if WITH_EDITOR
-void APressableButton::ValidateLinkedButtons()
-{
-	if (LinkedButtons.IsEmpty()) { return; }
-	for (FLinkedButton& LinkedButton : LinkedButtons)
-	{
-		if (!LinkedButton.Actor.IsNull())
-		{
-			if (const AActor* Actor = LinkedButton.Actor.Get(); Actor && Actor == this)
-				{
-				const FString DisplayName = this->GetHumanReadableName();
-				UE_LOG(LogButton, Warning, TEXT("%s contains button link to self."), *DisplayName)
-
-				LinkedButton.Actor = nullptr;
-
-				if (GEditor)
-				{
-					const FText Title {FText::FromString("Button")};
-					const FText Message {FText::FromString("Cannot add button link to self!")};
-					FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
-				}
-				}
-		}
-		if (TriggerType == EButtonTriggerType::SinglePress && LinkedButton.DoActionOnRelease)
-		{
-			if (GEditor)
-			{
-				const FText Title {FText::FromString("Button")};
-				const FText Message {FText::FromString("This button is a single press button and does not implement a release event.")};
-				FMessageDialog::Open(EAppMsgType::Ok, Message, &Title);
-			}
-			LinkedButton.DoActionOnRelease = false;
-		}
-	}
-}
-#endif
-
-void APressableButton::EventOnPress_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
-{
-	if (CallTargetActors)
-	{
-		DoTargetActorActions(true);
-	}
-	
-	if (CallLinkedButtons)
-	{
-		DoLinkedButtonActions(true);
-	}
-	
-}
-
-void APressableButton::EventOnRelease_Implementation(const bool CallTargetActors, const bool CallLinkedButtons)
-{
-	if (CallTargetActors)
-	{
-		DoTargetActorActions(false);
-	}
-	
-	if (CallLinkedButtons)
-	{
-		DoLinkedButtonActions(false);
-	}
+	OnButtonReleased.Broadcast();
 }
 
 void APressableButton::EventOnCollisionTrigger_Implementation()
 {
 	if (!IsPressed && !IsCooldownActive)
 	{
-		EventOnPress(true, true);
+		EventOnPress();
 	}
 }
 

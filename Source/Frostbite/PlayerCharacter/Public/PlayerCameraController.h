@@ -25,16 +25,14 @@ class FROSTBITE_API UPlayerCameraController : public UActorComponent
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCameraController, Log, All)
 
 private:
-	// CONFIGURATION
 	/** The configuration asset to use for this component. */
-	UPROPERTY(EditAnywhere, Category = "Camera|Configuration", Meta = (DisplayName = "Configuration"))
+	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
 	TSoftObjectPtr<UPlayerCameraConfiguration> ConfigurationAsset;
 
 	/** Pointer to the configuration asset for this component. */
 	UPROPERTY(BlueprintGetter = GetConfiguration)
 	UPlayerCameraConfiguration* Configuration;
-
-	// VARIABLES
+	
 	/** Pointer to the PlayerCharacter. */
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
@@ -44,7 +42,7 @@ private:
 	APlayerCharacterController* PlayerCharacterController;
 	
 	/** When set to true, the player does not have full rotational control over the camera's orientation. */
-	UPROPERTY(BlueprintReadOnly, Category = "Camera|Animation", Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", Meta = (DisplayName = "Lock Camera To Animation", AllowPrivateAccess = "true"))
 	bool IsCameraLockedToAnimation {false};
 	
 	/** The default head socket rotation from the skeletal mesh of the PlayerCharacterPawn. */
@@ -290,7 +288,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Centripetal Rotation",
 		Meta = (DisplayName = "Sprint Multiplier", EditCondition = "IsCentripetalRotationEnabled"))
 	float CentripetalRotationNonSprintMultiplier {1.25f};
- 
+	
 	/** Constructor with default values. */
 	UPlayerCameraConfiguration()
 	{

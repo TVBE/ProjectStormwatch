@@ -20,45 +20,44 @@ class UMeshCollisionTriggerComponent : public USceneComponent
 
 public:
 	/** Delegate that is called when a collision with sufficient force and at the correct angle has occured on the mesh. */
-	UPROPERTY(BlueprintAssignable, Category = "Collision Trigger Component", Meta = (DisplayName = "On Collision Trigger"))
+	UPROPERTY(BlueprintAssignable)
 	FOnCollisionTriggerDelegate OnCollisionTrigger;
 
 	/** Delegate that is called when the max collision trigger limit, if enabled, is reached. */
-	UPROPERTY(BlueprintAssignable, Category = "Collision Trigger Component", Meta = (DisplayName = "On Collision Trigger Limit Reached."))
+	UPROPERTY(BlueprintAssignable)
 	FOnCollisionTriggerLimitReachedDelegate OnCollisionTriggerLimitReached;
 
 	/** The impulse force threshold for the collision event to be triggered. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (Displayname = "Force Threshold", Units = "Newtons"))
+	UPROPERTY(EditAnywhere, Meta = (Displayname = "Force Threshold", Units = "Newtons"))
 	float ImpulseForceThreshold {100.0f};
 
 	/** If true, We expect the collision to come from a certain direction. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Restrict Collision Angle", InlineEditConditionToggle))
+	UPROPERTY(Meta = (InlineEditConditionToggle))
 	bool RestrictCollisionAngle {false};
 	
 	/** The maximum allowed angle for the collision to be triggered. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Maximum Allowed Angle", Units = "Degrees",
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Maximum Allowed Angle", Units = "Degrees",
 		EditCondition = "RestrictCollisionAngle"))
 	float MaxAllowedAngle {45.0f};
 
 	/** If true, we enforce a max trigger count for this collision trigger component.
 	 *	If the limit is reached, OnCollisionTriggerLimitReached is broadcast.
 	 *	It is possible to reset the trigger limit afterwards. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Enable Trigger Limit"))
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Enable Trigger Limit"))
 	bool IsTriggerLimitEnabled {false};
 
 private:
 	UPROPERTY()
 	UStaticMeshComponent* MeshComponent;
 	
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Trigger Limit",
-		EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
 	int32 TriggerLimit {1};
 
 	UPROPERTY()
 	int32 Triggers {0};
 
 	/** If true, the collision trigger component destroys itself after the trigger limit is reached. */
-	UPROPERTY(EditAnywhere, Category = "Collision Trigger Settings", Meta = (DisplayName = "Auto Destroy",
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Auto Destroy",
 		EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
 	bool DestroyAfterTriggerLimitReached {true};
 
@@ -66,11 +65,11 @@ public:
 	UMeshCollisionTriggerComponent();
 	
 	/** Resets the trigger count. */
-	UFUNCTION(BlueprintCallable, Category = "Collision Trigger Component", Meta = (DisplayName = "Reset Trigger Count"))
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ResetTriggerCount() { Triggers = 0; }
 
 	/** Sets the force threshold required to cause a collision trigger. */
-	UFUNCTION(BlueprintCallable, Category = "Collision Trigger Component", Meta = (DisplayName = "Set Force Threshold"))
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Set Force Threshold"))
 	FORCEINLINE void SetImpulseForceThreshold(const float Value) { ImpulseForceThreshold = Value; }
 
 protected:
@@ -80,7 +79,4 @@ protected:
 private:
 	UFUNCTION()
 	void OnStaticMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	
-
-
 };

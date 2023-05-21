@@ -18,24 +18,24 @@ class FROSTBITE_API UPlayerFootCollisionComponent : public USceneComponent
 
 private:
 	/** The collision component that is added to the owner when this scene component begins play. */
-	UPROPERTY(VisibleAnywhere, Category = "Foot Collision|Components", meta = (DisplayName = "Collision Sphere"))
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class USphereComponent* CollisionSphere;
 	
 	/** The radius of the sphere. */
-	UPROPERTY(EditAnywhere, Category = "Foot Collision", meta = (DisplayName = "Sphere Radius"))
+	UPROPERTY(EditAnywhere)
 	float SphereRadius {30.0f};
 	
 	/** The maximum push strength of the collision component. */
-	UPROPERTY(EditAnywhere, Category = "Foot Collision", meta = (DisplayName = "Base Push Strength"))
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Base Push Strength"))
 	float PushStrength {20.0f};
 
 	/** The lateral offset factor for objects that are directly in front of the player.
 	 *	This allows the character to more easily push aside small objects when walking. */
-	UPROPERTY(EditAnywhere, Category = "Foot Collision", meta = (DisplayName = "Lateral Offset Factor"))
+	UPROPERTY(EditAnywhere)
 	float LateralOffsetFactor {0.5f};
 
 	/** If true, we scale the push strength to the weight of the object. */
-	UPROPERTY(EditAnywhere, Category = "Foot Collision", Meta = (DisplayName = "Scale Force By Mass"))
+	UPROPERTY(EditAnywhere)
 	bool ScaleForceByMass {true};
 
 	UPROPERTY()

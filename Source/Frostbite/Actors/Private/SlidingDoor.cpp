@@ -240,7 +240,7 @@ bool ASlidingDoor::CanClose() const
 	return true;
 }
 
-void ASlidingDoor::EventDoorOpened_Implementation()
+void ASlidingDoor::EventOpened_Implementation()
 {
 	DoorState = EDoorState::Open;
 	
@@ -249,7 +249,7 @@ void ASlidingDoor::EventDoorOpened_Implementation()
 	OnDoorStateChanged.Broadcast(EDoorState::Open);
 }
 
-void ASlidingDoor::EventDoorClosed_Implementation()
+void ASlidingDoor::EventClosed_Implementation()
 {
 	DoorState = EDoorState::Closed;
 	

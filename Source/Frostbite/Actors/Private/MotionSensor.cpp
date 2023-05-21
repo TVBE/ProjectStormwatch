@@ -4,9 +4,7 @@
 
 #include "MotionSensor.h"
 #include "Components/PrimitiveComponent.h"
-#include "Components/BoxComponent.h"
-#include "PlayerCharacter.h"
-#include "Nightstalker.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Pawn.h"
 
 AMotionSensor::AMotionSensor()
@@ -17,108 +15,83 @@ AMotionSensor::AMotionSensor()
 void AMotionSensor::PostInitProperties()
 {
 	Super::PostInitProperties();
-	DetectionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
+	DetectionArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
 }
 
 void AMotionSensor::Poll()
 {
-	if (!DetectionBox) { return; }
+	IsActorDetected = false;
 
-	if (EnableCooldown && IsCooldownActive)
+	if (IsBroken) { return; }
+	
+	if (!OverlappingActors.IsEmpty())
 	{
-		return;
+		for (const AActor* Actor : OverlappingActors)
+		{
+			if (!IsActorOccluded(Actor) && IsActorMoving(Actor))
+			{
+				IsActorDetected = true;
+				break;
+			}
+		}
 	}
 	
-	DetectionBox->GetOverlappingActors(OverlappingActors, AActor::StaticClass());
-
-	for (int32 Index {0}; Index < OverlappingActors.Num(); ++Index)
+	if (IsActorDetected)
 	{
-		AActor* Actor {OverlappingActors[Index]};
-		bool ShouldIgnoreActor {false};
 		
-		if (Actor)
+		if (IsTriggered)
 		{
-			if (Actor->IsA(APlayerCharacter::StaticClass()))
+			return;
+		}
+
+		SetState(ESensorState::Detecting);
+
+		if (const UWorld* World {GetWorld()})
+		{
+			if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 			{
-				if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
+				World->GetTimerManager().ClearTimer(CooldownTimerHandle);
+			}
+		}
+		
+		DetectionLevel += PollInterval;
+		if (!IsAlerted)
+		{
+			IsAlerted = true;
+		}
+		
+		if (DetectionLevel >= DetectionThreshold)
+		{
+			IsTriggered = true;
+			
+			if (IsManualResetRequired)
+			{
+				if (const UWorld* World {GetWorld()})
 				{
-					ShouldIgnoreActor = true;
-				}
-				else if (IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Crouching))
-				{
-					if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(Actor)}; PlayerCharacter && PlayerCharacter->bIsCrouched)
+					if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 					{
-						ShouldIgnoreActor = true;
+						World->GetTimerManager().ClearTimer(PollTimerHandle);
 					}
 				}
 			}
-			else if (Actor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Nightstalker))
-			{
-				ShouldIgnoreActor = true;
-			}
 
-			if (ShouldIgnoreActor)
-			{
-				OverlappingActors[Index] = nullptr;
-			}
-			else
-			{
-				const FVector DirectionToActor {(Actor->GetActorLocation() - this->GetActorLocation()).GetSafeNormal()};
-				const float DotProduct {static_cast<float>(FVector::DotProduct(DirectionToActor, Root->GetForwardVector()))};
-
-				if (!(DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle))) || IsActorOccluded(Actor) || !IsActorMoving(Actor))
-				{
-					OverlappingActors[Index] = nullptr;
-				}
-			}
+			SetState(ESensorState::Triggered);
 		}
 	}
-
-	if (OverlappingActors.IsEmpty())
+	else
 	{
-		if (IsActorDetected)
+		if (IsAlerted)
 		{
-			IsActorDetected = false;
-			OnActorLost.Broadcast();
-
-			if (EnableCooldown)
+			SetState(ESensorState::Alerted);
+			
+			if (const UWorld* World {GetWorld()})
 			{
+				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
+				{
+					return;
+				}
 				StartCooldown();
 			}
-		}
-		return;
-	}
-		
-
-	AActor* NearestActor {nullptr};
-	float NearestPawnDistance {FLT_MAX};
-	
-	for (AActor* OverlappingActor : OverlappingActors)
-	{
-		if (OverlappingActor)
-		{
-			const float Distance {static_cast<float>(FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation()))};
-			if (Distance < NearestPawnDistance)
-			{
-				NearestPawnDistance = Distance;
-				NearestActor = OverlappingActor;
-			}
-		}
-	}
-
-	if (NearestActor)
-	{
-		IsActorDetected = true;
-		OnActorDetected.Broadcast(NearestActor, NearestPawnDistance);
-	}
-	else if (IsActorDetected)
-	{
-		IsActorDetected = false;
-		OnActorLost.Broadcast();
-
-		if (EnableCooldown)
-		{
-			StartCooldown();
 		}
 	}
 }

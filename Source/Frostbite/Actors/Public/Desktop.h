@@ -9,7 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Desktop.generated.h"
 
-class UMeshInteractionComponent;
+class UMeshGrabComponent;
 class UBoxComponent;
 class UStaticMeshComponent;
 
@@ -22,47 +22,47 @@ class FROSTBITE_API ADesktop : public AActor, public IUsableObject
 
 protected:
 	/** The static mesh of the desktop screen. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Desktop|Screen", Meta = (DisplayName = "Screen Mesh"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Screen")
 	UStaticMeshComponent* ScreenMesh;
 
 	/** The text displayed on the desktop screen. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Desktop|Screen", Meta = (DisplayName = "Cursor Screen Space"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Screen", Meta = (DisplayName = "Cursor Screen Space"))
 	UBoxComponent* ScreenSpace;
 	
 	/** The static mesh for the screen cursor*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Desktop|Cursor", Meta = (DisplayName = "Cursor Mesh"))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Cursor")
 	UStaticMeshComponent* CursorMesh;
 
 	/** The mesh interaction component for this actor. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Desktop", Meta = (DisplayName = "Mesh Interaction Component"))
-	UMeshInteractionComponent* InteractionComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UMeshGrabComponent* GrabComponent;
 	
 	/** The text displayed on the desktop screen. */
-	UPROPERTY(BlueprintReadWrite, Category = "Desktop|Text", Meta = (DisplayName = "Text Line Array"))
+	UPROPERTY(BlueprintReadWrite, Category = "Text")
 	TArray<FString> TextLineArray;
 
 	/** The amount of lines that can be displayed on the desktop screen. */
-	UPROPERTY(BlueprintReadOnly, Category = "Desktop|Text", Meta = (DisplayName = "Maximum Lines"))
+	UPROPERTY(BlueprintReadOnly, Category = "Text", Meta = (DisplayName = "Maximum Lines On Screen"))
 	int32 MaxLines {18};
 
 	/** The amount of characters allowed per line. */
-	UPROPERTY(BlueprintReadOnly, Category = "Desktop|Text", Meta = (DisplayName = "Maximum Characters Per Line"))
+	UPROPERTY(BlueprintReadOnly, Category = "Text", Meta = (DisplayName = "Maximum Characters Per Line"))
 	int32 MaxLineLength {72};
 
 	/** The full text to display on the desktop's screen. */
-	UPROPERTY(BlueprintReadOnly, Category = "Desktop|Text", Meta = (DisplayName = "Display Text"))
+	UPROPERTY(BlueprintReadOnly, Category = "Text")
 	FString DisplayText;
 
 	/** The time the player requires to hold the use key down to turn on or shut off the computer. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Desktop|Interaction", Meta = (DisplayName = "Use Press And Hold Time"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction", Meta = (DisplayName = "Use Press And Hold Time"))
 	float UseTime {1.0f};
 
 	/** If true, the desktop is currently turned on. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Desktop", Meta = (DisplayName = "Is Turned On"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsTurnedOn {true};
 
 	/** If true, the desktop is currently destroyed. */
-	UPROPERTY(BlueprintReadWrite, Category = "Desktop", Meta = (DisplayName = "Is Broken"))
+	UPROPERTY(BlueprintReadWrite)
 	bool IsBroken {false};
 	
 public:	
@@ -77,19 +77,19 @@ protected:
 	virtual void PostInitProperties() override;
 
 	/** Moves the cursor over the screen. */
-	UFUNCTION(BlueprintCallable, Category = "Desktop|Cursor", Meta = (DisplayName = "Move Cursor"))
+	UFUNCTION(BlueprintCallable, Category = "Cursor")
 	void MoveCursor(FVector2D InputVelocity);
 	
 	/** Formats the display text. */
-	UFUNCTION(BlueprintCallable, Category = "Desktop|Keyboard", Meta = (DisplayName = "Format Display Text"))
+	UFUNCTION(BlueprintCallable, Category = "Keyboard")
 	void FormatDisplayText();
 	
 	/** Adds a character to the array of text lines. */
-	UFUNCTION(BlueprintCallable, Category = "Desktop|Keyboard", Meta = (DisplayName = "Add Character To Display List"))
+	UFUNCTION(BlueprintCallable, Category = "Keyboard", Meta = (DisplayName = "Add Character To Display List"))
 	void AppendCharacterToArray(const FString& Character);
 
 	/** Returns a reference to the last line available with space. */
-	UFUNCTION(BlueprintCallable, Category = "Desktop|Keyboard", Meta = (DisplayName = "Get Available Text Line From List"))
+	UFUNCTION(BlueprintCallable, Category = "Keyboard", Meta = (DisplayName = "Get Available Text Line From List"))
 	UPARAM(ref) FString& GetLastLineWithSpace();
 };
 	
