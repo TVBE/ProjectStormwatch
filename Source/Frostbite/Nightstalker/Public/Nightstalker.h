@@ -54,11 +54,19 @@ public:
 	FORCEINLINE bool GetIsPhantomModeEnabled() const { return IsPhantomModeEnabled; }
 };
 
-UENUM(BlueprintType)
-enum class ENightstalkerBehavior : uint8
+USTRUCT(BlueprintType)
+struct FNightstalkerMovementAttributes
 {
-	Idle			UMETA(DisplayName = "Idle"),
-	Roaming		    UMETA(DisplayName = "Roaming"),
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MaxWalkSpeed {200.0f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float Acceleration {150.0f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float RotationSpeed {180.0f};
 };
 
 

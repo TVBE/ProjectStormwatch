@@ -48,10 +48,6 @@ private:
 	TArray<FVector> PathHistory;
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
-	ENightstalkerBehavior Behavior;
-
-protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	
 	virtual void BeginPlay() override;
