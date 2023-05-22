@@ -138,7 +138,7 @@ FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Act
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
-	if(Hit.ImpactNormal.Length() > 0.00001)
+	if(Hit.ImpactNormal.Length() > 0.001)
 	{
 		DeltaLocationDistance = abs(FVector::Distance(LatestLocation, Hit.Location));
 		
@@ -155,12 +155,12 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 			LatestTime = FPlatformTime::Seconds();
 
 			/** If there's a considerable time between hits, remove the hit history.*/
-			if(DeltaHitTime > 0.3)
+			if(DeltaHitTime > 1.0)
 			{
 				DeltaStateArray.Empty();
 			}
 			
-			if(DeltaHitTime > 0.01)
+			if(DeltaHitTime > 0.1)
 			{
 				/** prevent situations were sounds are hittng in the same orientation.*/
 				DeltaForwardVector =abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector()));
@@ -170,9 +170,9 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 				{
 					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
 
-					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + DeltaForwardVector);
+					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime * DeltaForwardVector);
 					UE_LOG(LogReacousticComponent, Verbose, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
-					if(GetArraySum(DeltaStateArray) > 10.0f || DeltaStateArray.Num() <= 5)
+					if(GetArraySum(DeltaStateArray) > 0.1f || DeltaStateArray.Num() <= 10)
 					{
 							// Calculate the impact force
 							ImpactForce = NormalImpulse.Size(); // HitComp->GetMass();
@@ -189,7 +189,7 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		}
 		else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: LOCATION DISTANCE"))}
 		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
-		if (DeltaStateArray.Num() > 5)
+		if (DeltaStateArray.Num() > 10)
 		{
 			DeltaStateArray.RemoveAt(0);
 		}
@@ -257,6 +257,7 @@ void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArra
 
 int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData, float ImpactValue)
 {
+	//TODO: Optimize, since there's a double for loop we need to make sure that it's breaking at the first moment possible!
 	/** data list is sorted and normalized so that the normalized inpact value * timing data returns the correct sample location that matches the interaction.*/
 	int DataEntryIn{ int(ImpactValue * SoundData.OnsetTimingData.Num())};
 	
@@ -277,41 +278,39 @@ int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData
 			int32 offset{DataEntryIn + i};
 			int32 index{DataEntryIn + offset * (offset % 2 == 0 ? 1 : -1)};
 			int32 indexClamped{FMath::Clamp(index,0,SoundData.OnsetTimingData.Num()-1)};
-        
-			if (indexClamped >= 0 && indexClamped < SoundData.OnsetTimingData.Num())
+			bool FoundValidTimeStamp{true};
+			float TimingToTest = SoundData.OnsetTimingData[indexClamped];
+			if(LatestSoundTimings.Num() != 0)
 			{
-				float TimingToTest = SoundData.OnsetTimingData[indexClamped];
-
-				if(LatestSoundTimings.Num() == 0)
+				/** Iterate throug the recorded sound timestamps.*/
+				for (int32 j = 0; j < LatestSoundTimings.Num(); j++)
 				{
-					LatestSoundTimings.Add(TimingToTest);
-					DataEntryOut = TimingToTest;
-				}
-				else
-				{
-					for (int32 j = 0; j < LatestSoundTimings.Num(); j++)
+					float LatestSoundTiming = LatestSoundTimings[j];
+					/** if any of them don't fit, break and test the next timestamp.*/
+					if (FMath::Abs(TimingToTest - LatestSoundTiming) < SoundData.ImpulseLength*2)
 					{
-						float LatestSoundTiming = LatestSoundTimings[j];
-						bool FoundValidTimeStamp{true};
-						if (FMath::Abs(TimingToTest - LatestSoundTiming) < SoundData.ImpulseLength)
-						{
-							FoundValidTimeStamp = false;
-							break;
-						}
-						if(FoundValidTimeStamp)
-						{
-							LatestSoundTimings.Add(TimingToTest);
-							DataEntryOut = TimingToTest;
-							break;
-						}
+						FoundValidTimeStamp = false;
+						break;
 					}
 				}
-			
+				/** break the loop for the first valid timestamp.*/
+				if(FoundValidTimeStamp)
+				{
+					DataEntryOut = TimingToTest;
+					break;
+				}
 			}
+			/** if timestamp history is empty, continue without any testing.*/
+			else
+			{
+				DataEntryOut = TimingToTest;
+				break;
+			}
+			
 		}
 	}
-
-	if (LatestSoundTimings.Num() > 10)
+	LatestSoundTimings.Add(DataEntryOut);
+	if (LatestSoundTimings.Num() > 5)
 	{
 		LatestSoundTimings.RemoveAt(0);
 	}
