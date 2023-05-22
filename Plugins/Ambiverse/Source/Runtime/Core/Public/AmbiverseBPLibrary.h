@@ -1,32 +1,25 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2022-present Tim Verberne
+// This source code is part of the Adaptive Ambience System plugin
 
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AmbiverseBPLibrary.generated.h"
 
-/* 
-*	Function library class.
-*	Each function in it is expected to be static and represents blueprint node that can be called in any blueprint.
-*
-*	When declaring function you can define metadata for the node. Key function specifiers will be BlueprintPure and BlueprintCallable.
-*	BlueprintPure - means the function does not affect the owning object in any way and thus creates a node without Exec pins.
-*	BlueprintCallable - makes a function which can be executed in Blueprints - Thus it has Exec pins.
-*	DisplayName - full name of the node, shown when you mouse over the node and in the blueprint drop down menu.
-*				Its lets you name the node using characters not allowed in C++ function names.
-*	CompactNodeTitle - the word(s) that appear on the node.
-*	Keywords -	the list of keywords that helps you to find node when you search for it using Blueprint drop-down menu. 
-*				Good example is "Print String" node which you can find also by using keyword "log".
-*	Category -	the category your node will be under in the Blueprint drop-down menu.
-*
-*	For more info on custom blueprint nodes visit documentation:
-*	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
-*/
 UCLASS()
 class UAmbiverseBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "Ambiverse sample test testing"), Category = "AmbiverseTesting")
-	static float AmbiverseSampleFunction(float Param);
+	UFUNCTION(BlueprintCallable, Category = "Ambiverse", Meta = (DisplayName = "Add Ambiverse Layer", Keywords = "Ambiverse Add Layer",
+		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void AddAmbiverseLayer(UObject* WorldContextObject, UAmbiverseLayer* AmbiverseLayer);
+
+	UFUNCTION(BlueprintCallable, Category = "Ambiverse", Meta = (DisplayName = "Pop Ambiverse Layer", Keywords = "Ambiverse Pop Layer",
+		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void PopAmbiverseLayer(UObject* WorldContextObject, UAmbiverseLayer* AmbiverseLayer);
+
+	UFUNCTION(BlueprintCallable, Category = "Ambiverse", Meta = (DisplayName = "Set Ambiverse Parameter", Keywords = "Ambiverse Set Parameter",
+		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void SetAmbiverseParameter(UObject* WorldContextObject);
 };

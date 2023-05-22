@@ -23,6 +23,11 @@ struct FAmbiverseLayerQueueEntry
 
 	UPROPERTY()
 	float Time {0.0f};
+	
+	/** The reference time the entry was initialized with.
+	 *	We use this time value to be able to dynamically apply parameters in real time without breaking th existing queue. */
+	UPROPERTY()
+	float ReferenceTime {0.0f};
 };
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Layer"))
@@ -52,7 +57,7 @@ public:
 	TArray<FAmbiverseProceduralSoundData> ProceduralSounds;
 
 	/** Parameters that influence all procedural sounds in this layer. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters", Meta = (TitleProperty = "Name", EditCondition = "IsEnabled"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters", Meta = (EditCondition = "IsEnabled"))
 	TArray<FAmbiverseParameterModifiers> Parameters;
 
 	/** Volume multiplier for all sounds in this layer. */
@@ -65,6 +70,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Enable Layer"))
 	bool IsEnabled {true};
+
+	
+	/** Runtime */
 	
 	UPROPERTY()
 	TArray<FAmbiverseLayerQueueEntry> SoundQueue;

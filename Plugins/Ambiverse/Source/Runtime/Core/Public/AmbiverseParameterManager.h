@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.generated.h"
 
+class UAmbiverseLayer;
 class UAmbiverseParameter;
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Ambiverse")
@@ -21,10 +22,16 @@ private:
 	TArray<UAmbiverseParameter*> ParameterRegistry;
 
 public:
+	void Initialize();
+	void Deinitialize();
 	
+	void GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
+
+	UFUNCTION(BlueprintCallable)
+	void SetParameterValue(UAmbiverseParameter* Parameter, const float Value);
 
 private:
-	void RegisterLayer(UAmbiverseParameter* Parameter);
+	void RegisterParameter(UAmbiverseParameter* Parameter);
 	
 	bool IsParameterRegistered(const UAmbiverseParameter* Parameter) const;
 

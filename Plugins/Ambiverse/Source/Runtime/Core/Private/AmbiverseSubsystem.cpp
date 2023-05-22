@@ -3,6 +3,8 @@
 
 #include "AmbiverseSubsystem.h"
 #include "AmbiverseLayer.h"
+#include "AmbiverseLayerManager.h"
+#include "AmbiverseParameterManager.h"
 #include "AmbiverseSoundSourceData.h"
 #include "AmbiverseSoundSourceManager.h"
 
@@ -12,12 +14,21 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	SoundSourceManager = NewObject<UAmbiverseSoundSourceManager>(this);
+	LayerManager = NewObject<UAmbiverseLayerManager>(this);
 
-	if(SoundSourceManager)
+	SoundSourceManager = NewObject<UAmbiverseSoundSourceManager>(this);
+	if (SoundSourceManager)
 	{
 		SoundSourceManager->Initialize();
 	}
+
+	ParameterManager = NewObject<UAmbiverseParameterManager>(this);
+
+	if (ParameterManager)
+	{
+		ParameterManager->Initialize();
+	}
+
 
 #if !UE_BUILD_SHIPPING
 	SoundSourceVisualisationConsoleCommand = MakeUnique<FAutoConsoleCommand>(
@@ -36,73 +47,50 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	UE_LOG(LogAmbiverseSubsystem, Log, TEXT("Adaptive Ambience System initialized successfully."))
 }
 
-void UAmbiverseSubsystem::AddAmbienceLayer(UAmbiverseLayer* Layer)
+void UAmbiverseSubsystem::Tick(float DeltaTime)
 {
-	if (!Layer)
-	{
-		UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("AddAmbienceLayer: No Layer provided."));
-		return;
-	}
-
-	if (Layer->ProceduralSounds.IsEmpty())
-	{
-		UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("AddAmbienceLayer: Layer has no procedural sounds: '%s'."), *Layer->GetName());
-		return;
-	}
-
-	for (FAmbiverseProceduralSoundData& SoundData : Layer->ProceduralSounds)
-	{
-		FAmbiverseProceduralSoundData::Validate(SoundData);
-	}
-
-	bool HasValidSoundData = false;
-	for (const FAmbiverseProceduralSoundData& SoundData : Layer->ProceduralSounds)
-	{
-		if (SoundData.IsValid)
-		{
-			HasValidSoundData = true;
-			break;
-		}
-	}
-
-	if (!HasValidSoundData)
-	{
-		UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("AddAmbienceLayer: Layer has no valid procedural sounds: '%s'."), *Layer->GetName());
-		return;
-	}
-
-	
-	if (!FindActiveAmbienceLayer(Layer))
-	{
-		ActiveLayers.Add(Layer);
-		UE_LOG(LogAmbiverseSubsystem, Verbose, TEXT("AddAmbienceLayer: Layer added successfully: '%s'."), *Layer->GetName());
-	}
+	Super::Tick(DeltaTime);
 }
 
-void UAmbiverseSubsystem::PopAmbienceLayer(UAmbiverseLayer* Layer)
+void UAmbiverseSubsystem::UpdateActiveLayers(const float DeltaTime)
 {
-	if (!Layer) { return; }
-}
+	if (LayerManager->GetLayerRegistry().IsEmpty()) { return; }
 
-UAmbiverseLayer* UAmbiverseSubsystem::FindActiveAmbienceLayer(const UAmbiverseLayer* LayerToFind) const
-{
-	for (UAmbiverseLayer* Layer : ActiveLayers)
+	for (UAmbiverseLayer* Layer : LayerManager->GetLayerRegistry())
 	{
-		if (Layer == LayerToFind)
+		if (Layer->SoundQueue.IsEmpty()) { continue; }
+		
+		for (FAmbiverseLayerQueueEntry& SoundQueueEntry : Layer->SoundQueue)
 		{
-			return Layer;
+			if (SoundQueueEntry.Time != 0)
+			{
+				const float ScaleFactor {(SoundQueueEntry.Time - DeltaTime) / SoundQueueEntry.Time};
+				
+				SoundQueueEntry.ReferenceTime *= ScaleFactor;
+			}
+			
+			SoundQueueEntry.Time -= DeltaTime;
+
+			if (SoundQueueEntry.Time <= 0)
+			{
+				ProcessAmbienceLayerQueue(Layer, SoundQueueEntry);
+			}
+
+			float DensityModifier {1.0f};
+			float VolumeModifier {1.0f};
+
+			ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, SoundQueueEntry);
+
+			SoundQueueEntry.Time = SoundQueueEntry.ReferenceTime * DensityModifier;
 		}
 	}
-
-	return nullptr;
 }
 
 void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmbiverseLayerQueueEntry& Entry)
 {
 	if (!Layer) { return; }
-
-	Layer->SubtractTimeFromQueue(Entry.Time);
-	Entry.Time = FMath::RandRange(Entry.SoundData.DelayMin, Entry.SoundData.DelayMax);
+	
+	Entry.ReferenceTime = FMath::RandRange(Entry.SoundData.DelayMin, Entry.SoundData.DelayMax);
 
 	/** We try to get the location of the listener here.*/
 	FVector CameraLocation;
@@ -128,15 +116,8 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	SoundSourceData.Name = Entry.SoundData.Name;
 	SoundSourceData.Layer = Layer;
 
-	/** Update the timer handle and timer delegate for the layer. */
-	if (FAmbiverseLayerQueueEntry LowestTimeEntry; Layer->GetEntryWithLowestTime(LowestTimeEntry))
-	{
-		const float NewTime {LowestTimeEntry.Time};
-
-		Layer->TimerDelegate.BindUFunction(this, FName("ProcessAmbienceLayerQueue"), Layer, LowestTimeEntry);
-
-		GetWorld()->GetTimerManager().SetTimer(Layer->TimerHandle, Layer->TimerDelegate, NewTime, false);
-	}
+	SoundSourceManager->InitiateSoundSource(SoundSourceData);
+	UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("Update"))
 }
 
 float UAmbiverseSubsystem::GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry)
@@ -170,6 +151,12 @@ void UAmbiverseSubsystem::Deinitialize()
 	if (SoundSourceManager)
 	{
 		SoundSourceManager->Deinitialize();
+		SoundSourceManager = nullptr;
+	}
+	if (ParameterManager)
+	{
+		ParameterManager->Deinitialize();
+		SoundSourceManager = nullptr;
 	}
 	Super::Deinitialize();
 }
