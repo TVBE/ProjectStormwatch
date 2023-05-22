@@ -1,8 +1,6 @@
 // Copyright 2023 Nino Saglia & Tim Verberne
 
 #include "ReacousticComponent.h"
-
-#include "FileCache.h"
 #include "ReacousticSubsystem.h"
 
 #define LOG_CATEGORY(LogReacousticComponent);
@@ -45,29 +43,37 @@ void UReacousticComponent::BeginPlay()
 			GetOwner()->GetComponents(Components);
 			if(!Components.IsEmpty())
 			{
+				bool bFoundCompatibleComponent = false;
 				for (UActorComponent* Component : Components)
 				{
-					UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(Component); 
-					if (StaticMeshComponent->IsSimulatingPhysics() && StaticMeshComponent->BodyInstance.bNotifyRigidBodyCollision)
+					if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(Component))
 					{
-						MeshComponent = StaticMeshComponent;
-						if(MeshAudioData.OnsetDataMap.IsEmpty())
+						if (StaticMeshComponent->IsSimulatingPhysics() && StaticMeshComponent->BodyInstance.bNotifyRigidBodyCollision)
 						{
-							if(UReacousticSubsystem* Subsystem {GetWorld()->GetSubsystem<UReacousticSubsystem>()})
-							{
-								MeshAudioData = Subsystem->ReturnSoundDataForMesh(MeshComponent);
-							}
-							
+							MeshComponent = StaticMeshComponent;
+							// StaticMeshComponent->SetGenerateOverlapEvents(true);
+							bFoundCompatibleComponent = true;
+							break;
 						}
-						break;
 					}
+				}
+
+				if (!bFoundCompatibleComponent)
+				{
+					UE_LOG(LogReacousticComponent, Warning, TEXT("Reacoustic component is not compatible with the parent actor: %s. Deleting it."),*FString(this->GetOwner()->GetName()));
+					GetOwner()->RemoveOwnedComponent(this);
+					this->UnregisterComponent();
+					AudioComponent->UnregisterComponent();
+					AudioComponent->DestroyComponent();
+					this->DestroyComponent();
 				}
 			}
 			if(!MeshComponent)
 			{
-				const FString ComponentName {this->GetName()};
-				UE_LOG(LogReacousticComponent, Warning, TEXT("%s was unable to find a static mesh component with physics simulation enabled in its owner. "), *ComponentName);
+				const FString OwnerName {this->GetOwner()->GetName()};
+				UE_LOG(LogReacousticComponent, Warning, TEXT("%s was unable to find a static mesh component with physics simulation enabled in its owner. "), *OwnerName);
 			}
+			Initialize();
 		}
 	
 
@@ -83,6 +89,24 @@ void UReacousticComponent::BeginPlay()
 
 }
 
+inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
+{
+	if(!AudioComponent)
+	{
+		AudioComponent = NewObject<UAudioComponent>(GetOwner());
+		AudioComponent->RegisterComponent();
+		AudioComponent->SetSound(SoundBase);
+	}
+	/** Set the attenuation settings */
+	AudioComponent->AttenuationSettings = MeshAudioData.Attenuation;
+
+	/** Set the parameters.*/
+	AudioComponent->SetFloatParameter(TEXT("Obj_Length"), MeshAudioData.ImpulseLength);
+	AudioComponent->SetWaveParameter(TEXT("Obj_WaveAsset"), MeshAudioData.ImpactWaveAsset);
+
+	/** Add the audio component to the parent actor */
+	AudioComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+}
 
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -114,9 +138,9 @@ FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Act
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
-	if(Hit.ImpactNormal.Length() > 0.0001)
+	if(Hit.ImpactNormal.Length() > 0.00001)
 	{
-		DeltaLocationDistance = FVector::Distance(LatestLocation, Hit.Location);
+		DeltaLocationDistance = abs(FVector::Distance(LatestLocation, Hit.Location));
 		
 		
 		LatestLocation = Hit.ImpactPoint;
@@ -124,23 +148,25 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		
 		
 		/** prevent situations were sounds are hittng in the same location.*/
-		if(DeltaLocationDistance > 0.01)
+		if(DeltaLocationDistance > 0.001)
 		{
 			/** prevent situations were sounds are hittng in a short timespan.*/
-			DeltaHitTime = FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0);
+			DeltaHitTime = abs(FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0));
 			LatestTime = FPlatformTime::Seconds();
-			if(DeltaHitTime > 0.001)
+
+			/** If there's a considerable time between hits, remove the hit history.*/
+			if(DeltaHitTime > 0.3)
+			{
+				DeltaStateArray.Empty();
+			}
+			
+			if(DeltaHitTime > 0.01)
 			{
 				/** prevent situations were sounds are hittng in the same orientation.*/
-				DeltaForwardVector =FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector());
-				LatestForwardVector = this->GetOwner()->GetActorForwardVector();
-
-				/** If there's a considerable time between hits, remove the hit history.*/
-				if(DeltaHitTime > 0.3)
-				{
-					DeltaStateArray.Empty();
-				}
-				if(DeltaForwardVector >0.0001)
+				DeltaForwardVector =abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector()));
+				LatestForwardVector =this->GetOwner()->GetActorForwardVector();
+				
+				if(DeltaForwardVector >0.01)
 				{
 					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
 
@@ -149,9 +175,11 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 					if(GetArraySum(DeltaStateArray) > 10.0f || DeltaStateArray.Num() <= 5)
 					{
 							// Calculate the impact force
-							ImpactForce = NormalImpulse.Size() / HitComp->GetMass();
+							ImpactForce = NormalImpulse.Size(); // HitComp->GetMass();
 							// Trigger the OnComponentHit event
 							OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+							
+						
 					}
 					else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: STATE ARRAY"))}
 				}
@@ -164,6 +192,27 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		if (DeltaStateArray.Num() > 5)
 		{
 			DeltaStateArray.RemoveAt(0);
+		}
+
+		if(MeshAudioData.OnsetVolumeData.Num() == 0)
+		{
+			if(const UWorld* World {GetWorld()})
+			{
+				if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+				{
+					TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
+					if(Subsystem->GetMeshSoundData(MeshComponent).OnsetVolumeData.Num() == 0)
+					{
+						UE_LOG(LogReacousticComponent, Warning, TEXT("Reacoustic component couldn't find any valid sounds for %s. Deleting it."),*FString(this->GetOwner()->GetName()));
+						GetOwner()->RemoveOwnedComponent(this);
+						this->UnregisterComponent();
+						AudioComponent->UnregisterComponent();
+						AudioComponent->DestroyComponent();
+						this->DestroyComponent();
+					}
+					Initialize();
+				}
+			}
 		}
 	}
 }
@@ -197,6 +246,76 @@ void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArra
 		UReacousticSoundDataRefMap = ReferenceMap;
 		MeshAudioData = MeshSoundDataIn;
 	}
+	else
+	{
+		UE_LOG(LogReacousticComponent,Warning,TEXT("Warning, failed to trasfer data to %s"),*GetOwner()->GetName());
+	}
+	
+}
+
+
+
+int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData, float ImpactValue)
+{
+	/** data list is sorted and normalized so that the normalized inpact value * timing data returns the correct sample location that matches the interaction.*/
+	int DataEntryIn{ int(ImpactValue * SoundData.OnsetTimingData.Num())};
+	
+	/** if the following loop can't find a new entry, just return the entry without filtering. */
+	int DataEntryOut{DataEntryIn};
+	
+	/** if the interval is quite large, then forget the latest hit results.*/
+	if(DeltaHitTime > 0.5)
+	{
+		LatestSoundTimings.Reset();
+	}
+	/** Iterate over SoundData.OnsetTimingData from the intended timestamp. */
+	if(SoundData.OnsetTimingData.Num())
+	{
+		for (int32 i = 0; i < SoundData.OnsetTimingData.Num(); i++)
+		{
+			/** iterate in a pattern of: DataEntryIn +1, -1, +2, -2 etc...*/
+			int32 offset{DataEntryIn + i};
+			int32 index{DataEntryIn + offset * (offset % 2 == 0 ? 1 : -1)};
+			int32 indexClamped{FMath::Clamp(index,0,SoundData.OnsetTimingData.Num()-1)};
+        
+			if (indexClamped >= 0 && indexClamped < SoundData.OnsetTimingData.Num())
+			{
+				float TimingToTest = SoundData.OnsetTimingData[indexClamped];
+
+				if(LatestSoundTimings.Num() == 0)
+				{
+					LatestSoundTimings.Add(TimingToTest);
+					DataEntryOut = TimingToTest;
+				}
+				else
+				{
+					for (int32 j = 0; j < LatestSoundTimings.Num(); j++)
+					{
+						float LatestSoundTiming = LatestSoundTimings[j];
+						bool FoundValidTimeStamp{true};
+						if (FMath::Abs(TimingToTest - LatestSoundTiming) < SoundData.ImpulseLength)
+						{
+							FoundValidTimeStamp = false;
+							break;
+						}
+						if(FoundValidTimeStamp)
+						{
+							LatestSoundTimings.Add(TimingToTest);
+							DataEntryOut = TimingToTest;
+							break;
+						}
+					}
+				}
+			
+			}
+		}
+	}
+
+	if (LatestSoundTimings.Num() > 10)
+	{
+		LatestSoundTimings.RemoveAt(0);
+	}
+	return DataEntryOut;
 }
 
 

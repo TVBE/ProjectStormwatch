@@ -57,6 +57,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ReacousticSubsystem")
 	void AddBPReacousticComponentToActor(AActor* Actor, TSubclassOf<UReacousticComponent> ComponentClass, FReacousticSoundData MeshSoundData);
 
+	/** Gets the sound data associated with a specific mesh.*/
+	FReacousticSoundData GetMeshSoundData(const UStaticMeshComponent* StaticMeshComponent) const;
 	
 	/** Checks whether an actor meets the conditions to be used by Reacoustic.
 	 *	For this, an actor must have IsSimulatingPhysics and a StaticMeshComponent with bNotifyRigidBodyCollision set to true.
@@ -66,8 +68,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = Reacoustic, Meta = (DisplayName = "Is Reacoustic Compatible"))
 	bool IsReacousticCompatible(AActor* Actor);
 
-	UFUNCTION(BlueprintCallable, Category = Reacoustic)
-	FReacousticSoundData ReturnSoundDataForMesh(UStaticMeshComponent* StaticMeshComponent);
 
 private:
 
@@ -86,6 +86,8 @@ private:
 	
 	UFUNCTION(BlueprintCallable, Category = Reacoustic)
 	void PopulateWorldWithBPReacousticComponents(TSubclassOf<UReacousticComponent> ComponentClass);
+
+
 };
 
 
