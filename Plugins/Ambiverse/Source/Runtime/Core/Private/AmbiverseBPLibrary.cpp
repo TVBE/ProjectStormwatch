@@ -22,7 +22,7 @@ void UAmbiverseBPLibrary::AddAmbiverseLayer(UObject* WorldContextObject, UAmbive
 		{
 			if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
 			{
-				LayerManager->AddAmbienceLayer(AmbiverseLayer);
+				LayerManager->RegisterAmbiverseLayer(AmbiverseLayer);
 			}
 		}
 	}
@@ -38,7 +38,7 @@ void UAmbiverseBPLibrary::PopAmbiverseLayer(UObject* WorldContextObject, UAmbive
 		{
 			if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
 			{
-				LayerManager->PopAmbienceLayer(AmbiverseLayer);
+				LayerManager->UnregisterAmbiverseLayer(AmbiverseLayer);
 			}
 		}
 	}

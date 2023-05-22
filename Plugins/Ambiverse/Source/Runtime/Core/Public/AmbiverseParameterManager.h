@@ -6,7 +6,7 @@
 #include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnParameterChangedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnParameterChangedDelegate, UAmbiverseParameter*, ChangedParameter);
 
 class UAmbiverseLayer;
 class UAmbiverseParameter;

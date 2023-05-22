@@ -75,7 +75,7 @@ void UAmbiverseParameterManager::SetParameterValue(UAmbiverseParameter* Paramete
 		}
 	}
 
-	OnParameterChangedDelegate.Broadcast();
+	OnParameterChangedDelegate.Broadcast(Parameter);
 }
 
 void UAmbiverseParameterManager::RegisterParameter(UAmbiverseParameter* Parameter)

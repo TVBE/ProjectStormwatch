@@ -27,7 +27,6 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	if (ParameterManager)
 	{
 		ParameterManager->Initialize(this);
-		ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseSubsystem::HandleParameterChanged);
 	}
 
 
@@ -179,12 +178,19 @@ void UAmbiverseSubsystem::Deinitialize()
 		SoundSourceManager->Deinitialize();
 		SoundSourceManager = nullptr;
 	}
+	
 	if (ParameterManager)
 	{
-		ParameterManager->OnParameterChangedDelegate.RemoveDynamic(this, &UAmbiverseSubsystem::HandleParameterChanged);
 		ParameterManager->Deinitialize();
 		SoundSourceManager = nullptr;
 	}
+	
+	if (LayerManager)
+	{
+		LayerManager->Deinitialize();
+		LayerManager = nullptr;
+	}
+	
 	Super::Deinitialize();
 }
 

@@ -1,23 +1,41 @@
 // Copyright Notice
 
 #include "AmbiverseLayerManager.h"
-
 #include "AmbiverseLayer.h"
+#include "AmbiverseParameterManager.h"
 #include "AmbiverseProceduralSoundData.h"
+#include "AmbiverseSubsystem.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayerManager, LogAmbiverseLayerManager);
 
-void UAmbiverseLayerManager::AddAmbienceLayer(UAmbiverseLayer* Layer)
+void UAmbiverseLayerManager::Initialize(UAmbiverseSubsystem* Subsystem)
+{
+	AmbiverseSubsystem = Subsystem;
+	if (AmbiverseSubsystem)
+	{
+		if (UAmbiverseParameterManager* ParameterManager {AmbiverseSubsystem->GetParameterManager()})
+		{
+			ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseLayerManager::HandleOnParameterChanged);
+		}
+	}
+}
+
+void UAmbiverseLayerManager::Deinitialize()
+{
+}
+
+void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 {
 	if (!Layer)
 	{
-		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("AddAmbienceLayer: No Layer provided."));
+		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("RegisterAmbiverseLayer: No Layer provided."));
 		return;
 	}
 
 	if (Layer->ProceduralSounds.IsEmpty())
 	{
-		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("AddAmbienceLayer: Layer has no procedural sounds: '%s'."), *Layer->GetName());
+		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("RegisterAmbiverseLayer: Layer has no procedural sounds: '%s'."),
+		       *Layer->GetName());
 		return;
 	}
 
@@ -38,23 +56,37 @@ void UAmbiverseLayerManager::AddAmbienceLayer(UAmbiverseLayer* Layer)
 
 	if (!HasValidSoundData)
 	{
-		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("AddAmbienceLayer: Layer has no valid procedural sounds: '%s'."), *Layer->GetName());
+		UE_LOG(LogAmbiverseLayerManager, Warning,
+		       TEXT("RegisterAmbiverseLayer: Layer has no valid procedural sounds: '%s'."), *Layer->GetName());
 		return;
 	}
 
-	
+
 	if (!FindActiveAmbienceLayer(Layer))
 	{
 		LayerRegistry.Add(Layer);
 		Layer->InitializeSoundQueue();
-		
-		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("AddAmbienceLayer: Layer added successfully: '%s'."), *Layer->GetName());
+
+		OnLayerRegistered.Broadcast(Layer);
+
+		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("Registered Ambiverse Layer: '%s'."), *Layer->GetName());
 	}
 }
 
-void UAmbiverseLayerManager::PopAmbienceLayer(UAmbiverseLayer* Layer)
+void UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayer* Layer)
 {
-	if (!Layer) { return; }
+	if (!Layer)
+	{
+		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("UnregisterAmbiverseLayer: No Layer provided."));
+		return;
+	}
+	if (LayerRegistry.Contains(Layer))
+	{
+		LayerRegistry.Remove(Layer);
+		OnLayerUnregistered.Broadcast(Layer);
+
+		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("Unregistered Ambiverse Layer:: '%s'."), *Layer->GetName());
+	}
 }
 
 UAmbiverseLayer* UAmbiverseLayerManager::FindActiveAmbienceLayer(const UAmbiverseLayer* LayerToFind) const
@@ -70,3 +102,7 @@ UAmbiverseLayer* UAmbiverseLayerManager::FindActiveAmbienceLayer(const UAmbivers
 	return nullptr;
 }
 
+void UAmbiverseLayerManager::HandleOnParameterChanged(UAmbiverseParameter* ChangedParameter)
+{
+	
+}
