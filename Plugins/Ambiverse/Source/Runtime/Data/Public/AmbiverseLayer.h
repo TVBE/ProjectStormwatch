@@ -88,6 +88,8 @@ public:
 	void SubtractTimeFromQueue(const float TimeToSubtract);
 	
 	void SortQueueDataByTime();
+
+	void InitializeSoundQueue();
 };
 
 

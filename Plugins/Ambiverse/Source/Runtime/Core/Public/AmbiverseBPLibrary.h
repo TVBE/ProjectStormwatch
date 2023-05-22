@@ -21,5 +21,5 @@ class UAmbiverseBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, Category = "Ambiverse", Meta = (DisplayName = "Set Ambiverse Parameter", Keywords = "Ambiverse Set Parameter",
 		WorldContext = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static void SetAmbiverseParameter(UObject* WorldContextObject);
+	static void SetAmbiverseParameter(UObject* WorldContextObject, UAmbiverseParameter* AmbiverseParameter, const float Value);
 };

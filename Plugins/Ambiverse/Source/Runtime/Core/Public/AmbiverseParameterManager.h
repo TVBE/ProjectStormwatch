@@ -6,6 +6,8 @@
 #include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnParameterChangedDelegate);
+
 class UAmbiverseLayer;
 class UAmbiverseParameter;
 
@@ -16,13 +18,21 @@ class AMBIVERSE_API UAmbiverseParameterManager : public UObject
 
 	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseParameterManager, Log, All)
 
+public:
+	UPROPERTY()
+	FOnParameterChangedDelegate OnParameterChangedDelegate;
+
 private:
+	/** Pointer to the ambiverse subsystem. */
+	UPROPERTY()
+	UAmbiverseSubsystem* AmbiverseSubsystem {nullptr};
+	
 	/** The Ambiverse parameters that are currently registered to the system. */
 	UPROPERTY()
 	TArray<UAmbiverseParameter*> ParameterRegistry;
 
 public:
-	void Initialize();
+	void Initialize(UAmbiverseSubsystem* Subsystem);
 	void Deinitialize();
 	
 	void GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);

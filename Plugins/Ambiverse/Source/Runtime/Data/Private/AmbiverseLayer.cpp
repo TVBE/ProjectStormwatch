@@ -53,3 +53,16 @@ void UAmbiverseLayer::SortQueueDataByTime()
 	}
 }
 
+void UAmbiverseLayer::InitializeSoundQueue()
+{
+	for (FAmbiverseProceduralSoundData& SoundData : ProceduralSounds)
+	{
+		FAmbiverseLayerQueueEntry QueueEntry {};
+		QueueEntry.SoundData = SoundData;
+		QueueEntry.ReferenceTime = FMath::RandRange(SoundData.DelayMin, SoundData.DelayMax);
+		QueueEntry.Time = QueueEntry.ReferenceTime;
+
+		SoundQueue.Add(QueueEntry);
+	}
+}
+

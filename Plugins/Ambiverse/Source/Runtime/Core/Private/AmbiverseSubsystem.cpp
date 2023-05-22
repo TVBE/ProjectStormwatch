@@ -13,7 +13,7 @@ DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSubsystem, LogAmbiverseSubsystem);
 void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
+	
 	LayerManager = NewObject<UAmbiverseLayerManager>(this);
 
 	SoundSourceManager = NewObject<UAmbiverseSoundSourceManager>(this);
@@ -26,7 +26,8 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 	if (ParameterManager)
 	{
-		ParameterManager->Initialize();
+		ParameterManager->Initialize(this);
+		ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseSubsystem::HandleParameterChanged);
 	}
 
 
@@ -50,12 +51,14 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 void UAmbiverseSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateActiveLayers(DeltaTime);
 }
 
 void UAmbiverseSubsystem::UpdateActiveLayers(const float DeltaTime)
 {
 	if (LayerManager->GetLayerRegistry().IsEmpty()) { return; }
-
+	
 	for (UAmbiverseLayer* Layer : LayerManager->GetLayerRegistry())
 	{
 		if (Layer->SoundQueue.IsEmpty()) { continue; }
@@ -75,13 +78,6 @@ void UAmbiverseSubsystem::UpdateActiveLayers(const float DeltaTime)
 			{
 				ProcessAmbienceLayerQueue(Layer, SoundQueueEntry);
 			}
-
-			float DensityModifier {1.0f};
-			float VolumeModifier {1.0f};
-
-			ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, SoundQueueEntry);
-
-			SoundQueueEntry.Time = SoundQueueEntry.ReferenceTime * DensityModifier;
 		}
 	}
 }
@@ -91,6 +87,13 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	if (!Layer) { return; }
 	
 	Entry.ReferenceTime = FMath::RandRange(Entry.SoundData.DelayMin, Entry.SoundData.DelayMax);
+
+	float DensityModifier {1.0f};
+	float VolumeModifier {1.0f};
+
+	ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, Entry);
+
+	Entry.Time = Entry.ReferenceTime * DensityModifier;
 
 	/** We try to get the location of the listener here.*/
 	FVector CameraLocation;
@@ -116,6 +119,8 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	SoundSourceData.Name = Entry.SoundData.Name;
 	SoundSourceData.Layer = Layer;
 
+	DrawDebugSphere(GetWorld(), SoundSourceData.Transform.GetLocation(), 100.0f, 12, FColor::Red, false, 10.0f);
+	
 	SoundSourceManager->InitiateSoundSource(SoundSourceData);
 	UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("Update"))
 }
@@ -134,6 +139,27 @@ float UAmbiverseSubsystem::GetSoundVolume(const UAmbiverseLayer* Layer, const FA
 	float Volume {Entry.SoundData.Volume};
 	Volume *= Layer->LayerVolume;
 	return Volume;
+}
+
+void UAmbiverseSubsystem::HandleParameterChanged()
+{
+	if (!LayerManager || LayerManager->GetLayerRegistry().IsEmpty()) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Parameter Changed!"))
+
+	TArray<UAmbiverseLayer*> Layers {LayerManager->GetLayerRegistry()};
+	for (UAmbiverseLayer* Layer : Layers)
+	{
+		for (FAmbiverseLayerQueueEntry Entry : Layer->SoundQueue)
+		{
+			float DensityScalar {1.0f};
+			float VolumeScalar {1.0f};
+			
+			ParameterManager->GetScalarsForEntry(DensityScalar, VolumeScalar, Layer, Entry);
+
+			Entry.Time = Entry.ReferenceTime * DensityScalar;
+		}
+	}
 }
 
 #if !UE_BUILD_SHIPPING
@@ -155,6 +181,7 @@ void UAmbiverseSubsystem::Deinitialize()
 	}
 	if (ParameterManager)
 	{
+		ParameterManager->OnParameterChangedDelegate.RemoveDynamic(this, &UAmbiverseSubsystem::HandleParameterChanged);
 		ParameterManager->Deinitialize();
 		SoundSourceManager = nullptr;
 	}

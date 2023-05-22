@@ -38,8 +38,10 @@ private:
 	UAmbiverseParameterManager* ParameterManager {nullptr};
 
 public:
-	/** Adds a sound set*/
-
+	virtual TStatId GetStatId() const override
+	{
+		RETURN_QUICK_DECLARE_CYCLE_STAT(UAmbiverseSubsystem, STATGROUP_Tickables);
+	}
 
 private:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
@@ -57,6 +59,9 @@ private:
 	
 	static float GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
 	static float GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
+
+	UFUNCTION()
+	void HandleParameterChanged();
 
 #if !UE_BUILD_SHIPPING
 	void SetSoundSourceVisualisationEnabled(bool IsEnabled);

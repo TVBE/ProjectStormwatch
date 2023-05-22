@@ -46,6 +46,8 @@ void UAmbiverseLayerManager::AddAmbienceLayer(UAmbiverseLayer* Layer)
 	if (!FindActiveAmbienceLayer(Layer))
 	{
 		LayerRegistry.Add(Layer);
+		Layer->InitializeSoundQueue();
+		
 		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("AddAmbienceLayer: Layer added successfully: '%s'."), *Layer->GetName());
 	}
 }

@@ -2,12 +2,15 @@
 // This source code is part of the Adaptive Ambience System plugin
 
 #include "AmbiverseParameterManager.h"
+#include "AmbiverseLayerManager.h"
 #include "AmbiverseParameter.h"
+#include "AmbiverseSubsystem.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseParameterManager, LogAmbiverseParameterManager);
 
-void UAmbiverseParameterManager::Initialize()
+void UAmbiverseParameterManager::Initialize(UAmbiverseSubsystem* Subsystem)
 {
+	AmbiverseSubsystem = Subsystem;
 }
 
 void UAmbiverseParameterManager::Deinitialize()
@@ -52,6 +55,7 @@ void UAmbiverseParameterManager::GetScalarsForEntry(float& DensityScalar, float&
 	}
 
 	DensityScalar *= Layer->LayerDensity;
+	DensityScalar = 1 / DensityScalar;
 	VolumeScalar *= Layer->LayerVolume;
 }
 
@@ -70,6 +74,8 @@ void UAmbiverseParameterManager::SetParameterValue(UAmbiverseParameter* Paramete
 			break;
 		}
 	}
+
+	OnParameterChangedDelegate.Broadcast();
 }
 
 void UAmbiverseParameterManager::RegisterParameter(UAmbiverseParameter* Parameter)

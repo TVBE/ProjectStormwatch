@@ -4,6 +4,7 @@
 #include "AmbiverseBPLibrary.h"
 #include "Ambiverse.h"
 #include "AmbiverseLayerManager.h"
+#include "AmbiverseParameterManager.h"
 #include "AmbiverseSubsystem.h"
 
 UAmbiverseBPLibrary::UAmbiverseBPLibrary(const FObjectInitializer& ObjectInitializer)
@@ -43,15 +44,18 @@ void UAmbiverseBPLibrary::PopAmbiverseLayer(UObject* WorldContextObject, UAmbive
 	}
 }
 
-void UAmbiverseBPLibrary::SetAmbiverseParameter(UObject* WorldContextObject)
+void UAmbiverseBPLibrary::SetAmbiverseParameter(UObject* WorldContextObject, UAmbiverseParameter* AmbiverseParameter, const float Value)
 {
 	if (!WorldContextObject) { return; }
 
 	if (UWorld* World {WorldContextObject->GetWorld()})
 	{
-		if (UAmbiverseSubsystem* AmbiverseSubsystem { World->GetSubsystem<UAmbiverseSubsystem>()})
+		if (UAmbiverseSubsystem* AmbiverseSubsystem {World->GetSubsystem<UAmbiverseSubsystem>()})
 		{
-			
+			if (UAmbiverseParameterManager* ParameterManager {AmbiverseSubsystem->GetParameterManager()})
+			{
+				ParameterManager->SetParameterValue(AmbiverseParameter, Value);
+			}
 		}
 	}
 }
