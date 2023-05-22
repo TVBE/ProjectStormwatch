@@ -30,7 +30,7 @@ bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 
 void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
-	if (Velocity.Z < -800)
+	/*if (Velocity.Z < -800)
 	{
 		if (Velocity.Z < -1000)
 		{
@@ -44,7 +44,10 @@ void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, flo
 	else
 	{
 		OnLanding.Broadcast(EPlayerLandingType::Soft);
-	}
+	}*/
+
+	OnLanding.Broadcast(EPlayerLandingType::Soft);
+	
 	Super::ProcessLanded(Hit, remainingTime, Iterations);
 }
 
