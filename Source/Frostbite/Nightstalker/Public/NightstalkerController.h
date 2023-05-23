@@ -62,19 +62,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Logging", Meta = (DevelopmentOnly))
 	void LogText(const FString& Text);
-
-	/** Checks if a point is occluded from the perspective of another point. */
-	UFUNCTION(BlueprintCallable, Category = "Occlusion", Meta = (DisplayName = "Is Occluded", Keywords = "Is Occluded Occlusion Visibility Visible", ExpandBoolAsExecs = "ReturnValue"))
-	void IsOccluded(bool& ReturnValue, const FVector& PointA, const FVector& PointB, const bool DrawDebugLines = false, const float DrawDebugLineDuration = 0.0f);
-
-	/** Performs a fast check to see if a point is occluded from the perspective of the another point.
-	 *	This function is more performant than the regular 'IsActorOccluded' check, but is less accurate. */
-	UFUNCTION(BlueprintCallable, Category = "Occlusion", Meta = (DisplayName = "Is Occluded (Fast)", Keywords = "Is Occluded Occlusion Visibility Visible", ExpandBoolAsExecs = "ReturnValue"))
-	void IsOccludedFast(bool& ReturnValue, const  FVector& LocationA, const FVector& LocationB, const bool DrawDebugLines, const float DrawDebugLineDuration);
-
-	/** Returns the angle in which the player is looking at the Nightstalker instance. */
-	UFUNCTION(BlueprintPure, Category = "Visibility", Meta = (DisplayName = "Get Player View Angle"))
-	float GetPlayerViewAngleToNightstalker(bool IgnorePitch) const;
 	
 	UFUNCTION(BlueprintPure, Category = "Nightstalker", Meta = (CompactNodeTitle = "Nightstalker"))
 	FORCEINLINE ANightstalker* GetNightstalker() { return Nightstalker; }
