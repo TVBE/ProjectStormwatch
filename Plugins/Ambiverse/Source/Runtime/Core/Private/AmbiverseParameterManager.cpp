@@ -11,10 +11,25 @@ DEFINE_LOG_CATEGORY_CLASS(UAmbiverseParameterManager, LogAmbiverseParameterManag
 void UAmbiverseParameterManager::Initialize(UAmbiverseSubsystem* Subsystem)
 {
 	AmbiverseSubsystem = Subsystem;
+
+	if (AmbiverseSubsystem)
+	{
+		if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
+		{
+			LayerManager->OnLayerRegistered.AddDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
+		}
+	}
 }
 
 void UAmbiverseParameterManager::Deinitialize()
 {
+	if (AmbiverseSubsystem)
+	{
+		if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
+		{
+			LayerManager->OnLayerRegistered.RemoveDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
+		}
+	}
 }
 
 void UAmbiverseParameterManager::GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry)
@@ -96,5 +111,40 @@ bool UAmbiverseParameterManager::IsParameterRegistered(const UAmbiverseParameter
 		return true;
 	}
 	return false;
+}
+
+void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayer* RegisteredLayer)
+{
+	if (!RegisteredLayer) { return; }
+
+	UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Updating parameter registry for: '%s'"), *RegisteredLayer->GetName());
+
+	TArray<UAmbiverseParameter*> RequiredParameters;
+
+	for (FAmbiverseParameterModifiers& ParameterModifiers : RegisteredLayer->Parameters)
+	{
+		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
+	}
+
+	for (FAmbiverseProceduralSoundData ProceduralSoundData : RegisteredLayer->ProceduralSounds)
+	{
+		for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
+		{
+			RequiredParameters.AddUnique(ParameterModifiers.Parameter);
+		}
+	}
+
+	for (UAmbiverseParameter* RequiredParameter : RequiredParameters)
+	{
+		if (!ParameterRegistry.Contains(RequiredParameter))
+		{
+			RegisterParameter(RequiredParameter);
+			UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Registered parameter: '%s'"), *RequiredParameter->GetName());
+		}
+		else
+		{
+			UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Parameter already registered: '%s'"), *RequiredParameter->GetName());
+		}
+	}
 }
 

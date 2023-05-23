@@ -13,7 +13,7 @@ FText FAmbiverseParameterAssetTypeActions::GetName() const
 
 UClass* FAmbiverseParameterAssetTypeActions::GetSupportedClass() const
 {
-	{ return UAmbiverseParameter::StaticClass(); }
+	return UAmbiverseParameter::StaticClass();
 }
 
 FColor FAmbiverseParameterAssetTypeActions::GetTypeColor() const

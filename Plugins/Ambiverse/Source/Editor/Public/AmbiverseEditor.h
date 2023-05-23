@@ -4,6 +4,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmbiverseCompositeAssetTypeActions.h"
+#include "AmbiverseElementAssetTypeActions.h"
 #include "AmbiverseLayerAssetTypeActions.h"
 #include "AmbiverseParameterAssetTypeActions.h"
 #include "Modules/ModuleManager.h"
@@ -15,7 +17,9 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
+	TSharedPtr<FAmbiverseElementAssetTypeActions> AmbienceElementAssetTypeActions;
 	TSharedPtr<FAmbiverseLayerAssetTypeActions> AmbienceLayerAssetTypeActions;
+	TSharedPtr<FAmbiverseCompositeAssetTypeActions> AmbienceCompositeAssetTypeActions;
 	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbienceParameterAssetTypeActions;
 	
 };

@@ -26,6 +26,7 @@ public class AmbiverseEditor : ModuleRules
 			{
 				"Core",
 				"AssetTools",
+				"Ambiverse"
 			}
 			);
 			
@@ -40,7 +41,6 @@ public class AmbiverseEditor : ModuleRules
 				"MetasoundEngine",
 				"Settings",
 				"UnrealEd",
-				"Ambiverse"
 			}
 			);
 		

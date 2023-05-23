@@ -30,7 +30,8 @@ struct FAmbiverseLayerQueueEntry
 	float ReferenceTime {0.0f};
 };
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Layer"))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Layer",
+	ShortToolTip = "A list of Ambiverse Elements that can be procedurally played."))
 class AMBIVERSE_API UAmbiverseLayer : public UObject
 {
 	GENERATED_BODY()

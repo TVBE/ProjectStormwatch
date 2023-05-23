@@ -13,7 +13,7 @@ FText FAmbiverseLayerAssetTypeActions::GetName() const
 
 UClass* FAmbiverseLayerAssetTypeActions::GetSupportedClass() const
 {
-	{ return UAmbiverseLayer::StaticClass(); }
+	return UAmbiverseLayer::StaticClass();
 }
 
 FColor FAmbiverseLayerAssetTypeActions::GetTypeColor() const

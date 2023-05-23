@@ -6,7 +6,10 @@
 #include "CoreMinimal.h"
 #include "AmbiverseParameter.generated.h"
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse")
+/** An ambiverse layer is an instanced parameter that can be set through the ParameterManager in the AmbiverseSubsystem.
+ *	Users can link modifiers to a parameter to change the density and volume of procedural sounds. */
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Parameter",
+	ShortToolTip = "A parameter that can be used to drive procedural ambience."))
 class AMBIVERSE_API UAmbiverseParameter : public UObject
 {
 	GENERATED_BODY()

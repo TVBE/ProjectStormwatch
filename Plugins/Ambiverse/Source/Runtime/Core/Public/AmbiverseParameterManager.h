@@ -45,6 +45,9 @@ private:
 	
 	bool IsParameterRegistered(const UAmbiverseParameter* Parameter) const;
 
+	UFUNCTION()
+	void HandleOnLayerRegistered(UAmbiverseLayer* RegisteredLayer);
+
 public:
 	/** Returns an array of currently registered parameters. */
 	FORCEINLINE TArray<UAmbiverseParameter*> GetRegisteredParameters() const { return ParameterRegistry; }

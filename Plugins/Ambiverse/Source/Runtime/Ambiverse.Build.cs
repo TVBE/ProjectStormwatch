@@ -11,7 +11,8 @@ public class Ambiverse : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/Core/Public",
-				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/Data/Public"
+				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/DataTypes/Public",
+				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/AssetTypes/Public"
 			}
 			);
 				
@@ -38,10 +39,10 @@ public class Ambiverse : ModuleRules
 				"Slate",
 				"SlateCore",
 				"MetasoundEngine",
-				"AmbiverseEditor"
 			}
 			);
 		
+		PublicIncludePathModuleNames.AddRange(new string[] { "AmbiverseEditor" });
 		
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
