@@ -137,59 +137,63 @@ FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Act
 
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	//ImpactForce = abs(NormalImpulse.Length())/(pow(this->GetOwnerMeshComponent()->GetMass(),2));
+	ImpactForce = (this->GetOwnerMeshComponent()->GetComponentVelocity()-Hit.Component->GetComponentVelocity()).Length()+10*this->GetOwnerMeshComponent()->GetPhysicsAngularVelocityInRadians().Length();
 	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
-	if(Hit.ImpactNormal.Length() > 0.001)
+	if( ImpactForce > 30)
 	{
 		DeltaLocationDistance = abs(FVector::Distance(LatestLocation, Hit.Location));
-		
-		
 		LatestLocation = Hit.ImpactPoint;
 		
-		
-		
 		/** prevent situations were sounds are hittng in the same location.*/
-		if(DeltaLocationDistance > 0.001)
+		if(DeltaLocationDistance > 1.5)
 		{
 			/** prevent situations were sounds are hittng in a short timespan.*/
-			DeltaHitTime = abs(FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 1.0));
+			DeltaHitTime = abs(FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 10.0));
 			LatestTime = FPlatformTime::Seconds();
 
-			/** If there's a considerable time between hits, remove the hit history.*/
+			/** If there's a considerable time between hits, remove the hit state history.*/
 			if(DeltaHitTime > 1.0)
 			{
 				DeltaStateArray.Empty();
 			}
 			
-			if(DeltaHitTime > 0.1)
+			if(DeltaHitTime > 0.2)
 			{
 				/** prevent situations were sounds are hittng in the same orientation.*/
-				DeltaForwardVector =abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector()));
+				DeltaDirectionVector =
+					abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector())) +
+					abs(FVector::Distance(LatestRightVector,this->GetOwner()->GetActorRightVector())) +
+					abs(FVector::Distance(LatestUptVector,this->GetOwner()->GetActorUpVector()))
+				;
 				LatestForwardVector =this->GetOwner()->GetActorForwardVector();
+				LatestRightVector = this->GetOwner()->GetActorRightVector();
+				LatestUptVector = this->GetOwner()->GetActorUpVector();
 				
-				if(DeltaForwardVector >0.01)
+				if(DeltaDirectionVector >0.1)
 				{
 					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
-
-					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime * DeltaForwardVector);
+					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + 100*DeltaDirectionVector);
 					UE_LOG(LogReacousticComponent, Verbose, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
-					if(GetArraySum(DeltaStateArray) > 0.1f || DeltaStateArray.Num() <= 10)
+					if(GetArraySum(DeltaStateArray) > 0.5f || DeltaStateArray.Num() <= 20)
 					{
 							// Calculate the impact force
-							ImpactForce = NormalImpulse.Size(); // HitComp->GetMass();
+							
 							// Trigger the OnComponentHit event
 							OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 							
 						
 					}
-					else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: STATE ARRAY"))}
+					else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: STATE ARRAY"))}
 				}
-				else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
+				else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
 			}
-			else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA HIT TIME"))}
+			else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA HIT TIME"))}
 		}
-		else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: LOCATION DISTANCE"))}
+		else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: LOCATION DISTANCE"))}
+		
 		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
-		if (DeltaStateArray.Num() > 10)
+		if (DeltaStateArray.Num() > 20)
 		{
 			DeltaStateArray.RemoveAt(0);
 		}
@@ -264,8 +268,8 @@ int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData
 	/** if the following loop can't find a new entry, just return the entry without filtering. */
 	int DataEntryOut{DataEntryIn};
 	
-	/** if the interval is quite large, then forget the latest hit results.*/
-	if(DeltaHitTime > 0.5)
+	/** if the interval is large enough so that the player forgets what the last hit sounds like, system forgets the latest hit results.*/
+	if(DeltaHitTime > 10)
 	{
 		LatestSoundTimings.Reset();
 	}
@@ -280,6 +284,7 @@ int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData
 			int32 indexClamped{FMath::Clamp(index,0,SoundData.OnsetTimingData.Num()-1)};
 			bool FoundValidTimeStamp{true};
 			float TimingToTest = SoundData.OnsetTimingData[indexClamped];
+			
 			if(LatestSoundTimings.Num() != 0)
 			{
 				/** Iterate throug the recorded sound timestamps.*/
@@ -293,12 +298,6 @@ int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData
 						break;
 					}
 				}
-				/** break the loop for the first valid timestamp.*/
-				if(FoundValidTimeStamp)
-				{
-					DataEntryOut = TimingToTest;
-					break;
-				}
 			}
 			/** if timestamp history is empty, continue without any testing.*/
 			else
@@ -307,6 +306,12 @@ int UReacousticComponent::CalcluateSoundDataEntry(FReacousticSoundData SoundData
 				break;
 			}
 			
+			/** break the loop for the first valid timestamp.*/
+			if(FoundValidTimeStamp)
+			{
+				DataEntryOut = TimingToTest;
+				break;
+			}
 		}
 	}
 	LatestSoundTimings.Add(DataEntryOut);
