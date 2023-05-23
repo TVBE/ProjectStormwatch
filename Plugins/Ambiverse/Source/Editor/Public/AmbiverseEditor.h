@@ -17,9 +17,8 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	TSharedPtr<FAmbiverseElementAssetTypeActions> AmbienceElementAssetTypeActions;
-	TSharedPtr<FAmbiverseLayerAssetTypeActions> AmbienceLayerAssetTypeActions;
-	TSharedPtr<FAmbiverseCompositeAssetTypeActions> AmbienceCompositeAssetTypeActions;
-	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbienceParameterAssetTypeActions;
-	
+	TSharedPtr<FAmbiverseElementAssetTypeActions> AmbiverseElementAssetTypeActions;
+	TSharedPtr<FAmbiverseLayerAssetTypeActions> AmbiverseLayerAssetTypeActions;
+	TSharedPtr<FAmbiverseCompositeAssetTypeActions> AmbiverseCompositeAssetTypeActions;
+	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbiverseParameterAssetTypeActions;
 };

@@ -18,7 +18,7 @@ UClass* FAmbiverseLayerAssetTypeActions::GetSupportedClass() const
 
 FColor FAmbiverseLayerAssetTypeActions::GetTypeColor() const
 {
-	return FColor(61, 0, 83);
+	return FColor(100, 50, 130);
 }
 
 uint32 FAmbiverseLayerAssetTypeActions::GetCategories()

@@ -18,7 +18,7 @@ UClass* FAmbiverseElementAssetTypeActions::GetSupportedClass() const
 
 FColor FAmbiverseElementAssetTypeActions::GetTypeColor() const
 {
-	return FColor(61, 0, 83);
+	return FColor(100, 50, 130);
 }
 
 uint32 FAmbiverseElementAssetTypeActions::GetCategories()

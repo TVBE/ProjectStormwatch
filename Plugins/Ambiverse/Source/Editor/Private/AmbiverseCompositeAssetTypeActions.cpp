@@ -18,7 +18,7 @@ UClass* FAmbiverseCompositeAssetTypeActions::GetSupportedClass() const
 
 FColor FAmbiverseCompositeAssetTypeActions::GetTypeColor() const
 {
-	return FColor(61, 0, 83);
+	return FColor(100, 50, 130);
 }
 
 uint32 FAmbiverseCompositeAssetTypeActions::GetCategories()

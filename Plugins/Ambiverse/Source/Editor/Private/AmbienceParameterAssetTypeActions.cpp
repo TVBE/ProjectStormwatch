@@ -18,7 +18,7 @@ UClass* FAmbiverseParameterAssetTypeActions::GetSupportedClass() const
 
 FColor FAmbiverseParameterAssetTypeActions::GetTypeColor() const
 {
-	return FColor(61, 0, 83);
+	return FColor(100, 50, 130);
 }
 
 uint32 FAmbiverseParameterAssetTypeActions::GetCategories()
