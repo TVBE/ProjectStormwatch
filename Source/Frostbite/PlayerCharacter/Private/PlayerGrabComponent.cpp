@@ -282,7 +282,7 @@ void UPlayerGrabComponent::ReleaseObject()
 		
 		if(WillThrowOnRelease)
 		{
-			GrabbedComponent->SetWorldLocation(ReleaseLocation);
+		
 		}
 		else
 		{
@@ -324,7 +324,6 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
 		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
-		ReleaseLocation = RotatedHandOffset;
 		FVector Target {FVector()};
 		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
@@ -339,7 +338,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		}
 		
 		/** Calculate the direction from the player to the target */
-		FVector Direction = Target - ReleaseLocation;
+		FVector Direction = Target - GrabbedComponent->GetComponentLocation();
 		Direction.Normalize();
 		
 		FVector FinalDirection{0,0,0};
@@ -370,7 +369,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		if(!UGameplayStatics::SuggestProjectileVelocity(
 				this,
 				TossVelocity,
-				ReleaseLocation,
+				GrabbedComponent->GetComponentLocation(),
 				Target,
 				ThrowingStrength,
 				false,
@@ -383,7 +382,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		{
 			TossVelocity = ThrowVelocity;
 		}
-		VisualizeProjectilePath(GrabbedComponent->GetOwner(),ReleaseLocation,TossVelocity);
+		VisualizeProjectilePath(GrabbedComponent->GetOwner(),GrabbedComponent->GetComponentLocation(),TossVelocity);
 
 		if(!OnlyPreviewTrajectory)
 		{
@@ -391,7 +390,6 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 			
 			GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
 			/** Release the grabbed component after the throw */
-			GrabbedComponent->SetWorldLocation(ReleaseLocation);
 			GrabbedComponent->WakeRigidBody();
 			ReleaseObject();
 			
