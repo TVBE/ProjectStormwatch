@@ -1,4 +1,5 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #pragma once
 
@@ -8,9 +9,6 @@
 #include "UObject/SoftObjectPath.h"
 #include "ReacousticSettings.generated.h"
 
-/**
- * 
- */
 UCLASS(config = Reacoustic, defaultconfig, Meta = (DisplayName = "Reacoustic"))
 class REACOUSTIC_API UReacousticProjectSettings : public UDeveloperSettings
 {

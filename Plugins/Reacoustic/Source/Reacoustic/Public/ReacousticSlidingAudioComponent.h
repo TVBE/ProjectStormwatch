@@ -1,21 +1,20 @@
-// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
 // Written by Tim Verberne.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "NightstalkerAudioController.generated.h"
+#include "ReacousticSlidingAudioComponent.generated.h"
 
-
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Nightstalker), Meta = (BlueprintSpawnableComponent))
-class UNightstalkerAudioController : public UActorComponent
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UReacousticSlidingAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UNightstalkerAudioController();
+	UReacousticSlidingAudioComponent();
 
 protected:
 	// Called when the game starts

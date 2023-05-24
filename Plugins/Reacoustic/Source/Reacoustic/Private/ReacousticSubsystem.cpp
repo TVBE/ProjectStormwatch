@@ -1,4 +1,5 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #include "ReacousticSubsystem.h"
 #include "ReacousticComponent.h"

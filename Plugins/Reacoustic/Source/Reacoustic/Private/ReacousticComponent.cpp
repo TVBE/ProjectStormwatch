@@ -1,4 +1,5 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #include "ReacousticComponent.h"
 
@@ -7,21 +8,18 @@
 
 #define LOG_CATEGORY(LogReacousticComponent);
 
-
 UReacousticComponent::UReacousticComponent()
 {
 
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 	bAutoActivate = true;
-	
 }
 
 void UReacousticComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 }
-
 
 void UReacousticComponent::BeginPlay()
 {
@@ -73,7 +71,6 @@ void UReacousticComponent::BeginPlay()
 		UE_LOG(LogReacousticComponent, Warning, TEXT("Failed to get mesh component"));
 	}
 }
-
 
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -158,9 +155,6 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		}
 	}
 }
-
-
-
 
 /** This implementation will likely allways be ovewrriden by a blueprint or function that needs to trigger a custom hit.*/
 void UReacousticComponent::TriggerManualHit_Implementation(float Strength){}

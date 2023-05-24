@@ -1,4 +1,5 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #include "Reacoustic.h"
 #include "ReacousticSubsystem.h"
