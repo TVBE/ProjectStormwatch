@@ -79,9 +79,9 @@ void UMeshGrabComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (!OverrideInventoryAutoConfig)
-	{
-		IsInventoryAddable = DetermineInventoryAddibility(this);
-	}
+	//if (!OverrideInventoryAutoConfig)
+	//{
+	//	IsInventoryAddable = DetermineInventoryAddibility(this);
+	//}
 }
 

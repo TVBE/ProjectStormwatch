@@ -243,9 +243,6 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	
 		/** Start the tick function so that the update for the target location can start updating. */
 		SetComponentTickEnabled(true);
-
-		/** Disable the colission with the player. */
-		StaticMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 	else
 	{
@@ -272,7 +269,6 @@ void UPlayerGrabComponent::ReleaseObject()
 {
 	if(GrabbedComponent)
 	{
-		GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 		SetComponentTickEnabled(false);
 
 		if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()))})
