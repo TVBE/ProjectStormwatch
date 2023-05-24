@@ -1,5 +1,5 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseLayerManager.h"
@@ -10,25 +10,11 @@ DEFINE_LOG_CATEGORY_CLASS(UAmbiverseParameterManager, LogAmbiverseParameterManag
 
 void UAmbiverseParameterManager::Initialize(UAmbiverseSubsystem* Subsystem)
 {
-	AmbiverseSubsystem = Subsystem;
-
-	if (AmbiverseSubsystem)
+	Super::Initialize(Subsystem);
+	
+	if (UAmbiverseLayerManager* LayerManager {Subsystem->GetLayerManager()})
 	{
-		if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
-		{
-			LayerManager->OnLayerRegistered.AddDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
-		}
-	}
-}
-
-void UAmbiverseParameterManager::Deinitialize()
-{
-	if (AmbiverseSubsystem)
-	{
-		if (UAmbiverseLayerManager* LayerManager {AmbiverseSubsystem->GetLayerManager()})
-		{
-			LayerManager->OnLayerRegistered.RemoveDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
-		}
+		LayerManager->OnLayerRegistered.AddDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
 	}
 }
 
@@ -146,5 +132,17 @@ void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayer* Regist
 			UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Parameter already registered: '%s'"), *RequiredParameter->GetName());
 		}
 	}
+}
+
+void UAmbiverseParameterManager::Deinitialize(UAmbiverseSubsystem* Subsystem)
+{
+	if (!Subsystem) { return; }
+	
+	if (UAmbiverseLayerManager* LayerManager {Subsystem->GetLayerManager()})
+	{
+		LayerManager->OnLayerRegistered.RemoveDynamic(this, &UAmbiverseParameterManager::HandleOnLayerRegistered);
+	}
+
+	Super::Deinitialize(Subsystem);
 }
 

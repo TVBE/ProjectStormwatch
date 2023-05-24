@@ -1,4 +1,5 @@
-// Copyright Notice
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
@@ -21,7 +22,7 @@ public:
 	void Activate(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintImplementableEvent, Meta = (WorldContext = "WorldContextObject"))
-	void ExecuteDistribution(UObject* WorldContextObject, bool& OutBool, FVector& OutVector, AActor*& OutActor);
+	bool ExecuteDistribution(UObject* WorldContextObject, FVector& Location, AActor*& Actor);
 
 protected:
 	UFUNCTION(BlueprintPure, Meta = (CompactNodeTitle = "Listener"))

@@ -11,9 +11,6 @@ void FAmbiverseEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools {FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get()};
 	
-	//  FAssetToolsModule::GetModule().Get().RegisterAdvancedAssetCategory(FName("Sounds|Adaptive Ambience System"),
-	//	FText::FromString("Sounds|Adaptive Ambience System"));
-
 	UE_LOG(LogTemp, Error, TEXT("Startup"))
 
 	AmbiverseElementAssetTypeActions = MakeShared<FAmbiverseElementAssetTypeActions>();

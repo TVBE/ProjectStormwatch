@@ -1,9 +1,9 @@
-// Copyright Notice
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "AmbiverseComposite.generated.h"
 
 /**

@@ -1,7 +1,9 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #include "AmbiverseSubsystem.h"
+
+#include "AmbiverseDistributorManager.h"
 #include "AmbiverseLayer.h"
 #include "AmbiverseLayerManager.h"
 #include "AmbiverseParameterManager.h"
@@ -10,25 +12,21 @@
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSubsystem, LogAmbiverseSubsystem);
 
-void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+void UAmbiverseSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::OnWorldBeginPlay(InWorld);
-	
+	Super::Initialize(Collection);
+
 	LayerManager = NewObject<UAmbiverseLayerManager>(this);
+	if (LayerManager) { LayerManager->Initialize(this); }
+	
+	ParameterManager = NewObject<UAmbiverseParameterManager>(this);
+	if (ParameterManager) { ParameterManager->Initialize(this); }
 
 	SoundSourceManager = NewObject<UAmbiverseSoundSourceManager>(this);
-	if (SoundSourceManager)
-	{
-		SoundSourceManager->Initialize();
-	}
+	if (SoundSourceManager) { SoundSourceManager->Initialize(this); }
 
-	ParameterManager = NewObject<UAmbiverseParameterManager>(this);
-
-	if (ParameterManager)
-	{
-		ParameterManager->Initialize(this);
-	}
-
+	DistributorManager = NewObject<UAmbiverseDistributorManager>(this);
+	if (DistributorManager) { DistributorManager->Initialize(this); }
 
 #if !UE_BUILD_SHIPPING
 	SoundSourceVisualisationConsoleCommand = MakeUnique<FAutoConsoleCommand>(
@@ -43,7 +41,12 @@ void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 		})
 	);
 #endif
+}
 
+void UAmbiverseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	
 	UE_LOG(LogAmbiverseSubsystem, Log, TEXT("Adaptive Ambience System initialized successfully."))
 }
 
@@ -173,22 +176,25 @@ void UAmbiverseSubsystem::SetSoundSourceVisualisationEnabled(bool IsEnabled)
 
 void UAmbiverseSubsystem::Deinitialize()
 {
-	if (SoundSourceManager)
-	{
-		SoundSourceManager->Deinitialize();
-		SoundSourceManager = nullptr;
-	}
-	
-	if (ParameterManager)
-	{
-		ParameterManager->Deinitialize();
-		SoundSourceManager = nullptr;
-	}
-	
 	if (LayerManager)
 	{
-		LayerManager->Deinitialize();
+		LayerManager->Deinitialize(this);
 		LayerManager = nullptr;
+	}
+	if (ParameterManager)
+	{
+		ParameterManager->Deinitialize(this);
+		SoundSourceManager = nullptr;
+	}
+	if (SoundSourceManager)
+	{
+		SoundSourceManager->Deinitialize(this);
+		SoundSourceManager = nullptr;
+	}
+	if (DistributorManager)
+	{
+		DistributorManager->Deinitialize(this);
+		DistributorManager = nullptr;
 	}
 	
 	Super::Deinitialize();

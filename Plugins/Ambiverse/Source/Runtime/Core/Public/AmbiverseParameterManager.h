@@ -1,9 +1,11 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AmbiverseLayer.h"
+#include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseParameterManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnParameterChangedDelegate, UAmbiverseParameter*, ChangedParameter);
@@ -11,8 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnParameterChangedDelegate, UAmbive
 class UAmbiverseLayer;
 class UAmbiverseParameter;
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Ambiverse")
-class AMBIVERSE_API UAmbiverseParameterManager : public UObject
+UCLASS()
+class UAmbiverseParameterManager : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -23,17 +25,13 @@ public:
 	FOnParameterChangedDelegate OnParameterChangedDelegate;
 
 private:
-	/** Pointer to the ambiverse subsystem. */
-	UPROPERTY()
-	UAmbiverseSubsystem* AmbiverseSubsystem {nullptr};
-	
 	/** The Ambiverse parameters that are currently registered to the system. */
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray<UAmbiverseParameter*> ParameterRegistry;
 
 public:
-	void Initialize(UAmbiverseSubsystem* Subsystem);
-	void Deinitialize();
+	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
+	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem) override;
 	
 	void GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
 

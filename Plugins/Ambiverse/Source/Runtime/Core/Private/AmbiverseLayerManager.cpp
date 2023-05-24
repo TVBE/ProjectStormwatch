@@ -1,4 +1,5 @@
-// Copyright Notice
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #include "AmbiverseLayerManager.h"
 #include "AmbiverseLayer.h"
@@ -10,18 +11,12 @@ DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayerManager, LogAmbiverseLayerManager);
 
 void UAmbiverseLayerManager::Initialize(UAmbiverseSubsystem* Subsystem)
 {
-	AmbiverseSubsystem = Subsystem;
-	if (AmbiverseSubsystem)
-	{
-		if (UAmbiverseParameterManager* ParameterManager {AmbiverseSubsystem->GetParameterManager()})
-		{
-			ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseLayerManager::HandleOnParameterChanged);
-		}
-	}
-}
+	Super::Initialize(Subsystem);
 
-void UAmbiverseLayerManager::Deinitialize()
-{
+	if (UAmbiverseParameterManager* ParameterManager {Subsystem->GetParameterManager()})
+	{
+		ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseLayerManager::HandleOnParameterChanged);
+	}
 }
 
 void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
@@ -105,4 +100,16 @@ UAmbiverseLayer* UAmbiverseLayerManager::FindActiveAmbienceLayer(const UAmbivers
 void UAmbiverseLayerManager::HandleOnParameterChanged(UAmbiverseParameter* ChangedParameter)
 {
 	
+}
+
+void UAmbiverseLayerManager::Deinitialize(UAmbiverseSubsystem* Subsystem)
+{
+	if (!Subsystem) { return; }
+	
+	if (UAmbiverseParameterManager* ParameterManager {Subsystem->GetParameterManager()})
+	{
+		ParameterManager->OnParameterChangedDelegate.RemoveDynamic(this, &UAmbiverseLayerManager::HandleOnParameterChanged);
+	}
+	
+	Super::Deinitialize(Subsystem);
 }

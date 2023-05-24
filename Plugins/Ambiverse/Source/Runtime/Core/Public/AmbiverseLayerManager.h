@@ -1,17 +1,18 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AmbiverseLayer.h"
+#include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseLayerManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLayerRegisteredDelegate, UAmbiverseLayer*, RegisteredLayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLayerUnregisteredDelegate, UAmbiverseLayer*, UnregisteredLayer);
 
 UCLASS()
-class UAmbiverseLayerManager : public UObject
+class UAmbiverseLayerManager : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -25,17 +26,13 @@ public:
 	FOnLayerRegisteredDelegate OnLayerUnregistered;
 
 private:
-	/** Pointer to the Ambiverse subsystem. */
-	UPROPERTY()
-	UAmbiverseSubsystem* AmbiverseSubsystem;
-	
 	/** The current active ambience layers. */
 	UPROPERTY()
 	TArray<UAmbiverseLayer*> LayerRegistry;
 
 public:
-	void Initialize(UAmbiverseSubsystem* Subsystem);
-	void Deinitialize();
+	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
+	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem) override;
 	
 	void RegisterAmbiverseLayer(UAmbiverseLayer* Layer);
 	void UnregisterAmbiverseLayer(UAmbiverseLayer* Layer);

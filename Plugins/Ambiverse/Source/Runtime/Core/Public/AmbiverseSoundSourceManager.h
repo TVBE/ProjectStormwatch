@@ -1,16 +1,17 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AmbiverseSoundSourceData.h"
+#include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseSoundSourceManager.generated.h"
 
 class AAmbiverseSoundSource;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse")
-class AMBIVERSE_API UAmbiverseSoundSourceManager : public UObject
+UCLASS()
+class UAmbiverseSoundSourceManager : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -30,9 +31,6 @@ private:
 #endif
 
 public:
-	void Initialize();
-	void Deinitialize();
-	
 	void InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData);
 
 	UFUNCTION(BlueprintCallable)

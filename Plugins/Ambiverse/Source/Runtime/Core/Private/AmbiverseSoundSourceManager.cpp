@@ -1,14 +1,10 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #include "AmbiverseSoundSourceManager.h"
 #include "AmbiverseSoundSource.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundSourceManager, LogAmbiverseSoundSourceManager);
-
-void UAmbiverseSoundSourceManager::Initialize()
-{
-}
 
 void UAmbiverseSoundSourceManager::InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData)
 {
@@ -66,9 +62,6 @@ void UAmbiverseSoundSourceManager::SetSoundSourceVisualisationEnabled(const bool
 }
 #endif
 
-void UAmbiverseSoundSourceManager::Deinitialize()
-{
-}
 
 
 

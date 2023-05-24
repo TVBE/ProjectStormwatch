@@ -1,4 +1,5 @@
-// Copyright Notice
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
@@ -7,6 +8,8 @@
 #include "MetasoundSource.h"
 #include "AmbiverseSoundSource.h"
 #include "AmbiverseElement.generated.h"
+
+class UAmbiverseDistributor;
 
 /** An ambiverse element is a single procedural sound. It can be played directly, or used in a layer to create a procedural soundscape. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Element",
@@ -28,18 +31,20 @@ public:
 		Meta = (ClampMin = "0"))
 	float Volume {1.0f};
 	
+	/** The distributor to use for this element. */
+	UPROPERTY(EditAnywhere, Category = "Distribution", Meta = (BlueprintBaseOnly))
+	TSubclassOf<UAmbiverseDistributor> DistributorClass;
+	
 	/** PlayRange data for an AmbienceSystem preset entry. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Distribution Data", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Distribution", Meta = (EditCondition = "DistributorClass == nullptr"))
 	FAmbiverseSoundDistributionData DistributionData;
 
 	/** The SoundSource class to use to for this element. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound Source")
-	TSubclassOf<AAmbiverseSoundSource> SoundSourceClass;
+	TSubclassOf<AAmbiverseSoundSource> SoundSourceClass {AAmbiverseSoundSource::StaticClass()};
 	
 	bool IsValid {true};
-
-	// static bool Validate(FAmbiverseProceduralSoundData& SoundData);
-
+	
 	static UMetaSoundSource* GetSoundFromMap(const TMap<UMetaSoundSource*, int>& SoundMap);
 
 #if WITH_EDITOR

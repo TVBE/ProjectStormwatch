@@ -1,5 +1,5 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin
+// Copyright (c) 2023-present Tim Verberne
+// This source code is part of the Ambiverse plugin
 
 #pragma once
 
@@ -7,12 +7,13 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "AmbiverseSubsystem.generated.h"
 
+class UAmbiverseDistributorManager;
 class UAmbiverseLayerManager;
 class UAmbiverseParameterManager;
 class UAmbiverseSoundSourceManager;
 class UAmbiverseLayer;
 
-UCLASS(ClassGroup = "Ambiverse")
+UCLASS(Transient, ClassGroup = "Ambiverse")
 class AMBIVERSE_API UAmbiverseSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
@@ -25,17 +26,18 @@ public:
 #endif
 
 private:
-	/** The layer manager object. */
+	/** Sub objects. */
 	UPROPERTY()
 	UAmbiverseLayerManager* LayerManager {nullptr};
 	
-	/** The sound source manager object. */
+	UPROPERTY()
+	UAmbiverseParameterManager* ParameterManager {nullptr};
+
 	UPROPERTY()
 	UAmbiverseSoundSourceManager* SoundSourceManager {nullptr};
 
-	/** The parameter manager object. */
 	UPROPERTY()
-	UAmbiverseParameterManager* ParameterManager {nullptr};
+	UAmbiverseDistributorManager* DistributorManager {nullptr};
 
 public:
 	virtual TStatId GetStatId() const override
@@ -44,8 +46,11 @@ public:
 	}
 
 private:
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+	
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -69,8 +74,9 @@ private:
 
 public:
 	FORCEINLINE UAmbiverseLayerManager* GetLayerManager() const { return LayerManager; }
-	FORCEINLINE UAmbiverseSoundSourceManager* GetSoundSourceManager() const { return SoundSourceManager; }
 	FORCEINLINE UAmbiverseParameterManager* GetParameterManager() const { return ParameterManager; }
+	FORCEINLINE UAmbiverseSoundSourceManager* GetSoundSourceManager() const { return SoundSourceManager; }
+	FORCEINLINE UAmbiverseDistributorManager* GetDistributorManager() const { return DistributorManager; }
 };
 
 
