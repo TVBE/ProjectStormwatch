@@ -43,7 +43,6 @@ void UReacousticComponent::BeginPlay()
 			GetOwner()->GetComponents(Components);
 			if(!Components.IsEmpty())
 			{
-				bool bFoundCompatibleComponent = false;
 				for (UActorComponent* Component : Components)
 				{
 					if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(Component))
@@ -52,21 +51,11 @@ void UReacousticComponent::BeginPlay()
 						{
 							MeshComponent = StaticMeshComponent;
 							// StaticMeshComponent->SetGenerateOverlapEvents(true);
-							bFoundCompatibleComponent = true;
 							break;
 						}
 					}
 				}
-
-				if (!bFoundCompatibleComponent)
-				{
-					UE_LOG(LogReacousticComponent, Warning, TEXT("Reacoustic component is not compatible with the parent actor: %s. Deleting it."),*FString(this->GetOwner()->GetName()));
-					GetOwner()->RemoveOwnedComponent(this);
-					this->UnregisterComponent();
-					AudioComponent->UnregisterComponent();
-					AudioComponent->DestroyComponent();
-					this->DestroyComponent();
-				}
+				
 			}
 			if(!MeshComponent)
 			{
@@ -91,6 +80,16 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
+
+		if(const UWorld* World {GetWorld()})
+		{
+			if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+			{
+				TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
+			}
+		}
+	
+	
 	if(!AudioComponent)
 	{
 		AudioComponent = NewObject<UAudioComponent>(GetOwner());
@@ -184,13 +183,13 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 							
 						
 					}
-					else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: STATE ARRAY"))}
+					else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: STATE ARRAY"))}
 				}
-				else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
+				else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
 			}
-			else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: DELTA HIT TIME"))}
+			else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA HIT TIME"))}
 		}
-		else{UE_LOG(LogReacousticComponent,Warning,TEXT("Prevented hit by: LOCATION DISTANCE"))}
+		else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: LOCATION DISTANCE"))}
 		
 		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
 		if (DeltaStateArray.Num() > 20)
@@ -200,24 +199,9 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 
 		if(MeshAudioData.OnsetVolumeData.Num() == 0)
 		{
-			if(const UWorld* World {GetWorld()})
-			{
-				if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-				{
-					TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
-					if(Subsystem->GetMeshSoundData(MeshComponent).OnsetVolumeData.Num() == 0)
-					{
-						UE_LOG(LogReacousticComponent, Warning, TEXT("Reacoustic component couldn't find any valid sounds for %s. Deleting it."),*FString(this->GetOwner()->GetName()));
-						GetOwner()->RemoveOwnedComponent(this);
-						this->UnregisterComponent();
-						AudioComponent->UnregisterComponent();
-						AudioComponent->DestroyComponent();
-						this->DestroyComponent();
-					}
-					Initialize();
-				}
-			}
+			Initialize();
 		}
+		
 	}
 }
 

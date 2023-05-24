@@ -31,12 +31,7 @@ void UPlayerDragComponent::OnRegister()
         Gravity = World->GetGravityZ();
     }
 
-	if(!Configuration)
-	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
-		Configuration = NewObject<UPlayerDragConfiguration>();
-	}
-	ApplyToPhysicsHandle();
+
 }
 
 void UPlayerDragComponent::BeginPlay()
@@ -50,12 +45,14 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (GrabbedComponent)
     {
-		// UpdateLocalConstraint();
+		
     	
-        if (!Configuration)
-        {
-        	return;
-        }
+    	if(!Configuration)
+    	{
+    		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
+    		Configuration = NewObject<UPlayerDragConfiguration>();
+    	}
+    	ApplyToPhysicsHandle();
     	
     	UpdateTargetLocation(DeltaTime);
     	// UpdateCameraRotationSpeed(DeltaTime);
