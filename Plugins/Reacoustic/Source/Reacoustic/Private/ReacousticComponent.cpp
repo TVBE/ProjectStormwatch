@@ -158,7 +158,7 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 				DeltaStateArray.Empty();
 			}
 			
-			if(DeltaHitTime > 0.2)
+			if(DeltaHitTime > 0.05)
 			{
 				/** prevent situations were sounds are hittng in the same orientation.*/
 				DeltaDirectionVector =
