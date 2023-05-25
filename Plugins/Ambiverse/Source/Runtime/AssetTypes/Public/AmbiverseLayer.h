@@ -19,7 +19,7 @@ struct FAmbiverseLayerQueueEntry
 	GENERATED_USTRUCT_BODY()
 	
 	UPROPERTY()
-	FAmbiverseProceduralSoundData SoundData {FAmbiverseProceduralSoundData()};
+	FAmbiverseProceduralElementData SoundData {FAmbiverseProceduralElementData()};
 
 	UPROPERTY()
 	float Time {0.0f};
@@ -41,24 +41,24 @@ class AMBIVERSE_API UAmbiverseLayer : public UObject
 public:
 #if WITH_EDITORONLY_DATA
 	/** User friendly name for the layer. */
-	UPROPERTY(EditAnywhere, Category = "Layer", Meta = (EditCondition = "IsEnabled"))
+	UPROPERTY(EditAnywhere, Category = "Editor")
 	FName Name;
 
 	/** A description for the layer. */
-	UPROPERTY(EditAnywhere, Category = "Layer", Meta = (EditCondition = "IsEnabled", MultiLine = "true"))
+	UPROPERTY(EditAnywhere, Category = "Editor", Meta = (MultiLine = "true"))
 	FText Description;
-#endif
 	
 	/** The color of the layer when visualised in the editor. */
-	UPROPERTY(EditAnywhere, Category = "Layer", Meta = (EditCondition = "IsEnabled"))
+	UPROPERTY(EditAnywhere, Category = "Editor")
 	FColor Color {FColor::Blue};
+#endif
 	
 	/** the procedural sound data of this layer. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds", Meta = (TitleProperty = "Name", EditCondition = "IsEnabled"))
-	TArray<FAmbiverseProceduralSoundData> ProceduralSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Elements", Meta = (TitleProperty = "Name"))
+	TArray<FAmbiverseProceduralElementData> Elements;
 
 	/** Parameters that influence all procedural sounds in this layer. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters", Meta = (EditCondition = "IsEnabled"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters")
 	TArray<FAmbiverseParameterModifiers> Parameters;
 
 	/** Volume multiplier for all sounds in this layer. */
@@ -92,5 +92,7 @@ public:
 
 	void InitializeSoundQueue();
 };
+
+
 
 

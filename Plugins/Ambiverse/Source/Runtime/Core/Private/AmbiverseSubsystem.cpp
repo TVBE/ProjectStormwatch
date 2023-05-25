@@ -116,7 +116,7 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
 		
 	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(Entry.SoundData.DistributionData, CameraLocation);
-	SoundSourceData.Sound = FAmbiverseProceduralSoundData::GetSoundFromMap(Entry.SoundData.Sounds);
+	SoundSourceData.Sound = FAmbiverseProceduralElementData::GetSoundFromMap(Entry.SoundData.Sounds);
 	SoundSourceData.Volume = Entry.SoundData.Volume;
 	SoundSourceData.Name = Entry.SoundData.Name;
 	SoundSourceData.Layer = Layer;

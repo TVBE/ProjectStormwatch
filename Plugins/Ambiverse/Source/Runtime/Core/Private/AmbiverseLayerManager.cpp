@@ -34,13 +34,13 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		return;
 	}
 
-	for (FAmbiverseProceduralSoundData& SoundData : Layer->ProceduralSounds)
+	for (FAmbiverseProceduralElementData& SoundData : Layer->ProceduralSounds)
 	{
-		FAmbiverseProceduralSoundData::Validate(SoundData);
+		FAmbiverseProceduralElementData::Validate(SoundData);
 	}
 
 	bool HasValidSoundData = false;
-	for (const FAmbiverseProceduralSoundData& SoundData : Layer->ProceduralSounds)
+	for (const FAmbiverseProceduralElementData& SoundData : Layer->ProceduralSounds)
 	{
 		if (SoundData.IsValid)
 		{

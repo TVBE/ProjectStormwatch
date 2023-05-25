@@ -55,7 +55,7 @@ void UAmbiverseLayer::SortQueueDataByTime()
 
 void UAmbiverseLayer::InitializeSoundQueue()
 {
-	for (FAmbiverseProceduralSoundData& SoundData : ProceduralSounds)
+	for (FAmbiverseProceduralElementData& SoundData : ProceduralSounds)
 	{
 		FAmbiverseLayerQueueEntry QueueEntry {};
 		QueueEntry.SoundData = SoundData;

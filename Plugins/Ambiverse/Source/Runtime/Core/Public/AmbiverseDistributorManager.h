@@ -7,6 +7,7 @@
 #include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseDistributorManager.generated.h"
 
+class UAmbiverseDistributor;
 class UAmbiverseSubsystem;
 
 /** Manages distributor instances. */
@@ -17,7 +18,13 @@ class UAmbiverseDistributorManager : public UAmbiverseSubsystemComponent
 
 	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseDistributorManager, Log, All)
 
-	UPROPERTY(Transient)
-	UAmbiverseSubsystem* AmbiverseSubsystem {nullptr};
+private:
+	UPROPERTY()
+	TArray<UAmbiverseDistributor*> DistributorRegistry;
+
+public:
+	/** Searches for a distributor instance in the registry. Will instance one if no instance was found. */
+	UAmbiverseDistributor* GetDistributorByClass(TSubclassOf<UAmbiverseDistributor> Class);
 	
+	FORCEINLINE TArray<UAmbiverseDistributor*> GetDistributorRegistry() const { return DistributorRegistry; }
 };

@@ -5,7 +5,7 @@
 
 DEFINE_LOG_CATEGORY(LogProceduralSoundData)
 
-bool FAmbiverseProceduralSoundData::Validate(FAmbiverseProceduralSoundData& SoundData)
+bool FAmbiverseProceduralElementData::Validate(FAmbiverseProceduralElementData& SoundData)
 {
 	if (!SoundData.Use) { return false; }
 	
@@ -47,7 +47,7 @@ bool FAmbiverseProceduralSoundData::Validate(FAmbiverseProceduralSoundData& Soun
 	return SoundData.IsValid;
 }
 
-UMetaSoundSource* FAmbiverseProceduralSoundData::GetSoundFromMap(const TMap<UMetaSoundSource*, int>& SoundMap)
+UMetaSoundSource* FAmbiverseProceduralElementData::GetSoundFromMap(const TMap<UMetaSoundSource*, int>& SoundMap)
 {
 	int32 TotalWeight {0};
 		

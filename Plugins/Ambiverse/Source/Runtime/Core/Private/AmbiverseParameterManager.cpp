@@ -112,7 +112,7 @@ void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayer* Regist
 		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
 	}
 
-	for (FAmbiverseProceduralSoundData ProceduralSoundData : RegisteredLayer->ProceduralSounds)
+	for (FAmbiverseProceduralElementData ProceduralSoundData : RegisteredLayer->ProceduralSounds)
 	{
 		for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
 		{
