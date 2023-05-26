@@ -1,6 +1,5 @@
-// Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
-// This source code is part of the project Frostbite
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+// Written by Tim Verberne.
 
 #include "PressableButton.h"
 

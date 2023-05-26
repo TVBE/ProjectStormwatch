@@ -1,4 +1,5 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #pragma once
 
@@ -20,8 +21,6 @@ private:
 
 
 public:
-
-	
 	/** The Reacoustic SoundData Data Asset. */
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data array Asset"))
 	UReacousticSoundDataAsset* ReacousticSoundDataAsset {NewObject<UReacousticSoundDataAsset>()};
@@ -30,9 +29,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
 
-
-	
-	
 public:
 	UReacousticSubsystem();
 	virtual void PostInitProperties() override;
@@ -68,7 +64,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = Reacoustic, Meta = (DisplayName = "Is Reacoustic Compatible"))
 	bool IsReacousticCompatible(AActor* Actor);
 
-
 private:
 
 	/** The internal reference of the global reacoustic settings.*/
@@ -81,13 +76,9 @@ private:
 	 */
 	UFUNCTION()
 	TArray<AActor*> GetCompatibleActorsOfClass(UClass* ClassType);
-
-	
 	
 	UFUNCTION(BlueprintCallable, Category = Reacoustic)
 	void PopulateWorldWithBPReacousticComponents(TSubclassOf<UReacousticComponent> ComponentClass);
-
-
 };
 
 

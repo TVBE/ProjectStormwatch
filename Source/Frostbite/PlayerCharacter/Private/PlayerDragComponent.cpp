@@ -1,6 +1,5 @@
-// Copyright (c) 2022-present Barrelhouse
-// Written by Nino Saglia
-// This source code is part of the project Frostbite
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+// Written by Nino Saglia & Tim Verberne.
 
 #include "PlayerDragComponent.h"
 #include "PlayerCharacter.h"
@@ -31,7 +30,12 @@ void UPlayerDragComponent::OnRegister()
         Gravity = World->GetGravityZ();
     }
 
-
+	if(!Configuration)
+	{
+		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
+		Configuration = NewObject<UPlayerDragConfiguration>();
+	}
+	ApplyToPhysicsHandle();
 }
 
 void UPlayerDragComponent::BeginPlay()
@@ -45,14 +49,12 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (GrabbedComponent)
     {
-		
+		// UpdateLocalConstraint();
     	
-    	if(!Configuration)
-    	{
-    		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
-    		Configuration = NewObject<UPlayerDragConfiguration>();
-    	}
-    	ApplyToPhysicsHandle();
+        if (!Configuration)
+        {
+        	return;
+        }
     	
     	UpdateTargetLocation(DeltaTime);
     	// UpdateCameraRotationSpeed(DeltaTime);

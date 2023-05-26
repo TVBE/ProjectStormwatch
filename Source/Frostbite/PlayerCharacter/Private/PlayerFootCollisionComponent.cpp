@@ -1,6 +1,5 @@
-// Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
-// This source code is part of the project Frostbite
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+// Written by Tim Verberne.
 
 #include "PlayerFootCollisionComponent.h"
 #include "Components/SphereComponent.h"
@@ -80,9 +79,23 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 #if WITH_REACOUSTIC
 if (ImpulseStrength > 1)
 {
-	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass())))
+	if (UReacousticComponent* ReacousticComponent {Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()))})
 	{
-		ReacousticComponent->TriggerManualHit(0.5f);
+		float PlayerVelocity {static_cast<float>(OtherActor->GetVelocity().Size())};
+		
+		PlayerVelocity = FMath::Clamp(PlayerVelocity, 50.0f, 300.0f);
+		
+		const float VelocityFactor {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(50.0f, 300.0f), FVector2D(0.3f, 0.5f), PlayerVelocity))};
+		
+		const float RandomImpactValue {FMath::RandRange(VelocityFactor, 0.5f)};
+		
+		const float Weight {FMath::Clamp(OtherComp->GetMass(), 0.1f, 10.0f)};
+		
+		const float WeightFactor {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(0.1f, 10.0f), FVector2D(0.8f, 0.2f), Weight))};
+		
+		const float ImpactValue {RandomImpactValue * WeightFactor};
+
+		ReacousticComponent->TriggerManualHit(ImpactValue);
 	}
 }
 #endif

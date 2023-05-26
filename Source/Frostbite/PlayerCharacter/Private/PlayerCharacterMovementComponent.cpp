@@ -1,6 +1,5 @@
-// Copyright (c) 2022-present Barrelhouse
-// Written by Tim Verberne
-// This source code is part of the project Frostbite
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+// Written by Tim Verberne.
 
 #include "PlayerCharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -30,7 +29,7 @@ bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
 
 void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
-	if (Velocity.Z < -800)
+	/*if (Velocity.Z < -800)
 	{
 		if (Velocity.Z < -1000)
 		{
@@ -44,7 +43,10 @@ void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, flo
 	else
 	{
 		OnLanding.Broadcast(EPlayerLandingType::Soft);
-	}
+	}*/
+
+	OnLanding.Broadcast(EPlayerLandingType::Soft);
+	
 	Super::ProcessLanded(Hit, remainingTime, Iterations);
 }
 

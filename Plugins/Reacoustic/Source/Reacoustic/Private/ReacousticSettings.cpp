@@ -1,12 +1,10 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
-
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #include "ReacousticSettings.h"
 #include "ReacousticSubsystem.h"
 #include "Reacoustic.h"
 #include "Serialization/JsonTypes.h"
-
-
 
 UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

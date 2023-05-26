@@ -1,10 +1,12 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #include "ReacousticComponent.h"
+
+#include "FileCache.h"
 #include "ReacousticSubsystem.h"
 
 #define LOG_CATEGORY(LogReacousticComponent);
-
 
 UReacousticComponent::UReacousticComponent()
 {
@@ -12,14 +14,12 @@ UReacousticComponent::UReacousticComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 	bAutoActivate = true;
-	
 }
 
 void UReacousticComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 }
-
 
 void UReacousticComponent::BeginPlay()
 {
