@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
+#include "components/AudioComponent.h"
 #include "ReacousticComponent.generated.h"
 
 class ReacousticSoundDataRef_Map;
@@ -74,6 +75,9 @@ protected:
 	/** The Reacoustic Sound Data Reference Map.*/
 	UPROPERTY(BlueprintReadWrite, Category = "Reacoustic Component", Meta = (DisplayName = "Sound Data Asset Reference Map"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
+
+	UPROPERTY(BlueprintReadOnly, category = "Reacoutic Component", Meta = (DisplayName = "Audio Component"))
+	UAudioComponent* AudioComponent{nullptr};
 
 public:	
 	UReacousticComponent();
