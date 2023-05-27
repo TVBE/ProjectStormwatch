@@ -162,22 +162,29 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 
 			if (const UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorComponent)})
 			{
-				/** Find the ReacousticSoundDataRef for the StaticMeshComponent. */
-				for (const auto& [Mesh, SoundDataRef] : UReacousticSoundDataRefMap->MeshMapEntries)
-				{
-					/** Get the mesh and associated sound data reference from the UReacousticSoundDataRefMap. */
-					UStaticMesh* MeshPtr {Mesh};
-					const int32 SoundDataRefValue {SoundDataRef};
-
-					/** If the current mesh is the same as the StaticMeshComponent's mesh, retrieve the row number that matches the sound data reference. */
-					if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
-					{
-						const FReacousticSoundData MeshSoundData {ReacousticSoundDataAsset->AudioData[SoundDataRefValue]};
-						AddBPReacousticComponentToActor(Actor, ComponentClass, MeshSoundData);
-					}
-				}
+				const FReacousticSoundData MeshSoundData {GetMeshSoundData(StaticMeshComponent)};
+				AddBPReacousticComponentToActor(Actor, ComponentClass, MeshSoundData);
 			}
 		}
 	}
 }
 
+FReacousticSoundData UReacousticSubsystem::GetMeshSoundData(const UStaticMeshComponent* StaticMeshComponent) const
+{
+	if (!StaticMeshComponent || !UReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
+	{
+		return FReacousticSoundData{};
+	}
+
+	for (const auto& [Mesh, SoundDataRef] : UReacousticSoundDataRefMap->MeshMapEntries)
+	{
+		UStaticMesh* MeshPtr {Mesh};
+		const int32 SoundDataRefValue {SoundDataRef};
+
+		if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
+		{
+			return ReacousticSoundDataAsset->AudioData[SoundDataRefValue];
+		}
+	}
+	return FReacousticSoundData{};
+}

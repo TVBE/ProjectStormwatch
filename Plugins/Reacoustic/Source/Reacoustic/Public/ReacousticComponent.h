@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
+#include "components/AudioComponent.h"
 #include "ReacousticComponent.generated.h"
 
 class ReacousticSoundDataRef_Map;
@@ -27,17 +28,30 @@ private:
 	 */
 	double DeltaHitTime;
 	double DeltaLocationDistance;
-	double DeltaForwardVector;
+	double DeltaDirectionVector;
+	
+	FVector LatestForwardVector;
+	FVector LatestRightVector;
+	FVector LatestUptVector;
+	
 	FVector LatestLocation;
 	double LatestTime;
-	FVector LatestForwardVector;
+
+	
 	TArray<float> DeltaStateArray;
 	
-	/** This variable is used to choose the impact sound during a hit.*/
-	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "ImapctForce", AllowPrivateAccess = "true"))	
-	float ImpactForce;
-	
 
+	/** Array used to store the latest hit values so that we can prevent multiple triggers of the same sound.*/
+	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "LatestHitResults", AllowPrivateAccess = "true"))
+	TArray<float> LatestSoundTimings;
+
+
+protected:
+	/** This variable is used to choose the impact sound during a hit.*/
+	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Impact Force"))	
+	float ImpactForce;
+
+private:
 	/** Utility function to calculate the sum of elements in an array of floats */
 	UFUNCTION()
 	static float GetArraySum(TArray<float> Array)
@@ -62,6 +76,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Reacoustic Component", Meta = (DisplayName = "Sound Data Asset Reference Map"))	
 	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
 
+	UPROPERTY(BlueprintReadOnly, category = "Reacoutic Component", Meta = (DisplayName = "Audio Component"))
+	UAudioComponent* AudioComponent{nullptr};
+
 public:	
 	UReacousticComponent();
 	
@@ -75,6 +92,9 @@ public:
 	UFUNCTION()
 	void HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
+
+	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Initialize"))
+	void Initialize(USoundBase* SoundBase = nullptr);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Trigger manual hit"))
 	void TriggerManualHit(float HitStrength);
@@ -91,13 +111,20 @@ public:
 	/** Get the time interval between hits */
 	UFUNCTION(BlueprintPure)
 	double ReturnDeltaTime();
-
+	
+	/** Get the location interval between hits */
 	UFUNCTION(BlueprintPure)
 	double ReturnDeltaLocationDistance();
 	
 	UFUNCTION()
 	void TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn);
 
+	/** Caluclates the integer entry number in FReacousticSoundData that matches the impact value.*/
+	UFUNCTION(BlueprintCallable)
+	int CalcluateSoundDataEntry(FReacousticSoundData SoundData, float ImpactValue);
+	
+	
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnComponentCreated() override;
