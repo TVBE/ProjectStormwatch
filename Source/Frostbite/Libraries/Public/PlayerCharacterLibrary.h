@@ -6,13 +6,13 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "PlayerCharacterUtilities.generated.h"
+#include "PlayerCharacterLibrary.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FROSTBITE_API UPlayerCharacterUtilities : public UBlueprintFunctionLibrary
+class FROSTBITE_API UPlayerCharacterLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

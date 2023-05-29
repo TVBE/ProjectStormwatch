@@ -2,10 +2,10 @@
 // Written by Tim Verberne
 // This source code is part of the project Frostbite
 
-#include "PlayerCharacterUtilities.h"
+#include "PlayerCharacterLibrary.h"
 #include "StepData.h"
 
-FStepData UPlayerCharacterUtilities::GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
+FStepData UPlayerCharacterLibrary::GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World)
