@@ -45,8 +45,8 @@ public:
 	void Initialize(UNightstalkerDirector* Subsystem);
 	void Deinitialize();
 
-	void StartHeatPointUpdateTimer();
-	void StopHeatPointUpdateTimer();
+	void Activate();
+	void Deactivate();
 
 	/** Registers a heat point instance to the heat point manager. */
 	void RegisterHeatPoint(AHeatPoint* Instance);
@@ -63,6 +63,8 @@ public:
 
 	/** Destroys all active heat points. */
 	void FlushHeatPoints();
+
+	bool IsActive() const;
 
 private:
 	/** Updates the lifetime of every heat point instance in the world. */

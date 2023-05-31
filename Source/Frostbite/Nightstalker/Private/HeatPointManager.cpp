@@ -17,16 +17,16 @@ void UHeatPointManager::Initialize(UNightstalkerDirector* Subsystem)
 
 	Director = Subsystem;
 
-	StartHeatPointUpdateTimer();
+	Activate();
 }
 
 void UHeatPointManager::Deinitialize()
 {
-	StopHeatPointUpdateTimer();
+	Deactivate();
 	FlushHeatPoints();
 }
 
-void UHeatPointManager::StartHeatPointUpdateTimer()
+void UHeatPointManager::Activate()
 {
 	if (const UWorld* World {GetWorld()})
 	{
@@ -35,7 +35,7 @@ void UHeatPointManager::StartHeatPointUpdateTimer()
 	}
 }
 
-void UHeatPointManager::StopHeatPointUpdateTimer()
+void UHeatPointManager::Deactivate()
 {
 	if (const UWorld* World {GetWorld()})
 	{
@@ -186,4 +186,16 @@ void UHeatPointManager::RemoveZeroHeatPoints()
 			HeatPoint->Destroy();
 		}
 	}
+}
+
+bool UHeatPointManager::IsActive() const
+{
+	if (const UWorld* World {GetWorld()})
+	{
+		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
+		{
+			return true;
+		}
+	}
+	return false;
 }

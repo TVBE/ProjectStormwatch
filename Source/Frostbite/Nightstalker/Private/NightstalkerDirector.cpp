@@ -90,11 +90,18 @@ void UNightstalkerDirector::HandlePlayerPerceptionChanged(bool IsPlayerDetected)
 	{
 		if (IsPlayerDetected)
 		{
-		
+			if (HeatPointmanager->IsActive())
+			{
+				HeatPointmanager->Deactivate();
+				HeatPointmanager->FlushHeatPoints();
+			}
 		}
 		else
 		{
-		
+			if (!HeatPointmanager->IsActive())
+			{
+				HeatPointmanager->Activate();
+			}
 		}
 	}
 }
