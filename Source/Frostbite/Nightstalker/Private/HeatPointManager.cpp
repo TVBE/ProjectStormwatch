@@ -3,7 +3,6 @@
 // This source code is part of the project Frostbite
 
 #include "HeatPointManager.h"
-
 #include "HeatPoint.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UHeatPointManager, LogHeatPointManager);
@@ -17,7 +16,18 @@ void UHeatPointManager::Initialize(UNightstalkerDirector* Subsystem)
 	if (!Subsystem) { return; }
 
 	Director = Subsystem;
-	
+
+	StartHeatPointUpdateTimer();
+}
+
+void UHeatPointManager::Deinitialize()
+{
+	StopHeatPointUpdateTimer();
+	FlushHeatPoints();
+}
+
+void UHeatPointManager::StartHeatPointUpdateTimer()
+{
 	if (const UWorld* World {GetWorld()})
 	{
 		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::UpdateHeatPointLifeTime, 1.0f, true);
@@ -25,7 +35,7 @@ void UHeatPointManager::Initialize(UNightstalkerDirector* Subsystem)
 	}
 }
 
-void UHeatPointManager::Deinitialize()
+void UHeatPointManager::StopHeatPointUpdateTimer()
 {
 	if (const UWorld* World {GetWorld()})
 	{
@@ -58,6 +68,12 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 {
 	TArray<FHeatPointOverlapData> CombinedOverlapData;
 	
+	/** Set to track which heat points had their heat increased. */
+	TSet<AHeatPoint*> HeatPointsIncreased;
+
+	/** Variable to track total added heat. */
+	float TotalAddedHeat {0}; 
+
 	for (const FHeatPointOverlapData& Overlap : OverlapData)
 	{
 		bool FoundExistingHeatPoint {false};
@@ -66,7 +82,12 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 		{
 			if (CombinedOverlap.HeatPoint == Overlap.HeatPoint)
 			{
+				const float OldHeat {CombinedOverlap.Event.Heat};
 				CombinedOverlap.Event.Heat = CombineHeatValues(CombinedOverlap.Event.Heat, Overlap.Event.Heat);
+				TotalAddedHeat += CombinedOverlap.Event.Heat - OldHeat; 
+				
+				HeatPointsIncreased.Add(CombinedOverlap.HeatPoint);
+				
 				CombinedOverlap.Event.Location = (CombinedOverlap.Event.Location + Overlap.Event.Location) / 2.0f;
 				CombinedOverlap.Event.Radius = (CombinedOverlap.Event.Radius + Overlap.Event.Radius) / 2.0f;
 				FoundExistingHeatPoint = true;
@@ -77,6 +98,9 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 		if (!FoundExistingHeatPoint)
 		{
 			CombinedOverlapData.Add(Overlap);
+			TotalAddedHeat += Overlap.Event.Heat;
+			
+			HeatPointsIncreased.Add(Overlap.HeatPoint);
 		}
 	}
 
@@ -93,7 +117,41 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 				break;
 			}
 		}
+		
+		if (!HeatPointsIncreased.Contains(HeatPoint))
+		{
+			HeatPoint->DetractHeat(TotalAddedHeat * 0.1f);
+		}
 	}
+	
+	RemoveZeroHeatPoints();
+}
+
+
+void UHeatPointManager::SortHeatPointsByHeatValue()
+{
+	const AHeatPoint* PreviousHottest {HeatPoints.Num() > 0 ? HeatPoints[HeatPoints.Num() - 1] : nullptr};
+
+	HeatPoints.Sort([](const AHeatPoint& A, const AHeatPoint& B)
+	{
+		return A.GetHeat() < B.GetHeat();
+	});
+
+	AHeatPoint* CurrentHottest {HeatPoints.Num() > 0 ? HeatPoints[HeatPoints.Num() - 1] : nullptr};
+
+	if (CurrentHottest != PreviousHottest)
+	{
+		OnHottestHeatPointChanged.Broadcast(CurrentHottest);
+	}
+}
+
+void UHeatPointManager::FlushHeatPoints()
+{
+	for (AHeatPoint* HeatPoint : HeatPoints)
+	{
+		HeatPoint->Destroy();
+	}
+	HeatPoints.Empty();
 }
 
 void UHeatPointManager::UpdateHeatPointLifeTime()
@@ -111,6 +169,21 @@ void UHeatPointManager::UpdateHeatPointLifeTime()
 				HeatPoints.RemoveAt(Index);
 				HeatPoint->Destroy();
 			}
+		}
+	}
+}
+
+void UHeatPointManager::RemoveZeroHeatPoints()
+{
+	if (HeatPoints.IsEmpty()) { return; }
+
+	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
+	{
+		AHeatPoint* HeatPoint {HeatPoints[Index]};
+		if (HeatPoint && HeatPoint->GetHeat() <= 0)
+		{
+			HeatPoints.RemoveAt(Index);
+			HeatPoint->Destroy();
 		}
 	}
 }

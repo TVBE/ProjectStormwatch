@@ -6,6 +6,7 @@
 
 #include "HeatPointManager.h"
 #include "Nightstalker.h"
+#include "NightstalkerController.h"
 #include "SensoryEventManager.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UNightstalkerDirector, LogNightstalkerDirector);
@@ -61,6 +62,12 @@ void UNightstalkerDirector::RegisterNightstalker(ANightstalker* Instance)
 		 *	We might want to change this later as it is slightly more difficult to debug the sensory event manager without a nightstalker instance. */
 		SensoryEventManager->Initialize(this);
 	}
+
+	if (ANightstalkerController* NightstalkerController {Cast<ANightstalkerController>(Instance->GetController())})
+	{
+		NightstalkerController->OnPlayerPerceptionChanged.AddDynamic(this, &UNightstalkerDirector::HandlePlayerPerceptionChanged);
+	}
+	
 	UE_LOG(LogNightstalkerDirector, Verbose, TEXT("Registered Nightstalker instance: '%s'"), *Instance->GetName());
 }
 
@@ -76,5 +83,21 @@ void UNightstalkerDirector::UnregisterNightstalker(ANightstalker* Instance)
 
 	UE_LOG(LogNightstalkerDirector, Verbose, TEXT("Unregistered Nightstalker instance."))
 }
+
+void UNightstalkerDirector::HandlePlayerPerceptionChanged(bool IsPlayerDetected)
+{
+	if (HeatPointmanager)
+	{
+		if (IsPlayerDetected)
+		{
+		
+		}
+		else
+		{
+		
+		}
+	}
+}
+
 
 

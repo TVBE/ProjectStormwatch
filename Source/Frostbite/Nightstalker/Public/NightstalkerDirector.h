@@ -59,6 +59,9 @@ private:
 
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
+	UFUNCTION()
+	void HandlePlayerPerceptionChanged(bool IsPlayerDetected);
+
 public:
 	UFUNCTION(BlueprintGetter, Category = "Sensory Event Manager")
 	FORCEINLINE USensoryEventManager* GetSensoryEventManager() const { return SensoryEventManager; }

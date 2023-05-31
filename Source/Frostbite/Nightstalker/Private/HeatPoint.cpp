@@ -120,6 +120,19 @@ void AHeatPoint::AddHeat(const float AddedHeat)
 	SetHeat(HeatTotal);
 }
 
+void AHeatPoint::DetractHeat(const float HeatToDeduct)
+{
+	
+	if (Heat - HeatToDeduct >= 0)
+	{
+		Heat -= HeatToDeduct;
+	}
+	else
+	{
+		Heat = 0;
+	}
+}
+
 #if WITH_EDITORONLY_DATA
 void AHeatPoint::SetDebugVisEnabled(bool IsEnabled)
 {

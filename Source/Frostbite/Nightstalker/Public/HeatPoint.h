@@ -31,7 +31,7 @@ private:
 
 	/** The expiration time of the heat point. This describes how long the heat point will remain active before expiring. */
 	UPROPERTY(BlueprintGetter = GetExpirationTime)
-	int ExpirationTime {30};
+	int ExpirationTime {60};
 
 #if WITH_EDITORONLY_DATA
 	bool IsDebugVisEnabled {true};
@@ -58,6 +58,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void AddHeat(const float AddedHeat);
+
+	UFUNCTION(BlueprintCallable)
+	void DetractHeat(const float HeatToDeduct);
 
 #if WITH_EDITORONLY_DATA
 	void SetDebugVisEnabled(bool IsEnabled);

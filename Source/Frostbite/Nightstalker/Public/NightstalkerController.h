@@ -12,12 +12,18 @@
 class APlayerCharacter;
 class ANightstalker;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPerceptionChangedDelegate, bool, IsPlayerDetected);
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Nightstalker")
 class ANightstalkerController : public AAIController
 {
 	GENERATED_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogNightstalkerController, Log, All)
+
+public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Delegates")
+	FOnPlayerPerceptionChangedDelegate OnPlayerPerceptionChanged;
 
 private:
 	/** Pointer to the ANightstalker instance that this controller is currently controlling. */

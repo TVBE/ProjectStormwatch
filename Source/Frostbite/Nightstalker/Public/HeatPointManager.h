@@ -11,6 +11,8 @@
 class AHeatPoint;
 class UNightstalkerDirector;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHottestHeatPointChangedDelegate, AHeatPoint*, HeatPoint);
+
 UCLASS()
 class UHeatPointManager : public UObject
 {
@@ -22,6 +24,9 @@ public:
 #if WITH_EDITORONLY_DATA
 	bool IsDebugVisualiationEnabled {true};
 #endif
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnHottestHeatPointChangedDelegate OnHottestHeatPointChanged;
 
 private:
 	/** Pointer to the subsystem that owns this object. */
@@ -40,6 +45,9 @@ public:
 	void Initialize(UNightstalkerDirector* Subsystem);
 	void Deinitialize();
 
+	void StartHeatPointUpdateTimer();
+	void StopHeatPointUpdateTimer();
+
 	/** Registers a heat point instance to the heat point manager. */
 	void RegisterHeatPoint(AHeatPoint* Instance);
 
@@ -50,10 +58,18 @@ public:
 	/** Updates the size and heat of existing heat points. */
 	void UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapData);
 
+	/** Sorts the heat points array by heat value in ascending order. */
+	void SortHeatPointsByHeatValue();
+
+	/** Destroys all active heat points. */
+	void FlushHeatPoints();
+
 private:
 	/** Updates the lifetime of every heat point instance in the world. */
 	UFUNCTION()
 	void UpdateHeatPointLifeTime();
+	
+	void RemoveZeroHeatPoints();
 
 public:
 	FORCEINLINE TArray<AHeatPoint*> GetHeatPoints() const { return HeatPoints; }
