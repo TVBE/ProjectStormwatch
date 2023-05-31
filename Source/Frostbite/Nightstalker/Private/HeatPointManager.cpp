@@ -18,6 +18,7 @@ void UHeatPointManager::Initialize(UNightstalkerDirector* Subsystem)
 	Director = Subsystem;
 
 	Activate();
+	UE_LOG(LogHeatPointManager, Log, TEXT("Initialized heat point manager."))
 }
 
 void UHeatPointManager::Deinitialize()
@@ -31,7 +32,7 @@ void UHeatPointManager::Activate()
 	if (const UWorld* World {GetWorld()})
 	{
 		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::UpdateHeatPointLifeTime, 1.0f, true);
-		UE_LOG(LogHeatPointManager, Log, TEXT("Initialized heat point manager."))
+		UE_LOG(LogHeatPointManager, Verbose, TEXT("Activated heat point manager."))
 	}
 }
 
@@ -42,6 +43,7 @@ void UHeatPointManager::Deactivate()
 		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
 		{
 			World->GetTimerManager().ClearTimer(HeatPointProcessorTimerHandle);
+			UE_LOG(LogHeatPointManager, Verbose, TEXT("Deactivated heat point manager."))
 		}
 	}
 }
@@ -49,13 +51,22 @@ void UHeatPointManager::Deactivate()
 void UHeatPointManager::RegisterHeatPoint(AHeatPoint* Instance)
 {
 	if (!Instance) { return; }
+	
 	HeatPoints.AddUnique(Instance);
+
+	SortHeatPointsByHeatValue();
+
+	if (HeatPoints.Num() == 1)
+	{
+		OnHottestHeatPointChanged.Broadcast(Instance);
+	}
 }
 
 void UHeatPointManager::UnregisterHeatPoint(AHeatPoint* Instance)
 {
 	if (!Instance) { return; }
 	HeatPoints.Remove(Instance);
+	SortHeatPointsByHeatValue();
 }
 
 inline float CombineHeatValues(float HeatValueA, float HeatValueB)
@@ -147,10 +158,12 @@ void UHeatPointManager::SortHeatPointsByHeatValue()
 
 void UHeatPointManager::FlushHeatPoints()
 {
-	for (AHeatPoint* HeatPoint : HeatPoints)
+	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
 	{
+		AHeatPoint* HeatPoint {HeatPoints[Index]};
 		HeatPoint->Destroy();
 	}
+
 	HeatPoints.Empty();
 }
 
@@ -198,4 +211,10 @@ bool UHeatPointManager::IsActive() const
 		}
 	}
 	return false;
+}
+
+AHeatPoint* UHeatPointManager::GetHottestHeatPoint()
+{
+	if (HeatPoints.IsEmpty()) { return nullptr; }
+	return HeatPoints[0];
 }

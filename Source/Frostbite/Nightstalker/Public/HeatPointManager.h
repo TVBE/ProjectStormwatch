@@ -66,6 +66,9 @@ public:
 
 	bool IsActive() const;
 
+	UFUNCTION(BlueprintPure)
+	AHeatPoint* GetHottestHeatPoint();
+
 private:
 	/** Updates the lifetime of every heat point instance in the world. */
 	UFUNCTION()
