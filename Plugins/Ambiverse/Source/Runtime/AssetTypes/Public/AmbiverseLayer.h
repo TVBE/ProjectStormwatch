@@ -53,6 +53,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Enable Layer"))
 	bool IsEnabled {true};
+
+	/** If true, the layer has a finite lifetime and will expire when this duration is reached after becoming active. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime")
+	bool EnableLifetime {false};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime", Meta = (EditCondition = "EnableTimeline", ClampMin = "0"))
+	float Lifetime {30.0f};
+
+	float ActiveDuration {0.0f};
+
+	/** @brief The normalized ratio of the active duration of the layer relative to its maximum lifetime.
+	* This property provides a normalized value indicating how much of the layer's total lifetime has been used up.
+	* It is calculated as the active duration divided by the total lifetime. 
+	* For instance, if the active duration is 20 seconds and the total lifetime is 40 seconds, LifetimePercentage will be 0.5. */
+	float LifetimeRatio {0.0f};
 	
 	UPROPERTY()
 	FTimerHandle TimerHandle;

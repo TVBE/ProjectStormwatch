@@ -18,6 +18,52 @@ void UAmbiverseLayerManager::Initialize(UAmbiverseSubsystem* Subsystem)
 	}
 }
 
+void UAmbiverseLayerManager::Tick(const float DeltaTime)
+{
+	UpdateActiveLayers(DeltaTime);
+}
+
+void UAmbiverseLayerManager::UpdateActiveLayers(const float DeltaTime)
+{
+	if (ActiveLayers.IsEmpty()) { return; }
+
+	for (UAmbiverseLayer* Layer : ActiveLayers)
+	{
+		UpdateElements(DeltaTime, Layer);
+
+		Layer->ActiveDuration += DeltaTime;
+		if (Layer->EnableLifetime)
+		{
+			if (Layer->Lifetime != 0.0f)
+			{
+				Layer->LifetimeRatio = Layer->ActiveDuration / Layer->Lifetime;
+			}
+			else
+			{
+				Layer->LifetimeRatio = 0.0f;
+			}
+		}
+	}
+}
+
+void UAmbiverseLayerManager::UpdateElements(const float DeltaTime, UAmbiverseLayer* Layer)
+{
+	if (Layer->Elements.IsEmpty()) { return; }
+
+	for (FAmbiverseProceduralElement& Element : Layer->Elements)
+	{
+		const float ScaleFactor {(Element.Time - DeltaTime) / Element.Time};
+		Element.ReferenceTime *= ScaleFactor;
+
+		Element.Time -= DeltaTime;
+
+		if (Element.Time <= 0)
+		{
+			Owner->ProcessElement(Layer, Element);
+		}
+	}
+}
+
 void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 {
 	if (!Layer)
@@ -58,7 +104,7 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 
 	if (!FindActiveAmbienceLayer(Layer))
 	{
-		LayerRegistry.Add(Layer);
+		ActiveLayers.Add(Layer);
 		Layer->BuildIndex();
 
 		OnLayerRegistered.Broadcast(Layer);
@@ -74,9 +120,9 @@ void UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("UnregisterAmbiverseLayer: No Layer provided."));
 		return;
 	}
-	if (LayerRegistry.Contains(Layer))
+	if (ActiveLayers.Contains(Layer))
 	{
-		LayerRegistry.Remove(Layer);
+		ActiveLayers.Remove(Layer);
 		OnLayerUnregistered.Broadcast(Layer);
 
 		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("Unregistered Ambiverse Layer:: '%s'."), *Layer->GetName());
@@ -85,7 +131,7 @@ void UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayer* Layer)
 
 UAmbiverseLayer* UAmbiverseLayerManager::FindActiveAmbienceLayer(const UAmbiverseLayer* LayerToFind) const
 {
-	for (UAmbiverseLayer* Layer : LayerRegistry)
+	for (UAmbiverseLayer* Layer : ActiveLayers)
 	{
 		if (Layer == LayerToFind)
 		{
@@ -112,3 +158,5 @@ void UAmbiverseLayerManager::Deinitialize(UAmbiverseSubsystem* Subsystem)
 	
 	Super::Deinitialize(Subsystem);
 }
+
+

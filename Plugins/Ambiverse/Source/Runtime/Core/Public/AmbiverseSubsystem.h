@@ -39,10 +39,16 @@ private:
 	UAmbiverseDistributorManager* DistributorManager {nullptr};
 
 public:
+	UAmbiverseSubsystem();
+	
 	virtual TStatId GetStatId() const override
 	{
 		RETURN_QUICK_DECLARE_CYCLE_STAT(UAmbiverseSubsystem, STATGROUP_Tickables);
 	}
+
+	/** Processes an ambience event and updates the queue for an ambience layer. */
+	UFUNCTION()
+	void ProcessElement(UAmbiverseLayer* Layer,  FAmbiverseProceduralElement& Element);
 
 private:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -50,16 +56,7 @@ private:
 	
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
-
 	virtual void Tick(float DeltaTime) override;
-
-	/** Updates the remaining time of all sounds in the sound queue. */
-	UFUNCTION()
-	void UpdateActiveLayers(const float DeltaTime);
-	
-	/** Processes an ambience event and updates the queue for an ambience layer.*/
-	UFUNCTION()
-	void ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer,  FAmbiverseLayerQueueEntry& Entry);
 	
 	static float GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
 	static float GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);

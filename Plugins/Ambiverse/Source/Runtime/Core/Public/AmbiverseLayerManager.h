@@ -27,11 +27,13 @@ public:
 private:
 	/** The current active ambience layers. */
 	UPROPERTY()
-	TArray<UAmbiverseLayer*> LayerRegistry;
+	TArray<UAmbiverseLayer*> ActiveLayers;
 
 public:
 	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
 	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem) override;
+
+	virtual void Tick(const float DeltaTime) override;
 	
 	void RegisterAmbiverseLayer(UAmbiverseLayer* Layer);
 	void UnregisterAmbiverseLayer(UAmbiverseLayer* Layer);
@@ -43,7 +45,11 @@ private:
 	UFUNCTION()
 	void HandleOnParameterChanged(UAmbiverseParameter* ChangedParameter);
 
+	void UpdateActiveLayers(float DeltaTime);
+
+	void UpdateElements(float DeltaTime, UAmbiverseLayer* Layer);
+
 public:
-	FORCEINLINE TArray<UAmbiverseLayer*> GetLayerRegistry() const { return LayerRegistry; }
+	FORCEINLINE TArray<UAmbiverseLayer*> GetLayerRegistry() const { return ActiveLayers; }
 	
 };

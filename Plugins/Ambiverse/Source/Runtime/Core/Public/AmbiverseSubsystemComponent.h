@@ -20,6 +20,8 @@ protected:
 public:
 	virtual void Initialize(UAmbiverseSubsystem* Subsystem);
 	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem);
+
+	virtual void Tick(const float DeltaTime) {};
 	
 	FORCEINLINE UAmbiverseSubsystem* GetOwner() const { return Owner; }
 };

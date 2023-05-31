@@ -11,6 +11,11 @@
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSubsystem, LogAmbiverseSubsystem);
 
+UAmbiverseSubsystem::UAmbiverseSubsystem()
+{
+	
+}
+
 void UAmbiverseSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -53,48 +58,24 @@ void UAmbiverseSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdateActiveLayers(DeltaTime);
-}
-
-void UAmbiverseSubsystem::UpdateActiveLayers(const float DeltaTime)
-{
-	if (LayerManager->GetLayerRegistry().IsEmpty()) { return; }
-	
-	for (UAmbiverseLayer* Layer : LayerManager->GetLayerRegistry())
+	if (LayerManager)
 	{
-		if (Layer->ProceduralElementList.IsEmpty()) { continue; }
-		
-		for (FAmbiverseLayerQueueEntry& SoundQueueEntry : Layer->ProceduralElementList)
-		{
-			if (SoundQueueEntry.Time != 0)
-			{
-				const float ScaleFactor {(SoundQueueEntry.Time - DeltaTime) / SoundQueueEntry.Time};
-				
-				SoundQueueEntry.ReferenceTime *= ScaleFactor;
-			}
-			
-			SoundQueueEntry.Time -= DeltaTime;
-
-			if (SoundQueueEntry.Time <= 0)
-			{
-				ProcessAmbienceLayerQueue(Layer, SoundQueueEntry);
-			}
-		}
+		LayerManager->Tick(DeltaTime);
 	}
 }
 
-void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmbiverseLayerQueueEntry& Entry)
+void UAmbiverseSubsystem::ProcessElement(UAmbiverseLayer* Layer, FAmbiverseProceduralElement& Element)
 {
 	if (!Layer) { return; }
 	
-	Entry.ReferenceTime = FMath::RandRange(Entry.SoundData.DelayMin, Entry.SoundData.DelayMax);
+	Element.ReferenceTime = FMath::RandRange(Element.SoundData.DelayMin, Element.SoundData.DelayMax);
 
 	float DensityModifier {1.0f};
 	float VolumeModifier {1.0f};
 
-	ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, Entry);
+	ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, Element);
 
-	Entry.Time = Entry.ReferenceTime * DensityModifier;
+	Element.Time = Element.ReferenceTime * DensityModifier;
 
 	/** We try to get the location of the listener here.*/
 	FVector CameraLocation;
@@ -114,10 +95,10 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	/** Prepare the sound source data. */
 	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
 		
-	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(Entry.SoundData.DistributionData, CameraLocation);
-	SoundSourceData.Sound = FAmbiverseProceduralElement::GetSoundFromMap(Entry.SoundData.Sounds);
-	SoundSourceData.Volume = Entry.SoundData.Volume;
-	SoundSourceData.Name = Entry.SoundData.Name;
+	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(Element.SoundData.DistributionData, CameraLocation);
+	SoundSourceData.Sound = FAmbiverseProceduralElement::GetSoundFromMap(Element.SoundData.Sounds);
+	SoundSourceData.Volume = Element.SoundData.Volume;
+	SoundSourceData.Name = Element.SoundData.Name;
 	SoundSourceData.Layer = Layer;
 
 	DrawDebugSphere(GetWorld(), SoundSourceData.Transform.GetLocation(), 100.0f, 12, FColor::Red, false, 10.0f);
