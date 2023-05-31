@@ -158,13 +158,10 @@ void UHeatPointManager::SortHeatPointsByHeatValue()
 
 void UHeatPointManager::FlushHeatPoints()
 {
-	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
+	for (AHeatPoint* HeatPoint : HeatPoints)
 	{
-		AHeatPoint* HeatPoint {HeatPoints[Index]};
 		HeatPoint->Destroy();
 	}
-
-	HeatPoints.Empty();
 }
 
 void UHeatPointManager::UpdateHeatPointLifeTime()
