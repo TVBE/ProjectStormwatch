@@ -1,11 +1,10 @@
-// Copyright (c) 2023-present Tim Verberne
-// This source code is part of the Ambiverse plugin
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AmbiverseParameter.h"
-#include "AmbiverseProceduralSoundData.h"
+#include "AmbiverseProceduralElement.h"
 #include "TimerManager.h"
 #include "AmbiverseLayer.generated.h"
 
@@ -13,30 +12,13 @@ class UAmbiverseSubsystem;
 class UAmbiverseParameter;
 class UAmbiverseSoundSourceManager;
 
-USTRUCT()
-struct FAmbiverseLayerQueueEntry
-{
-	GENERATED_USTRUCT_BODY()
-	
-	UPROPERTY()
-	FAmbiverseProceduralElementData SoundData {FAmbiverseProceduralElementData()};
-
-	UPROPERTY()
-	float Time {0.0f};
-	
-	/** The reference time the entry was initialized with.
-	 *	We use this time value to be able to dynamically apply parameters in real time without breaking th existing queue. */
-	UPROPERTY()
-	float ReferenceTime {0.0f};
-};
-
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Layer",
 	ShortToolTip = "A list of Ambiverse Elements that can be procedurally played."))
 class AMBIVERSE_API UAmbiverseLayer : public UObject
 {
 	GENERATED_BODY()
 
-	DECLARE_LOG_CATEGORY_CLASS(LogAmbienceLayer, Log, All)
+	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseLayer, Log, All)
 
 public:
 #if WITH_EDITORONLY_DATA
@@ -55,7 +37,7 @@ public:
 	
 	/** the procedural sound data of this layer. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Elements", Meta = (TitleProperty = "Name"))
-	TArray<FAmbiverseProceduralElementData> Elements;
+	TArray<FAmbiverseProceduralElement> Elements;
 
 	/** Parameters that influence all procedural sounds in this layer. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters")
@@ -71,26 +53,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Enable Layer"))
 	bool IsEnabled {true};
-
 	
-	/** Runtime */
-	
-	UPROPERTY()
-	TArray<FAmbiverseLayerQueueEntry> SoundQueue;
-
 	UPROPERTY()
 	FTimerHandle TimerHandle;
 	
 	FTimerDelegate TimerDelegate;
-
-public:
-	bool GetEntryWithLowestTime(FAmbiverseLayerQueueEntry& OutEntry);
-
-	void SubtractTimeFromQueue(const float TimeToSubtract);
 	
-	void SortQueueDataByTime();
+	void InitializeLayer();
 
-	void InitializeSoundQueue();
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };
 
 

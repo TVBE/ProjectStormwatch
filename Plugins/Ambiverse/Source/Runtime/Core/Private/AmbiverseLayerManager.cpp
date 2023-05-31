@@ -1,10 +1,9 @@
-// Copyright (c) 2023-present Tim Verberne
-// This source code is part of the Ambiverse plugin
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseLayerManager.h"
 #include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.h"
-#include "AmbiverseProceduralSoundData.h"
+#include "AmbiverseProceduralElement.h"
 #include "AmbiverseSubsystem.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayerManager, LogAmbiverseLayerManager);
@@ -34,13 +33,13 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		return;
 	}
 
-	for (FAmbiverseProceduralElementData& SoundData : Layer->ProceduralSounds)
+	for (FAmbiverseProceduralElement& SoundData : Layer->ProceduralSounds)
 	{
-		FAmbiverseProceduralElementData::Validate(SoundData);
+		FAmbiverseProceduralElement::Validate(SoundData);
 	}
 
 	bool HasValidSoundData = false;
-	for (const FAmbiverseProceduralElementData& SoundData : Layer->ProceduralSounds)
+	for (const FAmbiverseProceduralElement& SoundData : Layer->ProceduralSounds)
 	{
 		if (SoundData.IsValid)
 		{
@@ -60,7 +59,7 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 	if (!FindActiveAmbienceLayer(Layer))
 	{
 		LayerRegistry.Add(Layer);
-		Layer->InitializeSoundQueue();
+		Layer->BuildIndex();
 
 		OnLayerRegistered.Broadcast(Layer);
 

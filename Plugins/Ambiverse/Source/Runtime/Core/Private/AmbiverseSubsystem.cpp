@@ -1,5 +1,4 @@
-// Copyright (c) 2023-present Tim Verberne
-// This source code is part of the Ambiverse plugin
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseSubsystem.h"
 
@@ -63,9 +62,9 @@ void UAmbiverseSubsystem::UpdateActiveLayers(const float DeltaTime)
 	
 	for (UAmbiverseLayer* Layer : LayerManager->GetLayerRegistry())
 	{
-		if (Layer->SoundQueue.IsEmpty()) { continue; }
+		if (Layer->ProceduralElementList.IsEmpty()) { continue; }
 		
-		for (FAmbiverseLayerQueueEntry& SoundQueueEntry : Layer->SoundQueue)
+		for (FAmbiverseLayerQueueEntry& SoundQueueEntry : Layer->ProceduralElementList)
 		{
 			if (SoundQueueEntry.Time != 0)
 			{
@@ -116,7 +115,7 @@ void UAmbiverseSubsystem::ProcessAmbienceLayerQueue(UAmbiverseLayer* Layer, FAmb
 	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
 		
 	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(Entry.SoundData.DistributionData, CameraLocation);
-	SoundSourceData.Sound = FAmbiverseProceduralElementData::GetSoundFromMap(Entry.SoundData.Sounds);
+	SoundSourceData.Sound = FAmbiverseProceduralElement::GetSoundFromMap(Entry.SoundData.Sounds);
 	SoundSourceData.Volume = Entry.SoundData.Volume;
 	SoundSourceData.Name = Entry.SoundData.Name;
 	SoundSourceData.Layer = Layer;
@@ -152,7 +151,7 @@ void UAmbiverseSubsystem::HandleParameterChanged()
 	TArray<UAmbiverseLayer*> Layers {LayerManager->GetLayerRegistry()};
 	for (UAmbiverseLayer* Layer : Layers)
 	{
-		for (FAmbiverseLayerQueueEntry Entry : Layer->SoundQueue)
+		for (FAmbiverseLayerQueueEntry Entry : Layer->ProceduralElementList)
 		{
 			float DensityScalar {1.0f};
 			float VolumeScalar {1.0f};

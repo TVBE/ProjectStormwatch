@@ -1,5 +1,4 @@
-// Copyright (c) 2023-present Tim Verberne
-// This source code is part of the Ambiverse plugin
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseLayerManager.h"
@@ -112,7 +111,7 @@ void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayer* Regist
 		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
 	}
 
-	for (FAmbiverseProceduralElementData ProceduralSoundData : RegisteredLayer->ProceduralSounds)
+	for (FAmbiverseProceduralElement ProceduralSoundData : RegisteredLayer->ProceduralSounds)
 	{
 		for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
 		{
