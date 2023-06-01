@@ -48,9 +48,9 @@ void UAmbiverseLayerManager::UpdateActiveLayers(const float DeltaTime)
 
 void UAmbiverseLayerManager::UpdateElements(const float DeltaTime, UAmbiverseLayer* Layer)
 {
-	if (Layer->Elements.IsEmpty()) { return; }
+	if (Layer->ProceduralElements.IsEmpty()) { return; }
 
-	for (FAmbiverseProceduralElement& Element : Layer->Elements)
+	for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
 	{
 		const float ScaleFactor {(Element.Time - DeltaTime) / Element.Time};
 		Element.ReferenceTime *= ScaleFactor;
@@ -59,7 +59,7 @@ void UAmbiverseLayerManager::UpdateElements(const float DeltaTime, UAmbiverseLay
 
 		if (Element.Time <= 0)
 		{
-			Owner->ProcessElement(Layer, Element);
+			Owner->ProcessProceduralElement(Layer, Element);
 		}
 	}
 }
@@ -72,22 +72,17 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		return;
 	}
 
-	if (Layer->ProceduralSounds.IsEmpty())
+	if (Layer->ProceduralElements.IsEmpty())
 	{
 		UE_LOG(LogAmbiverseLayerManager, Warning, TEXT("RegisterAmbiverseLayer: Layer has no procedural sounds: '%s'."),
 		       *Layer->GetName());
 		return;
 	}
-
-	for (FAmbiverseProceduralElement& SoundData : Layer->ProceduralSounds)
-	{
-		FAmbiverseProceduralElement::Validate(SoundData);
-	}
-
+	
 	bool HasValidSoundData = false;
-	for (const FAmbiverseProceduralElement& SoundData : Layer->ProceduralSounds)
+	for (const FAmbiverseProceduralElement& ProceduralElement : Layer->ProceduralElements)
 	{
-		if (SoundData.IsValid)
+		if (ProceduralElement.IsValid())
 		{
 			HasValidSoundData = true;
 			break;
@@ -105,7 +100,7 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 	if (!FindActiveAmbienceLayer(Layer))
 	{
 		ActiveLayers.Add(Layer);
-		Layer->BuildIndex();
+		Layer->InitializeLayer();
 
 		OnLayerRegistered.Broadcast(Layer);
 

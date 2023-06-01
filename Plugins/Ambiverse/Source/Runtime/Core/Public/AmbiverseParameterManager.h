@@ -32,7 +32,7 @@ public:
 	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
 	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem) override;
 	
-	void GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
+	void GetScalarsForElement(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement);
 
 	UFUNCTION(BlueprintCallable)
 	void SetParameterValue(UAmbiverseParameter* Parameter, const float Value);

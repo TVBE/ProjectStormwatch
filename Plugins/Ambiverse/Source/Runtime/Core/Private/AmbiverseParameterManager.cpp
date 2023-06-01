@@ -17,7 +17,7 @@ void UAmbiverseParameterManager::Initialize(UAmbiverseSubsystem* Subsystem)
 	}
 }
 
-void UAmbiverseParameterManager::GetScalarsForEntry(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry)
+void UAmbiverseParameterManager::GetScalarsForElement(float& DensityScalar, float& VolumeScalar, const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement)
 {
 	DensityScalar = 1.0f;
 	VolumeScalar = 1.0f;
@@ -27,7 +27,7 @@ void UAmbiverseParameterManager::GetScalarsForEntry(float& DensityScalar, float&
 	TArray<FAmbiverseParameterModifiers> Parameters;
 	
 	Parameters.Append(Layer->Parameters);
-	Parameters.Append(Entry.SoundData.Parameters);
+	// Parameters.Append(ProceduralElement.Element.Parameters); // For now, we're not implementing parameters inside elements.
 	
 	if (Parameters.IsEmpty()) { return; }
 
@@ -111,13 +111,13 @@ void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayer* Regist
 		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
 	}
 
-	for (FAmbiverseProceduralElement ProceduralSoundData : RegisteredLayer->ProceduralSounds)
-	{
-		for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
-		{
-			RequiredParameters.AddUnique(ParameterModifiers.Parameter);
-		}
-	}
+	// for (FAmbiverseProceduralElement ProceduralSoundData : RegisteredLayer->ProceduralSounds)
+	// {
+	// 	for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
+	// 	{
+	// 		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
+	// 	}
+	// }
 
 	for (UAmbiverseParameter* RequiredParameter : RequiredParameters)
 	{

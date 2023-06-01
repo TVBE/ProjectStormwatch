@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "MetasoundSource.h"
-#include "AmbiverseSoundDistributionData.h"
-#include "AmbiverseParameter.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseProceduralElement.generated.h"
 
 class UAmbiverseElement;
@@ -14,9 +12,13 @@ USTRUCT(BlueprintType)
 struct FAmbiverseProceduralElement
 {
 	GENERATED_USTRUCT_BODY()
-
+	
 	UPROPERTY(EditAnywhere)
 	UAmbiverseElement* Element {nullptr};
+
+	/** The volume of this element. */
+	UPROPERTY(EditAnywhere, Meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2"))
+	float Volume {1.0f};
 	
 	/** The minimum and maximum delay between instances of an AmbienceSystem preset entry occuring.
 	 *	The play interval is randomized between these two values. */
@@ -30,7 +32,7 @@ struct FAmbiverseProceduralElement
 	 *	We use this time value to be able to dynamically apply parameters in real time without breaking th existing queue. */
 	UPROPERTY(Transient)
 	float ReferenceTime {0.0f};
-
+	
 	bool IsValid() const
 	{
 		return (Element != nullptr);

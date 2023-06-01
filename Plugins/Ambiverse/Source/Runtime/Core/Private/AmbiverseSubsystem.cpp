@@ -3,6 +3,7 @@
 #include "AmbiverseSubsystem.h"
 
 #include "AmbiverseDistributorManager.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseLayer.h"
 #include "AmbiverseLayerManager.h"
 #include "AmbiverseParameterManager.h"
@@ -64,18 +65,18 @@ void UAmbiverseSubsystem::Tick(float DeltaTime)
 	}
 }
 
-void UAmbiverseSubsystem::ProcessElement(UAmbiverseLayer* Layer, FAmbiverseProceduralElement& Element)
+void UAmbiverseSubsystem::ProcessProceduralElement(UAmbiverseLayer* Layer, FAmbiverseProceduralElement& ProceduralElement)
 {
 	if (!Layer) { return; }
 	
-	Element.ReferenceTime = FMath::RandRange(Element.SoundData.DelayMin, Element.SoundData.DelayMax);
+	ProceduralElement.ReferenceTime = FMath::RandRange(ProceduralElement.IntervalRange.X, ProceduralElement.IntervalRange.Y);
 
 	float DensityModifier {1.0f};
 	float VolumeModifier {1.0f};
 
-	ParameterManager->GetScalarsForEntry(DensityModifier, VolumeModifier, Layer, Element);
+	ParameterManager->GetScalarsForElement(DensityModifier, VolumeModifier, Layer, ProceduralElement);
 
-	Element.Time = Element.ReferenceTime * DensityModifier;
+	ProceduralElement.Time = ProceduralElement.ReferenceTime * DensityModifier;
 
 	/** We try to get the location of the listener here.*/
 	FVector CameraLocation;
@@ -95,10 +96,10 @@ void UAmbiverseSubsystem::ProcessElement(UAmbiverseLayer* Layer, FAmbiverseProce
 	/** Prepare the sound source data. */
 	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
 		
-	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(Element.SoundData.DistributionData, CameraLocation);
-	SoundSourceData.Sound = FAmbiverseProceduralElement::GetSoundFromMap(Element.SoundData.Sounds);
-	SoundSourceData.Volume = Element.SoundData.Volume;
-	SoundSourceData.Name = Element.SoundData.Name;
+	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(ProceduralElement.Element->DistributionData, CameraLocation);
+	SoundSourceData.Sound = UAmbiverseElement::GetSoundFromMap(ProceduralElement.Element->Sounds);
+	SoundSourceData.Volume = ProceduralElement.Element->Volume;
+	SoundSourceData.Name = FName(ProceduralElement.Element->GetName());
 	SoundSourceData.Layer = Layer;
 
 	DrawDebugSphere(GetWorld(), SoundSourceData.Transform.GetLocation(), 100.0f, 12, FColor::Red, false, 10.0f);
@@ -107,18 +108,18 @@ void UAmbiverseSubsystem::ProcessElement(UAmbiverseLayer* Layer, FAmbiverseProce
 	UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("Update"))
 }
 
-float UAmbiverseSubsystem::GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry)
+float UAmbiverseSubsystem::GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement)
 {
 	if (!Layer) { return -1.0f; }
-	float Interval {FMath::RandRange(Entry.SoundData.DelayMin, Entry.SoundData.DelayMax)};
+	float Interval {static_cast<float>(FMath::RandRange(ProceduralElement.IntervalRange.X, ProceduralElement.IntervalRange.Y))};
 	Interval /= Layer->LayerDensity;
 	return Interval;
 }
 
-float UAmbiverseSubsystem::GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry)
+float UAmbiverseSubsystem::GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement)
 {
 	if (!Layer) { return -1.0f; }
-	float Volume {Entry.SoundData.Volume};
+	float Volume {ProceduralElement.Element->Volume};
 	Volume *= Layer->LayerVolume;
 	return Volume;
 }
@@ -132,12 +133,12 @@ void UAmbiverseSubsystem::HandleParameterChanged()
 	TArray<UAmbiverseLayer*> Layers {LayerManager->GetLayerRegistry()};
 	for (UAmbiverseLayer* Layer : Layers)
 	{
-		for (FAmbiverseLayerQueueEntry Entry : Layer->ProceduralElementList)
+		for (FAmbiverseProceduralElement Entry : Layer->ProceduralElements)
 		{
 			float DensityScalar {1.0f};
 			float VolumeScalar {1.0f};
 			
-			ParameterManager->GetScalarsForEntry(DensityScalar, VolumeScalar, Layer, Entry);
+			ParameterManager->GetScalarsForElement(DensityScalar, VolumeScalar, Layer, Entry);
 
 			Entry.Time = Entry.ReferenceTime * DensityScalar;
 		}

@@ -48,7 +48,7 @@ public:
 
 	/** Processes an ambience event and updates the queue for an ambience layer. */
 	UFUNCTION()
-	void ProcessElement(UAmbiverseLayer* Layer,  FAmbiverseProceduralElement& Element);
+	void ProcessProceduralElement(UAmbiverseLayer* Layer,  FAmbiverseProceduralElement& ProceduralElement);
 
 private:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -58,8 +58,8 @@ private:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	static float GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
-	static float GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseLayerQueueEntry& Entry);
+	static float GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement);
+	static float GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement);
 
 	UFUNCTION()
 	void HandleParameterChanged();

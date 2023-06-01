@@ -36,11 +36,11 @@ public:
 #endif
 	
 	/** the procedural sound data of this layer. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Elements", Meta = (TitleProperty = "Name"))
-	TArray<FAmbiverseProceduralElement> Elements;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Elements", Meta = (DisplayName = "Elements", TitleProperty = "Element"))
+	TArray<FAmbiverseProceduralElement> ProceduralElements;
 
 	/** Parameters that influence all procedural sounds in this layer. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters", Meta = (TitleProperty = "Parameter"))
 	TArray<FAmbiverseParameterModifiers> Parameters;
 
 	/** Volume multiplier for all sounds in this layer. */
@@ -58,7 +58,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime")
 	bool EnableLifetime {false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime", Meta = (EditCondition = "EnableTimeline", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime", Meta = (EditCondition = "EnableLifetime", ClampMin = "0"))
 	float Lifetime {30.0f};
 
 	float ActiveDuration {0.0f};
