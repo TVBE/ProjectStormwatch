@@ -83,22 +83,26 @@ void UPlayerPerceptionComponent::UpdatePerception_Implementation()
 		
 		if (const float ViewAngleToNightstalker {GetViewAngleToTarget(NightstalkerLocation)}; ViewAngleToNightstalker <= 80)
 		{
+			UE_LOG(LogPlayerPerception, VeryVerbose, TEXT("UpdatePerception: View angle to Nightstalker: %f"), ViewAngleToNightstalker);
+			
 			if (!UNightstalkerAIFunctionLibrary::IsOccluded(this, PlayerLocation, NightstalkerLocation))
 			{
+				UE_LOG(LogPlayerPerception, VeryVerbose, TEXT("UpdatePerception: Nightstalker is not occluded."));
+				
 				IsNightstalkerVisible = true;
+				return;
 			}
 		}
-		else
-		{
-			IsNightstalkerVisible = false;
-			NightstalkerVisibilityDuration = 0.0f;
+		
+		IsNightstalkerVisible = false;
+		NightstalkerVisibilityDuration = 0.0f;
 
-			if (IsNightstalkerDetected)
-			{
-				IsNightstalkerDetected = false;
-				OnNightstalkerPerceptionChanged.Broadcast(false);
-			}
+		if (IsNightstalkerDetected)
+		{
+			IsNightstalkerDetected = false;
+			OnNightstalkerPerceptionChanged.Broadcast(false);
 		}
+		
 	}
 }
 

@@ -141,14 +141,14 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 
 void UHeatPointManager::SortHeatPointsByHeatValue()
 {
-	const AHeatPoint* PreviousHottest {HeatPoints.Num() > 0 ? HeatPoints[HeatPoints.Num() - 1] : nullptr};
+	const AHeatPoint* PreviousHottest {HeatPoints.Num() > 0 ? HeatPoints[0] : nullptr};
 
 	HeatPoints.Sort([](const AHeatPoint& A, const AHeatPoint& B)
 	{
 		return A.GetHeat() < B.GetHeat();
 	});
 
-	AHeatPoint* CurrentHottest {HeatPoints.Num() > 0 ? HeatPoints[HeatPoints.Num() - 1] : nullptr};
+	AHeatPoint* CurrentHottest {HeatPoints.Num() > 0 ? HeatPoints[0] : nullptr};
 
 	if (CurrentHottest != PreviousHottest)
 	{
