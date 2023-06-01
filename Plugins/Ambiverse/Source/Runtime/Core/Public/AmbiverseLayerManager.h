@@ -7,6 +7,7 @@
 #include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseLayerManager.generated.h"
 
+class UAmbiverseComposite;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLayerRegisteredDelegate, UAmbiverseLayer*, RegisteredLayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLayerUnregisteredDelegate, UAmbiverseLayer*, UnregisteredLayer);
 
@@ -37,6 +38,9 @@ public:
 	
 	void RegisterAmbiverseLayer(UAmbiverseLayer* Layer);
 	void UnregisterAmbiverseLayer(UAmbiverseLayer* Layer);
+
+	void RegisterAmbiverseComposite(UAmbiverseComposite* Composite);
+	void UnregisterAmbiverseComposite(UAmbiverseComposite* Composite);
 	
 	/** Checks if an ambience layer is already active*/
 	UAmbiverseLayer* FindActiveAmbienceLayer(const UAmbiverseLayer* LayerToFind) const;

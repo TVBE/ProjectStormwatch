@@ -19,11 +19,11 @@ class UAmbiverseDistributorManager : public UAmbiverseSubsystemComponent
 
 private:
 	UPROPERTY()
-	TArray<UAmbiverseDistributor*> DistributorRegistry;
+	TArray<UAmbiverseDistributor*> Distributors;
 
 public:
 	/** Searches for a distributor instance in the registry. Will instance one if no instance was found. */
 	UAmbiverseDistributor* GetDistributorByClass(TSubclassOf<UAmbiverseDistributor> Class);
 	
-	FORCEINLINE TArray<UAmbiverseDistributor*> GetDistributorRegistry() const { return DistributorRegistry; }
+	FORCEINLINE TArray<UAmbiverseDistributor*> GetDistributorRegistry() const { return Distributors; }
 };

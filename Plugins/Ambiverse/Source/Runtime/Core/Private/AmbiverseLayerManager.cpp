@@ -1,6 +1,7 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseLayerManager.h"
+#include "AmbiverseComposite.h"
 #include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseProceduralElement.h"
@@ -121,6 +122,45 @@ void UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		OnLayerUnregistered.Broadcast(Layer);
 
 		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("Unregistered Ambiverse Layer:: '%s'."), *Layer->GetName());
+	}
+}
+
+void UAmbiverseLayerManager::RegisterAmbiverseComposite(UAmbiverseComposite* Composite)
+{
+	if (!Composite)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("RegisterAmbiverseComposite: No Composite provided."));
+		return;
+	}
+
+	if (Composite->StopNonCompositeLayers)
+	{
+		for (UAmbiverseLayer* Layer : ActiveLayers)
+		{
+			if (!Composite->Layers.Contains(Layer))
+			{
+				UnregisterAmbiverseLayer(Layer);
+			}
+		}
+	}
+
+	for (UAmbiverseLayer* Layer : Composite->Layers)
+	{
+		RegisterAmbiverseLayer(Layer);
+	}
+}
+
+void UAmbiverseLayerManager::UnregisterAmbiverseComposite(UAmbiverseComposite* Composite)
+{
+	if (!Composite)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UnregisterAmbiverseComposite: No Composite provided."));
+		return;
+	}
+
+	for (UAmbiverseLayer* Layer : Composite->Layers)
+	{
+		UnregisterAmbiverseLayer(Layer);
 	}
 }
 

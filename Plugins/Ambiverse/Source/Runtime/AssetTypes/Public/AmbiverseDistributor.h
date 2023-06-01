@@ -7,6 +7,7 @@
 #include "AmbiverseDistributor.generated.h"
 
 
+class UAmbiverseElement;
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Distributor",
 	ShortToolTip = "A distributor allows for blueprint scripting of custom spawn behavior."))
 class AMBIVERSE_API UAmbiverseDistributor : public UObject
@@ -23,7 +24,7 @@ public:
 	void Activate(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintImplementableEvent, Meta = (WorldContext = "WorldContextObject"))
-	bool ExecuteDistribution(UObject* WorldContextObject, FVector& Location, AActor*& Actor);
+	bool ExecuteDistribution(UObject* WorldContextObject, FTransform& Transform, FVector& Location, UAmbiverseElement* Element);
 
 	/** Gets a random point in a specified radius around the listener. */
 	UFUNCTION(BlueprintCallable)

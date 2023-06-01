@@ -2,6 +2,7 @@
 
 #include "AmbiverseSubsystem.h"
 
+#include "AmbiverseDistributor.h"
 #include "AmbiverseDistributorManager.h"
 #include "AmbiverseElement.h"
 #include "AmbiverseLayer.h"
@@ -95,13 +96,28 @@ void UAmbiverseSubsystem::ProcessProceduralElement(UAmbiverseLayer* Layer, FAmbi
 
 	/** Prepare the sound source data. */
 	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
-		
-	SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(ProceduralElement.Element->DistributionData, CameraLocation);
+	
 	SoundSourceData.Sound = UAmbiverseElement::GetSoundFromMap(ProceduralElement.Element->Sounds);
 	SoundSourceData.Volume = ProceduralElement.Element->Volume;
 	SoundSourceData.Name = FName(ProceduralElement.Element->GetName());
 	SoundSourceData.Layer = Layer;
 
+	if (const TSubclassOf<UAmbiverseDistributor> DistributorClass {ProceduralElement.Element->DistributorClass})
+	{
+		if (UAmbiverseDistributor* Distributor {DistributorManager->GetDistributorByClass(DistributorClass)})
+		{
+			FTransform Transform {};
+			if (Distributor->ExecuteDistribution(this, Transform, CameraLocation, ProceduralElement.Element))
+			{
+				SoundSourceData.Transform = Transform;
+			}
+		}
+	}
+	else
+	{
+		SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(ProceduralElement.Element->DistributionData, CameraLocation);
+	}
+	
 	DrawDebugSphere(GetWorld(), SoundSourceData.Transform.GetLocation(), 100.0f, 12, FColor::Red, false, 10.0f);
 	
 	SoundSourceManager->InitiateSoundSource(SoundSourceData);
