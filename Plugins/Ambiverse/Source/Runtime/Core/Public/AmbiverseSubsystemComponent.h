@@ -12,6 +12,9 @@ UCLASS(MinimalAPI, Transient, Within = "AmbiverseSubsystem", ClassGroup = "AmbiV
 class UAmbiverseSubsystemComponent : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	bool IsInitialized {false};
 	
 protected:
 	UPROPERTY()

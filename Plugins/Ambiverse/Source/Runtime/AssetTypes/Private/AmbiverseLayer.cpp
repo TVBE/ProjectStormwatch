@@ -5,18 +5,6 @@
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayer, LogAmbiverseLayer);
 
-void UAmbiverseLayer::InitializeLayer()
-{
-	/** We check for invalid elements first and remove them from the layer.
-	 *	This way, we don't have to check the validity of an element in the array while the layer is active. */
-	ProceduralElements.RemoveAll([](const FAmbiverseProceduralElement& Element){ return !Element.IsValid(); });
-	
-	for (FAmbiverseProceduralElement& Element : ProceduralElements)
-	{
-			Element.RandomizeIntervalInRange();
-	}
-}
-
 #if WITH_EDITOR
 void UAmbiverseLayer::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {

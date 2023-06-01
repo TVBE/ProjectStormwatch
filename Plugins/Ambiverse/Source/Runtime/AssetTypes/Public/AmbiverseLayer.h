@@ -73,8 +73,6 @@ public:
 	FTimerHandle TimerHandle;
 	
 	FTimerDelegate TimerDelegate;
-	
-	void InitializeLayer();
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;

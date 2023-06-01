@@ -2,7 +2,3 @@
 
 #include "AmbiverseProceduralElement.h"
 
-
-void FAmbiverseProceduralElement::RandomizeIntervalInRange()
-{
-}

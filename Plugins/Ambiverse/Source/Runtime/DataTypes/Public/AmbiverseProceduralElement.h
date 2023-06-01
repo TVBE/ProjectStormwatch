@@ -22,7 +22,7 @@ struct FAmbiverseProceduralElement
 	
 	/** The minimum and maximum delay between instances of an AmbienceSystem preset entry occuring.
 	 *	The play interval is randomized between these two values. */
-	UPROPERTY(EditAnywhere, Meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Interval", ClampMin = "0"))
 	FVector2D IntervalRange {FVector2D(10, 30)};
 	
 	UPROPERTY(Transient)
@@ -38,7 +38,7 @@ struct FAmbiverseProceduralElement
 		return (Element != nullptr);
 	}
 
-	void RandomizeIntervalInRange();
+	void RandomizeTime(float Scalar);
 };
 
 

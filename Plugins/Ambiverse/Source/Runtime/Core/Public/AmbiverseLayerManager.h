@@ -39,6 +39,8 @@ public:
 	void RegisterAmbiverseLayer(UAmbiverseLayer* Layer);
 	void UnregisterAmbiverseLayer(UAmbiverseLayer* Layer);
 
+	void InitializeLayer(UAmbiverseLayer* Layer);
+
 	void RegisterAmbiverseComposite(UAmbiverseComposite* Composite);
 	void UnregisterAmbiverseComposite(UAmbiverseComposite* Composite);
 	

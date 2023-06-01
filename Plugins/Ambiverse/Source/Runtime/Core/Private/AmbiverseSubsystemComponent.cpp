@@ -4,12 +4,14 @@
 
 void UAmbiverseSubsystemComponent::Initialize(UAmbiverseSubsystem* Subsystem)
 {
-	if (!Owner) { return; }
+	if (!Subsystem) { return; }
 	Owner = Subsystem;
+	IsInitialized = true;
 }
 
 void UAmbiverseSubsystemComponent::Deinitialize(UAmbiverseSubsystem* Subsystem)
 {
-	if (!Owner) { return; }
+	if (!Subsystem) { return; }
 	Owner = nullptr;
+	IsInitialized = false;
 }

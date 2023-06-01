@@ -24,14 +24,17 @@ AAmbiverseSoundSource::AAmbiverseSoundSource()
 void AAmbiverseSoundSource::Initialize(UAmbiverseSoundSourceManager* Manager,
 	FAmbiverseSoundSourceData& Data)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Initializing Sound Source"))
 	if (!Manager)
 	{
+		UE_LOG(LogAmbiverseSoundSource, Error, TEXT("SoundSourceManager is nullptr."));
 		return;
 	}
 	SoundSourceManager = Manager;
 
 	if (!Data.Sound)
 	{
+		UE_LOG(LogAmbiverseSoundSource, Warning, TEXT("Sound is nullptr."));
 		return;
 	}
 	SoundSourceData = Data;
@@ -45,6 +48,10 @@ void AAmbiverseSoundSource::Initialize(UAmbiverseSoundSourceManager* Manager,
 	if(AudioComponent)
 	{
 		AudioComponent->Play();
+	}
+	else
+	{
+		UE_LOG(LogAmbiverseSoundSource, Warning, TEXT("AudioComponent is nullptr."));
 	}
 }
 

@@ -30,6 +30,8 @@ void UAmbiverseLayerManager::UpdateActiveLayers(const float DeltaTime)
 
 	for (UAmbiverseLayer* Layer : ActiveLayers)
 	{
+		if (!Layer) { continue; }
+		
 		UpdateElements(DeltaTime, Layer);
 
 		Layer->ActiveDuration += DeltaTime;
@@ -49,18 +51,19 @@ void UAmbiverseLayerManager::UpdateActiveLayers(const float DeltaTime)
 
 void UAmbiverseLayerManager::UpdateElements(const float DeltaTime, UAmbiverseLayer* Layer)
 {
+	if (!Layer || !Owner) { return; }
 	if (Layer->ProceduralElements.IsEmpty()) { return; }
-
-	for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+	
+	for (FAmbiverseProceduralElement& ProceduralElement : Layer->ProceduralElements)
 	{
-		const float ScaleFactor {(Element.Time - DeltaTime) / Element.Time};
-		Element.ReferenceTime *= ScaleFactor;
+		const float ScaleFactor {(ProceduralElement.Time - DeltaTime) / ProceduralElement.Time};
+		ProceduralElement.ReferenceTime *= ScaleFactor;
+		
+		ProceduralElement.Time -= DeltaTime;
 
-		Element.Time -= DeltaTime;
-
-		if (Element.Time <= 0)
+		if (ProceduralElement.Time <= 0)
 		{
-			Owner->ProcessProceduralElement(Layer, Element);
+			Owner->ProcessProceduralElement(Layer, ProceduralElement);
 		}
 	}
 }
@@ -80,33 +83,33 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 		return;
 	}
 	
-	bool HasValidSoundData = false;
-	for (const FAmbiverseProceduralElement& ProceduralElement : Layer->ProceduralElements)
-	{
-		if (ProceduralElement.IsValid())
-		{
-			HasValidSoundData = true;
-			break;
-		}
-	}
-
-	if (!HasValidSoundData)
-	{
-		UE_LOG(LogAmbiverseLayerManager, Warning,
-		       TEXT("RegisterAmbiverseLayer: Layer has no valid procedural sounds: '%s'."), *Layer->GetName());
-		return;
-	}
-
-
 	if (!FindActiveAmbienceLayer(Layer))
 	{
+		InitializeLayer(Layer);
 		ActiveLayers.Add(Layer);
-		Layer->InitializeLayer();
-
+		
 		OnLayerRegistered.Broadcast(Layer);
 
 		UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("Registered Ambiverse Layer: '%s'."), *Layer->GetName());
 	}
+}
+
+void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer)
+{
+	if (!Layer) { return; }
+	
+	/** We check for invalid elements first and remove them from the layer.
+	 *	This way, we don't have to check the validity of an element in the array while the layer is active. */
+	Layer->ProceduralElements.RemoveAll([](const FAmbiverseProceduralElement& Element){ return !Element.IsValid(); });
+	
+	for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+	{
+		if (Owner)
+		{
+			Owner->SetNewTimeForProceduralElement(Element, Layer);
+		}
+	}
+	UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("InitializeLayer: Initialized layer with %d elements."), Layer->ProceduralElements.Num());
 }
 
 void UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayer* Layer)

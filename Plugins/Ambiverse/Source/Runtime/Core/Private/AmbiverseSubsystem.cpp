@@ -49,7 +49,7 @@ void UAmbiverseSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (LayerManager)
+	if (LayerManager && LayerManager->IsInitialized)
 	{
 		LayerManager->Tick(DeltaTime);
 	}
@@ -57,13 +57,24 @@ void UAmbiverseSubsystem::Tick(float DeltaTime)
 
 void UAmbiverseSubsystem::ProcessProceduralElement(UAmbiverseLayer* Layer, FAmbiverseProceduralElement& ProceduralElement)
 {
-	if (!Layer) { return; }
+	if (!Layer)
+	{
+		UE_LOG(LogAmbiverseSubsystem, Error, TEXT("ProcessProceduralElement: Layer is nullptr."));
+		return;
+	}
 	
-	ProceduralElement.ReferenceTime = FMath::RandRange(ProceduralElement.IntervalRange.X, ProceduralElement.IntervalRange.Y);
+	ProceduralElement.ReferenceTime = FMath::RandRange(ProceduralElement.IntervalRange.X,
+	                                                   ProceduralElement.IntervalRange.Y);
 
 	float DensityModifier {1.0f};
 	float VolumeModifier {1.0f};
 
+	if (!ParameterManager)
+	{
+		UE_LOG(LogAmbiverseSubsystem, Error, TEXT("ProcessProceduralElement: ParameterManager is nullptr."));
+		return;
+	}
+	
 	ParameterManager->GetScalarsForElement(DensityModifier, VolumeModifier, Layer, ProceduralElement);
 
 	ProceduralElement.Time = ProceduralElement.ReferenceTime * DensityModifier;
@@ -71,31 +82,41 @@ void UAmbiverseSubsystem::ProcessProceduralElement(UAmbiverseLayer* Layer, FAmbi
 	/** We try to get the location of the listener here.*/
 	FVector CameraLocation;
 	bool IsCameraValid {false};
-		
+
 	if (APlayerController* PlayerController {GetWorld()->GetFirstPlayerController()})
 	{
-		if (const APlayerCameraManager* CameraManager {PlayerController->PlayerCameraManager})
+		if (const APlayerCameraManager* CameraManager{PlayerController->PlayerCameraManager})
 		{
 			CameraLocation = CameraManager->GetCameraLocation();
 			IsCameraValid = true;
 		}
 	}
 
-	if (!IsCameraValid) { return; }
+	if (!IsCameraValid)
+	{
+		UE_LOG(LogAmbiverseSubsystem, Error, TEXT("ProcessProceduralElement: Unable to obtain valid camera location."));
+		return;
+	}
 
 	/** Prepare the sound source data. */
-	FAmbiverseSoundSourceData SoundSourceData {FAmbiverseSoundSourceData()};
-	
+	FAmbiverseSoundSourceData SoundSourceData{FAmbiverseSoundSourceData()};
+
 	SoundSourceData.Sound = UAmbiverseElement::GetSoundFromMap(ProceduralElement.Element->Sounds);
 	SoundSourceData.Volume = ProceduralElement.Element->Volume;
 	SoundSourceData.Name = FName(ProceduralElement.Element->GetName());
 	SoundSourceData.Layer = Layer;
 
-	if (const TSubclassOf<UAmbiverseDistributor> DistributorClass {ProceduralElement.Element->DistributorClass})
+	if (const TSubclassOf<UAmbiverseDistributor> DistributorClass{ProceduralElement.Element->DistributorClass})
 	{
-		if (UAmbiverseDistributor* Distributor {DistributorManager->GetDistributorByClass(DistributorClass)})
+		if (!DistributorManager)
 		{
-			FTransform Transform {};
+			UE_LOG(LogAmbiverseSubsystem, Error, TEXT("ProcessProceduralElement: DistributorManager is nullptr."));
+			return;
+		}
+
+		if (UAmbiverseDistributor* Distributor{DistributorManager->GetDistributorByClass(DistributorClass)})
+		{
+			FTransform Transform{};
 			if (Distributor->ExecuteDistribution(this, Transform, CameraLocation, ProceduralElement.Element))
 			{
 				SoundSourceData.Transform = Transform;
@@ -104,21 +125,36 @@ void UAmbiverseSubsystem::ProcessProceduralElement(UAmbiverseLayer* Layer, FAmbi
 	}
 	else
 	{
-		SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(ProceduralElement.Element->DistributionData, CameraLocation);
+		SoundSourceData.Transform = FAmbiverseSoundDistributionData::GetSoundTransform(
+			ProceduralElement.Element->DistributionData, CameraLocation);
 	}
 	
-	DrawDebugSphere(GetWorld(), SoundSourceData.Transform.GetLocation(), 100.0f, 12, FColor::Red, false, 10.0f);
-	
+	if (!SoundSourceManager)
+	{
+		UE_LOG(LogAmbiverseSubsystem, Error, TEXT("ProcessProceduralElement: SoundSourceManager is nullptr."));
+		return;
+	}
+
 	SoundSourceManager->InitiateSoundSource(SoundSourceData);
-	UE_LOG(LogAmbiverseSubsystem, Warning, TEXT("Update"))
 }
 
-float UAmbiverseSubsystem::GetSoundInterval(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement)
+void UAmbiverseSubsystem::SetNewTimeForProceduralElement(FAmbiverseProceduralElement& ProceduralElement, UAmbiverseLayer* Layer)
 {
-	if (!Layer) { return -1.0f; }
-	float Interval {static_cast<float>(FMath::RandRange(ProceduralElement.IntervalRange.X, ProceduralElement.IntervalRange.Y))};
-	Interval /= Layer->LayerDensity;
-	return Interval;
+	ProceduralElement.ReferenceTime = FMath::RandRange(ProceduralElement.IntervalRange.X,
+													   ProceduralElement.IntervalRange.Y);
+
+	float DensityModifier {1.0f};
+	float VolumeModifier {1.0f};
+
+	if (!ParameterManager)
+	{
+		UE_LOG(LogAmbiverseSubsystem, Error, TEXT("SetNewTimeForProceduralElement: ParameterManager is nullptr."));
+		return;
+	}
+	
+	ParameterManager->GetScalarsForElement(DensityModifier, VolumeModifier, Layer, ProceduralElement);
+
+	ProceduralElement.Time = ProceduralElement.ReferenceTime * DensityModifier;
 }
 
 float UAmbiverseSubsystem::GetSoundVolume(const UAmbiverseLayer* Layer, const FAmbiverseProceduralElement& ProceduralElement)
