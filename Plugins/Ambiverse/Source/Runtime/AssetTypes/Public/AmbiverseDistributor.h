@@ -24,7 +24,7 @@ public:
 	void Activate(UObject* WorldContextObject);
 	
 	UFUNCTION(BlueprintImplementableEvent, Meta = (WorldContext = "WorldContextObject"))
-	bool ExecuteDistribution(UObject* WorldContextObject, FTransform& Transform, FVector& Location, UAmbiverseElement* Element);
+	bool ExecuteDistribution(UObject* WorldContextObject, FTransform& Transform, FVector Location, UAmbiverseElement* Element);
 
 	/** Gets a random point in a specified radius around the listener. */
 	UFUNCTION(BlueprintCallable)

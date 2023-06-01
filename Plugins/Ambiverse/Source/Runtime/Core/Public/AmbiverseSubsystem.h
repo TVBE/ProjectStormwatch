@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "AmbiverseSubsystem.generated.h"
 
+class UAmbiverseVisualisationComponent;
 class UAmbiverseDistributorManager;
 class UAmbiverseLayerManager;
 class UAmbiverseParameterManager;
@@ -18,11 +19,6 @@ class AMBIVERSE_API UAmbiverseSubsystem : public UTickableWorldSubsystem
 	GENERATED_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseSubsystem, Log, All)
-
-public:
-#if !UE_BUILD_SHIPPING
-	TUniquePtr<FAutoConsoleCommand> SoundSourceVisualisationConsoleCommand;
-#endif
 
 private:
 	/** Sub objects. */
@@ -37,6 +33,10 @@ private:
 
 	UPROPERTY()
 	UAmbiverseDistributorManager* DistributorManager {nullptr};
+
+#if !UE_BUILD_SHIPPING
+	TStrongObjectPtr<UAmbiverseVisualisationComponent> VisualisationComponent {nullptr};
+#endif
 
 public:
 	UAmbiverseSubsystem();
@@ -63,10 +63,6 @@ private:
 
 	UFUNCTION()
 	void HandleParameterChanged();
-
-#if !UE_BUILD_SHIPPING
-	void SetSoundSourceVisualisationEnabled(bool IsEnabled);
-#endif
 
 public:
 	FORCEINLINE UAmbiverseLayerManager* GetLayerManager() const { return LayerManager; }

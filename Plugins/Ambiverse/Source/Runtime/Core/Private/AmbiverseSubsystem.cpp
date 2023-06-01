@@ -1,7 +1,6 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseSubsystem.h"
-
 #include "AmbiverseDistributor.h"
 #include "AmbiverseDistributorManager.h"
 #include "AmbiverseElement.h"
@@ -10,12 +9,12 @@
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseSoundSourceData.h"
 #include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseVisualisationComponent.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSubsystem, LogAmbiverseSubsystem);
 
 UAmbiverseSubsystem::UAmbiverseSubsystem()
 {
-	
 }
 
 void UAmbiverseSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -35,17 +34,7 @@ void UAmbiverseSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	if (DistributorManager) { DistributorManager->Initialize(this); }
 
 #if !UE_BUILD_SHIPPING
-	SoundSourceVisualisationConsoleCommand = MakeUnique<FAutoConsoleCommand>(
-		TEXT("av.EnableSoundSourceVisualisation"),
-		TEXT("Enable or disable sound source visualisation."),
-		FConsoleCommandWithArgsDelegate::CreateLambda([this](const TArray<FString>& Args)
-		{
-			if (Args.Num() > 0)
-			{
-				SetSoundSourceVisualisationEnabled(FCString::Atoi(*Args[0]) != 0);
-			}
-		})
-	);
+	VisualisationComponent.Reset(NewObject<UAmbiverseVisualisationComponent>(this));
 #endif
 }
 
@@ -161,16 +150,6 @@ void UAmbiverseSubsystem::HandleParameterChanged()
 	}
 }
 
-#if !UE_BUILD_SHIPPING
-void UAmbiverseSubsystem::SetSoundSourceVisualisationEnabled(bool IsEnabled)
-{
-	if (SoundSourceManager)
-	{
-		SoundSourceManager->SetSoundSourceVisualisationEnabled(IsEnabled);
-	}
-}
-#endif
-
 void UAmbiverseSubsystem::Deinitialize()
 {
 	if (LayerManager)
@@ -193,6 +172,14 @@ void UAmbiverseSubsystem::Deinitialize()
 		DistributorManager->Deinitialize(this);
 		DistributorManager = nullptr;
 	}
+
+#if !UE_BUILD_SHIPPING
+	if (VisualisationComponent.IsValid())
+	{
+		VisualisationComponent->ConditionalBeginDestroy();
+		VisualisationComponent.Reset();
+	}
+#endif
 	
 	Super::Deinitialize();
 }

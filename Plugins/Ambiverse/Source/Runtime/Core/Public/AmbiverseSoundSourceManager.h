@@ -38,4 +38,6 @@ public:
 #if !UE_BUILD_SHIPPING
 	void SetSoundSourceVisualisationEnabled(const bool IsEnabled);
 #endif
+
+	FORCEINLINE TArray<AAmbiverseSoundSource*> GetActiveSoundSources() const { return ActiveSoundSources; }
 };
