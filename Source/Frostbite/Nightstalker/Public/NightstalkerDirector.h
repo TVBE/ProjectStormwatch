@@ -68,4 +68,6 @@ public:
 
 	UFUNCTION(BlueprintGetter, Category = "Heat Point Manager")
 	FORCEINLINE UHeatPointManager* GetHeatPointManager() const { return HeatPointmanager; }
+
+	FORCEINLINE ANightstalker* GetNightstalker() const { return Nightstalker; }
 };
