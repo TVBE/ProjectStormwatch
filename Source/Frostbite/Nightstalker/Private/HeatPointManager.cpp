@@ -131,28 +131,28 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 		
 		if (!HeatPointsIncreased.Contains(HeatPoint))
 		{
-			HeatPoint->DetractHeat(TotalAddedHeat * 0.1f);
+			HeatPoint->DetractHeat(TotalAddedHeat * 0.25f);
+			UE_LOG(LogTemp, Warning, TEXT("Detracting Heat"))
 		}
 	}
 	
 	RemoveZeroHeatPoints();
+	SortHeatPointsByHeatValue();
 }
-
 
 void UHeatPointManager::SortHeatPointsByHeatValue()
 {
-	const AHeatPoint* PreviousHottest {HeatPoints.Num() > 0 ? HeatPoints[0] : nullptr};
+	const float PreviousHighestHeat = HeatPoints.Num() > 0 ? HeatPoints[0]->GetHeat() : 0.0f;
 
 	HeatPoints.Sort([](const AHeatPoint& A, const AHeatPoint& B)
 	{
 		return A.GetHeat() < B.GetHeat();
 	});
-
-	AHeatPoint* CurrentHottest {HeatPoints.Num() > 0 ? HeatPoints[0] : nullptr};
-
-	if (CurrentHottest != PreviousHottest)
+	
+	const float CurrentHighestHeat = HeatPoints.Num() > 0 ? HeatPoints[0]->GetHeat() : 0.0f;
+	if (PreviousHighestHeat != CurrentHighestHeat)
 	{
-		OnHottestHeatPointChanged.Broadcast(CurrentHottest);
+		OnHottestHeatPointChanged.Broadcast(HeatPoints.Num() > 0 ? HeatPoints.Last() : nullptr);
 	}
 }
 

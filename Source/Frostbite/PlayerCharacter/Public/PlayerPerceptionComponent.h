@@ -33,7 +33,7 @@ protected:
 	UCameraComponent* Camera {nullptr};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float NightstalkerDetectionThreshold {300.0f};
+	float NightstalkerDetectionThreshold {0.3f};
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsNightstalkerVisible {false};

@@ -34,7 +34,7 @@ private:
 	int ExpirationTime {60};
 
 #if WITH_EDITORONLY_DATA
-	bool IsDebugVisEnabled {true};
+	bool IsDebugVisEnabled {false};
 	
 	UPROPERTY(Transient)
 	UStaticMeshComponent* DebugSphereMesh;

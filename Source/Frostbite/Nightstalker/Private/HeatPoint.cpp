@@ -109,7 +109,7 @@ void AHeatPoint::SetHeat(const float NewHeat)
 #if WITH_EDITORONLY_DATA
 	if (DebugMaterial)
 	{
-		DebugMaterial->SetScalarParameterValue(FName("Heat"), NewHeat);
+		DebugMaterial->SetScalarParameterValue(FName("Heat"), Heat);
 	}
 #endif
 }
@@ -122,15 +122,8 @@ void AHeatPoint::AddHeat(const float AddedHeat)
 
 void AHeatPoint::DetractHeat(const float HeatToDeduct)
 {
-	
-	if (Heat - HeatToDeduct >= 0)
-	{
-		Heat -= HeatToDeduct;
-	}
-	else
-	{
-		Heat = 0;
-	}
+	const float HeatTotal {Heat - HeatToDeduct};
+	SetHeat(HeatTotal);
 }
 
 #if WITH_EDITORONLY_DATA
