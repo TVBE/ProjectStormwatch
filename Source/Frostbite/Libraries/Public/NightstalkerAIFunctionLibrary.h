@@ -17,7 +17,7 @@ class UNightstalkerAIFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	/** Checks if a point is occluded from the perspective of another point.
 	* @param WorldContextObject The context object required to get a reference to the world.
-	* @param PointA The starting point for the occlusion check.
+	* @param Origin The starting point for the occlusion check.
 	* @param PointB The ending point for the occlusion check.
 	* @param DrawDebugLines If true, draw debug lines representing the occlusion check.
 	* @param DebugLineDuration The duration for which the debug lines should be drawn. */
@@ -26,7 +26,7 @@ public:
 		DisplayName = "Is Occluded",
 		Keywords = "Is Occluded Occlusion Visibility Visible",
 		AdvancedDisplay = "DrawDebugLines, DebugLineDuration"))
-	static bool IsOccluded(UObject* WorldContextObject, const FVector& PointA,
+	static bool IsOccluded(UObject* WorldContextObject, const FVector& Origin,
 		const FVector& PointB, const bool DrawDebugLines = false, const float DebugLineDuration = 0.0f);
 	
 	/** Performs a fast check to see if a point is occluded from the perspective of the another point.

@@ -9,7 +9,7 @@ inline static const TArray<FVector2D> OcclusionTraceVectors = {
 	FVector2D(50, -50)
 };
 
-bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, const FVector& PointA,
+bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, const FVector& Origin,
 	const FVector& PointB, const bool DrawDebugLines, const float DebugLineDuration)
 {
 	UWorld* World {WorldContextObject->GetWorld()};
@@ -18,7 +18,7 @@ bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, con
 		return false;
 	}
 
-	FVector Direction { (PointB - PointA).GetSafeNormal() };
+	FVector Direction { (PointB - Origin).GetSafeNormal() };
 	FRotator Rotation { Direction.Rotation() };
 
 	FCollisionQueryParams TraceParams;
@@ -26,7 +26,7 @@ bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, con
 	FHitResult HitResult;
 	for (const FVector2D& TraceVector : OcclusionTraceVectors)
 	{
-		FVector Start { Rotation.RotateVector(FVector{0, TraceVector.X, TraceVector.Y}) + PointA };
+		FVector Start { Rotation.RotateVector(FVector{0, TraceVector.X * 0.25, TraceVector.Y * 0.25}) + Origin };
 		FVector End { Rotation.RotateVector(FVector{0, TraceVector.X, TraceVector.Y}) + PointB };
 		
 		bool IsHit { World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams) };
