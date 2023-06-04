@@ -39,7 +39,7 @@ public:
 	void RegisterAmbiverseLayer(UAmbiverseLayer* Layer);
 	void UnregisterAmbiverseLayer(UAmbiverseLayer* Layer);
 
-	void InitializeLayer(UAmbiverseLayer* Layer, const bool Warmup = true);
+	void InitializeLayer(UAmbiverseLayer* Layer, const uint16 WarmUpCount = 3);
 
 	void RegisterAmbiverseComposite(UAmbiverseComposite* Composite);
 	void UnregisterAmbiverseComposite(UAmbiverseComposite* Composite);

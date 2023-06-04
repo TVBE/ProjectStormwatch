@@ -94,40 +94,44 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 	}
 }
 
-void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer, const bool Warmup)
+void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer, const uint16 WarmUpCount)
 {
 	if (!Layer) { return; }
-	
+
+	// Existing code to remove invalid elements from the layer
 	Layer->ProceduralElements.RemoveAll([](const FAmbiverseProceduralElement& Element){ return !Element.IsValid(); });
-	
-	FAmbiverseProceduralElement* MinElement {nullptr};
-	if (Warmup && Layer->ProceduralElements.Num() > 0)
+
+	if (WarmUpCount > 0 && Layer->ProceduralElements.Num() > 0)
 	{
-		MinElement = &Layer->ProceduralElements[0];
-		for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+		for(int i {0}; i < WarmUpCount; ++i) 
 		{
+			FAmbiverseProceduralElement* MinElement {&Layer->ProceduralElements[0]};
+
+			for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+			{
+				if (Owner)
+				{
+					Owner->SetNewTimeForProceduralElement(Element, Layer);
+				}
+
+				if (Element.Time < MinElement->Time)
+				{
+					MinElement = &Element;
+				}
+			}
+
+			for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+			{
+				if (&Element != MinElement)
+				{
+					Element.Time -= MinElement->Time;
+				}
+			}
+
 			if (Owner)
 			{
-				Owner->SetNewTimeForProceduralElement(Element, Layer);
+				Owner->SetNewTimeForProceduralElement(*MinElement, Layer);
 			}
-			
-			if (Element.Time < MinElement->Time)
-			{
-				MinElement = &Element;
-			}
-		}
-		
-		for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
-		{
-			if (&Element != MinElement)
-			{
-				Element.Time -= MinElement->Time;
-			}
-		}
-		
-		if (Owner)
-		{
-			Owner->SetNewTimeForProceduralElement(*MinElement, Layer);
 		}
 	}
 	else
