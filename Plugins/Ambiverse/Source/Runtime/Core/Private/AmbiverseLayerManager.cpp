@@ -94,21 +94,53 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 	}
 }
 
-void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer)
+void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer, const bool Warmup)
 {
 	if (!Layer) { return; }
 	
-	/** We check for invalid elements first and remove them from the layer.
-	 *	This way, we don't have to check the validity of an element in the array while the layer is active. */
 	Layer->ProceduralElements.RemoveAll([](const FAmbiverseProceduralElement& Element){ return !Element.IsValid(); });
 	
-	for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+	FAmbiverseProceduralElement* MinElement {nullptr};
+	if (Warmup && Layer->ProceduralElements.Num() > 0)
 	{
+		MinElement = &Layer->ProceduralElements[0];
+		for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+		{
+			if (Owner)
+			{
+				Owner->SetNewTimeForProceduralElement(Element, Layer);
+			}
+			
+			if (Element.Time < MinElement->Time)
+			{
+				MinElement = &Element;
+			}
+		}
+		
+		for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+		{
+			if (&Element != MinElement)
+			{
+				Element.Time -= MinElement->Time;
+			}
+		}
+		
 		if (Owner)
 		{
-			Owner->SetNewTimeForProceduralElement(Element, Layer);
+			Owner->SetNewTimeForProceduralElement(*MinElement, Layer);
 		}
 	}
+	else
+	{
+		for (FAmbiverseProceduralElement& Element : Layer->ProceduralElements)
+		{
+			if (Owner)
+			{
+				Owner->SetNewTimeForProceduralElement(Element, Layer);
+			}
+		}
+	}
+
 	UE_LOG(LogAmbiverseLayerManager, Verbose, TEXT("InitializeLayer: Initialized layer with %d elements."), Layer->ProceduralElements.Num());
 }
 
