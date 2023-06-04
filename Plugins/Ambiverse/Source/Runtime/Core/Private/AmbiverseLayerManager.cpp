@@ -97,8 +97,7 @@ void UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayer* Layer)
 void UAmbiverseLayerManager::InitializeLayer(UAmbiverseLayer* Layer, const uint16 WarmUpCount)
 {
 	if (!Layer) { return; }
-
-	// Existing code to remove invalid elements from the layer
+	
 	Layer->ProceduralElements.RemoveAll([](const FAmbiverseProceduralElement& Element){ return !Element.IsValid(); });
 
 	if (WarmUpCount > 0 && Layer->ProceduralElements.Num() > 0)
