@@ -43,7 +43,7 @@ private:
 
 	/** Array used to store the latest hit values so that we can prevent multiple triggers of the same sound.*/
 	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "LatestHitResults", AllowPrivateAccess = "true"))
-	TArray<float> LatestSoundTimings;
+	TArray<float> LatestMatchingElements;
 
 
 protected:
@@ -118,10 +118,14 @@ public:
 	
 	UFUNCTION()
 	void TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn);
+	bool FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                  FVector NormalImpulse, const FHitResult& Hit);
+	UFUNCTION(BlueprintCallable)
+	int FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
 
 	/** Caluclates the integer entry number in FReacousticSoundData that matches the impact value.*/
 	UFUNCTION(BlueprintCallable)
-	int CalcluateSoundDataEntry(FReacousticSoundData SoundData, float ImpactValue);
+	int PreventSimilarTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
 	
 	
 	
@@ -132,7 +136,7 @@ protected:
 	virtual void TriggerManualHit_Implementation(float HitStrength);
 
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
-	static float GetScaledImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);
+	static float CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);
 
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Surface Hit Sound"))
 	static FReacousticSoundData GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial);
