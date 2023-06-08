@@ -9,6 +9,8 @@
 #include "Components/SceneComponent.h"
 #include "ReacousticDataTypes.h"
 
+DEFINE_LOG_CATEGORY_CLASS(UReacousticSubsystem, LogReacousticSubsystem);
+
 UReacousticSubsystem::UReacousticSubsystem()
 {
 	Settings = GetMutableDefault<UReacousticProjectSettings>();
@@ -79,7 +81,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
     UActorComponent* NewComponent {nullptr};
     if (!Actor)
     {
-        UE_LOG(LogReacousticComponent, Warning, TEXT("AddComponentToActor was called without passing an actor pointer."))
+        UE_LOG(LogReacousticSubsystem, Warning, TEXT("AddComponentToActor was called without passing an actor pointer."))
         return;
     }
     if (Actor->GetComponentByClass(ComponentClass))

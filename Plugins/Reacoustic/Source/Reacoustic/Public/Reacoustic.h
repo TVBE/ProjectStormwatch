@@ -10,9 +10,6 @@
 #include "Modules/ModuleManager.h"
 #include "Engine/StaticMesh.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogReacousticSubsystem, Log, All);
-DECLARE_LOG_CATEGORY_EXTERN(LogReacousticComponent, Log, All);
-
 class FReacousticModule : public IModuleInterface
 {
 public:
@@ -21,6 +18,4 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-
-	
 };

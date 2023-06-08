@@ -4,10 +4,6 @@
 #include "Reacoustic.h"
 #include "ReacousticSubsystem.h"
 
-/** Log categories for Reacoustic. */
-DEFINE_LOG_CATEGORY(LogReacousticSubsystem)
-DEFINE_LOG_CATEGORY(LogReacousticComponent)
-
 void FReacousticModule::StartupModule()
 {
 	

@@ -1,9 +1,8 @@
 // Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
-// Written by Nino Saglia.
+// Written by Nino Saglia & Tim Verberne.
 
 #pragma once
 
-#include "Reacoustic.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
@@ -12,72 +11,54 @@
 
 class ReacousticSoundDataRef_Map;
 
-
 UCLASS(Abstract, Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
 class REACOUSTIC_API UReacousticComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-private:
-	/** Pointer to the StaticMeshComponent of the owner of this component. */
-	UPROPERTY(Transient, BlueprintGetter = GetOwnerMeshComponent, Category = "Reacoustic Component", Meta = (DisplayName = "Static Mesh Component"))
-	UStaticMeshComponent* MeshComponent {nullptr};
-	
-	/** These variables are used to calculate the difference in distance and time between hits.
-	 * Used to filter out unwanted hits.
-	 */
-	double DeltaHitTime;
-	double DeltaLocationDistance;
-	double DeltaDirectionVector;
-	
-	FVector LatestForwardVector;
-	FVector LatestRightVector;
-	FVector LatestUptVector;
-	
-	FVector LatestLocation;
-	double LatestTime;
-
-	
-	TArray<float> DeltaStateArray;
-	
-
-	/** Array used to store the latest hit values so that we can prevent multiple triggers of the same sound.*/
-	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "LatestHitResults", AllowPrivateAccess = "true"))
-	TArray<float> LatestMatchingElements;
-
+	DECLARE_LOG_CATEGORY_CLASS(LogReacousticComponent, Log, All)
 
 protected:
-	/** This variable is used to choose the impact sound during a hit.*/
+	UPROPERTY(Transient, BlueprintReadOnly)
+	UAudioComponent* AudioComponent {nullptr};
+
+	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset"))
+	UReacousticSoundDataAsset* ReacousticSoundDataAsset {nullptr};
+
+	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
+	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
+
+	UPROPERTY(BlueprintReadWrite)
+	FReacousticSoundData MeshAudioData;
+	
+	/** Used to choose the impact sound during a hit.*/
 	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Impact Force"))	
 	float ImpactForce;
 
 private:
-	/** Utility function to calculate the sum of elements in an array of floats */
-	UFUNCTION()
-	static float GetArraySum(TArray<float> Array)
-	{
-		float Sum = 0.0;
-		for (float Element : Array)
-		{
-			Sum += Element;
-		}
-		return Sum;
-	}
+	/** Pointer to the StaticMeshComponent of the owner of this component. */
+	UPROPERTY(Transient, BlueprintGetter = GetOwnerMeshComponent, Meta = (DisplayName = "Static Mesh Component"))
+	UStaticMeshComponent* MeshComponent {nullptr};
+	
+	/** These variables are used to calculate the difference in distance and time between hits.
+	 *  We use these to filter out unwanted hits */
+	float LatestTime;
 
-protected:
-	/** The Reacoustic SoundData Data Asset. */
-	UPROPERTY(BlueprintReadWrite, Category = "Reacoustic Component", Meta = (DisplayName = "Sound Data Asset"))
-	UReacousticSoundDataAsset* ReacousticSoundDataAsset {nullptr};
-
-	UPROPERTY(BlueprintReadWrite, Category = "Reacoustic Component", Meta = (DisplayName = "StaticMeshSoundData"))
-	FReacousticSoundData MeshAudioData;
-
-	/** The Reacoustic Sound Data Reference Map.*/
-	UPROPERTY(BlueprintReadWrite, Category = "Reacoustic Component", Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
-
-	UPROPERTY(BlueprintReadOnly, category = "Reacoutic Component", Meta = (DisplayName = "Audio Component"))
-	UAudioComponent* AudioComponent{nullptr};
+	FVector LatestLocation;
+	
+	float DeltaHitTime;
+	float DeltaLocationDistance;
+	float DeltaDirectionVector;
+	
+	FVector LatestForwardVector;
+	FVector LatestRightVector;
+	FVector LatestUpVector;
+	
+	TArray<float> DeltaStateArray;
+	
+	/** Array used to store the latest hit values so that we can prevent multiple triggers of the same sound.*/
+	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Latest Hit Results", AllowPrivateAccess = "true"))
+	TArray<float> LatestMatchingElements;
 
 public:	
 	UReacousticComponent();
@@ -105,9 +86,7 @@ public:
 	/** Returns the MeshComponent of the owner. */
 	UFUNCTION(BlueprintGetter, Category = Reacoustic, Meta = (DisplayName = "Get Owner StaticMeshComponent"))
 	FORCEINLINE UStaticMeshComponent* GetOwnerMeshComponent() const {return MeshComponent; }
-
-
-
+	
 	/** Get the time interval between hits */
 	UFUNCTION(BlueprintPure)
 	double ReturnDeltaTime();
@@ -126,13 +105,11 @@ public:
 	/** Caluclates the integer entry number in FReacousticSoundData that matches the impact value.*/
 	UFUNCTION(BlueprintCallable)
 	int PreventSimilarTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
-	
-	
-	
+
 protected:
 	virtual void BeginPlay() override;
-	virtual void OnComponentCreated() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 	virtual void TriggerManualHit_Implementation(float HitStrength);
 
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
@@ -140,5 +117,4 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Surface Hit Sound"))
 	static FReacousticSoundData GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial);
-	
 };

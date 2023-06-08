@@ -6,19 +6,11 @@
 #include "FileCache.h"
 #include "ReacousticSubsystem.h"
 
-#define LOG_CATEGORY(LogReacousticComponent);
+DEFINE_LOG_CATEGORY_CLASS(UReacousticComponent, LogReacousticComponent);
 
 UReacousticComponent::UReacousticComponent()
 {
-
 	PrimaryComponentTick.bCanEverTick = false;
-	bWantsInitializeComponent = true;
-	bAutoActivate = true;
-}
-
-void UReacousticComponent::OnComponentCreated()
-{
-	Super::OnComponentCreated();
 }
 
 void UReacousticComponent::BeginPlay()
@@ -80,15 +72,13 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-
-		if(const UWorld* World {GetWorld()})
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
 		{
-			if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-			{
-				TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
-			}
+			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
 		}
-	
+	}
 	
 	if(!AudioComponent)
 	{
@@ -96,6 +86,7 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		AudioComponent->RegisterComponent();
 		AudioComponent->SetSound(SoundBase);
 	}
+	
 	/** Set the attenuation settings */
 	AudioComponent->AttenuationSettings = MeshAudioData.Attenuation;
 
@@ -105,18 +96,6 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 
 	/** Add the audio component to the parent actor */
 	AudioComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-}
-
-void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if(const UWorld* World {GetWorld()})
-	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-		{
-			Subsystem->UnregisterComponent(this);
-		}
-	}
-	Super::EndPlay(EndPlayReason);
 }
 
 float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent,
@@ -178,6 +157,17 @@ void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArra
 	}
 	
 }
+
+inline static float GetArraySum(const TArray<float>& Array)
+{
+	float Sum {0.0};
+	for (const float Element : Array)
+	{
+		Sum += Element;
+	}
+	return Sum;
+}
+
 /** Filter the hit events so that the system only triggers at appropriate impacts.*/
 //TODO: i'm passing a lot of values that i might not need. So i'll delete them later.
 bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -210,11 +200,11 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 				DeltaDirectionVector =
 					abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector())) +
 					abs(FVector::Distance(LatestRightVector,this->GetOwner()->GetActorRightVector())) +
-					abs(FVector::Distance(LatestUptVector,this->GetOwner()->GetActorUpVector()))
+					abs(FVector::Distance(LatestUpVector,this->GetOwner()->GetActorUpVector()))
 				;
 				LatestForwardVector =this->GetOwner()->GetActorForwardVector();
 				LatestRightVector = this->GetOwner()->GetActorRightVector();
-				LatestUptVector = this->GetOwner()->GetActorUpVector();
+				LatestUpVector = this->GetOwner()->GetActorUpVector();
 				
 				if(DeltaDirectionVector >0.1)
 				{
@@ -241,6 +231,7 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 	}
 	return HitIsValid;
 }
+
 /**Iterate through SounData.OnsetDataMap(timestamp,volume) to find a timestamp related to a volume matching the impact value.*/
 int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue)
 {
@@ -317,11 +308,11 @@ int UReacousticComponent::PreventSimilarTimeStampEntry(FReacousticSoundData Soun
 		for (int32 i = 0; i < SoundData.OnsetTimingData.Num(); i++)
 		{
 			/** iterate in a pattern of: DataEntryIn +1, -1, +2, -2 etc...*/
-			int32 offset{TimeStampIn + i};
-			int32 index{TimeStampIn + offset * (offset % 2 == 0 ? 1 : -1)};
-			int32 indexClamped{FMath::Clamp(index,0,SoundData.OnsetTimingData.Num()-1)};
-			bool FoundValidTimeStamp{true};
-			float TimingToTest = SoundData.OnsetTimingData[indexClamped];
+			int32 Offset {TimeStampIn + i};
+			int32 Index {TimeStampIn + Offset * (Offset % 2 == 0 ? 1 : -1)};
+			int32 IndexClamped {FMath::Clamp(Index,0,SoundData.OnsetTimingData.Num()-1)};
+			bool FoundValidTimeStamp {true};
+			float TimingToTest {SoundData.OnsetTimingData[IndexClamped]};
 			
 			if(LatestMatchingElements.Num() != 0)
 			{
@@ -358,6 +349,18 @@ int UReacousticComponent::PreventSimilarTimeStampEntry(FReacousticSoundData Soun
 		LatestMatchingElements.RemoveAt(0);
 	}
 	return TimeStamp;
+}
+
+void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if(const UWorld* World {GetWorld()})
+	{
+		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+		{
+			Subsystem->UnregisterComponent(this);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
 }
 
 
