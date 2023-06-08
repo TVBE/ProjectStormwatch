@@ -19,7 +19,7 @@ UReacousticSubsystem::UReacousticSubsystem()
 void UReacousticSubsystem::PostInitProperties()
 {
 	
-	if(!ReacousticSoundDataAsset || !UReacousticSoundDataRefMap)
+	if(!ReacousticSoundDataAsset || !ReacousticSoundDataRefMap)
 	{
 		
 	}
@@ -32,6 +32,7 @@ void UReacousticSubsystem::PostInitProperties()
 		World->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &UReacousticSubsystem::OnActorSpawned));
 	}
 }
+
 
 void UReacousticSubsystem::OnActorSpawned(AActor* Actor)
 {
@@ -71,7 +72,7 @@ bool UReacousticSubsystem::IsReacousticCompatible(AActor* Actor)
 /* Adds a reacousticComponent derived component to an actor. and returns the pointer to this component.*/
 void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubclassOf<UReacousticComponent> ComponentClass, FReacousticSoundData MeshSoundData)
 {
-	if (!UReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
+	if (!ReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
 	{
 		return;
 	}
@@ -95,7 +96,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
     {
         if(UReacousticComponent* ReacousticComponent {Cast<UReacousticComponent>(NewComponent)})
         {
-            ReacousticComponent->TransferData(ReacousticSoundDataAsset, UReacousticSoundDataRefMap, MeshSoundData);
+            ReacousticComponent->TransferData(ReacousticSoundDataAsset, ReacousticSoundDataRefMap, MeshSoundData);
             ReacousticComponent->RegisterComponent();
         }
     }
@@ -138,7 +139,7 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 		return;
 	}
 
-	if (!UReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
+	if (!ReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
 	{
 		return;
 	}
@@ -171,12 +172,12 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 
 FReacousticSoundData UReacousticSubsystem::GetMeshSoundData(const UStaticMeshComponent* StaticMeshComponent) const
 {
-	if (!StaticMeshComponent || !UReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
+	if (!StaticMeshComponent || !ReacousticSoundDataRefMap || !ReacousticSoundDataAsset)
 	{
 		return FReacousticSoundData{};
 	}
 
-	for (const auto& [Mesh, SoundDataRef] : UReacousticSoundDataRefMap->MeshMapEntries)
+	for (const auto& [Mesh, SoundDataRef] : ReacousticSoundDataRefMap->MeshMapEntries)
 	{
 		UStaticMesh* MeshPtr {Mesh};
 		const int32 SoundDataRefValue {SoundDataRef};

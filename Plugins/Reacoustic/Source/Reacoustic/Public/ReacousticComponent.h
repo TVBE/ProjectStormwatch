@@ -48,7 +48,7 @@ private:
 
 protected:
 	/** This variable is used to choose the impact sound during a hit.*/
-	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Impact Force"))	
+	UPROPERTY(BlueprintReadWrite, Category = Default, Meta = (DisplayName = "Impact Force"))	
 	float ImpactForce;
 
 private:
@@ -123,12 +123,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
 
-	/** Caluclates the integer entry number in FReacousticSoundData that matches the impact value.*/
-	UFUNCTION(BlueprintCallable)
-	int PreventSimilarTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
-	
-	
-	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnComponentCreated() override;
