@@ -126,11 +126,11 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {return 0.0f; }
 
 	const FVector RelativeVelocity {HitComponent->GetComponentVelocity() - OtherActor->GetVelocity()};
+	//Rotation is currently not used since it results in unpredicable sound.
 	const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
 	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity)};
 	const float D = FMath::Abs(FVector::DotProduct(RelativeVelocity.GetSafeNormal(), NormalImpulse.GetSafeNormal()));
-	UE_LOG(LogTemp, Warning, TEXT("NormalImpulse Length: %f"), NormalImpulse.Size());
-	return RotationalSpeed + ScaledImpulse.Length()*D;
+	return  ScaledImpulse.Length()*D;
 }
 
 FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial)
@@ -291,10 +291,6 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 		{
 			LatestMatchingElements.RemoveAt(0);
 		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No matching timestamp was found"));
 	}
 
 	return BestTimeStamp;

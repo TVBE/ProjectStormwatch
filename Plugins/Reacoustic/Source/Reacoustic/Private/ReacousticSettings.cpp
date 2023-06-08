@@ -19,8 +19,8 @@ UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer&
 void UReacousticProjectSettings::GenerateRuntimeData()
 {
 	//TODO: Create the assets
-	if (!ReacousticSoundDataAsset){}
-	if (!ReacousticSoundDataRefMap){}
+	if (ReacousticSoundDataAsset){}
+	if (ReacousticSoundDataRefMap){}
 	UDataTable* Objects = Cast<UDataTable>(ReacousticObjects.TryLoad());
 	UDataTable* Surfaces = Cast<UDataTable>(ReacousticSurfaces.TryLoad());
 	if (Objects)
@@ -43,7 +43,7 @@ void UReacousticProjectSettings::GenerateRuntimeData()
 					NewData.ImpactWaveAsset = RowData->HitSound.Get();
 					NewData.MaxSpeedScalar = RowData->MaxSpeedScalar;
 
-					
+					//TODO: create an onset nrt and delete it later.
 					UOnsetNRT* OnsetNRT = NewObject<UOnsetNRT>();
 
 					
@@ -77,6 +77,7 @@ void UReacousticProjectSettings::GenerateRuntimeData()
 void UReacousticProjectSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
+	GenerateRuntimeData();
 }
 
 #endif
