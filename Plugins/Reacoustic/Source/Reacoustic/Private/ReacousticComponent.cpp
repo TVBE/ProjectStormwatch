@@ -5,6 +5,7 @@
 
 #include "FileCache.h"
 #include "ReacousticSubsystem.h"
+#include "Chaos/Utilities.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UReacousticComponent, LogReacousticComponent);
 
@@ -76,7 +77,10 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 	{
 		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
 		{
-			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->UReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
+			if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+			{
+				TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
+			}
 		}
 	}
 	
@@ -104,8 +108,11 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {return 0.0f; }
 
 	const FVector RelativeVelocity {HitComponent->GetComponentVelocity() - OtherActor->GetVelocity()};
-	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity) / HitComponent->GetMass()};
-	return ScaledImpulse.Length();
+	//Rotation is currently not used since it results in unpredicable sound.
+	const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
+	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity)};
+	const float D = FMath::Abs(FVector::DotProduct(RelativeVelocity.GetSafeNormal(), NormalImpulse.GetSafeNormal()));
+	return  ScaledImpulse.Length()*D;
 }
 
 FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial)
@@ -173,8 +180,7 @@ inline static float GetArraySum(const TArray<float>& Array)
 bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	bool HitIsValid{false};
-	//ImpactForce = abs(NormalImpulse.Length())/(pow(this->GetOwnerMeshComponent()->GetMass(),2));
-	ImpactForce = (this->GetOwnerMeshComponent()->GetComponentVelocity()-Hit.Component->GetComponentVelocity()).Length()+10*this->GetOwnerMeshComponent()->GetPhysicsAngularVelocityInRadians().Length();
+	ImpactForce = CalculateImpactValue(NormalImpulse,HitComp,OtherActor);
 	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
 	if( ImpactForce > 30)
 	{
@@ -232,6 +238,7 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 	return HitIsValid;
 }
 
+
 /**Iterate through SounData.OnsetDataMap(timestamp,volume) to find a timestamp related to a volume matching the impact value.*/
 int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue)
 {
@@ -252,7 +259,6 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 			if (FMath::Abs(Elem.Value - LatestMatchingElement) < SoundData.ImpulseLength*2)
 			{
 				next = true;
-				UE_LOG(LogTemp,Warning,TEXT("Timestamp found that is too close to the previous ones"))
 				break;
 			}
 		}
@@ -279,77 +285,10 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 			LatestMatchingElements.RemoveAt(0);
 		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No matching timestamp was found"));
-	}
 
 	return BestTimeStamp;
 }
 
-/** Checks if the current timestamp has been played and finds another timestamp that is similar.*/
-int UReacousticComponent::PreventSimilarTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue)
-{
-	//TODO: Optimize, since there's a double for loop we need to make sure that it's breaking at the first moment possible!
-	/** data list is sorted and normalized so that the normalized inpact value * timing data returns the correct sample location that matches the interaction.*/
-	int TimeStampIn{ int(ImpactValue * SoundData.OnsetTimingData.Num())};
-	
-	/** if the following loop can't find a new entry, just return the entry without filtering. */
-	int TimeStamp{TimeStampIn};
-	
-	/** if the interval is large enough so that the player forgets what the last hit sounds like, system forgets the latest hit results.*/
-	if(DeltaHitTime > 10)
-	{
-		LatestMatchingElements.Reset();
-	}
-	/** Iterate over SoundData.OnsetTimingData from the intended timestamp. */
-	if(SoundData.OnsetTimingData.Num())
-	{
-		for (int32 i = 0; i < SoundData.OnsetTimingData.Num(); i++)
-		{
-			/** iterate in a pattern of: DataEntryIn +1, -1, +2, -2 etc...*/
-			int32 Offset {TimeStampIn + i};
-			int32 Index {TimeStampIn + Offset * (Offset % 2 == 0 ? 1 : -1)};
-			int32 IndexClamped {FMath::Clamp(Index,0,SoundData.OnsetTimingData.Num()-1)};
-			bool FoundValidTimeStamp {true};
-			float TimingToTest {SoundData.OnsetTimingData[IndexClamped]};
-			
-			if(LatestMatchingElements.Num() != 0)
-			{
-				/** Iterate throug the recorded sound timestamps.*/
-				for (int32 j = 0; j < LatestMatchingElements.Num(); j++)
-				{
-					float LatestMatchingElement = LatestMatchingElements[j];
-					/** if any of them don't fit, break and test the next timestamp.*/
-					if (FMath::Abs(TimingToTest - LatestMatchingElement) < SoundData.ImpulseLength*2)
-					{
-						FoundValidTimeStamp = false;
-						break;
-					}
-				}
-			}
-			/** if timestamp history is empty, continue without any testing.*/
-			else
-			{
-				TimeStamp = TimingToTest;
-				break;
-			}
-			
-			/** break the loop for the first valid timestamp.*/
-			if(FoundValidTimeStamp)
-			{
-				TimeStamp = TimingToTest;
-				break;
-			}
-		}
-	}
-	LatestMatchingElements.Add(TimeStamp);
-	if (LatestMatchingElements.Num() > 5)
-	{
-		LatestMatchingElements.RemoveAt(0);
-	}
-	return TimeStamp;
-}
 
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
