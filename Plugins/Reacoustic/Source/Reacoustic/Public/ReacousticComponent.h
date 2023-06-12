@@ -97,14 +97,13 @@ public:
 	
 	UFUNCTION()
 	void TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn);
+
 	bool FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                  FVector NormalImpulse, const FHitResult& Hit);
+
 	UFUNCTION(BlueprintCallable)
 	int FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
 
-	/** Caluclates the integer entry number in FReacousticSoundData that matches the impact value.*/
-	UFUNCTION(BlueprintCallable)
-	int PreventSimilarTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
 
 protected:
 	virtual void BeginPlay() override;

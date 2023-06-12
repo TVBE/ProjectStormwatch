@@ -23,7 +23,7 @@ public:
 
 	/** The Reacoustic Sound Data Reference Map.*/
 	UPROPERTY(BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
+	UReacousticSoundDataRef_Map* ReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
 
 	/** The internal reference of the global reacoustic settings.*/
 	UPROPERTY();

@@ -77,10 +77,7 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 	{
 		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
 		{
-			if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-			{
-				TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
-			}
+			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
 		}
 	}
 	
@@ -112,7 +109,7 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 	const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
 	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity)};
 	const float D = FMath::Abs(FVector::DotProduct(RelativeVelocity.GetSafeNormal(), NormalImpulse.GetSafeNormal()));
-	return  ScaledImpulse.Length()*D;
+	return  RelativeVelocity.Length()*D;
 }
 
 FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial)
