@@ -61,7 +61,7 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	
 	UpdateGeometryQuery();
 	
-	if (GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 10000)
+	if (GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 1000)
 	{
 		LastPollLocation = GetOwner()->GetActorLocation();
 		if (GetOwner())
