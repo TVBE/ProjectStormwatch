@@ -58,10 +58,10 @@ void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	UpdateGeometryQuery();
 	
-	if (GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 6000)
+	if (GetOwner() && (GetOwner()->GetActorLocation() - LastPollLocation).SquaredLength() > 10000)
 	{
 		LastPollLocation = GetOwner()->GetActorLocation();
 		if (GetOwner())
@@ -131,6 +131,13 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 			const float TraceLength {static_cast<float>((TraceEnd - TraceStart).Size())};
 			TraceLengths.Add(TraceLength);
 		}
+#if WITH_EDITOR
+		if (IsTraceVisEnabled)
+		{
+			DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+		}
+#endif
+		
 	}
 	return TraceLengths;
 }
@@ -208,6 +215,7 @@ void UExteriorWindAudioComponent::UpdateGeometryQuery()
 		if (IsGeometryQueryQueued)
 		{
 			BeginTemporalGeometryQuery();
+			IsGeometryQueryQueued = false;
 		}
 		else
 		{
@@ -246,10 +254,12 @@ void UExteriorWindAudioComponent::UpdateGeometryQuery()
 void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& Array, const FRotator& Rotation,
 	const float Radius, const float NumPoints, const uint8 TemporalFrames, const float PitchIncrement, const float PitchOffset)
 {
+	TArray<TPair<FVector, double>> AzimuthVectors;
+    
 	const float AngleIncrement {2.f * PI / NumPoints};
 
 	TArray<FVector> SingleFrameTraceVectors;
-	
+    
 	for (int i {0}; i < NumPoints; i++)
 	{
 		const float Angle {i * AngleIncrement};
@@ -257,20 +267,20 @@ void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& 
 		const float Y {Radius * FMath::Sin(Angle)};
 		SingleFrameTraceVectors.Add(FVector(X, Y, 0)) ;
 	}
-	
+    
 	float TargetPitchAngle {0.0f};
-	
-	
+    
+    
 	for (int i {0}; i < TemporalFrames; i++)
 	{
 		constexpr float YawIncrement {22.5f};
 		FRotator YawRotation(0, i * YawIncrement, 0);
 		FQuat YawQuat(YawRotation);
-		
+        
 		for (const FVector& TraceVector : SingleFrameTraceVectors)
 		{
 			const FVector RotatedVector {YawQuat.RotateVector(TraceVector)};
-			
+            
 			const double Azimuth {FMath::Atan2(RotatedVector.Y, RotatedVector.X)};
 			double Elevation {FMath::Acos(RotatedVector.Z / Radius)};
 
@@ -280,23 +290,28 @@ void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& 
 			const double Y {Radius * FMath::Sin(Elevation) * FMath::Sin(Azimuth)};
 			const double Z {Radius * FMath::Cos(Elevation)};
 
-			Array.Add(FVector(X, Y, Z));
+			AzimuthVectors.Add(TPair<FVector, double>{FVector(X, Y, Z), Azimuth});
 		}
 		TargetPitchAngle += PitchIncrement;
 	}
-	SortTraceVectorsByYaw(Array);
+	SortTraceVectorsByYaw(AzimuthVectors);
+
+	for (auto& AzimuthVector : AzimuthVectors)
+	{
+		Array.Add(AzimuthVector.Key);
+	}
 }
 
-void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<FVector>& TraceVectors)
+void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<TPair<FVector, double>>& TraceVectors)
 {
-	TArray<FVector> NorthVectors;
-	TArray<FVector> EastVectors;
-	TArray<FVector> SouthVectors;
-	TArray<FVector> WestVectors;
+	TArray<TPair<FVector, double>> NorthVectors;
+	TArray<TPair<FVector, double>> EastVectors;
+	TArray<TPair<FVector, double>> SouthVectors;
+	TArray<TPair<FVector, double>> WestVectors;
 
-	for (const FVector& TraceVector : TraceVectors)
+	for (const TPair<FVector, double>& TraceVector : TraceVectors)
 	{
-		float Yaw {static_cast<float>(FMath::RadiansToDegrees(FMath::Atan2(TraceVector.Y, TraceVector.X)))};
+		double Yaw {FMath::RadiansToDegrees(TraceVector.Value)};
 
 		if (Yaw < 0.0f)
 		{
@@ -320,14 +335,13 @@ void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<FVector>& TraceVe
 			WestVectors.Add(TraceVector);
 		}
 	}
-	
+    
 	TraceVectors.Empty();
 	TraceVectors.Append(NorthVectors);
 	TraceVectors.Append(EastVectors);
 	TraceVectors.Append(SouthVectors);
 	TraceVectors.Append(WestVectors);
 }
-
 
 /** Populates the occlusion trace arrays. */
 void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>& ArrayA, TArray<FVector>& ArrayB,
