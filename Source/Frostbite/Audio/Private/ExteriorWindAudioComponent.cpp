@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "MetasoundSource.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/PlayerController.h"
 
 /** Sets default values for this component's properties. */
 UExteriorWindAudioComponent::UExteriorWindAudioComponent()
@@ -84,6 +85,9 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
+	
+	APawn* PlayerPawn {GetWorld()->GetFirstPlayerController()->GetPawn()};
+	
 	for (int i {0}; i < GeometryTraceVectors.Num(); i++)
 	{
 		const FVector TraceStart {GetOwner()->GetActorLocation()};
@@ -93,6 +97,7 @@ TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector
 		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
 		Params.bTraceComplex = false;
 		Params.bReturnPhysicalMaterial = false;
+		Params.AddIgnoredActor(PlayerPawn); 
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
 		{
@@ -111,6 +116,9 @@ TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector
 TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
+
+	APawn* PlayerPawn {GetWorld()->GetFirstPlayerController()->GetPawn()};
+	
 	for (int i {0}; i < OcclusionTraceStartVectors.Num(); i++)
 	{
 		const FVector TraceStart {GetOwner()->GetActorLocation() + OcclusionTraceStartVectors[i]};
@@ -120,6 +128,7 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
 		Params.bTraceComplex = false;
 		Params.bReturnPhysicalMaterial = false;
+		Params.AddIgnoredActor(PlayerPawn); 
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
 		{
