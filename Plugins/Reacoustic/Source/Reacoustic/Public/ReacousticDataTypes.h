@@ -163,6 +163,7 @@ float WeightPitchFactor{0.0};
 	FReacousticObjects(){};
 };
 
+
 USTRUCT(BlueprintType)
 struct FReacousticSurfaces
 {

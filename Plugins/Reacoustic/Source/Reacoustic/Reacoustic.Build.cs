@@ -28,7 +28,7 @@ public class Reacoustic : ModuleRules
 			new string[]
 			{
 				"Core",
-				"DeveloperSettings"
+				"DeveloperSettings",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -43,6 +43,7 @@ public class Reacoustic : ModuleRules
 				"SlateCore",
 				"InputCore", 
 				"PhysicsCore",
+				"AudioSynesthesia",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

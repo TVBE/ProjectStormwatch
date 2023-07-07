@@ -145,13 +145,20 @@ private:
 	/** Resets the geometry trace result array. */
 	void ResetGeometryQueryResults();
 	
-	/** Populates the terrain trace vector array. */
+	/** Populate a TArray of FAzimuthVector with vectors representing points on a circle that are rotated and adjusted in elevation.
+	* @param Array The TArray that will be populated.
+	* @param Rotation The rotation applied to the vectors.
+	* @param Radius The radius of the circle.
+	* @param NumPoints The number of points to generate on the circle.
+	* @param TemporalFrames The number of frames over which to distribute the generated points.
+	* @param PitchIncrement The increment applied to the pitch angle at each step.
+	* @param PitchOffset The offset applied to the pitch angle. */
 	static void PopulateGeometryTraceVectors(TArray<FVector>& Array, const FRotator& Rotation, const float Radius,
 		const float NumPoints, const uint8 TemporalFrames, const float PitchIncrement, const float PitchOffset);
 
 	/** Sorts the geometry trace vector array depending on yaw.
 	 *	This way, we can easily access all vectors in a certain direction by index.*/
-	static void SortTraceVectorsByYaw(TArray<FVector>& TraceVectors);
+	static void SortTraceVectorsByYaw(TArray<TPair<FVector, double>>& TraceVectors);
 
 	/** Populates the occlusion trace vector arrays. */
 	static void PopulateOcclusionTraceVectors(TArray<FVector>& ArrayA, TArray<FVector>& ArrayB, const FRotator& Rotation, const float TraceLength, const float Spacing);
