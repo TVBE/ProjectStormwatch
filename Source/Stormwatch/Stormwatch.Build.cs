@@ -22,7 +22,13 @@ public class Stormwatch : ModuleRules
 			"AIModule"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink", "MetasoundEngine", "AnimGraphRuntime"});
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"MetasoundEngine", 
+			"AnimGraphRuntime"
+		});
+		
+		// PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink" }); //Comment this out if you're not using Rider.
 		
 		if (Target.bBuildEditor)
 		{
