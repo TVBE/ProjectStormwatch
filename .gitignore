@@ -75,3 +75,4 @@ DerivedDataCache/*
 
 # files for Rider IDE
 Plugins/Developer
+.idea/.idea.Frostbite/.idea/workspace.xml
