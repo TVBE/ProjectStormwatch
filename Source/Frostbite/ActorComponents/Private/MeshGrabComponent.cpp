@@ -74,13 +74,4 @@ bool UMeshGrabComponent::TakeFromInventory_Implementation(const AActor* Actor)
 	return true;
 }
 
-void UMeshGrabComponent::OnRegister()
-{
-	Super::OnRegister();
-
-	//if (!OverrideInventoryAutoConfig)
-	//{
-	//	IsInventoryAddable = DetermineInventoryAddibility(this);
-	//}
-}
 

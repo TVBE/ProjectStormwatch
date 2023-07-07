@@ -38,7 +38,4 @@ public:
 	bool AddToInventory_Implementation(const AActor* Actor) override;
 	bool TakeFromInventory_Implementation(const AActor* Actor) override;
 	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const override { return InventoryTriggerType; }
-
-private:
-	virtual void BeginPlay() override;
 };
