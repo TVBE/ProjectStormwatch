@@ -4,12 +4,21 @@
 #include "Nightstalker.h"
 
 #include "NightstalkerDirector.h"
+#include "NightstalkerMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+DEFINE_LOG_CATEGORY_CLASS(ANightstalker, LogNightstalker);
 
 ANightstalker::ANightstalker()
 {
- 	
 	PrimaryActorTick.bCanEverTick = true;
+}
 
+void ANightstalker::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	NightstalkerMovementComponent = Cast<UNightstalkerMovementComponent>(GetCharacterMovement());
 }
 
 void ANightstalker::BeginPlay()
@@ -48,5 +57,14 @@ void ANightstalker::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ANightstalker::SetPhantomModeEnabled(const bool Value)
+{
+	if (IsPhantomModeEnabled != Value)
+	{
+		IsPhantomModeEnabled = Value;
+		EventSetPhantomModeEnabled(Value);
+	}
 }
 

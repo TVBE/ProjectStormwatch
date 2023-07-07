@@ -63,6 +63,14 @@ public:
 		WorldContext = "WorldContextObject"))
 	static APlayerCharacterController* GetFrostbitePlayerCharacterController(const UObject* WorldContextObject);
 
+	/** Returns the Nightstalker instance if it is already spawned in the world.
+	 *	This function performs no casts and can safely be called every frame without performance repercussions. */
+	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Get Frostbite Nightstalker", CompactNodeTitle = "Nightstalker",
+		Keywords = "Get, Frostbite, Nightstalker",
+		WorldContext = "WorldContextObject"))
+	static ANightstalker* GetFrostbiteNightstalker(const UObject* WorldContextObject);
+	
+
 	/** Plays an auditory event at a location. */
 	UFUNCTION(BlueprintCallable, Category = "Nightstalker Director", meta = (WorldContext = "WorldContextObject"))
 	static void PlayAuditoryEventAtLocation(const UObject* WorldContextObject, const FAuditoryEvent& AuditoryEvent, const FVector& Location);

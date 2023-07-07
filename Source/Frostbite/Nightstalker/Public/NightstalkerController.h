@@ -5,103 +5,80 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Nightstalker.h"
 #include "NightstalkerController.generated.h"
 
-struct FTimerHandle;
+class APlayerCharacter;
+class ANightstalker;
 
-UENUM(BlueprintType)
-enum class EBehaviorMode : uint8
-{
-	RoamMode    UMETA(DisplayName = "Roam Mode", ToolTip = "In roam mode, we assume that the Nightstalker is not implicitly aware about the whereabouts of the player." ),
-	StalkMode    UMETA(DisplayName = "stalk Mode", ToolTip = "In stalk mode, we assume that the Nightstalker is implicitly aware about the whereabouts of the player."),
-	AmbushMode  UMETA(DisplayName = "Ambush Mode", ToolTip = "In ambush mode, The Nightstalker is near the player and ready to strike.")
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPerceptionChangedDelegate, bool, IsPlayerDetected);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = (Nightstalker))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Nightstalker")
 class ANightstalkerController : public AAIController
 {
 	GENERATED_BODY()
-	
-private:
-	/** The current behavior mode of the Nightstalker.*/
-	UPROPERTY(BlueprintGetter = GetBehaviorMode, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Current Behavior Mode"))
-	EBehaviorMode BehaviorMode;
 
-	/** The update interval for roam mode. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Roam Mode Update Interval", AllowPrivateAccess = "true"))
-	float RoamModeUpdateInterval {1.65f};
-	
-	/** The update interval for stalk mode. */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Stalk Mode Update Interval", AllowPrivateAccess = "true"))
-	float StalkModeUpdateInterval {1.25f};
-	
-	/** The update interval for ambush mode.*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Ambush Mode Update Interval", AllowPrivateAccess = "true"))
-	float AmbushModeUpdateInterval {1.1f};
-	
-	/** The timer handle for the behavior mode update. */
-	UPROPERTY(BlueprintReadOnly, Category = "NightstalkerController|Timers", Meta = (DisplayName = "Behavior Update Timer Handle", AllowPrivateAccess = "true"))
-	FTimerHandle BehaviorUpdateTimerHandle;
-	
-protected:
-	/** Called every frame. */
-	virtual void Tick(float DeltaSeconds) override;
-
-	/** Called when the game ends for the controller. */
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
-	/** Set the controller to a specific behavior mode.
-	 *	@Mode The mode to switch to.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Switch Behavior Mode", BlueprintProtected))
-	void SwitchBehaviorMode(const EBehaviorMode Mode);
-
-	// MODE START
-	/** Called everytime the Nightstalker enters roam mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Roam Mode Start"))
-	void StartRoamMode();
-
-	/** Called everytime the Nightstalker enters stalk mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Stalk Mode Start"))
-	void StartStalkMode();
-
-	/** Called everytime the Nightstalker enters ambush mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Ambush Mode Start"))
-	void StartAmbushMode();
-	
-	// MODE UPDATE
-	/** Called every update interval while the Nightstalker is in roam mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Roam Mode Update"))
-	void UpdateRoamMode();
-	
-	/** Called every update interval while the Nightstalker is in roam mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Stalk Mode Update"))
-	void UpdateStalkMode();
-	
-	/** Called every update interval while the Nightstalker is in roam mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Ambush Mode Update"))
-	void UpdateAmbushMode();
-
-	// MODE TICK
-	/** Called every frame while the Nightstalker is in roam mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Roam Mode Tick"))
-	void TickRoamMode();
-	
-	/** Called every frame while the Nightstalker is in stalk mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Stalk Mode Tick"))
-	void TickStalkMode();
-
-	/** Called every frame while the Nightstalker is in ambush mode. */
-	UFUNCTION(BlueprintNativeEvent, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Ambush Mode Tick"))
-	void TickAmbushMode();
-
-private:
-	/** Called every update interval. */
-	UFUNCTION()
-	void OnBehaviorModeUpdate();
+	DECLARE_LOG_CATEGORY_CLASS(LogNightstalkerController, Log, All)
 
 public:
-	UFUNCTION(BlueprintGetter, Category = "NightstalkerController|Behavior", Meta = (DisplayName = "Current Behavior Mode"))
-	FORCEINLINE EBehaviorMode GetBehaviorMode() const {return BehaviorMode; }
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Delegates")
+	FOnPlayerPerceptionChangedDelegate OnPlayerPerceptionChanged;
+
+private:
+	/** Pointer to the ANightstalker instance that this controller is currently controlling. */
+	UPROPERTY()
+	ANightstalker* Nightstalker {nullptr};
+
+	/** Pointer to the player character. */
+	UPROPERTY(Transient)
+	APlayerCharacter* PlayerCharacter {nullptr};
+
+	/** The tick rate for the behavior tick. */
+	UPROPERTY(EditAnywhere, Category = "Behavior")
+	float BehaviorTickRate {5.0f};
+
+	float BehaviorTickInterval;
+	
+	FTimerHandle BehaviorTickTimerHandle;
+
+	/** The current distance to the player. */
+	double DistanceToPlayerCharacter {0.0f};
+	
+	FVector LastRegisteredLocation;
+	
+	uint8 MaxPathHistoryLength = 50;
+
+	/** Array of vectors where the Nightstalker has been. Can be used to backtrace it's route. */
+	UPROPERTY(Transient)
+	TArray<FVector> PathHistory;
+
+protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
+	
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void BehaviorTick(float DeltaSeconds);
+
+	virtual void OnPossess(APawn* InPawn) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Logging", Meta = (DevelopmentOnly))
+	void LogText(const FString& Text);
+	
+	UFUNCTION(BlueprintPure, Category = "Nightstalker", Meta = (CompactNodeTitle = "Nightstalker"))
+	FORCEINLINE ANightstalker* GetNightstalker() { return Nightstalker; }
+	
+	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (CompactNodeTitle = "Player Character", Keywords = "Player Character Frostbite"))
+	FORCEINLINE APlayerCharacter* GetPlayerCharacter() { return PlayerCharacter; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Absolute Distance To Player"))
+	FORCEINLINE double GetDistanceToPlayerCharacter() const { return DistanceToPlayerCharacter; }
+	
+	/** Returns the recent path history of the Nightstalker. */
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE TArray<FVector> GetPathHistory() const { return PathHistory; }
 };
 

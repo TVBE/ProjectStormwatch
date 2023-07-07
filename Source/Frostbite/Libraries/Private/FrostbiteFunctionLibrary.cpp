@@ -117,8 +117,21 @@ APlayerCharacterController* UFrostbiteFunctionLibrary::GetFrostbitePlayerCharact
 	return nullptr;
 }
 
+ANightstalker* UFrostbiteFunctionLibrary::GetFrostbiteNightstalker(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject) { return nullptr; }
+	if (const UWorld* World {WorldContextObject->GetWorld()})
+	{
+		if (const UNightstalkerDirector* Subsystem {World->GetSubsystem<UNightstalkerDirector>()})
+		{
+			return Subsystem->GetNightstalker();
+		}
+	}
+	return nullptr;
+}
+
 void UFrostbiteFunctionLibrary::PlayAuditoryEventAtLocation(const UObject* WorldContextObject,
-	const FAuditoryEvent& AuditoryEvent, const FVector& Location)
+                                                            const FAuditoryEvent& AuditoryEvent, const FVector& Location)
 {
 	if (!WorldContextObject)
 	{

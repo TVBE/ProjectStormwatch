@@ -28,32 +28,20 @@ AHeatPoint::AHeatPoint()
 		DebugSphereMesh->SetVisibility(false);
 		DebugSphereMesh->SetupAttachment(RootComponent);
 
-		ConstructorHelpers::FObjectFinder<UMaterial> MaterialFinder(TEXT("Material'/Game/Game/Tests/M_HeatPointDebugMaterial_01.M_HeatPointDebugMaterial_01'"));
+		ConstructorHelpers::FObjectFinder<UMaterial> MaterialFinder(TEXT("/Script/Engine.Material'/Game/Game/Tests/M_HeatPointDebugMaterial_01.M_HeatPointDebugMaterial_01'"));
 		if (MaterialFinder.Succeeded())
 		{
-		DebugSphereMesh->SetMaterial(0, DebugMaterial);
+		DebugSphereMesh->SetMaterial(0, MaterialFinder.Object);
 		}
 	}
 #endif
 }
 
-void AHeatPoint::InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue)
+void AHeatPoint::InitializeHeatPoint(const int RadiusValue, const int ExpirationValue, const float HeatValue)
 {
-	Radius = RadiusValue;
-	Lifetime = LifeTimeValue;
-	Heat = HeatValue;
-
-	SetRadius(Radius);
-	
-	if (const UWorld* World = GetWorld())
-	{
-		if (UNightstalkerDirector* DirectorSubsystem = World->GetSubsystem<UNightstalkerDirector>())
-		{
-			DirectorSubsystem->RegisterHeatPoint(this);
-		}
-
-		World->GetTimerManager().SetTimer(LifetimeTimerHandle, this, &AHeatPoint::HandleLifeTimeUpdate, 1, true);
-	}
+	ExpirationTime = ExpirationValue;
+	SetHeat(HeatValue);
+	SetRadius(RadiusValue);
 }
 
 void AHeatPoint::BeginPlay()
@@ -63,8 +51,7 @@ void AHeatPoint::BeginPlay()
 #if WITH_EDITORONLY_DATA
 	if (DebugSphereMesh)
 	{
-		UMaterialInterface* BaseMaterial {DebugSphereMesh->GetMaterial(0)};
-		if (BaseMaterial)
+		if (UMaterialInterface* BaseMaterial {DebugSphereMesh->GetMaterial(0)})
 		{
 			DebugMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
 			DebugSphereMesh->SetMaterial(0, DebugMaterial);
@@ -91,29 +78,16 @@ void AHeatPoint::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AHeatPoint::Update()
+void AHeatPoint::UpdateLifeTime(const int DeltaTime)
 {
-}
-
-void AHeatPoint::HandleLifeTimeUpdate()
-{
-	Lifetime -= 1;
-	if (Lifetime <= 0)
-	{
-		if (const UWorld* World = GetWorld())
-		{
-			if (World->GetTimerManager().IsTimerActive(LifetimeTimerHandle))
-			{
-				World->GetTimerManager().ClearTimer(LifetimeTimerHandle);
-			}
-		}
-		
-		Destroy(0);
-	}
+	Lifetime += DeltaTime;
+	ExpirationTime = FMath::Max(0.0f, ExpirationTime - DeltaTime);
 }
 
 void AHeatPoint::SetRadius(const int NewRadius)
 {
+	Radius = NewRadius;
+	
 	if (SphereComponent)
 	{
 		SphereComponent->SetSphereRadius(Radius);
@@ -134,19 +108,20 @@ void AHeatPoint::SetHeat(const float NewHeat)
 #if WITH_EDITORONLY_DATA
 	if (DebugMaterial)
 	{
-		DebugMaterial->SetScalarParameterValue(FName("Heat"), NewHeat);
+		DebugMaterial->SetScalarParameterValue(FName("Heat"), Heat);
 	}
 #endif
-}
-
-void AHeatPoint::AddLifeTime(const int Time)
-{
-	Lifetime += Time;
 }
 
 void AHeatPoint::AddHeat(const float AddedHeat)
 {
 	const float HeatTotal {Heat + AddedHeat};
+	SetHeat(HeatTotal);
+}
+
+void AHeatPoint::DetractHeat(const float HeatToDeduct)
+{
+	const float HeatTotal {Heat - HeatToDeduct};
 	SetHeat(HeatTotal);
 }
 

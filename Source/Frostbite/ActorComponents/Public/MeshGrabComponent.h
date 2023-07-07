@@ -40,5 +40,5 @@ public:
 	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const override { return InventoryTriggerType; }
 
 private:
-	virtual void OnRegister() override;
+	virtual void BeginPlay() override;
 };

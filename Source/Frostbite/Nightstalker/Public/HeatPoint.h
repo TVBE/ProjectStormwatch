@@ -24,11 +24,13 @@ private:
 	UPROPERTY(BlueprintGetter = GetHeat)
 	float Heat;
 
+	/** The lifetime of the heat point. This describes how long the heat point has been active. */
 	UPROPERTY(BlueprintGetter = GetLifetime)
-	int Lifetime;
-	
-	UPROPERTY()
-	FTimerHandle LifetimeTimerHandle;
+	int Lifetime {0};
+
+	/** The expiration time of the heat point. This describes how long the heat point will remain active before expiring. */
+	UPROPERTY(BlueprintGetter = GetExpirationTime)
+	int ExpirationTime {60};
 
 #if WITH_EDITORONLY_DATA
 	bool IsDebugVisEnabled {false};
@@ -42,32 +44,32 @@ private:
 
 public:	
 	AHeatPoint();
+	
+	void InitializeHeatPoint(const int RadiusValue, const int ExpirationValue, const float HeatValue);
 
-private:
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	UFUNCTION()
-	void Update();
-
-	UFUNCTION()
-	void HandleLifeTimeUpdate();
-
-public:
-	void InitializeHeatPoint(const int RadiusValue, const int LifeTimeValue, const float HeatValue);
+	void UpdateLifeTime(const int DeltaTime);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetRadius(const int NewRadius);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetHeat(const float NewHeat);
-
-	UFUNCTION(BlueprintCallable)
-	void AddLifeTime(const int Time);
-
+	
 	UFUNCTION(BlueprintCallable)
 	void AddHeat(const float AddedHeat);
 
+	UFUNCTION(BlueprintCallable)
+	void DetractHeat(const float HeatToDeduct);
+
+#if WITH_EDITORONLY_DATA
+	void SetDebugVisEnabled(bool IsEnabled);
+#endif
+
+private:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int GetRadius() const { return Radius; }
 
@@ -77,8 +79,6 @@ public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE int GetLifeTime() const { return Lifetime; }
 
-#if WITH_EDITORONLY_DATA
-	void SetDebugVisEnabled(bool IsEnabled);
-#endif
-	
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE int GetExpirationTime() const { return ExpirationTime; }
 };

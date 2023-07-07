@@ -7,6 +7,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "FrostbiteWorldSubystem.generated.h"
 
+class ANightstalker;
 class APlayerCharacter;
 class APlayerCharacterController;
 
@@ -27,7 +28,7 @@ private:
 	/** The Player Controller for the Player Character. */
 	UPROPERTY()
 	APlayerCharacterController* PlayerController {nullptr};
-
+	
 	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
 	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
 	uint8 MovementInputLockCount {1};
@@ -38,26 +39,22 @@ private:
 
 public:
 	/** Registers a Player Character to the subsystem.
-	 *	@Character The PlayerCharacter to register.
-	 */
+	 *	@Character The PlayerCharacter to register. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void RegisterPlayerCharacter(APlayerCharacter* Character);
 
 	/** Registers a Player Controller to the subsystem.
-	*	@Controller The PlayerController to register.
-	*/
+	*	@Controller The PlayerController to register. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void RegisterPlayerController(APlayerCharacterController* Controller);
 
 	/** Unregisters a Player Character from the subsystem. This will be ignored if the player character is not already registered.
-	*	@Character The PlayerCharacter to unregister.
-	*/
+	*	@Character The PlayerCharacter to unregister. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void UnregisterPlayerCharacter(APlayerCharacter* Character);
 	
 	/** Unregisters a Player Controller from the subsystem. This will be ignored if the player controller is not already registered.
-	*	@Controller The PlayerController to unregister.
-	*/
+	*	@Controller The PlayerController to unregister. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void UnregisterPlayerController(APlayerCharacterController* Controller);
 	

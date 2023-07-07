@@ -65,7 +65,10 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::Jump()
 {
-	Super::Jump();
+	if (Configuration && Configuration->IsJumpingEnabled)
+	{
+		Super::Jump();
+	}
 }
 
 /** Called after the constructor but before the components are initialized. */

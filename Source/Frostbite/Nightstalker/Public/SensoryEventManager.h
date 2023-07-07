@@ -8,29 +8,9 @@
 #include "UObject/NoExportTypes.h"
 #include "SensoryEventManager.generated.h"
 
-USTRUCT()
-struct FHeatAtLocation
-{
-	GENERATED_BODY()
-	
-	float Heat;
-	
-	FVector Location;
-	
-	FHeatAtLocation()
-		: Heat(0.0f)
-		, Location(FVector::ZeroVector)
-	{
-	}
-	
-	FHeatAtLocation(float InHeat, FVector InLocation)
-		: Heat(InHeat)
-		, Location(InLocation)
-	{
-	}
-};
-
+class UNightstalkerDirector;
 class ANightstalker;
+
 UCLASS()
 class USensoryEventManager : public UObject
 {
@@ -43,20 +23,53 @@ public:
 	ANightstalker* Nightstalker;
 
 private:
+	/** Pointer to the subsystem that owns this object. */
+	UPROPERTY()
+	UNightstalkerDirector* Director {nullptr};
+	
 	/** Array of auditory events that are waiting to be processed. */
 	UPROPERTY()
 	TArray<FAuditoryEvent> AuditoryEventQueue;
+
+	/** The update interval for the auditory even processor. */
+	float AuditoryEventProcessorUpdateInterval {1.0f};
 
 	/** Timer handle for the auditory event processor. */
 	FTimerHandle AuditoryEventProcessorTimerHandle;
 
 public:
-	void Initialize();
+	void Initialize(UNightstalkerDirector* Subsystem);
+	void Deinitialize();
 	
 	void AddAuditoryEventAtLocation(FAuditoryEvent Event, const FVector& Location);
 
 private:
-	
 	UFUNCTION()
 	void ProcessAuditoryEvents();
+};
+
+USTRUCT()
+struct FHeatEvent
+{
+	GENERATED_BODY()
+	
+	float Heat;
+
+	float Radius;
+	
+	FVector Location;
+	
+	FHeatEvent()
+		: Heat(0.0f)
+		, Radius(0.0f)
+		, Location(FVector::ZeroVector)
+	{
+	}
+
+	FHeatEvent(float InHeat, float InRadius, const FVector& InLocation)
+		: Heat(InHeat)
+		, Radius(InRadius)
+		, Location(InLocation)
+	{
+	}
 };
