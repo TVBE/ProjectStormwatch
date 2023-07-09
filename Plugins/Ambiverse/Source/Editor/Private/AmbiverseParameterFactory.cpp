@@ -2,16 +2,16 @@
 // This source code is part of the Adaptive Ambience System plugin.
 
 #include "AmbiverseParameterFactory.h"
-#include "AmbiverseParameter.h"
+#include "AmbiverseParameterAsset.h"
 
 UAmbiverseParameterFactory::UAmbiverseParameterFactory()
 {
-	SupportedClass = UAmbiverseParameter::StaticClass();
+	SupportedClass = UAmbiverseParameterAsset::StaticClass();
 	bCreateNew = true;
 }
 
 UObject* UAmbiverseParameterFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn)
 {
-	return NewObject<UAmbiverseParameter>(InParent, Class, Name, Flags, Context);
+	return NewObject<UAmbiverseParameterAsset>(InParent, Class, Name, Flags, Context);
 }
