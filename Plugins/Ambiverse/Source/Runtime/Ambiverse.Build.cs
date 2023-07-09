@@ -41,7 +41,6 @@ public class Ambiverse : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"MetasoundEngine",
 			}
 			);
 		

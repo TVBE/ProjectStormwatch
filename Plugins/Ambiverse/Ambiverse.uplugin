@@ -25,11 +25,5 @@
 			"Type": "Editor",
 			"LoadingPhase": "PreLoadingScreen"
 		}
-	],
-	"Plugins": [
-		{
-			"Name": "Metasound",
-			"Enabled": true
-		}
 	]
 }

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "MetasoundSource.h"
 #include "AmbiverseSoundSourceData.generated.h"
 
 class UAmbiverseLayerAsset;
@@ -15,7 +14,7 @@ struct FAmbiverseSoundSourceData
 	
 	/** The MetaSoundSource to use for a SoundSource. */
 	UPROPERTY()
-	UMetaSoundSource* Sound {nullptr};
+	USoundBase* Sound {nullptr};
 	
 	/** The transform to play a SoundSource at. */
 	UPROPERTY()

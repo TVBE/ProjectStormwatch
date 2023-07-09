@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSoundDistributionData.h"
-#include "MetasoundSource.h"
 #include "AmbiverseSoundSource.h"
 #include "AmbiverseElementAsset.generated.h"
 
@@ -21,7 +20,7 @@ class AMBIVERSE_API UAmbiverseElementAsset : public UObject
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	TSoftObjectPtr<UMetaSoundSource> Sound;
+	TSoftObjectPtr<USoundBase> Sound;
 	
 	/** PlayRange data for an AmbienceSystem preset entry. */
 	UPROPERTY(EditAnywhere, Category = "Distribution", Meta = (EditCondition = "DistributorClass == nullptr", ShowOnlyInnerProperties))
@@ -50,7 +49,7 @@ private:
 public:
 	bool IsValid {true};
 
-	FORCEINLINE UMetaSoundSource* GetSound()
+	FORCEINLINE USoundBase* GetSound()
 	{
 		if (!Sound.IsValid()) { Sound.LoadSynchronous(); }
 		return Sound.Get();
