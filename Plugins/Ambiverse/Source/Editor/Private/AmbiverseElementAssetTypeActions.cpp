@@ -3,6 +3,7 @@
 
 #include "AmbiverseElementAssetTypeActions.h"
 #include "AmbiverseElementAsset.h"
+#include "AmbiverseEditor.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
@@ -18,7 +19,7 @@ UClass* FAmbiverseElementAssetTypeActions::GetSupportedClass() const
 
 FColor FAmbiverseElementAssetTypeActions::GetTypeColor() const
 {
-	return FColor(100, 50, 130);
+	return AMBIVERSE_ASSET_COLOR;
 }
 
 uint32 FAmbiverseElementAssetTypeActions::GetCategories()

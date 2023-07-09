@@ -22,3 +22,5 @@ private:
 	TSharedPtr<FAmbiverseCompositeAssetTypeActions> AmbiverseCompositeAssetTypeActions;
 	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbiverseParameterAssetTypeActions;
 };
+
+#define AMBIVERSE_ASSET_COLOR FColor(210, 20, 70)
