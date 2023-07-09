@@ -39,7 +39,8 @@ public class AmbiverseEditor : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Settings",
-				"UnrealEd",
+				"UnrealEd", 
+				"EditorStyle",
 			}
 			);
 		
