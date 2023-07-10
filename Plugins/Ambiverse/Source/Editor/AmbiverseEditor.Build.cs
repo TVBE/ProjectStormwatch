@@ -38,9 +38,9 @@ public class AmbiverseEditor : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"MetasoundEngine",
 				"Settings",
-				"UnrealEd",
+				"UnrealEd", 
+				"EditorStyle",
 			}
 			);
 		

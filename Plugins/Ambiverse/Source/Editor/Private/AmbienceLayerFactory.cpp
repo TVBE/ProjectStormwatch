@@ -2,16 +2,16 @@
 // This source code is part of the Adaptive Ambience System plugin.
 
 #include "AmbiverseLayerFactory.h"
-#include "AmbiverseLayer.h"
+#include "AmbiverseLayerAsset.h"
 
 UAmbiverseLayerFactory::UAmbiverseLayerFactory()
 {
-	SupportedClass = UAmbiverseLayer::StaticClass();
+	SupportedClass = UAmbiverseLayerAsset::StaticClass();
 	bCreateNew = true;
 }
 
 UObject* UAmbiverseLayerFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn)
 {
-	return NewObject<UAmbiverseLayer>(InParent, Class, Name, Flags, Context);
+	return NewObject<UAmbiverseLayerAsset>(InParent, Class, Name, Flags, Context);
 }

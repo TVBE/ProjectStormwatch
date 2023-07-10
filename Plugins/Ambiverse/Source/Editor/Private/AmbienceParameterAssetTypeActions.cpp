@@ -2,7 +2,8 @@
 // This source code is part of the Adaptive Ambience System plugin.
 
 #include "AmbiverseParameterAssetTypeActions.h"
-#include "AmbiverseParameter.h"
+#include "AmbiverseParameterAsset.h"
+#include "AmbiverseEditor.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
@@ -13,12 +14,12 @@ FText FAmbiverseParameterAssetTypeActions::GetName() const
 
 UClass* FAmbiverseParameterAssetTypeActions::GetSupportedClass() const
 {
-	return UAmbiverseParameter::StaticClass();
+	return UAmbiverseParameterAsset::StaticClass();
 }
 
 FColor FAmbiverseParameterAssetTypeActions::GetTypeColor() const
 {
-	return FColor(100, 50, 130);
+	return AMBIVERSE_ASSET_COLOR;
 }
 
 uint32 FAmbiverseParameterAssetTypeActions::GetCategories()
