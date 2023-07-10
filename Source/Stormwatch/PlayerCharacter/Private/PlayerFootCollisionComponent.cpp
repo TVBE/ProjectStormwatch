@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 
 #if WITH_REACOUSTIC
-#include "Reacoustic/Public/ReacousticComponent.h"
+#include "Runtime//Public/ReacousticComponent.h"
 #endif
 
 UPlayerFootCollisionComponent::UPlayerFootCollisionComponent()

@@ -3,16 +3,15 @@
 
 using UnrealBuildTool;
 
-public class Reacoustic : ModuleRules
+public class ReacousticEditor : ModuleRules
 {
-	public Reacoustic(ReadOnlyTargetRules Target) : base(Target)
+	public ReacousticEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				
 			}
 			);
 				
@@ -28,7 +27,9 @@ public class Reacoustic : ModuleRules
 			new string[]
 			{
 				"Core",
-				"DeveloperSettings",
+				"AssetTools",
+				"Reacoustic",
+				
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -41,13 +42,16 @@ public class Reacoustic : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Settings",
 				"InputCore", 
 				"PhysicsCore",
 				"AudioSynesthesia",
+				"UnrealEd",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
 		
+
 		
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
