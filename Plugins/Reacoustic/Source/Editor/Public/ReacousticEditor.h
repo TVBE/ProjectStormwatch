@@ -15,6 +15,6 @@ public:
 private:
 	TSharedPtr<FReacousticSoundAssetTypeActions> ReacousticSoundAssetTypeActions;
 
-#define REACOUSTIC_ASSET_COLOR FColor(155, 89, 182, 255)
+#define REACOUSTIC_ASSET_COLOR FColor(136, 59, 249)
 	
 };
