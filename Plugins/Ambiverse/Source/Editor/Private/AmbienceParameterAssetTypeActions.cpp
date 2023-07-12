@@ -24,14 +24,14 @@ FColor FAmbiverseParameterAssetTypeActions::GetTypeColor() const
 
 uint32 FAmbiverseParameterAssetTypeActions::GetCategories()
 {
-	return EAssetTypeCategories::Sounds;
+	return AMBIVERSE_ASSET_CATEGORY;
 }
 
 const TArray<FText>& FAmbiverseParameterAssetTypeActions::GetSubMenus() const
 {
 	static const TArray<FText> SubMenus
 	{
-		LOCTEXT("AssetAmbiverseSubMenu", "Ambiverse")
+		AMBIVERSE_ASSET_SUBMENUS
 	};
 
 	return SubMenus;

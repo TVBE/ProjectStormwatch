@@ -23,4 +23,7 @@ private:
 	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbiverseParameterAssetTypeActions;
 };
 
+/** Asset macros */
 #define AMBIVERSE_ASSET_COLOR FColor(210, 20, 70)
+#define AMBIVERSE_ASSET_CATEGORY EAssetTypeCategories::Sounds
+#define AMBIVERSE_ASSET_SUBMENUS LOCTEXT("AssetAmbiverseSubMenu", "Ambiverse")
