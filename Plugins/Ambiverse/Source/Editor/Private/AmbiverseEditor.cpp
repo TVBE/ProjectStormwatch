@@ -11,8 +11,6 @@ void FAmbiverseEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools {FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get()};
 	
-	UE_LOG(LogTemp, Error, TEXT("Startup"))
-
 	AmbiverseElementAssetTypeActions = MakeShared<FAmbiverseElementAssetTypeActions>();
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(AmbiverseElementAssetTypeActions.ToSharedRef());
 	
