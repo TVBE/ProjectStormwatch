@@ -1,10 +1,11 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin.
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
+
+class UAmbiverseElementAsset;
 
 class FAmbiverseElementAssetTypeActions : public FAssetTypeActions_Base
 {
@@ -14,27 +15,15 @@ public:
 	virtual FColor GetTypeColor() const override;
 	virtual uint32 GetCategories() override;
 	virtual const TArray<FText>& GetSubMenus() const override;
-	EVisibility GetThumbnailOverlayVisibility() const;
 	virtual TSharedPtr<SWidget> GetThumbnailOverlay(const FAssetData& AssetData) const override;
-	FReply OnThumbnailOverlayClicked() const;
-
-protected:
-	/** Plays the specified sound wave */
-	void PlaySound(USoundBase* Sound) const;
-
-	/** Stops any currently playing sounds */
-	void StopSound() const;
-
-	/** Return true if the specified sound is playing */
-	bool IsSoundPlaying(USoundBase* Sound) const;
-
-	/** Return true if the specified asset's sound is playing */
-	bool IsSoundPlaying(const FAssetData& AssetData) const;
 
 private:
-	/** Handler for when PlaySound is selected */
-	void ExecutePlaySound(TArray<TWeakObjectPtr<USoundBase>> Objects) const;
+	/** Plays the sound of the element. */
+	void PlayElement(TWeakObjectPtr<UAmbiverseElementAsset> Object) const;
 
-	/** Handler for when StopSound is selected */
-	void ExecuteStopSound(TArray<TWeakObjectPtr<USoundBase>> Objects) const;
+	/** Stops any currently playing sounds. */
+	void StopElement() const;
+	
+	/** Returns true if the specified asset's sound is playing */
+	bool IsElementPlaying(const FAssetData& AssetData) const;
 };

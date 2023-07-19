@@ -1,5 +1,4 @@
-// Copyright (c) 2022-present Tim Verberne
-// This source code is part of the Adaptive Ambience System plugin.
+// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseElementAssetTypeActions.h"
 #include "AmbiverseElementAsset.h"
@@ -38,69 +37,11 @@ const TArray<FText>& FAmbiverseElementAssetTypeActions::GetSubMenus() const
 	return SubMenus;
 }
 
-void FAmbiverseElementAssetTypeActions::PlaySound(USoundBase* Sound) const
-{
-	if ( Sound )
-	{
-		GEditor->PlayPreviewSound(Sound);
-	}
-	else
-	{
-		StopSound();
-	}
-}
-
-void FAmbiverseElementAssetTypeActions::StopSound() const
-{
-	GEditor->ResetPreviewAudioComponent();
-}
-
-bool FAmbiverseElementAssetTypeActions::IsSoundPlaying(USoundBase* Sound) const
-{
-	const UAudioComponent* PreviewComp {GEditor->GetPreviewAudioComponent()};
-	return PreviewComp && PreviewComp->Sound == Sound && PreviewComp->IsPlaying();
-}
-
-bool FAmbiverseElementAssetTypeActions::IsSoundPlaying(const FAssetData& AssetData) const
-{
-	const UAudioComponent* PreviewComp {GEditor->GetPreviewAudioComponent()};
-	if (PreviewComp && PreviewComp->Sound && PreviewComp->IsPlaying())
-	{
-		if (PreviewComp->Sound->GetFName() == AssetData.AssetName)
-		{
-			if (PreviewComp->Sound->GetOutermost()->GetFName() == AssetData.PackageName)
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-void FAmbiverseElementAssetTypeActions::ExecutePlaySound(TArray<TWeakObjectPtr<USoundBase>> Objects) const
-{
-	for (auto ObjIt = Objects.CreateConstIterator(); ObjIt; ++ObjIt)
-	{
-		if (USoundBase* Sound {(*ObjIt).Get()})
-		{
-			PlaySound(Sound);
-			break;
-		}
-	}
-}
-
-void FAmbiverseElementAssetTypeActions::ExecuteStopSound(TArray<TWeakObjectPtr<USoundBase>> Objects) const
-{
-	StopSound();
-}
-
 TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const FAssetData& AssetData) const
 {
 	auto OnGetDisplayBrushLambda = [this, AssetData]() -> const FSlateBrush*
 	{
-		
-		if (IsSoundPlaying(AssetData))
+		if (IsElementPlaying(AssetData))
 		{
 			return FAppStyle::GetBrush("MediaAsset.AssetActions.Stop.Large");
 		}
@@ -110,20 +51,23 @@ TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const
 
 	auto OnClickedLambda = [this, AssetData]() -> FReply
 	{
-		if (IsSoundPlaying(AssetData))
+		if (IsElementPlaying(AssetData))
 		{
-			StopSound();
+			StopElement();
 		}
 		else
 		{
-			PlaySound(Cast<USoundBase>(AssetData.GetAsset()));
+			if (UAmbiverseElementAsset* ElementAsset {Cast<UAmbiverseElementAsset>(AssetData.GetAsset())})
+			{
+				PlayElement(TWeakObjectPtr<UAmbiverseElementAsset>(ElementAsset));
+			}
 		}
 		return FReply::Handled();
 	};
 
 	auto OnToolTipTextLambda = [this, AssetData]() -> FText
 	{
-		if (IsSoundPlaying(AssetData))
+		if (IsElementPlaying(AssetData))
 		{
 			return LOCTEXT("Thumbnail_StopSoundToolTip", "Stop selected sound");
 		}
@@ -139,7 +83,7 @@ TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const
 
 	auto OnGetVisibilityLambda = [this, Box, AssetData]() -> EVisibility
 	{
-		if (Box.IsValid() && (Box->IsHovered() || IsSoundPlaying(AssetData)))
+		if (Box.IsValid() && (Box->IsHovered() || IsElementPlaying(AssetData)))
 		{
 			return EVisibility::Visible;
 		}
@@ -151,7 +95,7 @@ TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const
 	SAssignNew(Widget, SButton)
 		.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
 		.ToolTipText_Lambda(OnToolTipTextLambda)
-		.Cursor(EMouseCursor::Default) // The outer widget can specify a DragHand cursor, so we need to override that here
+		.Cursor(EMouseCursor::Default)
 		.ForegroundColor(FSlateColor::UseForeground())
 		.IsFocusable(false)
 		.OnClicked_Lambda(OnClickedLambda)
@@ -167,9 +111,46 @@ TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const
 	return Box;
 }
 
-FReply FAmbiverseElementAssetTypeActions::OnThumbnailOverlayClicked() const
+void FAmbiverseElementAssetTypeActions::PlayElement(TWeakObjectPtr<UAmbiverseElementAsset> Object) const
 {
-	UE_LOG(LogTemp, Error, TEXT("The button was clicked"))
-	return FReply::Handled();
+	if (Object.IsValid())
+	{
+		if (UAmbiverseElementAsset* ElementAsset {Object.Get()})
+		{
+			if (USoundBase* Sound {ElementAsset->GetSound()})
+			{
+				GEditor->PlayPreviewSound(Sound);
+			}
+		}
+	}
+	else
+	{
+		StopElement();
+	}
+}
+
+void FAmbiverseElementAssetTypeActions::StopElement() const
+{
+	GEditor->ResetPreviewAudioComponent();
+}
+
+bool FAmbiverseElementAssetTypeActions::IsElementPlaying(const FAssetData& AssetData) const
+{
+	const UAudioComponent* PreviewComponent {GEditor->GetPreviewAudioComponent()};
+	if (PreviewComponent && PreviewComponent->Sound && PreviewComponent->IsPlaying())
+	{
+		if (UAmbiverseElementAsset* ElementAsset {Cast<UAmbiverseElementAsset>(AssetData.GetAsset())})
+		{
+			if (USoundBase* Sound {ElementAsset->GetSound()})
+			{
+				if (PreviewComponent->Sound == Sound)
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
