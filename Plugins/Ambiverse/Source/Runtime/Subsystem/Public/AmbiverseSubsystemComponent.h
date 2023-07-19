@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSubsystem.h"
-#include "UObject/NoExportTypes.h"
 #include "AmbiverseSubsystemComponent.generated.h"
 
 class UAmbiverseSubsystem;
 
-UCLASS(MinimalAPI, Transient, Within = "AmbiverseSubsystem", ClassGroup = "AmbiVerse")
+UCLASS(MinimalAPI, Transient, Within = "AmbiverseSubsystem", ClassGroup = "Ambiverse")
 class UAmbiverseSubsystemComponent : public UObject
 {
 	GENERATED_BODY()
@@ -27,7 +26,7 @@ public:
 	
 	virtual void Tick(const float DeltaTime) {};
 
-	virtual UWorld* GetWorld() const override
+	virtual UWorld* GetWorld() const override final
 	{
 		if (Owner) { return Owner->GetWorld(); }
 		return nullptr;

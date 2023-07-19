@@ -1,12 +1,10 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseVisualisationComponent.h"
+#include "AmbiverseDebugVisualizationComponent.h"
 #include "AmbiverseSoundSourceManager.h"
 #include "AmbiverseSubsystem.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseVisualisationComponent, LogAmbiverseVisualisation);
-
-void UAmbiverseVisualisationComponent::Initialize(UAmbiverseSubsystem* Subsystem)
+void UAmbiverseDebugVisualizationComponent::Initialize(UAmbiverseSubsystem* Subsystem)
 {
 	Super::Initialize(Subsystem);
 
@@ -23,7 +21,7 @@ void UAmbiverseVisualisationComponent::Initialize(UAmbiverseSubsystem* Subsystem
 	);
 }
 
-void UAmbiverseVisualisationComponent::Tick(const float DeltaTime)
+void UAmbiverseDebugVisualizationComponent::Tick(const float DeltaTime)
 {
 	if (!IsDebugEnabled || !Owner) { return; }
 
@@ -34,7 +32,7 @@ void UAmbiverseVisualisationComponent::Tick(const float DeltaTime)
 }
 
 
-void UAmbiverseVisualisationComponent::SetSoundSourceVisualisationEnabled(bool IsEnabled)
+void UAmbiverseDebugVisualizationComponent::SetSoundSourceVisualisationEnabled(bool IsEnabled)
 {
 	
 }

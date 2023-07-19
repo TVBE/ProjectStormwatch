@@ -4,14 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSubsystemComponent.h"
-#include "AmbiverseVisualisationComponent.generated.h"
+#include "AmbiverseDebugVisualizationComponent.generated.h"
 
 UCLASS()
-class UAmbiverseVisualisationComponent : public UAmbiverseSubsystemComponent
+class UAmbiverseDebugVisualizationComponent : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
-
-	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseVisualisation, Log, All)
 
 public:
 	TUniquePtr<FAutoConsoleCommand> SoundSourceVisualisationConsoleCommand;

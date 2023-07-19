@@ -6,9 +6,10 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "AmbiverseSubsystem.generated.h"
 
+class UAmbiverseSubsystemComponent;
 class UAmbiverseElementManager;
 class UAmbiverseElementInstance;
-class UAmbiverseVisualisationComponent;
+class UAmbiverseDebugVisualizationComponent;
 class UAmbiverseDistributionManager;
 class UAmbiverseLayerManager;
 class UAmbiverseParameterManager;
@@ -23,23 +24,18 @@ class AMBIVERSE_API UAmbiverseSubsystem : public UTickableWorldSubsystem
 	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseSubsystem, Log, All)
 
 private:
-	UPROPERTY()
-	UAmbiverseLayerManager* LayerManager {nullptr};
+	/** Array containing all subsystem components in this subsystem.
+	 *	@note The elements in this array can be garbage collected when the
+	 *	strong object pointers are reset or go out of scope. */
+	TArray<UAmbiverseSubsystemComponent*> SubsystemComponents;
 	
-	UPROPERTY()
-	UAmbiverseParameterManager* ParameterManager {nullptr};
-
-	UPROPERTY()
-	UAmbiverseSoundSourceManager* SoundSourceManager {nullptr};
-
-	UPROPERTY()
-	UAmbiverseDistributionManager* DistributorManager {nullptr};
-
-	UPROPERTY()
-	UAmbiverseElementManager* ElementManager {nullptr};
-
+	TStrongObjectPtr<UAmbiverseLayerManager> LayerManager;
+	TStrongObjectPtr<UAmbiverseParameterManager> ParameterManager;
+	TStrongObjectPtr<UAmbiverseSoundSourceManager> SoundSourceManager;
+	TStrongObjectPtr<UAmbiverseDistributionManager> DistributorManager;
+	TStrongObjectPtr<UAmbiverseElementManager> ElementManager;
 #if !UE_BUILD_SHIPPING
-	TStrongObjectPtr<UAmbiverseVisualisationComponent> VisualisationComponent {nullptr};
+	TStrongObjectPtr<UAmbiverseDebugVisualizationComponent> Debugger;
 #endif
 
 public:
@@ -69,14 +65,15 @@ private:
 	virtual void Deinitialize() override;
 	
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	FORCEINLINE UAmbiverseLayerManager* GetLayerManager() const { return LayerManager; }
-	FORCEINLINE UAmbiverseParameterManager* GetParameterManager() const { return ParameterManager; }
-	FORCEINLINE UAmbiverseSoundSourceManager* GetSoundSourceManager() const { return SoundSourceManager; }
-	FORCEINLINE UAmbiverseDistributionManager* GetDistributorManager() const { return DistributorManager; }
-	FORCEINLINE UAmbiverseElementManager* GetElementManager() const { return ElementManager; }
+	FORCEINLINE UAmbiverseLayerManager* GetLayerManager() const { return LayerManager.Get(); }
+	FORCEINLINE UAmbiverseParameterManager* GetParameterManager() const { return ParameterManager.Get(); }
+	FORCEINLINE UAmbiverseSoundSourceManager* GetSoundSourceManager() const { return SoundSourceManager.Get(); }
+	FORCEINLINE UAmbiverseDistributionManager* GetDistributorManager() const { return DistributorManager.Get(); }
+	FORCEINLINE UAmbiverseElementManager* GetElementManager() const { return ElementManager.Get(); }
 };
 
 
