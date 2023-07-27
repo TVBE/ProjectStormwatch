@@ -10,6 +10,8 @@
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSubsystem, LogAmbiverseSubsystem);
 
+/** Using a macro here instead of a templated function due to to binding errors caused by TStrongObjectPtr overloaded
+ *	assignment operator, which returns an rvalue. */
 #define CREATE_AND_INIT_SUBSYSTEM_COMPONENT(ComponentType, ComponentPtr) \
 	ComponentPtr.Reset(NewObject<ComponentType>(this)); \
 		if (ComponentPtr.IsValid()) { \
