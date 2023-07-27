@@ -2,10 +2,11 @@
 // Written by Nino Saglia.
 
 #include "ReacousticComponent.h"
-
+#include "ReacousticSoundAsset.h"
 #include "FileCache.h"
 #include "ReacousticSubsystem.h"
 #include "Chaos/Utilities.h"
+#include "Engine/StaticMeshActor.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UReacousticComponent, LogReacousticComponent);
 
@@ -73,28 +74,47 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-	if(const UWorld* World {GetWorld()})
+	const UWorld* World = GetWorld();
+	if (!World) 
 	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-		{
-			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
-		}
+		return;
 	}
-	
+
+	UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();
+	if (!Subsystem) 
+	{
+		return;
+	}
+
+	/** If ReacousticSoundAsset is null, get the asset from the subsystem, otherwise use the existing asset. */
+	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : Subsystem->GetMeshSoundAsset(MeshComponent);
+	TransferData(AssetToTransfer, Subsystem->ReacousticSoundAssociationMap);
+
+	/** Make sure htere's an audio component.*/
 	if(!AudioComponent)
 	{
 		AudioComponent = NewObject<UAudioComponent>(GetOwner());
 		AudioComponent->RegisterComponent();
 		AudioComponent->SetSound(SoundBase);
 	}
+
+	if(!ReacousticSoundAsset)
+	{
+		UE_LOG(LogReacousticComponent, Warning, TEXT("No sound asset found, destroying component"));
+		AudioComponent->Stop();
+		DestroyComponent();
+	}
 	
-	/** Set the attenuation settings */
-	AudioComponent->AttenuationSettings = MeshAudioData.Attenuation;
+		/** Set the attenuation settings */
+		if(ReacousticSoundAsset->Sound_Attenuation){AudioComponent->AttenuationSettings = ReacousticSoundAsset->Sound_Attenuation;}
 
-	/** Set the parameters.*/
-	AudioComponent->SetFloatParameter(TEXT("Obj_Length"), MeshAudioData.ImpulseLength);
-	AudioComponent->SetWaveParameter(TEXT("Obj_WaveAsset"), MeshAudioData.ImpactWaveAsset);
+		if(ReacousticSoundAsset->Sound){AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);}
 
+
+		/** Set the parameters.*/
+		if(ReacousticSoundAsset->ImpulseLength){AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);}
+	
+	
 	/** Add the audio component to the parent actor */
 	AudioComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 }
@@ -112,18 +132,20 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 	return  RelativeVelocity.Length()*D;
 }
 
-FReacousticSoundData UReacousticComponent::GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial)
-{
-	return FReacousticSoundData();
-}
+
 
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if(FilterImpact(HitComp,OtherActor,OtherComp,NormalImpulse,Hit))
 	{
+		if(UReacousticSubsystem* Subsystem {GetWorld()->GetSubsystem<UReacousticSubsystem>()})
+		{
+			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			SurfaceSoundAsset = Subsystem->GetSurfaceSoundAsset(SurfaceType);
+		}
 		OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-	}
 	
+	}
 }
 
 
@@ -147,13 +169,12 @@ double UReacousticComponent::ReturnDeltaLocationDistance()
 	return DeltaLocationDistance;
 }
 
-void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn)
+void UReacousticComponent::TransferData(UReacousticSoundAsset* SoundDataAsset, UReacousticSoundAssociationMap* ReferenceMap)
 {
-	if(SoundDataArray && ReferenceMap)
+	if(SoundDataAsset && ReferenceMap)
 	{
-		ReacousticSoundDataAsset = SoundDataArray;
-		UReacousticSoundDataRefMap = ReferenceMap;
-		MeshAudioData = MeshSoundDataIn;
+		ReacousticSoundAsset = SoundDataAsset;
+		ReacousticSoundAssociationMap = ReferenceMap;
 	}
 	else
 	{
@@ -236,38 +257,53 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 }
 
 
-/**Iterate through SounData.OnsetDataMap(timestamp,volume) to find a timestamp related to a volume matching the impact value.*/
-int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue)
+FVector2D UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
-	
 	float BestDifference = FLT_MAX; 
-	int BestTimeStamp = -1;
+	float BestTimeStamp = -1;
+	float BestStrenght = -1;
 
-	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
-	for(auto& Elem : SoundData.OnsetDataMap)
+	TArray<float> OutOnsetTimestamps;
+	TArray<float> OutOnsetStrengths;
+	
+	if (!SoundAsset || !SoundAsset->Sound)
 	{
-		/** If this element is in LatestMatchingElements, skip to the next iteration */
-		/** Iterate throug the recorded sound timestamps.*/
-		bool next{false};
-		for (int32 j = 0; j < LatestMatchingElements.Num(); j++)
+		return FVector2D(0,0);
+	}
+
+	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
+	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
+	if (OutOnsetTimestamps.Num() == OutOnsetStrengths.Num())
+	{
+		for (int i = 0; i < OutOnsetTimestamps.Num(); ++i)
 		{
-			float LatestMatchingElement = LatestMatchingElements[j];
-			/** if any of them don't fit, break and test the next timestamp.*/
-			if (FMath::Abs(Elem.Value - LatestMatchingElement) < SoundData.ImpulseLength*2)
+			float timestamp = OutOnsetTimestamps[i];
+			float strength = OutOnsetStrengths[i];
+			
+			/** If this element is in LatestMatchingElements, skip to the next iteration */
+			/** Iterate throug the recorded sound timestamps.*/
+			bool next{false};
+			for (int32 j = 0; j < LatestMatchingElements.Num(); j++)
 			{
-				next = true;
-				break;
+				float LatestMatchingElement = LatestMatchingElements[j];
+				/** if any of them don't fit, break and test the next timestamp.*/
+				if (FMath::Abs(timestamp - LatestMatchingElement) < SoundAsset->ImpulseLength*2)
+				{
+					next = true;
+					break;
+				}
 			}
-		}
-		if(next)
-		{
-			continue;
-		}
-		const float CurrentDifference = FMath::Abs(ImpactValue - Elem.Value);
-		if(CurrentDifference < BestDifference)
-		{
-			BestDifference = CurrentDifference;
-			BestTimeStamp = Elem.Value;
+			if(next)
+			{
+				continue;
+			}
+			const float CurrentDifference = FMath::Abs(ImpactValue - strength);
+			if(CurrentDifference < BestDifference)
+			{
+				BestDifference = CurrentDifference;
+				BestTimeStamp = timestamp;
+				BestStrenght = strength;
+			}
 		}
 	}
 
@@ -282,8 +318,7 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 			LatestMatchingElements.RemoveAt(0);
 		}
 	}
-
-	return BestTimeStamp;
+	return FVector2D(BestTimeStamp, BestStrenght);
 }
 
 

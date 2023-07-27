@@ -33,9 +33,8 @@ public:
 	FSoftObjectPath ReacousticComponent;
 
 protected:
-	/** The GENERATED data used by the reacoustic subsystem.#1#*/
-	UReacousticSoundDataAsset* ReacousticSoundDataAsset;
-	UReacousticSoundDataRef_Map* ReacousticSoundDataRefMap;
+	/** The GENERATED data used by the reacoustic subsystem*/
+	UReacousticSoundAssociationMap* ReacousticSoundDataRefMap;
 
 
 public:

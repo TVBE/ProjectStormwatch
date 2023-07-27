@@ -6,7 +6,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
+#include "ReacousticSoundAsset.h"
 #include "components/AudioComponent.h"
+
 #include "ReacousticComponent.generated.h"
 
 class ReacousticSoundDataRef_Map;
@@ -22,14 +24,15 @@ protected:
 	UPROPERTY(Transient, BlueprintReadOnly)
 	UAudioComponent* AudioComponent {nullptr};
 
-	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset"))
-	UReacousticSoundDataAsset* ReacousticSoundDataAsset {nullptr};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Reacoustic Sound"), Category = "Default")
+	UReacousticSoundAsset* ReacousticSoundAsset{nullptr};
+
+	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Reacoustic Surface Sound"))
+	UReacousticSoundAsset* SurfaceSoundAsset{nullptr};
 
 	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
-
-	UPROPERTY(BlueprintReadWrite)
-	FReacousticSoundData MeshAudioData;
+	UReacousticSoundAssociationMap* ReacousticSoundAssociationMap {nullptr};
+	
 	
 	/** Used to choose the impact sound during a hit.*/
 	UPROPERTY(BlueprintReadOnly, Category = Default, Meta = (DisplayName = "Impact Force"))	
@@ -96,13 +99,13 @@ public:
 	double ReturnDeltaLocationDistance();
 	
 	UFUNCTION()
-	void TransferData(UReacousticSoundDataAsset* SoundDataArray, UReacousticSoundDataRef_Map* ReferenceMap, FReacousticSoundData MeshSoundDataIn);
+	void TransferData(UReacousticSoundAsset* SoundDataAsset, UReacousticSoundAssociationMap* ReferenceMap);
 
 	bool FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                  FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(BlueprintCallable)
-	int FindTimeStampEntry(FReacousticSoundData SoundData, float ImpactValue);
+	FVector2D ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue);
 
 
 protected:
@@ -114,6 +117,4 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
 	static float CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);
 
-	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Surface Hit Sound"))
-	static FReacousticSoundData GetSurfaceHitSoundX(const AActor* Actor, const UPhysicalMaterial* PhysicalMaterial);
 };

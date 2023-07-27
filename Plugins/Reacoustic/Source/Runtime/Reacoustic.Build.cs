@@ -28,7 +28,10 @@ public class Reacoustic : ModuleRules
 			new string[]
 			{
 				"Core",
+				"CoreUObject",
 				"DeveloperSettings",
+				"AudioSynesthesia",
+				"AudioAnalyzer"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
