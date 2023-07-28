@@ -7,6 +7,7 @@
 #include "Algo/AnyOf.h"
 #include "ToolMenus.h"
 #include "ContentBrowserMenuContexts.h"
+#include "ReacousticSubsystem.h"
 #include "Misc/PackageName.h"
 #include "Sound/SoundWaveProcedural.h"
 #include "ToolMenu.h"
@@ -51,7 +52,7 @@ void FReacousticSoundAssetTypeActions::PlaySound(USoundBase* Sound) const
 {
 	if ( Sound )
 	{
-		GEditor->PlayPreviewSound(Sound);
+		//GEditor->PlayPreviewSound();
 	}
 	else
 	{
@@ -125,11 +126,52 @@ TSharedPtr<SWidget> FReacousticSoundAssetTypeActions::GetThumbnailOverlay(const 
 		}
 		else
 		{
-			PlaySound(Cast<USoundBase>(AssetData.GetAsset()));
+			UReacousticSubsystem* ReacousticSubsystem = GEditor->GetEditorWorldContext().World()->GetSubsystem<UReacousticSubsystem>();
+
+			UObject* SoundObject = StaticLoadObject(UObject::StaticClass(), nullptr, TEXT("/Reacoustic/Audio/Metasounds/MSS_Reacoustic")); //Asset path referencing for now. I might include Metasound plugin later.
+			USoundBase* SoundBase = Cast<USoundBase>(SoundObject);
+    
+			if (UReacousticSoundAsset* CastedAsset = Cast<UReacousticSoundAsset>(AssetData.GetAsset()))
+			{
+				UWorld* World = GEditor->GetEditorWorldContext().World();
+				UAudioComponent* AudioComponent = NewObject<UAudioComponent>(World);
+
+				// Set the sound object as the sound base
+				AudioComponent->SetSound(SoundBase);
+
+				FString soundName = CastedAsset->Sound->GetFName().ToString();
+				float ImpactValue = FMath::RandRange(0.0f,1.0f); //For now a random impact value is fun. Another option is retriggering the sound with a delay to showcase the full range of interactions a reacoustic sound has.
+            
+				FVector2d TimestampAndVolume = ReacousticSubsystem->GetTimeStampWithStrenght(CastedAsset, ImpactValue);
+				float Timestamp = TimestampAndVolume.X;
+				float Volume = TimestampAndVolume.Y;
+				
+				
+				// Set parameters for the audio component
+
+				AudioComponent->bAutoDestroy = false;
+				AudioComponent->bIsUISound = true;
+				AudioComponent->bAllowSpatialization = false;
+				AudioComponent->bReverb = false;
+				AudioComponent->bCenterChannelOnly = false;
+				AudioComponent->bPreviewComponent = true;
+				
+				AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Timestamp);
+				AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
+				AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), CastedAsset->Sound);
+				AudioComponent->SetFloatParameter(TEXT("Obj_Length"), CastedAsset->ImpulseLength);
+				
+
+				
+				AudioComponent->Play();
+
+
+			}
+			
 		}
 		return FReply::Handled();
 	};
-
+	
 	auto OnToolTipTextLambda = [this, AssetData]() -> FText
 	{
 		if (IsSoundPlaying(AssetData))

@@ -1,12 +1,7 @@
 // Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
 // Written by Nino Saglia.
-
 #include "ReacousticComponent.h"
 #include "ReacousticSoundAsset.h"
-#include "FileCache.h"
-#include "ReacousticSubsystem.h"
-#include "Chaos/Utilities.h"
-#include "Engine/StaticMeshActor.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UReacousticComponent, LogReacousticComponent);
 
@@ -23,6 +18,7 @@ void UReacousticComponent::BeginPlay()
 		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
 		{
 			Subsystem->RegisterComponent(this);
+			CachedSubsystem = Subsystem;
 		}
 	}
 	else
@@ -80,15 +76,15 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		return;
 	}
 
-	UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();
-	if (!Subsystem) 
-	{
-		return;
-	}
-
+	/** Make sure the subsystem is still referenced.*/
+	CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
+	
 	/** If ReacousticSoundAsset is null, get the asset from the subsystem, otherwise use the existing asset. */
-	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : Subsystem->GetMeshSoundAsset(MeshComponent);
-	TransferData(AssetToTransfer, Subsystem->ReacousticSoundAssociationMap);
+	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : CachedSubsystem->GetMeshSoundAsset(MeshComponent);
+	TransferData(AssetToTransfer, CachedSubsystem->ReacousticSoundAssociationMap);
+
+
+
 
 	/** Make sure htere's an audio component.*/
 	if(!AudioComponent)
@@ -138,11 +134,12 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 {
 	if(FilterImpact(HitComp,OtherActor,OtherComp,NormalImpulse,Hit))
 	{
-		if(UReacousticSubsystem* Subsystem {GetWorld()->GetSubsystem<UReacousticSubsystem>()})
-		{
-			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-			SurfaceSoundAsset = Subsystem->GetSurfaceSoundAsset(SurfaceType);
-		}
+		/** Make sure the subsystem is still referenced.*/
+		CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
+		
+		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+		SurfaceSoundAsset = CachedSubsystem->GetSurfaceSoundAsset(SurfaceType);
+		
 		OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	
 	}
@@ -259,66 +256,12 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 
 FVector2D UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
-	float BestDifference = FLT_MAX; 
-	float BestTimeStamp = -1;
-	float BestStrenght = -1;
+	/** Make sure the subsystem is still referenced.*/
+	CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
 
-	TArray<float> OutOnsetTimestamps;
-	TArray<float> OutOnsetStrengths;
-	
-	if (!SoundAsset || !SoundAsset->Sound)
-	{
-		return FVector2D(0,0);
-	}
+	/** Use the reacoustic subsystem to pass on the timestamp and strength value.*/
+	return CachedSubsystem->GetTimeStampWithStrenght(SoundAsset, ImpactValue);
 
-	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
-	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
-	if (OutOnsetTimestamps.Num() == OutOnsetStrengths.Num())
-	{
-		for (int i = 0; i < OutOnsetTimestamps.Num(); ++i)
-		{
-			float timestamp = OutOnsetTimestamps[i];
-			float strength = OutOnsetStrengths[i];
-			
-			/** If this element is in LatestMatchingElements, skip to the next iteration */
-			/** Iterate throug the recorded sound timestamps.*/
-			bool next{false};
-			for (int32 j = 0; j < LatestMatchingElements.Num(); j++)
-			{
-				float LatestMatchingElement = LatestMatchingElements[j];
-				/** if any of them don't fit, break and test the next timestamp.*/
-				if (FMath::Abs(timestamp - LatestMatchingElement) < SoundAsset->ImpulseLength*2)
-				{
-					next = true;
-					break;
-				}
-			}
-			if(next)
-			{
-				continue;
-			}
-			const float CurrentDifference = FMath::Abs(ImpactValue - strength);
-			if(CurrentDifference < BestDifference)
-			{
-				BestDifference = CurrentDifference;
-				BestTimeStamp = timestamp;
-				BestStrenght = strength;
-			}
-		}
-	}
-
-	/** If we found a matching timestamp, update LatestMatchingElements */
-	if(BestTimeStamp != -1)
-	{
-		LatestMatchingElements.Add(BestTimeStamp);
-        
-		/** If we now have more than 10 elements, remove the oldest one */
-		if(LatestMatchingElements.Num() > 10)
-		{
-			LatestMatchingElements.RemoveAt(0);
-		}
-	}
-	return FVector2D(BestTimeStamp, BestStrenght);
 }
 
 

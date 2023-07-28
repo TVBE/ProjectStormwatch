@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "ReacousticDataTypes.h"
 #include "ReacousticSoundAsset.h"
+#include "ReacousticSubsystem.h"
 #include "components/AudioComponent.h"
 
 #include "ReacousticComponent.generated.h"
@@ -117,4 +118,5 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
 	static float CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);
 
+	UReacousticSubsystem* CachedSubsystem;
 };

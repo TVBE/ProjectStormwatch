@@ -210,3 +210,61 @@ UReacousticSoundAsset* UReacousticSubsystem::GetSurfaceSoundAsset(const EPhysica
 
 	return nullptr;
 }
+
+FVector2D UReacousticSubsystem::GetTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
+{
+	float BestDifference = FLT_MAX; 
+	float BestTimeStamp = -1;
+	float BestStrenght = -1;
+
+	TArray<float> OutOnsetTimestamps;
+	TArray<float> OutOnsetStrengths;
+	
+	if (!SoundAsset || !SoundAsset->Sound)
+	{
+		return FVector2D(0,0);
+	}
+
+	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
+	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
+	if (OutOnsetTimestamps.Num() == OutOnsetStrengths.Num())
+	{
+		for (int i = 0; i < OutOnsetTimestamps.Num(); ++i)
+		{
+			float timestamp = OutOnsetTimestamps[i];
+			float strength = OutOnsetStrengths[i];
+			
+			/** If this element is in LatestMatchingElements, skip to the next iteration */
+			/** Iterate throug the recorded sound timestamps.*/
+			bool next{false};
+			for (int32 j = 0; j < SoundAsset->GetTimestampHistory().Num(); j++)
+			{
+				float LatestMatchingTimestamp = SoundAsset->GetTimestampHistory()[j];
+				/** if any of them don't fit, break and test the next timestamp.*/
+				if (FMath::Abs(timestamp - LatestMatchingTimestamp) < SoundAsset->ImpulseLength*2)
+				{
+					next = true;
+					break;
+				}
+			}
+			if(next)
+			{
+				continue;
+			}
+			const float CurrentDifference = FMath::Abs(ImpactValue - strength);
+			if(CurrentDifference < BestDifference)
+			{
+				BestDifference = CurrentDifference;
+				BestTimeStamp = timestamp;
+				BestStrenght = strength;
+			}
+		}
+	}
+
+	/** If we found a matching timestamp, update LatestMatchingElements */
+	if(BestTimeStamp != -1)
+	{
+		SoundAsset->UpdateTimestampHistory(BestTimeStamp);
+	}
+	return FVector2D(BestTimeStamp, BestStrenght);
+}

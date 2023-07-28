@@ -31,7 +31,7 @@ public class Reacoustic : ModuleRules
 				"CoreUObject",
 				"DeveloperSettings",
 				"AudioSynesthesia",
-				"AudioAnalyzer"
+				"AudioAnalyzer",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

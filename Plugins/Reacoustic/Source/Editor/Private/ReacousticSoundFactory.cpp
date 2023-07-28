@@ -16,6 +16,7 @@ UObject* UReacousticSoundFactory::FactoryCreateNew(UClass* Class, UObject* InPar
 	UReacousticSoundAsset* NewReacousticSoundAsset = NewObject<UReacousticSoundAsset>(InParent, Class, Name, Flags, Context);
 	
 	NewReacousticSoundAsset->Sound = StagedSoundWave;
+	NewReacousticSoundAsset->TriggerOnsetNRTAnalysis();
 	
 	return NewReacousticSoundAsset;
 }
