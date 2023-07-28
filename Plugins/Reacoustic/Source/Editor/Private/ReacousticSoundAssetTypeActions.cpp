@@ -57,8 +57,8 @@ void FReacousticContentBrowserMenuExtension::RegisterMenus()
 			if (!Algo::AnyOf(Context->SelectedAssets, [](const FAssetData& AssetData){ return AssetData.IsInstanceOf<USoundWaveProcedural>(); }))
 			{
 				const TAttribute<FText> Label = LOCTEXT("SoundWave_CreateReacousticSound", "Create Reacoustic Sound");
-				const TAttribute<FText> ToolTip = LOCTEXT("SoundWave_CreateReacousticSoundTooltip", "Creates an impulse response asset using the selected sound wave.");
-				const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.ImpulseResponse");
+				const TAttribute<FText> ToolTip = LOCTEXT("SoundWave_CreateReacousticSoundTooltip", "Creates an reacoustic sound asset using the selected sound wave.");
+				const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.SoundWave");
 				const FToolMenuExecuteAction UIAction = FToolMenuExecuteAction::CreateStatic(&FReacousticContentBrowserMenuExtension::ExecuteCreateReacousticSound);
 
 				InSection.AddMenuEntry("SoundWave_CreateReacousticSound", Label, ToolTip, Icon, UIAction);
