@@ -12,6 +12,11 @@ class REACOUSTICEDITOR_API UReacousticSoundFactory : public UFactory
 	GENERATED_BODY()
 
 public:
+	
+	//* A weak pointer to a USoundWave object. It doesn't prevent the USoundWave from being destroyed when there are no more strong references to it. */
+	TObjectPtr<USoundWave> StagedSoundWave;
+
+	
 	UReacousticSoundFactory();
 
 	virtual UObject* FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;

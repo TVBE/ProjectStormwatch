@@ -3,6 +3,15 @@
 #include "ReacousticSoundAssetTypeActions.h"
 #include "ReacousticSoundAsset.h"
 #include "ReacousticEditor.h"
+#include "ReacousticSoundFactory.h"
+#include "Algo/AnyOf.h"
+#include "ToolMenus.h"
+#include "ContentBrowserMenuContexts.h"
+#include "Misc/PackageName.h"
+#include "Sound/SoundWaveProcedural.h"
+#include "ToolMenu.h"
+#include "ToolMenuSection.h"
+
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
@@ -34,4 +43,64 @@ const TArray<FText>& FReacousticSoundAssetTypeActions::GetSubMenus() const
 	};
 
 	return SubMenus;
+}
+
+void FReacousticContentBrowserMenuExtension::RegisterMenus()
+{
+	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu.SoundWave");
+	FToolMenuSection& Section = Menu->FindOrAddSection("GetAssetActions");
+
+	Section.AddDynamicEntry("SoundWaveAssetConversion_CreateReacousticSound", FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
+	{
+		if (const UContentBrowserAssetContextMenuContext* Context = InSection.FindContext<UContentBrowserAssetContextMenuContext>())
+		{
+			if (!Algo::AnyOf(Context->SelectedAssets, [](const FAssetData& AssetData){ return AssetData.IsInstanceOf<USoundWaveProcedural>(); }))
+			{
+				const TAttribute<FText> Label = LOCTEXT("SoundWave_CreateReacousticSound", "Create Reacoustic Sound");
+				const TAttribute<FText> ToolTip = LOCTEXT("SoundWave_CreateReacousticSoundTooltip", "Creates an impulse response asset using the selected sound wave.");
+				const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.ImpulseResponse");
+				const FToolMenuExecuteAction UIAction = FToolMenuExecuteAction::CreateStatic(&FReacousticContentBrowserMenuExtension::ExecuteCreateReacousticSound);
+
+				InSection.AddMenuEntry("SoundWave_CreateReacousticSound", Label, ToolTip, Icon, UIAction);
+			}
+		}
+	}));
+}
+
+void FReacousticContentBrowserMenuExtension::ExecuteCreateReacousticSound(const FToolMenuContext& MenuContext)
+{
+	const FString DefaultSuffix = TEXT("");
+	FAssetToolsModule& AssetToolsModule = FModuleManager::Get().LoadModuleChecked<FAssetToolsModule>("AssetTools");
+
+	/** Create the factory used to generate the asset */
+	UReacousticSoundFactory* Factory = NewObject<UReacousticSoundFactory>();
+	
+	/** only converts 0th selected object for now (see return statement) */
+	if (const UContentBrowserAssetContextMenuContext* Context = UContentBrowserAssetContextMenuContext::FindContextWithAssets(MenuContext))
+	{
+		for (USoundWave* Wave : Context->LoadSelectedObjectsIf<USoundWave>([](const FAssetData& AssetData) { return !AssetData.IsInstanceOf<USoundWaveProcedural>(); }))
+		{
+			Factory->StagedSoundWave = Wave; //* WeakPtr gets reset by the Factory after it is consumed */
+
+			/** Determine an appropriate name */
+			FString Prefix = TEXT("RS_");
+			FString OriginalAssetName = Wave->GetOutermost()->GetName();
+			
+			/** Split the original asset name from its path */
+			int32 LastSlashIndex;
+			OriginalAssetName.FindLastChar('/', LastSlashIndex);
+			FString Path = OriginalAssetName.Left(LastSlashIndex + 1);
+			FString AssetName = OriginalAssetName.Mid(LastSlashIndex + 1);
+
+			/** Add the prefix to the asset name only, not the full path */
+			FString PrefixedAssetName = Path + Prefix + AssetName;
+			
+			FString Name;
+			FString PackagePath;
+			AssetToolsModule.Get().CreateUniqueAssetName(PrefixedAssetName, DefaultSuffix, PackagePath, Name);
+
+			/** create new asset */
+			AssetToolsModule.Get().CreateAsset(Name, FPackageName::GetLongPackagePath(PackagePath), UReacousticSoundAsset::StaticClass(), Factory);
+		}
+	}
 }

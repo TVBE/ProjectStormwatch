@@ -12,5 +12,10 @@ UReacousticSoundFactory::UReacousticSoundFactory()
 UObject* UReacousticSoundFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn)
 {
-	return NewObject<UReacousticSoundAsset>(InParent, Class, Name, Flags, Context);
+
+	UReacousticSoundAsset* NewReacousticSoundAsset = NewObject<UReacousticSoundAsset>(InParent, Class, Name, Flags, Context);
+	
+	NewReacousticSoundAsset->Sound = StagedSoundWave;
+	
+	return NewReacousticSoundAsset;
 }

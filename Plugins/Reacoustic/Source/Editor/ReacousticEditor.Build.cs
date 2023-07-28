@@ -28,7 +28,13 @@ public class ReacousticEditor : ModuleRules
 			{
 				"Core",
 				"AssetTools",
-				"Reacoustic",
+				"Reacoustic", 
+				"Blutility", 
+				"CoreUObject", 
+				"Engine", 
+				"InputCore", 
+				"ToolMenus",
+				"ContentBrowser",
 				
 				// ... add other public dependencies that you statically link with here ...
 			}

@@ -38,3 +38,4 @@ void UReacousticSoundAsset::Serialize(FStructuredArchiveRecord Record)
 	Super::Serialize(Record);
 	// your implementation here
 }
+

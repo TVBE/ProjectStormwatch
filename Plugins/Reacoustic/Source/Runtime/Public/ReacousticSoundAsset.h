@@ -9,9 +9,10 @@
 #include "Sound/SoundAttenuation.h"
 #include "ReacousticSoundAsset.generated.h"
 
-/** An ambiverse element is a single procedural sound. It can be played directly, or used in a layer to create a procedural soundscape. */
+/** An audio asset that utilizes Onset NRT analysis to select and playback specific transients in real-time. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Reacoustic", Meta = (DisplayName = "Reacoustic Sound",
 	ShortToolTip = "An auto analyzed sound clip for impact sound playback."))
+
 class REACOUSTIC_API UReacousticSoundAsset : public UOnsetNRT
 
 {

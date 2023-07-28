@@ -13,6 +13,7 @@ void FReacousticEditorModule::StartupModule()
 
 	ReacousticSoundAssetTypeActions = MakeShared<FReacousticSoundAssetTypeActions>();
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(ReacousticSoundAssetTypeActions.ToSharedRef());
+	FReacousticContentBrowserMenuExtension::RegisterMenus();
 }
 
 void FReacousticEditorModule::ShutdownModule()
