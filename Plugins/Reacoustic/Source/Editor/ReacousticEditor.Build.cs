@@ -35,6 +35,8 @@ public class ReacousticEditor : ModuleRules
 				"InputCore", 
 				"ToolMenus",
 				"ContentBrowser",
+				"UnrealEd", 
+				"EditorStyle"
 				
 				// ... add other public dependencies that you statically link with here ...
 			}
