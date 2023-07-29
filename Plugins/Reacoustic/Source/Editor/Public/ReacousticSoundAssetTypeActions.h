@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
 #include "Factories/Factory.h"
+#include "ReacousticSoundAsset.h"
 #include "Components/AudioComponent.h"
 
 
@@ -42,6 +43,8 @@ private:
 
 	/** Handler for when StopSound is selected */
 	void ExecuteStopSound(TArray<TWeakObjectPtr<USoundBase>> Objects) const;
+
+
 };
 
 class FReacousticContentBrowserMenuExtension

@@ -1,7 +1,6 @@
 // Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
 
 #include "ReacousticSoundAssetTypeActions.h"
-#include "ReacousticSoundAsset.h"
 #include "ReacousticEditor.h"
 #include "ReacousticSoundFactory.h"
 #include "Algo/AnyOf.h"
@@ -52,7 +51,8 @@ void FReacousticSoundAssetTypeActions::PlaySound(USoundBase* Sound) const
 {
 	if ( Sound )
 	{
-		//GEditor->PlayPreviewSound();
+		GEditor->PlayPreviewSound(Sound);
+		
 	}
 	else
 	{
@@ -109,63 +109,49 @@ TSharedPtr<SWidget> FReacousticSoundAssetTypeActions::GetThumbnailOverlay(const 
 {
 	auto OnGetDisplayBrushLambda = [this, AssetData]() -> const FSlateBrush*
 	{
-		
-		if (IsSoundPlaying(AssetData))
-		{
-			return FAppStyle::GetBrush("MediaAsset.AssetActions.Stop.Large");
-		}
-
 		return FAppStyle::GetBrush("MediaAsset.AssetActions.Play.Large");
 	};
 
 	auto OnClickedLambda = [this, AssetData]() -> FReply
 	{
-		if (IsSoundPlaying(AssetData))
 		{
-			StopSound();
-		}
-		else
-		{
-			UReacousticSubsystem* ReacousticSubsystem = GEditor->GetEditorWorldContext().World()->GetSubsystem<UReacousticSubsystem>();
-
-			UObject* SoundObject = StaticLoadObject(UObject::StaticClass(), nullptr, TEXT("/Reacoustic/Audio/Metasounds/MSS_Reacoustic")); //Asset path referencing for now. I might include Metasound plugin later.
-			USoundBase* SoundBase = Cast<USoundBase>(SoundObject);
-    
-			if (UReacousticSoundAsset* CastedAsset = Cast<UReacousticSoundAsset>(AssetData.GetAsset()))
 			{
-				UWorld* World = GEditor->GetEditorWorldContext().World();
-				UAudioComponent* AudioComponent = NewObject<UAudioComponent>(World);
+				UReacousticSubsystem* ReacousticSubsystem = GEditor->GetEditorWorldContext().World()->GetSubsystem<UReacousticSubsystem>();
 
-				// Set the sound object as the sound base
-				AudioComponent->SetSound(SoundBase);
-
-				FString soundName = CastedAsset->Sound->GetFName().ToString();
-				float ImpactValue = FMath::RandRange(0.0f,1.0f); //For now a random impact value is fun. Another option is retriggering the sound with a delay to showcase the full range of interactions a reacoustic sound has.
+				/** Set the reacoustic metasound as the sound base */
+				UObject* SoundObject = StaticLoadObject(UObject::StaticClass(), nullptr, TEXT("/Reacoustic/Audio/Metasounds/MSS_Reacoustic")); //Asset path referencing for now. I might include Metasound plugin later.
+				USoundBase* SoundBase = Cast<USoundBase>(SoundObject);
+				
+				
+				if (UReacousticSoundAsset* CastedAsset = Cast<UReacousticSoundAsset>(AssetData.GetAsset()))
+				{
+					UWorld* World = GEditor->GetEditorWorldContext().World();
+					UAudioComponent* AudioComponent = NewObject<UAudioComponent>(World);
+					
+					AudioComponent->SetSound(SoundBase);
+					
+					float ImpactValue = FMath::RandRange(0.0f,1.0f); //For now a random impact value is fun. Another option is retriggering the sound with a delay to showcase the full range of interactions a reacoustic sound has.
             
-				FVector2d TimestampAndVolume = ReacousticSubsystem->GetTimeStampWithStrenght(CastedAsset, ImpactValue);
-				float Timestamp = TimestampAndVolume.X;
-				float Volume = TimestampAndVolume.Y;
-				
-				
-				// Set parameters for the audio component
+					FVector2d TimestampAndVolume = ReacousticSubsystem->GetTimeStampWithStrenght(CastedAsset, ImpactValue);
+					float Timestamp = TimestampAndVolume.X;
+					float Volume = TimestampAndVolume.Y;
+					
+					// Set parameters for the audio component
 
-				AudioComponent->bAutoDestroy = false;
-				AudioComponent->bIsUISound = true;
-				AudioComponent->bAllowSpatialization = false;
-				AudioComponent->bReverb = false;
-				AudioComponent->bCenterChannelOnly = false;
-				AudioComponent->bPreviewComponent = true;
+					AudioComponent->bAutoDestroy = true;
+					AudioComponent->bIsUISound = true;
+					AudioComponent->bAllowSpatialization = false;
+					AudioComponent->bReverb = false;
+					AudioComponent->bCenterChannelOnly = false;
+					AudioComponent->bPreviewComponent = true;
 				
-				AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Timestamp);
-				AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
-				AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), CastedAsset->Sound);
-				AudioComponent->SetFloatParameter(TEXT("Obj_Length"), CastedAsset->ImpulseLength);
-				
-
-				
-				AudioComponent->Play();
-
-
+					AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Timestamp);
+					AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
+					AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), CastedAsset->Sound);
+					AudioComponent->SetFloatParameter(TEXT("Obj_Length"), CastedAsset->ImpulseLength);
+					
+					AudioComponent->Play();
+				}
 			}
 			
 		}
@@ -174,11 +160,6 @@ TSharedPtr<SWidget> FReacousticSoundAssetTypeActions::GetThumbnailOverlay(const 
 	
 	auto OnToolTipTextLambda = [this, AssetData]() -> FText
 	{
-		if (IsSoundPlaying(AssetData))
-		{
-			return LOCTEXT("Thumbnail_StopSoundToolTip", "Stop selected sound");
-		}
-
 		return LOCTEXT("Thumbnail_PlaySoundToolTip", "Play selected sound");
 	};
 
