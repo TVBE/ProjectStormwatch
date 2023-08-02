@@ -1,33 +1,33 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseElementAssetTypeActions.h"
+#include "AssetTypeActions_AmbiverseElement.h"
 #include "AmbiverseElementAsset.h"
 #include "AmbiverseEditor.h"
 #include "Sound/SoundBase.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
-FText FAmbiverseElementAssetTypeActions::GetName() const
+FText FAssetTypeActions_AmbiverseElement::GetName() const
 {
 	return NSLOCTEXT("AssetTypeActions", "AssetTypeActions_AmbiverseElement", "Ambiverse Element");
 }
 
-UClass* FAmbiverseElementAssetTypeActions::GetSupportedClass() const
+UClass* FAssetTypeActions_AmbiverseElement::GetSupportedClass() const
 {
 	return UAmbiverseElementAsset::StaticClass();
 }
 
-FColor FAmbiverseElementAssetTypeActions::GetTypeColor() const
+FColor FAssetTypeActions_AmbiverseElement::GetTypeColor() const
 {
 	return AMBIVERSE_ASSET_COLOR;
 }
 
-uint32 FAmbiverseElementAssetTypeActions::GetCategories()
+uint32 FAssetTypeActions_AmbiverseElement::GetCategories()
 {
 	return AMBIVERSE_ASSET_CATEGORY;
 }
 
-const TArray<FText>& FAmbiverseElementAssetTypeActions::GetSubMenus() const
+const TArray<FText>& FAssetTypeActions_AmbiverseElement::GetSubMenus() const
 {
 	static const TArray<FText> SubMenus
 	{
@@ -37,7 +37,7 @@ const TArray<FText>& FAmbiverseElementAssetTypeActions::GetSubMenus() const
 	return SubMenus;
 }
 
-TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const FAssetData& AssetData) const
+TSharedPtr<SWidget> FAssetTypeActions_AmbiverseElement::GetThumbnailOverlay(const FAssetData& AssetData) const
 {
 	auto OnGetDisplayBrushLambda = [this, AssetData]() -> const FSlateBrush*
 	{
@@ -111,7 +111,7 @@ TSharedPtr<SWidget> FAmbiverseElementAssetTypeActions::GetThumbnailOverlay(const
 	return Box;
 }
 
-void FAmbiverseElementAssetTypeActions::PlayElement(TWeakObjectPtr<UAmbiverseElementAsset> Object) const
+void FAssetTypeActions_AmbiverseElement::PlayElement(TWeakObjectPtr<UAmbiverseElementAsset> Object) const
 {
 	if (Object.IsValid())
 	{
@@ -129,12 +129,12 @@ void FAmbiverseElementAssetTypeActions::PlayElement(TWeakObjectPtr<UAmbiverseEle
 	}
 }
 
-void FAmbiverseElementAssetTypeActions::StopElement() const
+void FAssetTypeActions_AmbiverseElement::StopElement() const
 {
 	GEditor->ResetPreviewAudioComponent();
 }
 
-bool FAmbiverseElementAssetTypeActions::IsElementPlaying(const FAssetData& AssetData) const
+bool FAssetTypeActions_AmbiverseElement::IsElementPlaying(const FAssetData& AssetData) const
 {
 	const UAudioComponent* PreviewComponent {GEditor->GetPreviewAudioComponent()};
 	if (PreviewComponent && PreviewComponent->Sound && PreviewComponent->IsPlaying())

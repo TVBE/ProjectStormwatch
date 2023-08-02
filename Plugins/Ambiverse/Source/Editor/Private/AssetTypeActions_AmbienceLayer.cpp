@@ -1,32 +1,32 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseLayerAssetTypeActions.h"
+#include "AssetTypeActions_AmbiverseLayer.h"
 #include "AmbiverseLayerAsset.h"
 #include "AmbiverseEditor.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
-FText FAmbiverseLayerAssetTypeActions::GetName() const
+FText FAssetTypeActions_AmbiverseLayer::GetName() const
 {
 	return NSLOCTEXT("AssetTypeActions", "AssetTypeActions_AmbiverseLayer", "Ambiverse Layer");
 }
 
-UClass* FAmbiverseLayerAssetTypeActions::GetSupportedClass() const
+UClass* FAssetTypeActions_AmbiverseLayer::GetSupportedClass() const
 {
 	return UAmbiverseLayerAsset::StaticClass();
 }
 
-FColor FAmbiverseLayerAssetTypeActions::GetTypeColor() const
+FColor FAssetTypeActions_AmbiverseLayer::GetTypeColor() const
 {
 	return AMBIVERSE_ASSET_COLOR;
 }
 
-uint32 FAmbiverseLayerAssetTypeActions::GetCategories()
+uint32 FAssetTypeActions_AmbiverseLayer::GetCategories()
 {
 	return AMBIVERSE_ASSET_CATEGORY;
 }
 
-const TArray<FText>& FAmbiverseLayerAssetTypeActions::GetSubMenus() const
+const TArray<FText>& FAssetTypeActions_AmbiverseLayer::GetSubMenus() const
 {
 	static const TArray<FText> SubMenus
 {

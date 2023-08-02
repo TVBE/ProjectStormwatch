@@ -7,7 +7,7 @@
 
 class UAmbiverseElementAsset;
 
-class FAmbiverseElementAssetTypeActions : public FAssetTypeActions_Base
+class FAssetTypeActions_AmbiverseElement : public FAssetTypeActions_Base
 {
 public:
 	virtual FText GetName() const override;

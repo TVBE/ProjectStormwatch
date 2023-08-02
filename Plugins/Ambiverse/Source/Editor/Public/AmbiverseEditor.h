@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AmbiverseCompositeAssetTypeActions.h"
-#include "AmbiverseElementAssetTypeActions.h"
-#include "AmbiverseLayerAssetTypeActions.h"
-#include "AmbiverseParameterAssetTypeActions.h"
+#include "AssetTypeActions_AmbiverseComposite.h"
+#include "AssetTypeActions_AmbiverseElement.h"
+#include "AssetTypeActions_AmbiverseLayer.h"
+#include "AssetTypeActions_AmbiverseParameter.h"
 #include "Modules/ModuleManager.h"
 
 class FAmbiverseEditorModule : public IModuleInterface
@@ -16,10 +16,10 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	TSharedPtr<FAmbiverseElementAssetTypeActions> AmbiverseElementAssetTypeActions;
-	TSharedPtr<FAmbiverseLayerAssetTypeActions> AmbiverseLayerAssetTypeActions;
-	TSharedPtr<FAmbiverseCompositeAssetTypeActions> AmbiverseCompositeAssetTypeActions;
-	TSharedPtr<FAmbiverseParameterAssetTypeActions> AmbiverseParameterAssetTypeActions;
+	TSharedPtr<FAssetTypeActions_AmbiverseElement> AmbiverseElementAssetTypeActions;
+	TSharedPtr<FAssetTypeActions_AmbiverseLayer> AmbiverseLayerAssetTypeActions;
+	TSharedPtr<FAssetTypeActions_AmbiverseComposite> AmbiverseCompositeAssetTypeActions;
+	TSharedPtr<FAssetTypeActions_AmbiverseParameter> AmbiverseParameterAssetTypeActions;
 };
 
 /** Asset macros */
