@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSubsystemComponent.h"
-#include "AmbiverseDistributionManager.generated.h"
+#include "AmbiverseDistributionHandler.generated.h"
 
 class UAmbiverseDistributorAsset;
 class UAmbiverseSubsystem;
-class UAmbiverseElementInstance;
+class UAmbiverseElement;
 
 /** Manages sound source distribution. */
 UCLASS()
-class UAmbiverseDistributionManager : public UAmbiverseSubsystemComponent
+class UAmbiverseDistributionHandler : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ private:
 	TArray<UAmbiverseDistributorAsset*> Distributors;
 
 public:
-	bool GetTransformForElement(FTransform& Transform, UAmbiverseElementInstance* ElementInstance);
+	bool GetTransformForElement(FTransform& Transform, UAmbiverseElement* ElementInstance);
 	
 	/** Searches for a distributor instance in the registry. Will instance one if no instance was found. */
 	UAmbiverseDistributorAsset* GetDistributorByClass(TSubclassOf<UAmbiverseDistributorAsset> Class);
@@ -38,7 +38,7 @@ private:
 	 * @return true if the operation succeeded, false otherwise.
 	 */
 	static bool PerformRandomDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		UAmbiverseElementInstance* ElementInstance);
+		UAmbiverseElement* ElementInstance);
 
 	/**
 	 * Performs a uniform distribution.
@@ -51,7 +51,7 @@ private:
 	 * @return true if the operation succeeded, false otherwise.
 	 */
 	static bool PerformUniformDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		UAmbiverseElementInstance* ElementInstance, const TArray<FVector>& Vectors, const bool IgnoreZ);
+		UAmbiverseElement* ElementInstance, const TArray<FVector>& Vectors, const bool IgnoreZ);
 
 	
 	/**
@@ -63,7 +63,7 @@ private:
 	 * @return true if the operation succeeded, false otherwise.
 	 */
 	static bool PerformStaticDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		UAmbiverseElementInstance* ElementInstance);
+		UAmbiverseElement* ElementInstance);
 
 public:
 	FORCEINLINE TArray<UAmbiverseDistributorAsset*> GetDistributors() const { return Distributors; }

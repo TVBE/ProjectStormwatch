@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "AmbiverseLayerAsset.h"
 #include "AmbiverseElementRuntimeData.h"
-#include "AmbiverseElementInstance.generated.h"
+#include "AmbiverseElement.generated.h"
 
 class UAmbiverseSubsystem;
 class AAmbiverseSoundSource;
 
 UCLASS(MinimalAPI, Transient)
-class UAmbiverseElementInstance : public UObject
+class UAmbiverseElement : public UObject
 {
 	GENERATED_BODY()
 
@@ -45,6 +45,5 @@ public:
 		AssociatedLayer = Layer;
 	}
 	
-	static UAmbiverseElementInstance* CreateInstanceFromRuntimeData(UObject* Outer, FAmbiverseElementRuntimeData& RuntimeData);
-	
+	static UAmbiverseElement* CreateInstanceFromRuntimeData(UObject* Outer, FAmbiverseElementRuntimeData& RuntimeData);
 };

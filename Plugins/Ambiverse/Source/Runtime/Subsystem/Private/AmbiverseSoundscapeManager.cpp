@@ -1,18 +1,18 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseElementManager.h"
-#include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseSoundscapeManager.h"
+#include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseParameterManager.h"
-#include "AmbiverseElementInstance.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseSubsystem.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseElementManager, LogAmbiverseElementManager);
+DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundscapeManager, LogAmbiverseElementManager);
 
-void UAmbiverseElementManager::RegisterElements(TArray<UAmbiverseElementInstance*> Elements)
+void UAmbiverseSoundscapeManager::RegisterElements(TArray<UAmbiverseElement*> Elements)
 {
 	if (Elements.IsEmpty()) { return; }
 	
-	for (UAmbiverseElementInstance* Element : Elements)
+	for (UAmbiverseElement* Element : Elements)
 	{
 		if (Element)
 		{
@@ -22,16 +22,16 @@ void UAmbiverseElementManager::RegisterElements(TArray<UAmbiverseElementInstance
 	}
 }
 
-void UAmbiverseElementManager::UnregisterElements(TArray<UAmbiverseElementInstance*> Elements)
+void UAmbiverseSoundscapeManager::UnregisterElements(TArray<UAmbiverseElement*> Elements)
 {
 	if (Elements.IsEmpty()) { return; }
 
-	for (UAmbiverseElementInstance* ProceduralElement : Elements)
+	for (UAmbiverseElement* ProceduralElement : Elements)
 	{
 		ScheduledElementInstances.Remove(ProceduralElement);
 	}
 
-	for (UAmbiverseElementInstance* ProceduralElement : Elements)
+	for (UAmbiverseElement* ProceduralElement : Elements)
 	{
 		int32 i;
 		PlayingProceduralElements.Find(ProceduralElement, i);
@@ -40,7 +40,7 @@ void UAmbiverseElementManager::UnregisterElements(TArray<UAmbiverseElementInstan
 	}
 }
 
-void UAmbiverseElementManager::EvaluateFinishedElement(UAmbiverseElementInstance* Element)
+void UAmbiverseSoundscapeManager::EvaluateFinishedElement(UAmbiverseElement* Element)
 {
 	if (!Element)
 	{
@@ -67,11 +67,11 @@ void UAmbiverseElementManager::EvaluateFinishedElement(UAmbiverseElementInstance
 	}
 }
 
-void UAmbiverseElementManager::Tick(const float DeltaTime)
+void UAmbiverseSoundscapeManager::Tick(const float DeltaTime)
 {
 	if (ScheduledElementInstances.IsEmpty()) { return; }
 	
-	for (UAmbiverseElementInstance* ElementInstance : ScheduledElementInstances)
+	for (UAmbiverseElement* ElementInstance : ScheduledElementInstances)
 	{
 		const float ScaleFactor {(ElementInstance->Time - DeltaTime) / ElementInstance->Time};
 		ElementInstance->ReferenceTime *= ScaleFactor;
@@ -82,7 +82,7 @@ void UAmbiverseElementManager::Tick(const float DeltaTime)
 		{
 			if (!Owner || !ElementInstance) { return; }
 			
-			if (UAmbiverseSoundSourceManager* SoundSourceManager {Owner->GetSoundSourceManager()})
+			if (UAmbiverseSoundSourcePool* SoundSourceManager {Owner->GetSoundSourcePool()})
 			{
 				SoundSourceManager->PlayElement(ElementInstance);
 				UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("Tick: Playing element '%s'."), *ElementInstance->GetName());
@@ -101,7 +101,7 @@ void UAmbiverseElementManager::Tick(const float DeltaTime)
 	}
 }
 
-void UAmbiverseElementManager::ScheduleProceduralElement(UAmbiverseElementInstance* ElementInstance, const bool IgnoreMin)
+void UAmbiverseSoundscapeManager::ScheduleProceduralElement(UAmbiverseElement* ElementInstance, const bool IgnoreMin)
 {
 	if (!ElementInstance || !Owner) { return; }
 	

@@ -1,7 +1,7 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseDebugVisualizationComponent.h"
-#include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseSubsystem.h"
 
 void UAmbiverseDebugVisualizationComponent::Initialize(UAmbiverseSubsystem* Subsystem)
@@ -25,7 +25,7 @@ void UAmbiverseDebugVisualizationComponent::Tick(const float DeltaTime)
 {
 	if (!IsDebugEnabled || !Owner) { return; }
 
-	if (UAmbiverseSoundSourceManager* SoundSourceManager {Owner->GetSoundSourceManager()})
+	if (UAmbiverseSoundSourcePool* SoundSourcePool {Owner->GetSoundSourcePool()})
 	{
 		// TArray<AAmbiverseSoundSource*> ActiveSoundSources {SoundSourceManager->GetAct}
 	}

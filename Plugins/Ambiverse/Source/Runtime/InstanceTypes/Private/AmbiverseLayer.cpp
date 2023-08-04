@@ -1,12 +1,12 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseLayerInstance.h"
+#include "AmbiverseLayer.h"
 #include "AmbiverseElementRuntimeData.h"
-#include "AmbiverseElementManager.h"
-#include "AmbiverseElementInstance.h"
+#include "AmbiverseSoundscapeManager.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseSubsystem.h"
 
-bool UAmbiverseLayerInstance::Initialize(UAmbiverseSubsystem* Subsystem)
+bool UAmbiverseLayer::Initialize(UAmbiverseSubsystem* Subsystem)
 {
 	if (!Subsystem) { return false; }
 	AmbiverseSubsystem = Subsystem;
@@ -17,14 +17,14 @@ bool UAmbiverseLayerInstance::Initialize(UAmbiverseSubsystem* Subsystem)
 		
 		for(const FAmbiverseElementRuntimeData& RuntimeElementData : Asset->Elements)
 		{
-			UAmbiverseElementInstance* NewRuntimeElement = NewObject<UAmbiverseElementInstance>(this, UAmbiverseElementInstance::StaticClass());
+			UAmbiverseElement* NewRuntimeElement = NewObject<UAmbiverseElement>(this, UAmbiverseElement::StaticClass());
 			
 			NewRuntimeElement->RuntimeData = RuntimeElementData;
 			
 			this->ProceduralElements.Add(NewRuntimeElement);
 		}
 		
-		if (UAmbiverseElementManager* ElementManager {AmbiverseSubsystem->GetElementManager()})
+		if (UAmbiverseSoundscapeManager* ElementManager {AmbiverseSubsystem->GetSoundscapeManager()})
 		{
 			ElementManager->RegisterElements(ProceduralElements);
 		}
@@ -42,11 +42,11 @@ bool UAmbiverseLayerInstance::Initialize(UAmbiverseSubsystem* Subsystem)
 	return IsInitialized;
 }
 
-UAmbiverseLayerInstance* UAmbiverseLayerInstance::CreateInstanceFromAsset(UObject* Outer, UAmbiverseLayerAsset* Asset)
+UAmbiverseLayer* UAmbiverseLayer::CreateInstanceFromAsset(UObject* Outer, UAmbiverseLayerAsset* Asset)
 {
 	if (!Asset) { return nullptr; }
 	
-	UAmbiverseLayerInstance* LayerInstance = {NewObject<UAmbiverseLayerInstance>(Outer)};
+	UAmbiverseLayer* LayerInstance = {NewObject<UAmbiverseLayer>(Outer)};
 	
 	LayerInstance->Asset = Asset;
 	

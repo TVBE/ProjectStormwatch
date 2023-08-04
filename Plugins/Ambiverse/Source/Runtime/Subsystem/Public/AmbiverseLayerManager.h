@@ -7,7 +7,7 @@
 #include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseLayerManager.generated.h"
 
-class UAmbiverseLayerInstance;
+class UAmbiverseLayer;
 class UAmbiverseCompositeAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLayerRegisteredDelegate, UAmbiverseLayerAsset*, RegisteredLayer);
@@ -30,7 +30,7 @@ public:
 private:
 	/** The current active ambience layers. */
 	UPROPERTY()
-	TArray<UAmbiverseLayerInstance*> ActiveLayers;
+	TArray<UAmbiverseLayer*> ActiveLayers;
 
 public:
 	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
@@ -46,12 +46,12 @@ public:
 	// void UnregisterAmbiverseComposite(UAmbiverseCompositeAsset* Composite);
 	
 	/** Tries to find a layer instance by the asset that is provided. */
-	UAmbiverseLayerInstance* FindInstanceByAsset(UAmbiverseLayerAsset* Asset) const;
+	UAmbiverseLayer* FindInstanceByAsset(UAmbiverseLayerAsset* Asset) const;
 
 private:
 	UFUNCTION()
 	void HandleOnParameterChanged(UAmbiverseParameterAsset* ChangedParameter);
 
 public:
-	FORCEINLINE TArray<UAmbiverseLayerInstance*> GetLayerRegistry() const { return ActiveLayers; }
+	FORCEINLINE TArray<UAmbiverseLayer*> GetLayerRegistry() const { return ActiveLayers; }
 };

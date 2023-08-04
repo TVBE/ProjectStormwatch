@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseLayerAsset.h"
-#include "AmbiverseElementInstance.h"
+#include "AmbiverseElement.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayerAsset, LogAmbiverseLayer);
 

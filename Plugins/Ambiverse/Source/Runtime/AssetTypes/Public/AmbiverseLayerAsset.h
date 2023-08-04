@@ -8,10 +8,10 @@
 #include "TimerManager.h"
 #include "AmbiverseLayerAsset.generated.h"
 
-class UAmbiverseElementInstance;
+class UAmbiverseElement;
 class UAmbiverseSubsystem;
 class UAmbiverseParameterAsset;
-class UAmbiverseSoundSourceManager;
+class UAmbiverseSoundSourcePool;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Layer",
 	ShortToolTip = "A list of Ambiverse Elements that can be procedurally played."))

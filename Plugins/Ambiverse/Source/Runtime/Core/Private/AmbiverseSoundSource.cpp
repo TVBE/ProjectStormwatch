@@ -1,7 +1,7 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseSoundSource.h"
-#include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseSoundSourcePool.h"
 
 #if !UE_BUILD_SHIPPING
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +21,7 @@ AAmbiverseSoundSource::AAmbiverseSoundSource()
 	}
 }
 
-bool AAmbiverseSoundSource::Initialize(FAmbiverseSoundSourceData& Data, UAmbiverseElementInstance* ElementInstance)
+bool AAmbiverseSoundSource::Initialize(FAmbiverseSoundSourceData& Data, UAmbiverseElement* ElementInstance)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Initializing Sound Source"))
 	

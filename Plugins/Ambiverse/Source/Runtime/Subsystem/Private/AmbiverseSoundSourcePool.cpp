@@ -1,18 +1,18 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseSoundSourcePool.h"
 
 #include "AmbiverseDistributorAsset.h"
-#include "AmbiverseDistributionManager.h"
+#include "AmbiverseDistributionHandler.h"
 #include "AmbiverseElementAsset.h"
-#include "AmbiverseElementInstance.h"
-#include "AmbiverseElementManager.h"
+#include "AmbiverseElement.h"
+#include "AmbiverseSoundscapeManager.h"
 #include "AmbiverseSoundSource.h"
 #include "AmbiverseSubsystem.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundSourceManager, LogAmbiverseSoundSourceManager);
+DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundSourcePool, LogAmbiverseSoundSourceManager);
 
-void UAmbiverseSoundSourceManager::PlayElement(UAmbiverseElementInstance* ElementInstance)
+void UAmbiverseSoundSourcePool::PlayElement(UAmbiverseElement* ElementInstance)
 {
 	FAmbiverseSoundSourceData SoundSourceData{FAmbiverseSoundSourceData()};
 
@@ -23,7 +23,7 @@ void UAmbiverseSoundSourceManager::PlayElement(UAmbiverseElementInstance* Elemen
 	SoundSourceData.Sound = Element->GetSound();
 	SoundSourceData.Name = FName(Element->GetName());
 
-	if(UAmbiverseDistributionManager* DistributionManager {Owner->GetDistributorManager()})
+	if(UAmbiverseDistributionHandler* DistributionManager {Owner->GetDistributionManager()})
 	{
 		FTransform Transform {};
 		if (DistributionManager->GetTransformForElement(Transform, ElementInstance))
@@ -41,7 +41,7 @@ void UAmbiverseSoundSourceManager::PlayElement(UAmbiverseElementInstance* Elemen
 	InitiateSoundSource(SoundSourceData, ElementInstance);
 }
 
-void UAmbiverseSoundSourceManager::InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElementInstance* ElementInstance)
+void UAmbiverseSoundSourcePool::InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElement* ElementInstance)
 {
 	if (!SoundSourceData.Sound)
 	{
@@ -55,23 +55,23 @@ void UAmbiverseSoundSourceManager::InitiateSoundSource(FAmbiverseSoundSourceData
 	{
 		if(SoundSourceInstance->Initialize(SoundSourceData, ElementInstance))
 		{
-			SoundSourceInstance->OnFinishedPlayback.BindUObject(this, &UAmbiverseSoundSourceManager::HandleSoundSourceFinishedPlayback);
+			SoundSourceInstance->OnFinishedPlayback.BindUObject(this, &UAmbiverseSoundSourcePool::HandleSoundSourceFinishedPlayback);
 			ActiveSoundSources.AddUnique(SoundSourceInstance);
 		}
 	}
 }
 
-void UAmbiverseSoundSourceManager::HandleSoundSourceFinishedPlayback(AAmbiverseSoundSource* SoundSource)
+void UAmbiverseSoundSourcePool::HandleSoundSourceFinishedPlayback(AAmbiverseSoundSource* SoundSource)
 {
 	if (!SoundSource) { return; }
 
 	/** We retrieve the associated element from the SoundSource before deinitializing the SoundSource and adding it back to the available pool.
 	 *	We pass it to the ElementManager so that it can reschedule the element if it is set to only be rescheduled after finishing playback. */
-	if (UAmbiverseElementInstance* ElementInstance {SoundSource->GetAssociatedElement()})
+	if (UAmbiverseElement* ElementInstance {SoundSource->GetAssociatedElement()})
 	{
 		/** We set the element's LastPlaylocation here. */ //TODO: Move this to a more suitable location.
 		ElementInstance->LastPlaylocation = SoundSource->GetActorLocation();
-		if (UAmbiverseElementManager* ElementManager {Owner->GetElementManager()})
+		if (UAmbiverseSoundscapeManager* ElementManager {Owner->GetSoundscapeManager()})
 		{
 			ElementManager->EvaluateFinishedElement(ElementInstance);
 		}
@@ -83,7 +83,7 @@ void UAmbiverseSoundSourceManager::HandleSoundSourceFinishedPlayback(AAmbiverseS
 	Pool.AddUnique(SoundSource);
 }
 
-AAmbiverseSoundSource* UAmbiverseSoundSourceManager::GetSoundSourceFromPool(TSubclassOf<AAmbiverseSoundSource> Class)
+AAmbiverseSoundSource* UAmbiverseSoundSourcePool::GetSoundSourceFromPool(TSubclassOf<AAmbiverseSoundSource> Class)
 {
 	for (int32 i {0}; i < Pool.Num(); i++)
 	{
@@ -105,7 +105,7 @@ AAmbiverseSoundSource* UAmbiverseSoundSourceManager::GetSoundSourceFromPool(TSub
 }
 
 #if !UE_BUILD_SHIPPING
-void UAmbiverseSoundSourceManager::SetSoundSourceVisualisationEnabled(const bool IsEnabled)
+void UAmbiverseSoundSourcePool::SetSoundSourceVisualisationEnabled(const bool IsEnabled)
 {
 	EnableSoundSourceVisualisation = IsEnabled;
 	

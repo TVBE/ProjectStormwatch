@@ -1,16 +1,16 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseDistributionManager.h"
+#include "AmbiverseDistributionHandler.h"
 #include "AmbiverseDistributorAsset.h"
-#include "AmbiverseElementInstance.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseElementAsset.h"
-#include "AmbiverseSoundSourceManager.h"
+#include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseSubsystem.h"
 #include "AmbiverseUtilities.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseDistributionManager, LogAmbiverseDistributionManager);
+DEFINE_LOG_CATEGORY_CLASS(UAmbiverseDistributionHandler, LogAmbiverseDistributionManager);
 
-bool UAmbiverseDistributionManager::GetTransformForElement(FTransform& Transform, UAmbiverseElementInstance* ElementInstance)
+bool UAmbiverseDistributionHandler::GetTransformForElement(FTransform& Transform, UAmbiverseElement* ElementInstance)
 {
 	if (!ElementInstance || !Owner) { return false; }
 
@@ -44,7 +44,7 @@ bool UAmbiverseDistributionManager::GetTransformForElement(FTransform& Transform
 		
 		case EDistributionMode::Uniform:
 			/** TODO: For now, we take all elements for our uniform distribution. Implement element-type specific uniform distribution. */
-			if (const UAmbiverseSoundSourceManager* SoundSourceManager {Owner->GetSoundSourceManager()})
+			if (const UAmbiverseSoundSourcePool* SoundSourceManager {Owner->GetSoundSourcePool()})
 			{
 				TArray<AAmbiverseSoundSource*> ActiveSoundSources {SoundSourceManager->GetActiveSoundSources()};
 				for (const AAmbiverseSoundSource* ActiveSoundSource :ActiveSoundSources)
@@ -61,7 +61,7 @@ bool UAmbiverseDistributionManager::GetTransformForElement(FTransform& Transform
 	return false;
 }
 
-UAmbiverseDistributorAsset* UAmbiverseDistributionManager::GetDistributorByClass(TSubclassOf<UAmbiverseDistributorAsset> Class)
+UAmbiverseDistributorAsset* UAmbiverseDistributionHandler::GetDistributorByClass(TSubclassOf<UAmbiverseDistributorAsset> Class)
 {
 	if (!Owner) { return nullptr ; }
 	
@@ -87,8 +87,8 @@ UAmbiverseDistributorAsset* UAmbiverseDistributionManager::GetDistributorByClass
 	return Distributor;
 }
 
-bool UAmbiverseDistributionManager::PerformRandomDistribution(FTransform& OutTransform,
-	const FTransform& ListenerTransform, UAmbiverseElementInstance* ElementInstance)
+bool UAmbiverseDistributionHandler::PerformRandomDistribution(FTransform& OutTransform,
+	const FTransform& ListenerTransform, UAmbiverseElement* ElementInstance)
 {
 	if (!ElementInstance || !ElementInstance->RuntimeData.ElementAsset)
 	{
@@ -114,8 +114,8 @@ bool UAmbiverseDistributionManager::PerformRandomDistribution(FTransform& OutTra
 	return true;
 }
 
-bool UAmbiverseDistributionManager::PerformUniformDistribution(FTransform& OutTransform,
-	const FTransform& ListenerTransform, UAmbiverseElementInstance* ElementInstance,
+bool UAmbiverseDistributionHandler::PerformUniformDistribution(FTransform& OutTransform,
+	const FTransform& ListenerTransform, UAmbiverseElement* ElementInstance,
 	const TArray<FVector>& Vectors, const bool IgnoreZ = true)
 {
 	if (!ElementInstance || !ElementInstance->RuntimeData.ElementAsset)
@@ -178,8 +178,8 @@ bool UAmbiverseDistributionManager::PerformUniformDistribution(FTransform& OutTr
 	return true;
 }
 
-bool UAmbiverseDistributionManager::PerformStaticDistribution(FTransform& OutTransform,
-	const FTransform& ListenerTransform, UAmbiverseElementInstance* ElementInstance)
+bool UAmbiverseDistributionHandler::PerformStaticDistribution(FTransform& OutTransform,
+	const FTransform& ListenerTransform, UAmbiverseElement* ElementInstance)
 {
 	const FAmbiverseSoundDistributionData& SoundDistributionData {ElementInstance->RuntimeData.ElementAsset->GetDistributionData()};
 	if (!ElementInstance->LastPlaylocation.IsZero())

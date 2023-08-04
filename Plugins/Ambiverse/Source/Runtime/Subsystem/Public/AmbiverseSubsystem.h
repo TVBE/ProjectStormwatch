@@ -7,13 +7,13 @@
 #include "AmbiverseSubsystem.generated.h"
 
 class UAmbiverseSubsystemComponent;
-class UAmbiverseElementManager;
-class UAmbiverseElementInstance;
+class UAmbiverseSoundscapeManager;
+class UAmbiverseElement;
 class UAmbiverseDebugVisualizationComponent;
-class UAmbiverseDistributionManager;
+class UAmbiverseDistributionHandler;
 class UAmbiverseLayerManager;
 class UAmbiverseParameterManager;
-class UAmbiverseSoundSourceManager;
+class UAmbiverseSoundSourcePool;
 class UAmbiverseLayerAsset;
 
 UCLASS(Transient, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse"))
@@ -28,14 +28,16 @@ private:
 	 *	@note The elements in this array can be garbage collected when the
 	 *	strong object pointers are reset or go out of scope. */
 	TArray<UAmbiverseSubsystemComponent*> SubsystemComponents;
-	
-	TStrongObjectPtr<UAmbiverseLayerManager> LayerManager;
+
+	TStrongObjectPtr<UAmbiverseSoundscapeManager> SoundscapeManager;
 	TStrongObjectPtr<UAmbiverseParameterManager> ParameterManager;
-	TStrongObjectPtr<UAmbiverseSoundSourceManager> SoundSourceManager;
-	TStrongObjectPtr<UAmbiverseDistributionManager> DistributorManager;
-	TStrongObjectPtr<UAmbiverseElementManager> ElementManager;
+	TStrongObjectPtr<UAmbiverseSoundSourcePool> SoundSourcePool;
+	
+	TStrongObjectPtr<UAmbiverseLayerManager> LayerManager; // TODO: remove.
+	TStrongObjectPtr<UAmbiverseDistributionHandler> DistributionHandler; // TODO: remove.
+	
 #if !UE_BUILD_SHIPPING
-	TStrongObjectPtr<UAmbiverseDebugVisualizationComponent> Debugger;
+	TStrongObjectPtr<UAmbiverseDebugVisualizationComponent> DebugComponent;
 #endif
 
 public:
@@ -71,9 +73,9 @@ private:
 public:
 	FORCEINLINE UAmbiverseLayerManager* GetLayerManager() const { return LayerManager.Get(); }
 	FORCEINLINE UAmbiverseParameterManager* GetParameterManager() const { return ParameterManager.Get(); }
-	FORCEINLINE UAmbiverseSoundSourceManager* GetSoundSourceManager() const { return SoundSourceManager.Get(); }
-	FORCEINLINE UAmbiverseDistributionManager* GetDistributorManager() const { return DistributorManager.Get(); }
-	FORCEINLINE UAmbiverseElementManager* GetElementManager() const { return ElementManager.Get(); }
+	FORCEINLINE UAmbiverseSoundSourcePool* GetSoundSourcePool() const { return SoundSourcePool.Get(); }
+	FORCEINLINE UAmbiverseDistributionHandler* GetDistributionManager() const { return DistributionHandler.Get(); }
+	FORCEINLINE UAmbiverseSoundscapeManager* GetSoundscapeManager() const { return SoundscapeManager.Get(); }
 };
 
 

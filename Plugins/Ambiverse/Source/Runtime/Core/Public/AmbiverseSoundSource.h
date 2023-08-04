@@ -8,9 +8,9 @@
 #include "GameFramework/Actor.h"
 #include "AmbiverseSoundSource.generated.h"
 
-class UAmbiverseElementInstance;
+class UAmbiverseElement;
 class UAmbiverseLayerAsset;
-class UAmbiverseSoundSourceManager;
+class UAmbiverseSoundSourcePool;
 
 DECLARE_DELEGATE_OneParam(FOnFinishedPlaybackDelegate, AAmbiverseSoundSource*)
 
@@ -36,20 +36,20 @@ private:
 
 	/** Pointer to the sound source manager. */
 	UPROPERTY(Transient)
-	UAmbiverseSoundSourceManager* SoundSourceManager;
+	UAmbiverseSoundSourcePool* SoundSourceManager;
 	
 	UPROPERTY(BlueprintGetter = GetSoundSourceData)
 	FAmbiverseSoundSourceData SoundSourceData;
 
 	/** The element that this sound source is currently playing. */
 	UPROPERTY(Transient)
-	UAmbiverseElementInstance* AssociatedElement;
+	UAmbiverseElement* AssociatedElement;
 	
 public:	
 	AAmbiverseSoundSource();
 
 	/** Initializes the sound source. If initialization was succesful, this will immediatly start playing back the sound. */
-	bool Initialize(FAmbiverseSoundSourceData& Data, UAmbiverseElementInstance* ElementInstance);
+	bool Initialize(FAmbiverseSoundSourceData& Data, UAmbiverseElement* ElementInstance);
 
 	/** Deinitializes the sound source and clears all data associated with the element the SoundSource was playing before.
 	 *	This prevents lingering references to elements that might or might not exist anymore while this SoundSource is in the pool. */
@@ -83,5 +83,5 @@ private:
 	void HandleOnAudioFinishedPlaying();
 
 public:
-	FORCEINLINE UAmbiverseElementInstance* GetAssociatedElement() const { return AssociatedElement; }
+	FORCEINLINE UAmbiverseElement* GetAssociatedElement() const { return AssociatedElement; }
 };

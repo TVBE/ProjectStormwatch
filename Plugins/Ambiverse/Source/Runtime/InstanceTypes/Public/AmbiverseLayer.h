@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseElementRuntimeData.h"
-#include "AmbiverseLayerInstance.generated.h"
+#include "AmbiverseLayer.generated.h"
 
 class UAmbiverseSubsystem;
 
 UCLASS(MinimalAPI, Transient)
-class UAmbiverseLayerInstance : public UObject
+class UAmbiverseLayer : public UObject
 {
 	GENERATED_BODY()
 
@@ -26,7 +26,7 @@ public:
 	float LifetimeRatio {0.0f};
 	
 	UPROPERTY(Transient)
-	TArray<UAmbiverseElementInstance*> ProceduralElements;
+	TArray<UAmbiverseElement*> ProceduralElements;
 
 private:
 	UPROPERTY(Transient)
@@ -39,5 +39,5 @@ private:
 public:
 	bool Initialize(UAmbiverseSubsystem* Subsystem);
 	
-	static UAmbiverseLayerInstance* CreateInstanceFromAsset(UObject* Outer, UAmbiverseLayerAsset* Asset);
+	static UAmbiverseLayer* CreateInstanceFromAsset(UObject* Outer, UAmbiverseLayerAsset* Asset);
 };

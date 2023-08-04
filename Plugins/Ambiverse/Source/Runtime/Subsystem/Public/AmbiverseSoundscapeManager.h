@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSubsystemComponent.h"
-#include "AmbiverseElementManager.generated.h"
+#include "AmbiverseSoundscapeManager.generated.h"
 
-class UAmbiverseElementInstance;
+class UAmbiverseElement;
 
 UCLASS()
-class UAmbiverseElementManager : public UAmbiverseSubsystemComponent
+class UAmbiverseSoundscapeManager : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -17,24 +17,24 @@ class UAmbiverseElementManager : public UAmbiverseSubsystemComponent
 
 private:
 	UPROPERTY()
-	TArray<UAmbiverseElementInstance*> ScheduledElementInstances;
+	TArray<UAmbiverseElement*> ScheduledElementInstances;
 
 	UPROPERTY()
-	TArray<UAmbiverseElementInstance*> PlayingProceduralElements;
+	TArray<UAmbiverseElement*> PlayingProceduralElements;
 
 public:
 	virtual void Tick(const float DeltaTime) override;
 
-	void RegisterElements(TArray<UAmbiverseElementInstance*> Elements);
-	void UnregisterElements(TArray<UAmbiverseElementInstance*> Elements);
+	void RegisterElements(TArray<UAmbiverseElement*> Elements);
+	void UnregisterElements(TArray<UAmbiverseElement*> Elements);
 
 	/** Determines if a finished element should be rescheduled if it is still valid and not already scheduled.
 	 *	Situations where this might not be the case is if the element is marked PendingKill, or its IntervalMode is set to OnSpawn.
 	 *	This is basically a handover function that is exclusively called by the SoundSourceManager within the owner subsystem. */
-	void EvaluateFinishedElement(UAmbiverseElementInstance* Element);
+	void EvaluateFinishedElement(UAmbiverseElement* Element);
 
 private:
-	void ScheduleProceduralElement(UAmbiverseElementInstance* ElementInstance, const bool IgnoreMin = false);
+	void ScheduleProceduralElement(UAmbiverseElement* ElementInstance, const bool IgnoreMin = false);
 };
 
 

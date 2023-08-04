@@ -3,7 +3,7 @@
 #include "AmbiverseLayerManager.h"
 #include "AmbiverseCompositeAsset.h"
 #include "AmbiverseLayerAsset.h"
-#include "AmbiverseLayerInstance.h"
+#include "AmbiverseLayer.h"
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseSubsystem.h"
 
@@ -40,7 +40,7 @@ bool UAmbiverseLayerManager::RegisterAmbiverseLayer(UAmbiverseLayerAsset* LayerA
 	
 	if (!FindInstanceByAsset(LayerAsset))
 	{
-		UAmbiverseLayerInstance* LayerInstance {UAmbiverseLayerInstance::CreateInstanceFromAsset(Owner, LayerAsset)};
+		UAmbiverseLayer* LayerInstance {UAmbiverseLayer::CreateInstanceFromAsset(Owner, LayerAsset)};
 		LayerInstance->Initialize(Owner);
 		ActiveLayers.Add(LayerInstance);
 		
@@ -62,7 +62,7 @@ bool UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayerAsset* Laye
 		return false;
 	}
 
-	if (UAmbiverseLayerInstance* LayerInstance {FindInstanceByAsset(LayerAsset)})
+	if (UAmbiverseLayer* LayerInstance {FindInstanceByAsset(LayerAsset)})
 	{
 		ActiveLayers.Remove(LayerInstance);
 		OnLayerUnregistered.Broadcast(LayerAsset);
@@ -73,9 +73,9 @@ bool UAmbiverseLayerManager::UnregisterAmbiverseLayer(UAmbiverseLayerAsset* Laye
 	return false;
 }
 
-UAmbiverseLayerInstance* UAmbiverseLayerManager::FindInstanceByAsset(UAmbiverseLayerAsset* Asset) const
+UAmbiverseLayer* UAmbiverseLayerManager::FindInstanceByAsset(UAmbiverseLayerAsset* Asset) const
 {
-	for (UAmbiverseLayerInstance* LayerInstance : ActiveLayers)
+	for (UAmbiverseLayer* LayerInstance : ActiveLayers)
 	{
 		if (LayerInstance && LayerInstance->Asset == Asset)
 		{

@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "AmbiverseSoundSourceData.h"
 #include "AmbiverseSubsystemComponent.h"
-#include "AmbiverseSoundSourceManager.generated.h"
+#include "AmbiverseSoundSourcePool.generated.h"
 
-class UAmbiverseElementInstance;
+class UAmbiverseElement;
 class AAmbiverseSoundSource;
 
 UCLASS()
-class UAmbiverseSoundSourceManager : public UAmbiverseSubsystemComponent
+class UAmbiverseSoundSourcePool : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
@@ -32,9 +32,9 @@ private:
 
 public:
 	/** Initiates and plays an element. */
-	void PlayElement(UAmbiverseElementInstance* ElementInstance);
+	void PlayElement(UAmbiverseElement* ElementInstance);
 	
-	void InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElementInstance* ElementInstance);
+	void InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElement* ElementInstance);
 
 	void HandleSoundSourceFinishedPlayback(AAmbiverseSoundSource* SoundSource);
 
