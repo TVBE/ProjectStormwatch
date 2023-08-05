@@ -72,20 +72,20 @@ bool UAmbiverseParameterManager::IsParameterRegistered(const UAmbiverseParameter
 	return false;
 }
 
-void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseSceneAsset* RegisteredLayer)
+void UAmbiverseParameterManager::HandleOnSceneRegistered(UAmbiverseSceneAsset* RegisteredScene)
 {
-	if (!RegisteredLayer) { return; }
+	if (!RegisteredScene) { return; }
 
-	UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Updating parameter registry for: '%s'"), *RegisteredLayer->GetName());
+	UE_LOG(LogAmbiverseParameterManager, Verbose, TEXT("Updating parameter registry for: '%s'"), *RegisteredScene->GetName());
 
 	TArray<UAmbiverseParameterAsset*> RequiredParameters;
 
-	for (FAmbiverseParameterModifiers& ParameterModifiers : RegisteredLayer->Parameters)
+	for (FAmbiverseParameterModifiers& ParameterModifiers : RegisteredScene->Parameters)
 	{
 		RequiredParameters.AddUnique(ParameterModifiers.Parameter);
 	}
 
-	// for (FAmbiverseProceduralElement ProceduralSoundData : RegisteredLayer->ProceduralSounds)
+	// for (FAmbiverseProceduralElement ProceduralSoundData : RegisteredScene->ProceduralSounds)
 	// {
 	// 	for (FAmbiverseParameterModifiers& ParameterModifiers : ProceduralSoundData.Parameters)
 	// 	{

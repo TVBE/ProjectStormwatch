@@ -51,7 +51,7 @@ struct FAmbiverseElement
 	UPROPERTY(Transient)
 	FElementTimeData TimeData;
 	
-	/** The Ambiverse layer this element is associated with. This can be a nullptr if the element was instanced without a layer. this is rare though. */
+	/** The Ambiverse scene this element is associated with. This can be a nullptr if the element was instanced without a scene. this is rare though. */
 	UPROPERTY(Transient)
 	UAmbiverseSceneAsset* AssociatedScene {nullptr};
 

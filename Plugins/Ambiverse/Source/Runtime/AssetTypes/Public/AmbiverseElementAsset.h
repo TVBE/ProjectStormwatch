@@ -9,7 +9,7 @@
 
 class UAmbiverseDistributorAsset;
 
-/** An ambiverse element is a single procedural sound. It can be played directly, or used in a layer to create a procedural soundscape. */
+/** An ambiverse element is a single procedural sound. It can be played directly, or used in a scene to create a procedural soundscape. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Element",
 	ShortToolTip = "A single sound element that can be used inside an Ambiverse Layer"))
 class AMBIVERSE_API UAmbiverseElementAsset : public UObject

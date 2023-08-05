@@ -45,26 +45,26 @@ public:
 	FSceneDisplayData DisplayData;
 #endif
 	
-	/** the procedural sound data of this layer. */
+	/** the procedural sound data of this scene. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Elements", Meta = (DisplayName = "Elements", TitleProperty = "ElementAsset"))
 	TArray<FAmbiverseElement> Elements;
 	
-	/** Parameters that influence all procedural sounds in this layer. */
+	/** Parameters that influence all procedural sounds in this scene. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters", Meta = (TitleProperty = "Parameter"))
 	TArray<FAmbiverseParameterModifiers> Parameters;
 
-	/** Volume multiplier for all sounds in this layer. */
+	/** Volume multiplier for all sounds in this scene. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Volume", ClampMin = "0", ClampMax = "2", UIMin = "1", UIMax ="2"))
 	float SceneVolume {1.0f};
 
-	/** Rate multiplier for all sounds in this layer. */
+	/** Rate multiplier for all sounds in this scene. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Density", ClampMin = "0", ClampMax = "2", UIMin = "1", UIMax ="2"))
 	float SceneDensity {1.0f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (DisplayName = "Enable Layer"))
 	bool IsEnabled {true};
 
-	/** If true, the layer has a finite lifetime and will expire when this duration is reached after becoming active. */
+	/** If true, the scene has a finite lifetime and will expire when this duration is reached after becoming active. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifetime")
 	bool EnableLifetime {false};
 

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AmbiverseParameterAsset.generated.h"
 
-/** An ambiverse layer is an instanced parameter that can be set through the ParameterManager in the AmbiverseSubsystem.
+/** An ambiverse scene is an instanced parameter that can be set through the ParameterManager in the AmbiverseSubsystem.
  *	Users can link modifiers to a parameter to change the density and volume of procedural sounds. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Parameter",
 	ShortToolTip = "A parameter that can be used to drive procedural ambience."))

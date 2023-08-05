@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Layers", Meta = (TitleProperty = "{Name}"))
 	TArray<UAmbiverseSceneAsset*> Layers;
 
-	/** If true, all layers that are not part of this composite are popped when this composite is pushed. */
-	UPROPERTY(EditAnywhere, Category = "Settings", Meta = (DisplayName = "Stop Non-Composite layers"))
+	/** If true, all scenes that are not part of this composite are popped when this composite is pushed. */
+	UPROPERTY(EditAnywhere, Category = "Settings", Meta = (DisplayName = "Stop Non-Composite scenes"))
 	bool StopNonCompositeLayers {false};
 };

@@ -25,7 +25,7 @@ public:
 	FOnLayerRegisteredDelegate OnLayerUnregistered;
 
 private:
-	/** The current active ambience layers. */
+	/** The current active ambience scenes. */
 	UPROPERTY()
 	TArray<FAmbiverseScene> Scenes;
 
@@ -50,7 +50,7 @@ public:
 	// void RegisterAmbiverseComposite(UAmbiverseCompositeAsset* Composite);
 	// void UnregisterAmbiverseComposite(UAmbiverseCompositeAsset* Composite);
 	
-	/** Tries to find a layer instance by the asset that is provided. */
+	/** Tries to find a scene instance by the asset that is provided. */
 	UAmbiverseLayer* FindSceneByAsset(UAmbiverseSceneAsset* Asset) const;
 
 private:

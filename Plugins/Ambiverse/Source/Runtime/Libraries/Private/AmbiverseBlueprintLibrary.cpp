@@ -6,7 +6,7 @@ bool UAmbiverseBlueprintLibrary::StartAmbiverseScene(const UObject* WorldContext
 {
 	if (UAmbiverseSubsystem* AmbiverseSubsystem = WorldContextObject->GetWorld()->GetSubsystem<UAmbiverseSubsystem>())
 	{
-		// Assuming LayerManager is publicly accessible or there's a getter method for it
+		// Assuming SceneManager is publicly accessible or there's a getter method for it
 		UAmbiverseLayerManager* LayerManager = AmbiverseSubsystem->GetLayerManager();
 		if (LayerManager)
 		{
