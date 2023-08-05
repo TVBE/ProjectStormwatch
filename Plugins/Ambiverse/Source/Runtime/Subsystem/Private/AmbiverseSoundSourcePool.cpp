@@ -3,7 +3,7 @@
 #include "AmbiverseSoundSourcePool.h"
 
 #include "AmbiverseDistributorAsset.h"
-#include "AmbiverseDistributionHandler.h"
+#include "AmbiverseDistributorPool.h"
 #include "AmbiverseElementAsset.h"
 #include "AmbiverseElement.h"
 #include "AmbiverseSoundscapeManager.h"
@@ -23,7 +23,7 @@ void UAmbiverseSoundSourcePool::PlayElement(UAmbiverseElement* ElementInstance)
 	SoundSourceData.Sound = Element->GetSound();
 	SoundSourceData.Name = FName(Element->GetName());
 
-	if(UAmbiverseDistributionHandler* DistributionManager {Owner->GetDistributionManager()})
+	if(UAmbiverseDistributorPool* DistributionManager {Owner->GetDistributionManager()})
 	{
 		FTransform Transform {};
 		if (DistributionManager->GetTransformForElement(Transform, ElementInstance))

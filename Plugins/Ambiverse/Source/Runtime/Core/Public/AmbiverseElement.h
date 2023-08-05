@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AmbiverseSceneAsset.h"
-#include "AmbiverseElementRuntimeData.h"
 #include "AmbiverseElement.generated.h"
 
 class UAmbiverseSubsystem;
