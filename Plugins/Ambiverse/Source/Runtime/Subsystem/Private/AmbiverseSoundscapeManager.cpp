@@ -1,12 +1,11 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseSoundscapeManager.h"
+#include "AmbiverseLogCategories.h"
 #include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseElement.h"
 #include "AmbiverseSubsystem.h"
-
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundscapeManager, LogAmbiverseElementManager);
 
 void UAmbiverseSoundscapeManager::RegisterElements(TArray<UAmbiverseElement*> Elements)
 {
@@ -17,7 +16,7 @@ void UAmbiverseSoundscapeManager::RegisterElements(TArray<UAmbiverseElement*> El
 		if (Element)
 		{
 			ScheduleProceduralElement(Element, true);
-			UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("Registered and scheduled element: '%s'"), *Element->GetName());
+			UE_LOG(LogAmbiverse, VeryVerbose, TEXT("Registered and scheduled element: '%s'"), *Element->GetName());
 		}
 	}
 }
@@ -28,7 +27,7 @@ void UAmbiverseSoundscapeManager::UnregisterElements(TArray<UAmbiverseElement*> 
 
 	for (UAmbiverseElement* ProceduralElement : Elements)
 	{
-		ScheduledElementInstances.Remove(ProceduralElement);
+		ScheduledElements.Remove(ProceduralElement);
 	}
 
 	for (UAmbiverseElement* ProceduralElement : Elements)
@@ -52,26 +51,49 @@ void UAmbiverseSoundscapeManager::EvaluateFinishedElement(UAmbiverseElement* Ele
 	if (Element->IsPendingKill)
 	{
 		Element->ConditionalBeginDestroy();
-		UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("EvaluateFinishedElement: Destroyed element due to being marked PendingKill: '%s'"), *Element->GetName());
+		UE_LOG(LogAmbiverse, VeryVerbose, TEXT("EvaluateFinishedElement: Destroyed element due to being marked PendingKill: '%s'"), *Element->GetName());
 	}
 
-	if (Element->RuntimeData.IntervalMode == EIntervalMode::OnSpawn && ScheduledElementInstances.Contains(Element))
+	if (Element->RuntimeData.IntervalMode == EIntervalMode::OnSpawn && ScheduledElements.Contains(Element))
 	{
-		UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("EvaluateFinishedElement: Element is already scheduled: '%s'"), *Element->GetName());
+		UE_LOG(LogAmbiverse, VeryVerbose, TEXT("EvaluateFinishedElement: Element is already scheduled: '%s'"), *Element->GetName());
 		return;
 	}
 	if (Element->RuntimeData.IntervalMode == EIntervalMode::OnFinished)
 	{
 		ScheduleProceduralElement(Element);
-		UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("EvaluateFinishedElement: Rescheduled element: '%s'"), *Element->GetName());
+		UE_LOG(LogAmbiverse, VeryVerbose, TEXT("EvaluateFinishedElement: Rescheduled element: '%s'"), *Element->GetName());
+	}
+}
+
+UAmbiverseLayer* UAmbiverseSoundscapeManager::FindSceneByAsset(UAmbiverseSceneAsset* Asset) const
+{
+	for (UAmbiverseLayer* LayerInstance : Scenes)
+	{
+		if (LayerInstance && LayerInstance->Asset == Asset)
+		{
+			return LayerInstance;
+		}
+	}
+
+	return nullptr;
+}
+
+void UAmbiverseSoundscapeManager::Initialize(UAmbiverseSubsystem* Subsystem)
+{
+	Super::Initialize(Subsystem);
+	
+	if (UAmbiverseParameterManager* ParameterManager {Subsystem->GetParameterManager()})
+	{
+		ParameterManager->OnParameterChangedDelegate.AddDynamic(this, &UAmbiverseSoundscapeManager::HandleOnParameterChanged);
 	}
 }
 
 void UAmbiverseSoundscapeManager::Tick(const float DeltaTime)
 {
-	if (ScheduledElementInstances.IsEmpty()) { return; }
+	if (ScheduledElements.IsEmpty()) { return; }
 	
-	for (UAmbiverseElement* ElementInstance : ScheduledElementInstances)
+	for (UAmbiverseElement* ElementInstance : ScheduledElements)
 	{
 		const float ScaleFactor {(ElementInstance->Time - DeltaTime) / ElementInstance->Time};
 		ElementInstance->ReferenceTime *= ScaleFactor;
@@ -85,20 +107,71 @@ void UAmbiverseSoundscapeManager::Tick(const float DeltaTime)
 			if (UAmbiverseSoundSourcePool* SoundSourceManager {Owner->GetSoundSourcePool()})
 			{
 				SoundSourceManager->PlayElement(ElementInstance);
-				UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("Tick: Playing element '%s'."), *ElementInstance->GetName());
+				UE_LOG(LogAmbiverse, VeryVerbose, TEXT("Tick: Playing element '%s'."), *ElementInstance->GetName());
 
 				/** If the element has its intervalmode set to OnFinished, we remove the element from the array. */
 				if (ElementInstance->RuntimeData.IntervalMode == EIntervalMode::OnFinished)
 				{
-					ScheduledElementInstances.Remove(ElementInstance);
+					ScheduledElements.Remove(ElementInstance);
 					return;
 				}
 			}
 			
 			ScheduleProceduralElement(ElementInstance); // THIS IS THE CULPRIT
-			UE_LOG(LogAmbiverseElementManager, VeryVerbose, TEXT("Scheduled element '%s'."), *ElementInstance->GetName());
+			UE_LOG(LogAmbiverse, VeryVerbose, TEXT("Scheduled element '%s'."), *ElementInstance->GetName());
 		}
 	}
+}
+
+bool UAmbiverseSoundscapeManager::RegisterScene(UAmbiverseSceneAsset* LayerAsset)
+{
+	if (!LayerAsset)
+	{
+		UE_LOG(LogAmbiverse, Warning, TEXT("RegisterAmbiverseLayer: No Layer provided."));
+		return false;
+	}
+	
+	if (LayerAsset->Elements.IsEmpty())
+	{
+		UE_LOG(LogAmbiverse, Warning, TEXT("RegisterAmbiverseLayer: Layer has no procedural sounds: '%s'."),
+			   *LayerAsset->GetName());
+		return false;
+	}
+	
+	if (!FindSceneByAsset(LayerAsset))
+	{
+		UAmbiverseLayer* LayerInstance {UAmbiverseLayer::CreateInstanceFromAsset(Owner, LayerAsset)};
+		LayerInstance->Initialize(Owner);
+		Scenes.Add(LayerInstance);
+		
+		OnLayerRegistered.Broadcast(LayerAsset);
+
+		UE_LOG(LogAmbiverse, Verbose, TEXT("Registered Ambiverse Layer: '%s'."), *LayerAsset->GetName());
+
+		return true;
+		
+	}
+	return false;
+}
+
+bool UAmbiverseSoundscapeManager::UnregisterScene(UAmbiverseSceneAsset* LayerAsset, const bool ForceStop,
+	const float FadeTime)
+{
+	if (!LayerAsset)
+	{
+		UE_LOG(LogAmbiverse, Warning, TEXT("UnregisterAmbiverseLayer: No LayerAsset provided."));
+		return false;
+	}
+
+	if (UAmbiverseLayer* LayerInstance {FindSceneByAsset(LayerAsset)})
+	{
+		Scenes.Remove(LayerInstance);
+		OnLayerUnregistered.Broadcast(LayerAsset);
+
+		UE_LOG(LogAmbiverse, Verbose, TEXT("Unregistered Ambiverse Layer: '%s'."), *LayerAsset->GetName());
+		return true;
+	}
+	return false;
 }
 
 void UAmbiverseSoundscapeManager::ScheduleProceduralElement(UAmbiverseElement* ElementInstance, const bool IgnoreMin)
@@ -107,7 +180,7 @@ void UAmbiverseSoundscapeManager::ScheduleProceduralElement(UAmbiverseElement* E
 	
 	float DensityScalar {1.0f};
 
-	UAmbiverseLayerAsset* Layer {ElementInstance->AssociatedLayer};
+	UAmbiverseSceneAsset* Layer {ElementInstance->AssociatedLayer};
 	UAmbiverseParameterManager* ParameterManager {Owner->GetParameterManager()};
 		
 	if(Layer && ParameterManager)
@@ -127,8 +200,20 @@ void UAmbiverseSoundscapeManager::ScheduleProceduralElement(UAmbiverseElement* E
 	ElementInstance->ReferenceTime = FMath::RandRange(MinimumValue,ElementInstance->RuntimeData.IntervalRange.Y);
 	ElementInstance->Time = ElementInstance->ReferenceTime * DensityScalar;
 
-	if (ScheduledElementInstances.Contains(ElementInstance)) { return; }
-	ScheduledElementInstances.Add(ElementInstance);
+	if (ScheduledElements.Contains(ElementInstance)) { return; }
+	ScheduledElements.Add(ElementInstance);
+}
+
+void UAmbiverseSoundscapeManager::Deinitialize(UAmbiverseSubsystem* Subsystem)
+{
+	if (!Subsystem) { return; }
+	
+	if (UAmbiverseParameterManager* ParameterManager {Subsystem->GetParameterManager()})
+	{
+		ParameterManager->OnParameterChangedDelegate.RemoveDynamic(this, &UAmbiverseLayerManager::HandleOnParameterChanged);
+	}
+	
+	Super::Deinitialize(Subsystem);
 }
 
 

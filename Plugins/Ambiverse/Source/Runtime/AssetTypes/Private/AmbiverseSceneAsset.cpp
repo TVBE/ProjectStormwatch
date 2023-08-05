@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseLayerAsset.h"
+#include "AmbiverseSceneAsset.h"
 #include "AmbiverseElement.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseLayerAsset, LogAmbiverseLayer);
-
 #if WITH_EDITOR
-void UAmbiverseLayerAsset::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void UAmbiverseSceneAsset::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
@@ -14,7 +12,7 @@ void UAmbiverseLayerAsset::PostEditChangeProperty(struct FPropertyChangedEvent& 
 	{
 		const FName PropertyName = PropertyChangedEvent.Property->GetFName();
 		
-		if(PropertyName == GET_MEMBER_NAME_CHECKED(UAmbiverseLayerAsset, Elements))
+		if(PropertyName == GET_MEMBER_NAME_CHECKED(UAmbiverseSceneAsset, Elements))
 		{
 			for(FAmbiverseElementRuntimeData& Element : Elements)
 			{

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Factories/Factory.h"
-#include "AmbiverseLayerFactory.generated.h"
+#include "AmbiverseSceneFactory.generated.h"
 
 UCLASS()
-class AMBIVERSEEDITOR_API UAmbiverseLayerFactory : public UFactory
+class AMBIVERSEEDITOR_API UAmbiverseSceneFactory : public UFactory
 {
 	GENERATED_BODY()
 
 public:
-	UAmbiverseLayerFactory();
+	UAmbiverseSceneFactory();
 
 	virtual UObject* FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 };

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseUtilities.h"
+#include "AmbiverseStatics.h"
 
 #include "AudioDevice.h"
 
-bool AmbiverseUtilities::GetListenerTransform(FTransform& Transform)
+bool AmbiverseStatics::GetListenerTransform(FTransform& Transform)
 {
 	if (const FAudioDevice* AudioDevice {GEngine->GetMainAudioDevice()}; AudioDevice->GetListeners().Num() > 0)
 	{

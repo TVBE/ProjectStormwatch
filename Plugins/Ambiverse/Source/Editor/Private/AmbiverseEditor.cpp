@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseEditor.h"
-#include "AssetTypeActions_AmbiverseLayer.h"
+#include "AssetTypeActions_AmbiverseScene.h"
 #include "AssetTypeActions_AmbiverseParameter.h"
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
@@ -13,7 +13,7 @@ void FAmbiverseEditorModule::StartupModule()
 	AmbiverseElementAssetTypeActions = MakeShared<FAssetTypeActions_AmbiverseElement>();
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(AmbiverseElementAssetTypeActions.ToSharedRef());
 	
-	AmbiverseLayerAssetTypeActions = MakeShared<FAssetTypeActions_AmbiverseLayer>();
+	AmbiverseLayerAssetTypeActions = MakeShared<FAssetTypeActions_AmbiverseScene>();
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(AmbiverseLayerAssetTypeActions.ToSharedRef());
 
 	AmbiverseCompositeAssetTypeActions = MakeShared<FAssetTypeActions_AmbiverseComposite>();

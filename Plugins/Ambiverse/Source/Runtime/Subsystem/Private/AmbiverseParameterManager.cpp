@@ -72,7 +72,7 @@ bool UAmbiverseParameterManager::IsParameterRegistered(const UAmbiverseParameter
 	return false;
 }
 
-void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseLayerAsset* RegisteredLayer)
+void UAmbiverseParameterManager::HandleOnLayerRegistered(UAmbiverseSceneAsset* RegisteredLayer)
 {
 	if (!RegisteredLayer) { return; }
 

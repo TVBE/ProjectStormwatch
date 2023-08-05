@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_AmbiverseComposite.h"
 #include "AssetTypeActions_AmbiverseElement.h"
-#include "AssetTypeActions_AmbiverseLayer.h"
+#include "AssetTypeActions_AmbiverseScene.h"
 #include "AssetTypeActions_AmbiverseParameter.h"
 #include "Modules/ModuleManager.h"
 
@@ -17,7 +17,7 @@ public:
 
 private:
 	TSharedPtr<FAssetTypeActions_AmbiverseElement> AmbiverseElementAssetTypeActions;
-	TSharedPtr<FAssetTypeActions_AmbiverseLayer> AmbiverseLayerAssetTypeActions;
+	TSharedPtr<FAssetTypeActions_AmbiverseScene> AmbiverseLayerAssetTypeActions;
 	TSharedPtr<FAssetTypeActions_AmbiverseComposite> AmbiverseCompositeAssetTypeActions;
 	TSharedPtr<FAssetTypeActions_AmbiverseParameter> AmbiverseParameterAssetTypeActions;
 };

@@ -1,16 +1,16 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
-#include "AmbiverseLayerFactory.h"
-#include "AmbiverseLayerAsset.h"
+#include "AmbiverseSceneFactory.h"
+#include "AmbiverseSceneAsset.h"
 
-UAmbiverseLayerFactory::UAmbiverseLayerFactory()
+UAmbiverseSceneFactory::UAmbiverseSceneFactory()
 {
-	SupportedClass = UAmbiverseLayerAsset::StaticClass();
+	SupportedClass = UAmbiverseSceneAsset::StaticClass();
 	bCreateNew = true;
 }
 
-UObject* UAmbiverseLayerFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags,
+UObject* UAmbiverseSceneFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn)
 {
-	return NewObject<UAmbiverseLayerAsset>(InParent, Class, Name, Flags, Context);
+	return NewObject<UAmbiverseSceneAsset>(InParent, Class, Name, Flags, Context);
 }

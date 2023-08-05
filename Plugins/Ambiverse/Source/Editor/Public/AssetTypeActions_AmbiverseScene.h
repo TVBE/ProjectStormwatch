@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
 
-class FAssetTypeActions_AmbiverseLayer : public FAssetTypeActions_Base
+class FAssetTypeActions_AmbiverseScene : public FAssetTypeActions_Base
 {
 public:
 	virtual FText GetName() const override;

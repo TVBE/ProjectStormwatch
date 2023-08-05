@@ -6,7 +6,7 @@
 #include "AmbiverseElementAsset.h"
 #include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseSubsystem.h"
-#include "AmbiverseUtilities.h"
+#include "AmbiverseStatics.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UAmbiverseDistributionHandler, LogAmbiverseDistributionManager);
 
@@ -15,7 +15,7 @@ bool UAmbiverseDistributionHandler::GetTransformForElement(FTransform& Transform
 	if (!ElementInstance || !Owner) { return false; }
 
 	FTransform ListenerTransform;
-	if (!AmbiverseUtilities::GetListenerTransform(ListenerTransform))
+	if (!AmbiverseStatics::GetListenerTransform(ListenerTransform))
 	{
 		return false;
 	}

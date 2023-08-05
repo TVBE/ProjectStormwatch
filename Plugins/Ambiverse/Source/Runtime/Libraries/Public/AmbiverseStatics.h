@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 
-class AmbiverseUtilities
+class AmbiverseStatics
 {
 public:
 	/**
-	* This function attempts to retrieve the transform of the primary
+	* Attempts to retrieve the transform of the primary
 	* audio listener from the main audio device.
 	* 
 	* @param[out] Transform Reference to a FTransform that will hold the listener's transform 

@@ -9,7 +9,7 @@
 #include "AmbiverseSoundSource.generated.h"
 
 class UAmbiverseElement;
-class UAmbiverseLayerAsset;
+class UAmbiverseSceneAsset;
 class UAmbiverseSoundSourcePool;
 
 DECLARE_DELEGATE_OneParam(FOnFinishedPlaybackDelegate, AAmbiverseSoundSource*)

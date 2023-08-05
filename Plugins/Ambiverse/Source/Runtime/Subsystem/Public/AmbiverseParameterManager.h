@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AmbiverseLayerAsset.h"
+#include "AmbiverseSceneAsset.h"
 #include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseParameterManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnParameterChangedDelegate, UAmbiverseParameterAsset*, ChangedParameter);
 
-class UAmbiverseLayerAsset;
+class UAmbiverseSceneAsset;
 class UAmbiverseParameterAsset;
 
 UCLASS()
@@ -43,7 +43,7 @@ private:
 	bool IsParameterRegistered(const UAmbiverseParameterAsset* Parameter) const;
 
 	UFUNCTION()
-	void HandleOnLayerRegistered(UAmbiverseLayerAsset* RegisteredLayer);
+	void HandleOnLayerRegistered(UAmbiverseSceneAsset* RegisteredLayer);
 
 public:
 	/** Returns an array of currently registered parameters. */
