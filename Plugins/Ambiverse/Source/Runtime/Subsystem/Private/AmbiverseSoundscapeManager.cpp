@@ -5,6 +5,7 @@
 #include "AmbiverseSoundSourcePool.h"
 #include "AmbiverseParameterManager.h"
 #include "AmbiverseElement.h"
+#include "AmbiverseElementAsset.h"
 #include "AmbiverseSubsystem.h"
 
 void UAmbiverseSoundscapeManager::RegisterElements(TArray<UAmbiverseElement*> Elements)
@@ -37,6 +38,34 @@ void UAmbiverseSoundscapeManager::UnregisterElements(TArray<UAmbiverseElement*> 
 
 		PlayingProceduralElements[i]->IsPendingKill = true;
 	}
+}
+
+void UAmbiverseSoundscapeManager::PlayElement(const FAmbiverseElement& Element)
+{
+	if (!Element.IsValid()) { return; }
+
+	FAmbiverseSoundSourceData SoundSourceData{FAmbiverseSoundSourceData()};
+
+	SoundSourceData.Sound = Element.Asset->GetSound();
+	SoundSourceData.Name = FName(Element.Asset->GetName());
+
+	if(UAmbiverseDistributorPool* DistributionManager {Owner->GetDistributionManager()})
+	{
+		FTransform Transform {};
+		if (DistributionManager->GetTransformForElement(Transform, ElementInstance))
+		{
+			SoundSourceData.Transform = Transform;
+			
+			ElementInstance->LastPlaylocation = Transform.GetLocation();
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	InitiateSoundSource(SoundSourceData, ElementInstance);
+
 }
 
 void UAmbiverseSoundscapeManager::EvaluateFinishedElement(UAmbiverseElement* Element)

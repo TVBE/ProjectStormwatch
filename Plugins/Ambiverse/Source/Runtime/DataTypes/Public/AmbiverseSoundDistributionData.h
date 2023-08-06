@@ -19,7 +19,7 @@ UENUM(BlueprintType)
 enum class EDistributionMode : uint8
 {
 	Random							UMETA(DisplayName = "Random", ToolTip = "We distribute the element randomly."),
-	Uniform							UMETA(DisplayName = "Even", ToolTip = "We distribute the element pseudo-evenly."),
+	Uniform							UMETA(DisplayName = "Uniform", ToolTip = "We distribute the element pseudo-evenly."),
 	Static							UMETA(DisplayName = "Static", ToolTip = "We try to place the element around the same location until a threshold has been met. This creates more consistent soundscapes."),
 };
 

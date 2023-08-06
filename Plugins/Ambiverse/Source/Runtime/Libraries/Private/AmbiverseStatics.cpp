@@ -1,21 +1,63 @@
 ﻿// Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseStatics.h"
-
+#include "AmbiverseDistributorAsset.h"
+#include "AmbiverseElementAsset.h"
 #include "AudioDevice.h"
 
-bool AmbiverseStatics::GetListenerTransform(FTransform& Transform)
+bool AmbiverseStatics::GetTransformForElement(FTransform& OutTransform, const FAmbiverseElement& Element,
+	const UObject* WorldContextObject)
 {
-	if (const FAudioDevice* AudioDevice {GEngine->GetMainAudioDevice()}; AudioDevice->GetListeners().Num() > 0)
+	if (!Element.IsValid()) { return false; }
+
+	FTransform ListenerTransform;
+	GetListenerTransform(ListenerTransform);
+
+	/** First we check if the element has a custom distributor class set.
+	 *	If this is the case, we'll instantiate the distributor and let it handle the distribution.
+	 *	If the distributor class is null, we'll use one of the base distribution formulas instead. */
+	if (const TSubclassOf<UAmbiverseDistributorAsset> DistributorClass {Element.Asset->GetDistributorClass()})
 	{
-		Transform = AudioDevice->GetListeners()[0].Transform;
-		return true;
+		return PerformDistributorDistribution(OutTransform, ListenerTransform, DistributorClass);
 	}
-	return false;
+
+	const FAmbiverseSoundDistributionData& DistributionData {Element.Asset->GetDistributionData().DistributionMode};
+	
+	switch (DistributionData.DistributionMode)
+	{
+	case EDistributionMode::Random:
+		return PerformRandomDistribution(OutTransform, ListenerTransform, Element);
+
+	case EDistributionMode::Uniform:
+		return PerformUniformDistribution(OutTransform, ListenerTransform, Element, true, WorldContextObject);
+
+	case EDistributionMode::Static:
+		return PerformStaticDistribution(OutTransform, ListenerTransform, Element);
+	}
 }
 
+bool AmbiverseStatics::PerformRandomDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
+	const FAmbiverseElement& Element)
+{
+}
+
+bool AmbiverseStatics::PerformUniformDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
+	const FAmbiverseElement& Element, const bool IgnoreZ, const UObject* WorldContextObject)
+{
+}
+
+bool AmbiverseStatics::PerformStaticDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
+	const FAmbiverseElement& Element)
+{
+}
+
+bool AmbiverseStatics::PerformDistributorDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
+                                                      TSubclassOf<UAmbiverseDistributorAsset> Distributor)
+{
+}  
+
 bool UAmbiverseDistributorPool::PerformRandomDistribution(FTransform& OutTransform,
-	const FTransform& ListenerTransform, UAmbiverseElement* ElementInstance)
+                                                          const FTransform& ListenerTransform, UAmbiverseElement* ElementInstance)
 {
 	if (!ElementInstance || !ElementInstance->RuntimeData.ElementAsset)
 	{
@@ -131,4 +173,26 @@ bool UAmbiverseDistributorPool::PerformStaticDistribution(FTransform& OutTransfo
 		return PerformRandomDistribution(OutTransform, ListenerTransform, ElementInstance);
 	}
 	return true;
+}
+
+bool AmbiverseStatics::GetListenerTransform(FTransform& Transform)
+{
+	if (const FAudioDevice* AudioDevice {GEngine->GetMainAudioDevice()}; AudioDevice->GetListeners().Num() > 0)
+	{
+		Transform = AudioDevice->GetListeners()[0].Transform;
+		return true;
+	}
+	return false;
+}
+
+UAmbiverseSubsystem* AmbiverseStatics::GetSubsystem(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject || !WorldContextObject->ImplementsGetWorld()) { return nullptr; }
+	return GetSubsystem(WorldContextObject->GetWorld());
+}
+
+UAmbiverseSubsystem* AmbiverseStatics::GetSubsystem(const UWorld* World)
+{
+	if (!World) { return nullptr; }
+	return World->GetSubsystem<UAmbiverseSubsystem>();
 }

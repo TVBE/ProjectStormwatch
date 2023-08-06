@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmbiverseElement.h"
 #include "AmbiverseScene.h"
 #include "AmbiverseSubsystemComponent.h"
 #include "AmbiverseSoundscapeManager.generated.h"
@@ -40,6 +41,9 @@ public:
 
 	void RegisterElements(TArray<UAmbiverseElement*> Elements);
 	void UnregisterElements(TArray<UAmbiverseElement*> Elements);
+
+	/** Initiates and plays an element. */
+	void PlayElement(const FAmbiverseElement& Element);
 
 	/** Determines if a finished element should be rescheduled if it is still valid and not already scheduled.
 	 *	Situations where this might not be the case is if the element is marked PendingKill, or its IntervalMode is set to OnSpawn.

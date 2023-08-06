@@ -1,45 +1,9 @@
 // Copyright (c) 2023-present Tim Verberne. All rights reserved.
 
 #include "AmbiverseSoundSourcePool.h"
-
-#include "AmbiverseDistributorAsset.h"
-#include "AmbiverseDistributorPool.h"
-#include "AmbiverseElementAsset.h"
-#include "AmbiverseElement.h"
 #include "AmbiverseSoundscapeManager.h"
 #include "AmbiverseSoundSource.h"
 #include "AmbiverseSubsystem.h"
-
-DEFINE_LOG_CATEGORY_CLASS(UAmbiverseSoundSourcePool, LogAmbiverseSoundSourceManager);
-
-void UAmbiverseSoundSourcePool::PlayElement(UAmbiverseElement* ElementInstance)
-{
-	FAmbiverseSoundSourceData SoundSourceData{FAmbiverseSoundSourceData()};
-
-	UAmbiverseElementAsset* Element {ElementInstance->RuntimeData.ElementAsset};
-
-	if (!Element) { return; }
-
-	SoundSourceData.Sound = Element->GetSound();
-	SoundSourceData.Name = FName(Element->GetName());
-
-	if(UAmbiverseDistributorPool* DistributionManager {Owner->GetDistributionManager()})
-	{
-		FTransform Transform {};
-		if (DistributionManager->GetTransformForElement(Transform, ElementInstance))
-		{
-			SoundSourceData.Transform = Transform;
-			
-			ElementInstance->LastPlaylocation = Transform.GetLocation();
-		}
-		else
-		{
-			return;
-		}
-	}
-
-	InitiateSoundSource(SoundSourceData, ElementInstance);
-}
 
 void UAmbiverseSoundSourcePool::InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElement* ElementInstance)
 {

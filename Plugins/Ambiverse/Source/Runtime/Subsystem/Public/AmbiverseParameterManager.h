@@ -31,9 +31,11 @@ private:
 public:
 	virtual void Initialize(UAmbiverseSubsystem* Subsystem) override;
 	virtual void Deinitialize(UAmbiverseSubsystem* Subsystem) override;
+
+	virtual bool IsTickable() const override { return false; }
 	
 	float GetParameterValue(UAmbiverseParameterAsset* Parameter);
-
+	
 	UFUNCTION(BlueprintCallable)
 	void SetParameterValue(UAmbiverseParameterAsset* Parameter, const float Value);
 

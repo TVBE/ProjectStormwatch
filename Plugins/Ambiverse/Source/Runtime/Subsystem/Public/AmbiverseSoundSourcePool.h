@@ -15,8 +15,6 @@ class UAmbiverseSoundSourcePool : public UAmbiverseSubsystemComponent
 {
 	GENERATED_BODY()
 
-	DECLARE_LOG_CATEGORY_CLASS(LogAmbiverseSoundSourceManager, Log, All)
-
 private:
 	/** Pool of SoundSource instances. These can include subobjects. */
 	UPROPERTY(Transient)
@@ -26,21 +24,12 @@ private:
 	UPROPERTY(Transient)
 	TArray<AAmbiverseSoundSource*> ActiveSoundSources;
 
-#if !UE_BUILD_SHIPPING
-	bool EnableSoundSourceVisualisation {false};
-#endif
-
 public:
-	/** Initiates and plays an element. */
-	void PlayElement(UAmbiverseElement* ElementInstance);
+	virtual bool IsTickable() const override { return false; }
 	
 	void InitiateSoundSource(FAmbiverseSoundSourceData& SoundSourceData, UAmbiverseElement* ElementInstance);
 
 	void HandleSoundSourceFinishedPlayback(AAmbiverseSoundSource* SoundSource);
-
-#if !UE_BUILD_SHIPPING
-	void SetSoundSourceVisualisationEnabled(const bool IsEnabled);
-#endif
 
 	private:
 	/**
