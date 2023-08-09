@@ -10,6 +10,7 @@ public class Ambiverse : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
+				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/Public",
 				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/AssetTypes/Public",
 				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/Core/Public",
 				"$(ProjectDir)/Plugins/Ambiverse/Source/Runtime/DataTypes/Public",
