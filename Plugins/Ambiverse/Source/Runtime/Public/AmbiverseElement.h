@@ -121,13 +121,12 @@ struct FAmbiverseElement
 	const FElementDistributionData& InDistributionData,
 	const FElementIntervalData&		InIntervalData,
 	const FElementTimeData&			InTimeData
-)
+	)
 	: Asset(RawAssetPtr)
 	, DistributionData(InDistributionData)
 	, IntervalData(InIntervalData)
 	, TimeData(InTimeData)
-	{
-	}
+	{}
 	
 	bool IsValid() const { return Asset.IsValid(); }
 	

@@ -24,12 +24,12 @@ private:
 	AActor* Listener;
 
 public:
-	void Initialize(UObject* WorldContextObject);
+	void Initialize(const UObject* WorldContextObject);
 	
-	virtual UWorld* GetWorld() const override { return World; };
+	virtual UWorld* GetWorld() const override final { return World; };
 	
 	UFUNCTION(BlueprintImplementableEvent, Meta = (WorldContext = "WorldContextObject"))
-	bool ExecuteDistribution(FTransform& Transform, FVector Location, UAmbiverseElementAsset* Element);
+	bool ExecuteDistribution(FTransform& Transform, const FVector& ListenerLocation, const UAmbiverseElementAsset* Element);
 
 	/** Gets a random point in a specified radius around the listener. */
 	UFUNCTION(BlueprintCallable)

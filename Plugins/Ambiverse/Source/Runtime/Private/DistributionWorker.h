@@ -8,6 +8,26 @@
 class UAmbiverseDistributorAsset;
 struct FAmbiverseElement;
 
+struct DistributionParamameters
+{
+	FTransform& OutTransform;
+	const FTransform& ListenerTransform;
+	const FAmbiverseElement& Element;
+	const UObject* WorldContextObject;
+
+	DistributionParamameters(
+	FTransform&					InOutTransform,
+	const FTransform&			InListenerTransform,
+	const FAmbiverseElement&	InElement,
+	const UObject*				InWorldContextObject
+	)
+	: OutTransform(InOutTransform) 
+	, ListenerTransform(InListenerTransform) 
+	, Element(InElement) 
+	, WorldContextObject(InWorldContextObject)
+	{}
+};
+
 class DistributionWorker
 {
 public:
@@ -23,17 +43,14 @@ public:
 		const UObject* WorldContextObject);
 
 private:
-	static bool PerformRandomDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		const FAmbiverseElement& Element);
+	static bool PerformRandomDistribution(const DistributionParamameters& Params);
 	
-	static bool PerformUniformDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		const FAmbiverseElement& Element, const bool IgnoreZ, const UObject* WorldContextObject);
+	static bool PerformUniformDistribution(const DistributionParamameters& Params);
 	
-	static bool PerformStaticDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		const FAmbiverseElement& Element);
+	static bool PerformStaticDistribution(const DistributionParamameters& Params);
 
-	static bool PerformDistributorDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
-		TSubclassOf<UAmbiverseDistributorAsset> Distributor);
+	static bool PerformDistributorDistribution(const DistributionParamameters& Params,
+		const TSubclassOf<UAmbiverseDistributorAsset> Distributor);
 	
 	static bool GetListenerTransform(FTransform& Transform);
 
