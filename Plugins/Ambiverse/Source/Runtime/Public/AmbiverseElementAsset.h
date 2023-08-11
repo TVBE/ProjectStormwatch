@@ -22,10 +22,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	TSoftObjectPtr<USoundBase> Sound;
 	
-	/** PlayRange data for an AmbienceSystem preset entry. */
-	UPROPERTY(EditAnywhere, Category = "Distribution", Meta = (EditCondition = "DistributorClass == nullptr", ShowOnlyInnerProperties))
-	FAmbiverseSoundDistributionData DistributionData;
-
 	/**
 	 *  Custom SoundSource classes can be used to implement complex behavior for specific sounds.
 	 *  You can create a blueprint derived from UAmbiverseSoundSource to script custom behavior.
@@ -55,6 +51,5 @@ public:
 		return Sound.Get();
 	}
 	FORCEINLINE TSubclassOf<UAmbiverseDistributorAsset> GetDistributorClass() const { return DistributorClass; }
-	FORCEINLINE FAmbiverseSoundDistributionData GetDistributionData() const { return DistributionData; }
 	FORCEINLINE TSubclassOf<AAmbiverseSoundSource> GetSoundSourceClass() const { return SoundSourceClass; }
 };
