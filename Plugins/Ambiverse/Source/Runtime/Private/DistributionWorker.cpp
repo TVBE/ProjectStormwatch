@@ -72,34 +72,35 @@ bool DistributionWorker::PerformRandomDistribution(FTransform& OutTransform, con
 	return true;
 }
 
+inline FVector ComputeDrift(const FElementDistributionData& DistributionData)
+{
+	auto ComputeAxisDriftValue = [&]()
+	{
+		return FMath::RandRange(-0.5f * DistributionData.Drift, 0.5f * DistributionData.Drift);
+	};
+	return FVector(ComputeAxisDriftValue(), ComputeAxisDriftValue(), ComputeAxisDriftValue());
+}
+
 bool DistributionWorker::PerformStaticDistribution(FTransform& OutTransform, const FTransform& ListenerTransform,
 	const FAmbiverseElement& Element)
 {
 	const FElementDistributionData& DistributionData {Element.DistributionData};
-
-	if (Element.LastPlayTransform.IsSet())
 	
-	if (!Element.LastPlayTransform.IsZero())
+	if (!Element.LastPlayTransform.IsSet())
 	{
-		if (const float Distance {static_cast<float>(FVector::Dist(ListenerTransform.GetLocation(), ElementInstance->LastPlaylocation))};
-			Distance >= DistributionData.Threshold)
-		{
-			return PerformRandomDistribution(OutTransform, ListenerTransform, ElementInstance);
-		}
-		else
-		{
-			const FVector Drift {
-				FMath::RandRange(-0.5f * DistributionData.Drift, 0.5f * DistributionData.Drift), 
-				FMath::RandRange(-0.5f * DistributionData.Drift, 0.5f * DistributionData.Drift), 
-				0.0f
-			};
-			OutTransform.SetLocation(ElementInstance->LastPlaylocation + Drift);
-		}
+		return PerformRandomDistribution(OutTransform, ListenerTransform, Element);
 	}
-	else
+	
+	if (const float Distance {static_cast<float>(FVector::Dist(ListenerTransform.GetLocation(),
+		Element.LastPlayTransform.GetValue().GetLocation()))};
+		Distance >= DistributionData.Threshold)
 	{
-		return PerformRandomDistribution(OutTransform, ListenerTransform, ElementInstance);
+		return PerformRandomDistribution(OutTransform, ListenerTransform, Element);
 	}
+	
+	const FVector Drift {ComputeDrift(DistributionData)};
+	OutTransform.SetLocation(Element.LastPlayTransform.GetValue().GetLocation() + Drift);
+
 	return true;
 }
 
