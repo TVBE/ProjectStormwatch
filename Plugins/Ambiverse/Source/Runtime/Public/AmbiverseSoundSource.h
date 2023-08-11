@@ -3,14 +3,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "..\..\Private\SoundSourceData.h"
+#include "AmbiverseElement.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/Actor.h"
 #include "AmbiverseSoundSource.generated.h"
 
-class UAmbiverseElement;
 class UAmbiverseSceneAsset;
 class USoundSourcePool;
+
+/** Contains data that can be used by an AmbienceSoundSource instance. */
+USTRUCT()
+struct FSoundSourceData
+{
+	GENERATED_USTRUCT_BODY()
+	
+	/** The element that this sound source is currently playing. */
+	UPROPERTY()
+	FAmbiverseElement Element;
+	
+	/** The transform to play a SoundSource at. */
+	UPROPERTY()
+	FTransform Transform;
+	
+	FSoundSourceData(
+	const FAmbiverseElement&	InElement,
+	const FTransform&			InTransform
+	)
+	: Element(InElement)
+	, Transform(InTransform)
+	{}
+};
 
 DECLARE_DELEGATE_OneParam(FOnFinishedPlaybackDelegate, AAmbiverseSoundSource*)
 
@@ -33,18 +55,10 @@ private:
 	/** The audio component to play back sounds at. */
 	UPROPERTY(BlueprintGetter = GetAudioComponent)
 	UAudioComponent* AudioComponent;
-
-	/** Pointer to the sound source manager. */
-	UPROPERTY(Transient)
-	USoundSourcePool* SoundSourceManager;
 	
 	UPROPERTY(BlueprintGetter = GetSoundSourceData)
 	FSoundSourceData SoundSourceData;
 
-	/** The element that this sound source is currently playing. */
-	UPROPERTY(Transient)
-	UAmbiverseElement* AssociatedElement;
-	
 public:	
 	AAmbiverseSoundSource();
 
@@ -66,11 +80,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BeginPlayback();
+	UFUNCTION(BlueprintImplementableEvent, Meta = (DisplayName = "Begin Playback"))
+	void OnBeginPlayback();
 	
-	UFUNCTION(BlueprintImplementableEvent)
-	void EndPlayback();
+	UFUNCTION(BlueprintImplementableEvent, Meta = (DisplayName = "End Playback"))
+	void OnEndPlayback();
 	
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UAudioComponent* GetAudioComponent() const { return AudioComponent; }
@@ -81,7 +95,4 @@ protected:
 private:
 	UFUNCTION()
 	void HandleOnAudioFinishedPlaying();
-
-public:
-	FORCEINLINE UAmbiverseElement* GetAssociatedElement() const { return AssociatedElement; }
 };

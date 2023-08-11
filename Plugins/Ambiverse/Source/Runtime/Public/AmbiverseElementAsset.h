@@ -7,7 +7,7 @@
 #include "AmbiverseSoundSource.h"
 #include "AmbiverseElementAsset.generated.h"
 
-class UAmbiverseDistributorAsset;
+class UAmbiverseDistributor;
 
 /** An ambiverse element is a single procedural sound. It can be played directly, or used in a scene to create a procedural soundscape. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Ambiverse", Meta = (DisplayName = "Ambiverse Element",
@@ -40,7 +40,7 @@ private:
 	 *	@note Setting this property causes the distribution data to be ignored and to become uneditable.
 	 */
 	UPROPERTY(EditAnywhere, Category = "Advanced", Meta = (BlueprintBaseOnly))
-	TSubclassOf<UAmbiverseDistributorAsset> DistributorClass;
+	TSubclassOf<UAmbiverseDistributor> DistributorClass;
 
 public:
 	bool IsValid {true};
@@ -50,6 +50,6 @@ public:
 		if (!Sound.IsValid()) { Sound.LoadSynchronous(); }
 		return Sound.Get();
 	}
-	FORCEINLINE TSubclassOf<UAmbiverseDistributorAsset> GetDistributorClass() const { return DistributorClass; }
+	FORCEINLINE TSubclassOf<UAmbiverseDistributor> GetDistributorClass() const { return DistributorClass; }
 	FORCEINLINE TSubclassOf<AAmbiverseSoundSource> GetSoundSourceClass() const { return SoundSourceClass; }
 };

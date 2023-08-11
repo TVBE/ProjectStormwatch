@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AmbiverseElement.h"
 
-class UAmbiverseDistributorAsset;
+class UAmbiverseDistributor;
 struct FAmbiverseElement;
 
 struct DistributionParamameters
@@ -50,10 +50,7 @@ private:
 	static bool PerformStaticDistribution(const DistributionParamameters& Params);
 
 	static bool PerformDistributorDistribution(const DistributionParamameters& Params,
-		const TSubclassOf<UAmbiverseDistributorAsset> Distributor);
+		const TSubclassOf<UAmbiverseDistributor> Distributor);
 	
 	static bool GetListenerTransform(FTransform& Transform);
-
-	static UAmbiverseSubsystem* GetSubsystem(const UObject* WorldContextObject);
-	static UAmbiverseSubsystem* GetSubsystem(const UWorld* World);
 };

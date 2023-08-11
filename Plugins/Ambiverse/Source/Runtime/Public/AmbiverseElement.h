@@ -6,6 +6,7 @@
 #include "AmbiverseSceneAsset.h"
 #include "AmbiverseElement.generated.h"
 
+class UAmbiverseDistributor;
 class UAmbiverseElementAsset;
 class UAmbiverseSubsystem;
 class AAmbiverseSoundSource;
@@ -97,6 +98,22 @@ struct FElementTimeData
 	float ReferenceTime {0.0f};
 };
 
+/** Editor version for building scenes. These are not actually used during runtime for playback. */
+USTRUCT(Meta = (DisplayName = "Ambiverse Element Template"))
+struct FAmbiverseElementSceneTemplate
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere)
+	UAmbiverseElementAsset* Asset;
+
+	UPROPERTY(EditAnywhere)
+	FElementDistributionData DistributionData;
+
+	UPROPERTY(EditAnywhere)
+	FElementIntervalData IntervalData;
+};
+
 USTRUCT()
 struct FAmbiverseElement
 {
@@ -106,7 +123,11 @@ struct FAmbiverseElement
 	
 	const FElementDistributionData DistributionData;
 	const FElementIntervalData IntervalData;
-	FElementTimeData TimeData;
+	FElementTimeData TimeData {};
+
+	/** If the asset referenced by this element contains a custom distributor class, we'll keep a strong object ptr to it here.
+	 *	This allows us to execute the Distributors logic conveniently through the DistributionWorker's statics. */
+	TStrongObjectPtr<UAmbiverseDistributor> Distributor;
 	
 	/** The last location this element was played at. We only really use this if the distribution mode is set to static.
 	 *	We save this vector here independently from the SoundSource used to play this element,
@@ -119,16 +140,29 @@ struct FAmbiverseElement
 	FAmbiverseElement(
 	const UAmbiverseElementAsset*	RawAssetPtr,
 	const FElementDistributionData& InDistributionData,
-	const FElementIntervalData&		InIntervalData,
-	const FElementTimeData&			InTimeData
+	const FElementIntervalData&		InIntervalData
 	)
 	: Asset(RawAssetPtr)
 	, DistributionData(InDistributionData)
 	, IntervalData(InIntervalData)
-	, TimeData(InTimeData)
 	{}
+
+	FAmbiverseElement(
+	const FAmbiverseElementSceneTemplate& SceneTemplate
+	)
+	: Asset(TStrongObjectPtr<const UAmbiverseElementAsset>(SceneTemplate.Asset))
+	, DistributionData(SceneTemplate.DistributionData)
+	, IntervalData(SceneTemplate.IntervalData)
+	{}
+
+	~FAmbiverseElement()
+	{
+		Asset.Reset();
+		Distributor.Reset();
+	}
 	
 	bool IsValid() const { return Asset.IsValid(); }
 	
 	const UAmbiverseElementAsset* GetAsset() const { return Asset.Get(); }
 };
+

@@ -38,7 +38,7 @@ bool AAmbiverseSoundSource::Initialize(FSoundSourceData& Data, UAmbiverseElement
 	if(AudioComponent)
 	{
 		AudioComponent->Play();
-		BeginPlayback();
+		OnBeginPlayback();
 	}
 	else
 	{
@@ -47,7 +47,7 @@ bool AAmbiverseSoundSource::Initialize(FSoundSourceData& Data, UAmbiverseElement
 
 	if (ElementInstance)
 	{
-		AssociatedElement = ElementInstance;
+		Element = ElementInstance;
 	}
 	else
 	{
@@ -59,7 +59,7 @@ bool AAmbiverseSoundSource::Initialize(FSoundSourceData& Data, UAmbiverseElement
 
 bool AAmbiverseSoundSource::Deinitialize()
 {
-	AssociatedElement = nullptr;
+	Element = nullptr;
 	SoundSourceData = {};
 
 	return true;
@@ -81,7 +81,7 @@ void AAmbiverseSoundSource::HandleOnAudioFinishedPlaying()
 		ActiveTime = 0;
 #endif
 	
-		EndPlayback();
+		OnEndPlayback();
 		OnFinishedPlayback.Execute(this);
 }
 

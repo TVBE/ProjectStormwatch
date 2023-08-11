@@ -30,3 +30,15 @@ bool UAmbiverseStatics::StopAmbiverseScene(const UObject* WorldContextObject, UA
 	}
 	return false;
 }
+
+UAmbiverseSubsystem* UAmbiverseStatics::GetSubsystem(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject || !WorldContextObject->ImplementsGetWorld()) { return nullptr; }
+	return GetSubsystem(WorldContextObject->GetWorld());
+}
+
+UAmbiverseSubsystem* UAmbiverseStatics::GetSubsystem(const UWorld* World)
+{
+	if (!World) { return nullptr; }
+	return World->GetSubsystem<UAmbiverseSubsystem>();
+}

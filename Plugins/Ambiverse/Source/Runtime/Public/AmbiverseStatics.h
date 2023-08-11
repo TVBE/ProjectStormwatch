@@ -32,6 +32,9 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Ambiverse", Meta = (DisplayName = "Stop Scene", WorldContext = "WorldContextObject"))
 	static bool StopAmbiverseScene(const UObject* WorldContextObject, UAmbiverseSceneAsset* Asset, const bool ForceStop = false, const float FadeTime = 1.0f);
+
+	static UAmbiverseSubsystem* GetSubsystem(const UObject* WorldContextObject);
+	static UAmbiverseSubsystem* GetSubsystem(const UWorld* World);
 };
 
 
