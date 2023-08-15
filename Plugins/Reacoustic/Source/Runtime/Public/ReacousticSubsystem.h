@@ -70,7 +70,7 @@ public:
 	/** Gets the matching timestamp and strength for a given normalized physics impact value.
 	 *This function needs to be in the subsystem so that the it can be used in game and in editor.*/
 	UFUNCTION(BlueprintCallable, Category = "ReacousticSubsystem")
-	FVector2D GetTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue);
+	FImpactValueToTimestampResult GetTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue);
 	
 	/** Checks whether an actor meets the conditions to be used by Reacoustic.
 	 *	For this, an actor must have IsSimulatingPhysics and a StaticMeshComponent with bNotifyRigidBodyCollision set to true.

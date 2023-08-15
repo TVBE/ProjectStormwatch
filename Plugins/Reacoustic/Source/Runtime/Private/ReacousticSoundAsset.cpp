@@ -54,5 +54,6 @@ void UReacousticSoundAsset::UpdateTimestampHistory(const float& NewElement)
 	}
 
 	TimestampHistory.Add(NewElement);
-	MarkPackageDirty();  /** Mark the asset as dirty so the engine knows to save changes. */
+	
+	//MarkPackageDirty();  /** Mark the asset as dirty so the engine knows to save changes. */
 }

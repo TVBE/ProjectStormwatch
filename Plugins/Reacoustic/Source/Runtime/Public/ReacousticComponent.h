@@ -14,7 +14,7 @@
 
 class ReacousticSoundDataRef_Map;
 
-UCLASS(Abstract, Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
 class REACOUSTIC_API UReacousticComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -25,7 +25,8 @@ protected:
 	UPROPERTY(Transient, BlueprintReadOnly)
 	UAudioComponent* AudioComponent {nullptr};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Reacoustic Sound"), Category = "Default")
+	/** Set this parameter to override the mesh associated Reacoustic Sound.*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Override Reacoustic Sound"), Category = "Default")
 	UReacousticSoundAsset* ReacousticSoundAsset{nullptr};
 
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Reacoustic Surface Sound"))
@@ -106,7 +107,7 @@ public:
 	                  FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(BlueprintCallable)
-	FVector2D ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue);
+	FImpactValueToTimestampResult ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue);
 
 
 protected:

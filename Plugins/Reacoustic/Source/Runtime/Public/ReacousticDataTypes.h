@@ -35,6 +35,21 @@ struct FPhysicalMaterialToAudioMapEntry
 	
 };
 
+USTRUCT(BlueprintType)
+struct FImpactValueToTimestampResult
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	float Timestamp;
+	
+	UPROPERTY(BlueprintReadOnly)
+	float NormalizedOnsetStrength;
+	
+	UPROPERTY(BlueprintReadOnly)
+	float OnsetStrength;
+};
+
 // The map with all references to quickly be able to access the right audio data.
 UCLASS(BlueprintType)
 class UReacousticSoundAssociationMap : public UDataAsset

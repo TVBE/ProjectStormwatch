@@ -132,9 +132,7 @@ TSharedPtr<SWidget> FReacousticSoundAssetTypeActions::GetThumbnailOverlay(const 
 					
 					float ImpactValue = FMath::RandRange(0.0f,1.0f); //For now a random impact value is fun. Another option is retriggering the sound with a delay to showcase the full range of interactions a reacoustic sound has.
             
-					FVector2d TimestampAndVolume = ReacousticSubsystem->GetTimeStampWithStrenght(CastedAsset, ImpactValue);
-					float Timestamp = TimestampAndVolume.X;
-					float Volume = TimestampAndVolume.Y;
+					const FImpactValueToTimestampResult Result = ReacousticSubsystem->GetTimeStampWithStrenght(CastedAsset, ImpactValue);
 					
 					// Set parameters for the audio component
 
@@ -145,7 +143,7 @@ TSharedPtr<SWidget> FReacousticSoundAssetTypeActions::GetThumbnailOverlay(const 
 					AudioComponent->bCenterChannelOnly = false;
 					AudioComponent->bPreviewComponent = true;
 				
-					AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Timestamp);
+					AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Result.Timestamp);
 					AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
 					AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), CastedAsset->Sound);
 					AudioComponent->SetFloatParameter(TEXT("Obj_Length"), CastedAsset->ImpulseLength);
@@ -205,8 +203,13 @@ FReply FReacousticSoundAssetTypeActions::OnThumbnailOverlayClicked() const
 	return FReply::Handled();
 }
 
-
-
+//TODO:Use this to implement custom drag and drop functionality
+bool FReacousticSoundAssetTypeActions::AssetsActivatedOverride(const TArray<UObject*>& InObjects,
+	EAssetTypeActivationMethod::Type ActivationType)
+{
+	UE_LOG(LogTemp, Warning, TEXT("This works!"));
+	return FAssetTypeActions_Base::AssetsActivatedOverride(InObjects, ActivationType);
+}
 
 
 void FReacousticContentBrowserMenuExtension::RegisterMenus()
@@ -268,6 +271,7 @@ void FReacousticContentBrowserMenuExtension::ExecuteCreateReacousticSound(const 
 		}
 	}
 }
+
 
 
 

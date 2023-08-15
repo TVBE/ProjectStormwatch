@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SceneComponent.h"
 #include "ReacousticDataTypes.h"
+#include "ReacousticSoundUserData.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UReacousticSubsystem, LogReacousticSubsystem);
 
@@ -173,20 +174,41 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 
 UReacousticSoundAsset* UReacousticSubsystem::GetMeshSoundAsset(const UStaticMeshComponent* StaticMeshComponent) const
 {
-	if (!StaticMeshComponent || !ReacousticSoundAssociationMap)
+	if (!StaticMeshComponent)
 	{
 		return nullptr;
 	}
 
-	for (const auto& [Mesh, SoundAsset] : ReacousticSoundAssociationMap->MeshMapEntries)
+	// Get the static mesh from the component.
+	UStaticMesh* Mesh {StaticMeshComponent->GetStaticMesh()};
+	if (!Mesh)
 	{
-		UStaticMesh* MeshPtr {Mesh};
-
-		if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
-		{
-			return SoundAsset;
-		}
+		return nullptr;
 	}
+
+	// Try to get your custom asset user data from the mesh.
+	UReacousticSoundUserData* SoundUserData {Mesh->GetAssetUserData<UReacousticSoundUserData>()};
+
+	return SoundUserData->ReacousticSound;
+
+
+
+
+	//if (!StaticMeshComponent || !ReacousticSoundAssociationMap)
+	//{
+	//	return nullptr;
+	//}
+
+	
+	//for (const auto& [Mesh, SoundAsset] : ReacousticSoundAssociationMap->MeshMapEntries)
+	//{
+	//	UStaticMesh* MeshPtr {Mesh};
+
+	//	if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
+	//	{
+	//		return SoundAsset;
+	//	}
+	//}
 
 	return nullptr;
 }
@@ -211,27 +233,34 @@ UReacousticSoundAsset* UReacousticSubsystem::GetSurfaceSoundAsset(const EPhysica
 	return nullptr;
 }
 
-FVector2D UReacousticSubsystem::GetTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
+FImpactValueToTimestampResult UReacousticSubsystem::GetTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
 	float BestDifference = FLT_MAX; 
 	float BestTimeStamp = -1;
+	float BestNormalizedStrenght = -1;
 	float BestStrenght = -1;
+	
 
 	TArray<float> OutOnsetTimestamps;
+	TArray<float> OutOnsetStrengthsNormalized;
 	TArray<float> OutOnsetStrengths;
+	
 	
 	if (!SoundAsset || !SoundAsset->Sound)
 	{
-		return FVector2D(0,0);
+		return FImpactValueToTimestampResult{BestTimeStamp,BestNormalizedStrenght,BestStrenght};
 	}
+	//TODO: normalize this manually after the vacation.
+	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengthsNormalized);
+	SoundAsset->GetChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
 
-	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
 	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
 	if (OutOnsetTimestamps.Num() == OutOnsetStrengths.Num())
 	{
 		for (int i = 0; i < OutOnsetTimestamps.Num(); ++i)
 		{
 			float timestamp = OutOnsetTimestamps[i];
+			float strengthNormalized = OutOnsetStrengthsNormalized[i];
 			float strength = OutOnsetStrengths[i];
 			
 			/** If this element is in LatestMatchingElements, skip to the next iteration */
@@ -256,6 +285,7 @@ FVector2D UReacousticSubsystem::GetTimeStampWithStrenght(UReacousticSoundAsset* 
 			{
 				BestDifference = CurrentDifference;
 				BestTimeStamp = timestamp;
+				BestNormalizedStrenght = strengthNormalized;
 				BestStrenght = strength;
 			}
 		}
@@ -266,5 +296,5 @@ FVector2D UReacousticSubsystem::GetTimeStampWithStrenght(UReacousticSoundAsset* 
 	{
 		SoundAsset->UpdateTimestampHistory(BestTimeStamp);
 	}
-	return FVector2D(BestTimeStamp, BestStrenght);
+	return FImpactValueToTimestampResult{BestTimeStamp,BestNormalizedStrenght,BestStrenght};
 }

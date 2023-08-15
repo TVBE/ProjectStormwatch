@@ -38,6 +38,7 @@ public class ReacousticEditor : ModuleRules
 				"UnrealEd", 
 				"EditorStyle"
 				
+				
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -55,6 +56,7 @@ public class ReacousticEditor : ModuleRules
 				"PhysicsCore",
 				"AudioSynesthesia",
 				"UnrealEd",
+				"PropertyEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

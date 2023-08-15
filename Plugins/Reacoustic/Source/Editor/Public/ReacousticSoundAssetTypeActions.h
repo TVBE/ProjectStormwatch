@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
+#include "ContentBrowserDelegates.h"
 #include "Factories/Factory.h"
 #include "ReacousticSoundAsset.h"
 #include "Components/AudioComponent.h"
@@ -22,7 +23,9 @@ public:
 	EVisibility GetThumbnailOverlayVisibility() const;
 	virtual TSharedPtr<SWidget> GetThumbnailOverlay(const FAssetData& AssetData) const override;
 	FReply OnThumbnailOverlayClicked() const;
-
+	bool AssetsActivatedOverride(const TArray<UObject*>& InObjects, EAssetTypeActivationMethod::Type ActivationType) override;
+	
+	 
 
 protected:
 	/** Plays the specified sound wave */
@@ -36,6 +39,8 @@ protected:
 
 	/** Return true if the specified asset's sound is playing */
 	bool IsSoundPlaying(const FAssetData& AssetData) const;
+
+
 
 private:
 	/** Handler for when PlaySound is selected */
@@ -53,5 +58,6 @@ public:
 	static void RegisterMenus();
 	static void ExecuteCreateReacousticSound(const struct FToolMenuContext& MenuContext);
 };
+
 
 

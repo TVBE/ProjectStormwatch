@@ -57,9 +57,10 @@ public:
 
 	/** PHYSICS CATEGORY */
 
-	/** How fast the object is expected to hit things eg: a cup would be 1. A basketball 5 */
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="1.000000"), Category = "Physics")
-	double MaxSpeedScalar{1.0};
+	/** How fast the object is expected to hit things in M/s
+	 *eg: a thrown ball would be 20 M/s. A baseball thrown by a world class pitcher would be 40 M/s*/
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="30.000000"), Category = "Physics")
+	double MaxSpeedScalar{20};
 
 
 	/** TEMPORAL BEHAVIOUR CATEGORY */

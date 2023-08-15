@@ -76,12 +76,43 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		return;
 	}
 
-	/** Make sure the subsystem is still referenced.*/
-	CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
-	
-	/** If ReacousticSoundAsset is null, get the asset from the subsystem, otherwise use the existing asset. */
+	if(!CachedSubsystem)
+	{
+		// Handle this case. Maybe log an error and return?
+		UE_LOG(LogReacousticComponent, Error, TEXT("CachedSubsystem is null!"));
+		return;
+	}
+
 	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : CachedSubsystem->GetMeshSoundAsset(MeshComponent);
+
+	if(!AssetToTransfer)
+	{
+		// Handle this case. Maybe log an error and return?
+		UE_LOG(LogReacousticComponent, Error, TEXT("AssetToTransfer is null!"));
+		return;
+	}
+
 	TransferData(AssetToTransfer, CachedSubsystem->ReacousticSoundAssociationMap);
+
+	if(!ReacousticSoundAsset)
+	{
+		UE_LOG(LogReacousticComponent, Warning, TEXT("No sound asset found, destroying component"));
+    
+		if(AudioComponent)
+		{
+			AudioComponent->Stop();
+		}
+		else
+		{
+			UE_LOG(LogReacousticComponent, Warning, TEXT("AudioComponent is null!"));
+		}
+    
+		DestroyComponent();
+		return;
+	}
+
+	// Rest of your code...
+
 
 
 
@@ -101,32 +132,30 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		DestroyComponent();
 	}
 	
-		/** Set the attenuation settings */
-		if(ReacousticSoundAsset->Sound_Attenuation){AudioComponent->AttenuationSettings = ReacousticSoundAsset->Sound_Attenuation;}
-
-		if(ReacousticSoundAsset->Sound){AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);}
-
-
-		/** Set the parameters.*/
-		if(ReacousticSoundAsset->ImpulseLength){AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);}
-	
+	/** Pass All relevant parameters for startup to the sound component.*/
+	if(ReacousticSoundAsset->Sound_Attenuation){AudioComponent->AttenuationSettings = ReacousticSoundAsset->Sound_Attenuation;}
+	if(ReacousticSoundAsset->Sound){AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);}
+	if(ReacousticSoundAsset->ImpulseLength){AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);}
+	USoundBase* SoundObject = Cast<USoundBase>(StaticLoadObject(UObject::StaticClass(), nullptr, TEXT("/Reacoustic/Audio/Metasounds/MSS_Reacoustic"))); //Asset path referencing for now. I might include Metasound plugin later.
+	AudioComponent->SetSound(SoundObject);
 	
 	/** Add the audio component to the parent actor */
 	AudioComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 }
 
-float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent,
-	const AActor* OtherActor)
-{
-	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {return 0.0f; }
+float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor) {
+	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {
+		return 0.0f;
+	}
 
 	const FVector RelativeVelocity {HitComponent->GetComponentVelocity() - OtherActor->GetVelocity()};
-	//Rotation is currently not used since it results in unpredicable sound.
-	const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
+	// Rotation is currently not used since it results in unpredictable sound.
+	// const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
 	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity)};
 	const float D = FMath::Abs(FVector::DotProduct(RelativeVelocity.GetSafeNormal(), NormalImpulse.GetSafeNormal()));
-	return  RelativeVelocity.Length()*D;
+	return (RelativeVelocity.Length() * D * 0.1); 
 }
+
 
 
 
@@ -137,18 +166,42 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		/** Make sure the subsystem is still referenced.*/
 		CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
 		
+		/** Get the surface sound for this impact.*/
 		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 		SurfaceSoundAsset = CachedSubsystem->GetSurfaceSoundAsset(SurfaceType);
+
+		float ImpactValue = CalculateImpactValue(NormalImpulse,HitComp,OtherActor)/ReacousticSoundAsset->MaxSpeedScalar;
+
+		FImpactValueToTimestampResult Result {CachedSubsystem->GetTimeStampWithStrenght(ReacousticSoundAsset,ImpactValue)};
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Strenght: %f"),ImpactValue);
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Timestamp Result: %f"),Result.Timestamp);
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Normalized Strenght: %f"),Result.NormalizedOnsetStrength);
 		
+		/** Pass all relevant parameters to the audio component for audio playback.*/
+		AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Result.Timestamp);
+		AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
+		AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);
+		AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);
+
+		/** For blueprint implementation.*/
 		OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-	
+		
+		/** The metasound can handle polyphonic hits by retriggering the sound using this parameter.*/
+		if(AudioComponent->IsPlaying())
+		{
+			AudioComponent->SetTriggerParameter("TriggerSound");
+		}
+		else
+		{
+			AudioComponent->Play();
+		}
 	}
 }
 
 
 
 
-/** This implementation will likely allways be ovewrriden by a blueprint or function that needs to trigger a custom hit.*/
+/** This implementation will likely  be overridden by a blueprint or function that needs to trigger a custom hit.*/
 void UReacousticComponent::TriggerManualHit_Implementation(float Strength){}
 
 
@@ -191,70 +244,75 @@ inline static float GetArraySum(const TArray<float>& Array)
 }
 
 /** Filter the hit events so that the system only triggers at appropriate impacts.*/
-//TODO: i'm passing a lot of values that i might not need. So i'll delete them later.
 bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	bool HitIsValid{false};
-	ImpactForce = CalculateImpactValue(NormalImpulse,HitComp,OtherActor);
-	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
-	if( ImpactForce > 30)
-	{
+	ImpactForce = CalculateImpactValue(NormalImpulse, HitComp, OtherActor);
+
+	if (ImpactForce <= .5) {
+		return HitIsValid;//false
+	}
+
+	auto IsDifferentLocation = [&]() {
 		DeltaLocationDistance = abs(FVector::Distance(LatestLocation, Hit.Location));
 		LatestLocation = Hit.ImpactPoint;
-		
-		/** prevent situations were sounds are hittng in the same location.*/
-		if(DeltaLocationDistance > 1.5)
-		{
-			/** prevent situations were sounds are hittng in a short timespan.*/
-			DeltaHitTime = abs(FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 10.0));
-			LatestTime = FPlatformTime::Seconds();
+		return DeltaLocationDistance > 0.5;
+	};
 
-			/** If there's a considerable time between hits, remove the hit state history.*/
-			if(DeltaHitTime > 1.0)
-			{
-				DeltaStateArray.Empty();
-			}
-			
-			if(DeltaHitTime > 0.05)
-			{
-				/** prevent situations were sounds are hittng in the same orientation.*/
-				DeltaDirectionVector =
-					abs(FVector::Distance(LatestForwardVector,this->GetOwner()->GetActorForwardVector())) +
-					abs(FVector::Distance(LatestRightVector,this->GetOwner()->GetActorRightVector())) +
-					abs(FVector::Distance(LatestUpVector,this->GetOwner()->GetActorUpVector()))
-				;
-				LatestForwardVector =this->GetOwner()->GetActorForwardVector();
-				LatestRightVector = this->GetOwner()->GetActorRightVector();
-				LatestUpVector = this->GetOwner()->GetActorUpVector();
-				
-				if(DeltaDirectionVector >0.1)
-				{
-					/** Prevent more erratic hits happening for a long time in the same location. Eg: An object glitching behind the wall.*/
-					DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + 100*DeltaDirectionVector);
-					UE_LOG(LogReacousticComponent, Verbose, TEXT("DeltaStateArray Array Sum: %f"),(GetArraySum(DeltaStateArray)));
-					if(GetArraySum(DeltaStateArray) > 0.5f || DeltaStateArray.Num() <= 20)
-					{
-							HitIsValid = true;
-					}
-					else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: STATE ARRAY"))}
-				}
-				else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA FORWARD VECTOR"))}
-			}
-			else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: DELTA HIT TIME"))}
+	auto HasSufficientTimeBetweenHits = [&]() {
+		DeltaHitTime = abs(FMath::Clamp((FPlatformTime::Seconds() - LatestTime), 0.0, 10.0));
+		if (DeltaHitTime > 1.0) {
+			DeltaStateArray.Empty();
 		}
-		else{UE_LOG(LogReacousticComponent,Verbose,TEXT("Prevented hit by: LOCATION DISTANCE"))}
-		
-		/** Remove the oldest delta location distance from the array if it exceeds the limit. */
-		if (DeltaStateArray.Num() > 20)
+		if (DeltaHitTime > 0.01)
 		{
-			DeltaStateArray.RemoveAt(0);
+			LatestTime = FPlatformTime::Seconds();
 		}
+
+		return DeltaHitTime > 0.1;
+	};
+
+	auto IsDifferentOrientation = [&]() {
+		DeltaDirectionVector =
+			abs(FVector::Distance(LatestForwardVector, this->GetOwner()->GetActorForwardVector())) +
+			abs(FVector::Distance(LatestRightVector, this->GetOwner()->GetActorRightVector())) +
+			abs(FVector::Distance(LatestUpVector, this->GetOwner()->GetActorUpVector()));
+
+		LatestForwardVector = this->GetOwner()->GetActorForwardVector();
+		LatestRightVector = this->GetOwner()->GetActorRightVector();
+		LatestUpVector = this->GetOwner()->GetActorUpVector();
+
+		return DeltaDirectionVector > 0.05;
+	};
+
+	auto IsValidHitState = [&]() {
+		DeltaStateArray.Add(DeltaLocationDistance * DeltaHitTime + 100 * DeltaDirectionVector);
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("DeltaStateArray Array Sum: %f"), (GetArraySum(DeltaStateArray)));
+		return GetArraySum(DeltaStateArray) > 0.1f;
+	};
+
+	if (!IsDifferentLocation()) {
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: LOCATION DISTANCE"));
+	} else if (!HasSufficientTimeBetweenHits()) {
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: DELTA HIT TIME"));
+	} else if (!IsDifferentOrientation()) {
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: DELTA FORWARD VECTOR"));
+	} else if (IsValidHitState()) {
+		HitIsValid = true;
+	} else {
+		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: STATE ARRAY"));
 	}
+
+	if (DeltaStateArray.Num() > 20) {
+		DeltaStateArray.RemoveAt(0);
+	}
+
 	return HitIsValid;
 }
 
 
-FVector2D UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
+
+FImpactValueToTimestampResult UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
 	/** Make sure the subsystem is still referenced.*/
 	CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
