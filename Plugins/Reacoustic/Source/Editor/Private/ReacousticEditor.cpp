@@ -2,9 +2,15 @@
 
 #include "ReacousticEditor.h"
 #include "ReacousticSoundAssetTypeActions.h"
+#include "Internationalization/Internationalization.h"
 #include "AssetToolsModule.h"
 #include "ReacousticStaticMeshDetailCustomization.h"
 #include "IAssetTools.h"
+#include "EditorModeRegistry.h"
+#include "ReacousticEditorMode.h"
+
+#define LOCTEXT_NAMESPACE "ReacousticEditor"
+IMPLEMENT_MODULE(FReacousticEditorModule, ReacousticEditor)
 
 void FReacousticEditorModule::StartupModule()
 {
@@ -24,19 +30,23 @@ void FReacousticEditorModule::StartupModule()
 	if(&PropertyModule)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Successfully loaded PropertyEditor module."));
-    
-		// This registers your customization for UStaticMesh objects, assuming you're trying to customize the details of UStaticMesh.
+		
 		PropertyModule.RegisterCustomClassLayout("StaticMesh", FOnGetDetailCustomizationInstance::CreateStatic(&ReacousticStaticMeshDetailCustomization::MakeInstance));
 		UE_LOG(LogTemp, Log, TEXT("Registered custom class layout for StaticMesh."));
-    
-		// If you have other customizations, register them similarly
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load PropertyEditor module."));
+
 	}
 
+
+
+	FEditorModeRegistry::Get().RegisterMode<ReacousticEditorMode>(
+		ReacousticEditorMode::EM_ReacousticEditorModeId,
+		LOCTEXT("ReacousticEditorMode","Reacoustic"),
+		FSlateIcon(),
+		true // Whether the mode should be visible in the editor
+	);
+	
 }
+
 
 void FReacousticEditorModule::ShutdownModule()
 {
@@ -47,6 +57,10 @@ void FReacousticEditorModule::ShutdownModule()
     
 	// Make sure to unregister during shutdown
 	PropertyModule.UnregisterCustomClassLayout("StaticMesh");
+
+	FEditorModeRegistry::Get().UnregisterMode(ReacousticEditorMode::EM_ReacousticEditorModeId);
+
 }
 
-IMPLEMENT_MODULE(FReacousticEditorModule, ReacousticEditor)
+#undef LOCTEXT_NAMESPACE
+

@@ -18,16 +18,18 @@ UCLASS(Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableCompo
 class REACOUSTIC_API UReacousticComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
 	DECLARE_LOG_CATEGORY_CLASS(LogReacousticComponent, Log, All)
-
-protected:
-	UPROPERTY(Transient, BlueprintReadOnly)
-	UAudioComponent* AudioComponent {nullptr};
+public:
 
 	/** Set this parameter to override the mesh associated Reacoustic Sound.*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (DisplayName = "Override Reacoustic Sound"), Category = "Default")
 	UReacousticSoundAsset* ReacousticSoundAsset{nullptr};
+	
+protected:
+	UPROPERTY(Transient, BlueprintReadOnly)
+	UAudioComponent* AudioComponent {nullptr};
+
+	
 
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Reacoustic Surface Sound"))
 	UReacousticSoundAsset* SurfaceSoundAsset{nullptr};

@@ -111,8 +111,6 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		return;
 	}
 
-	// Rest of your code...
-
 
 
 
@@ -169,20 +167,22 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 		/** Get the surface sound for this impact.*/
 		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 		SurfaceSoundAsset = CachedSubsystem->GetSurfaceSoundAsset(SurfaceType);
-
-		float ImpactValue = CalculateImpactValue(NormalImpulse,HitComp,OtherActor)/ReacousticSoundAsset->MaxSpeedScalar;
-
-		FImpactValueToTimestampResult Result {CachedSubsystem->GetTimeStampWithStrenght(ReacousticSoundAsset,ImpactValue)};
-		UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Strenght: %f"),ImpactValue);
-		UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Timestamp Result: %f"),Result.Timestamp);
-		UE_LOG(LogReacousticComponent, Verbose, TEXT("Normalized Strenght: %f"),Result.NormalizedOnsetStrength);
+		if(ReacousticSoundAsset)
+		{
+			float ImpactValue = CalculateImpactValue(NormalImpulse,HitComp,OtherActor)/ReacousticSoundAsset->MaxSpeedScalar;
 		
-		/** Pass all relevant parameters to the audio component for audio playback.*/
-		AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Result.Timestamp);
-		AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
-		AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);
-		AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);
-
+			FImpactValueToTimestampResult Result {CachedSubsystem->GetTimeStampWithStrenght(ReacousticSoundAsset,ImpactValue)};
+			UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Strenght: %f"),ImpactValue);
+			UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Timestamp Result: %f"),Result.Timestamp);
+			UE_LOG(LogReacousticComponent, Verbose, TEXT("Normalized Strenght: %f"),Result.NormalizedOnsetStrength);
+		
+			/** Pass all relevant parameters to the audio component for audio playback.*/
+			AudioComponent->SetFloatParameter(TEXT("Obj_StartTime"), Result.Timestamp);
+			AudioComponent->SetFloatParameter(TEXT("Obj_Velocity"), ImpactValue);
+			AudioComponent->SetObjectParameter(TEXT("Obj_WaveAsset"), ReacousticSoundAsset->Sound);
+			AudioComponent->SetFloatParameter(TEXT("Obj_Length"), ReacousticSoundAsset->ImpulseLength);
+		}
+		
 		/** For blueprint implementation.*/
 		OnComponentHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		

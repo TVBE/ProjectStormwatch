@@ -57,6 +57,7 @@ class FReacousticContentBrowserMenuExtension
 public:
 	static void RegisterMenus();
 	static void ExecuteCreateReacousticSound(const struct FToolMenuContext& MenuContext);
+	static void ExecuteOpenReacousticEditor(const FToolMenuContext& MenuContext);
 };
 
 

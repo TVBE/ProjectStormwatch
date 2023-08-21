@@ -6,6 +6,7 @@
 #include "Algo/AnyOf.h"
 #include "ToolMenus.h"
 #include "ContentBrowserMenuContexts.h"
+#include "ReacousticAssociationEditorWidget.h"
 #include "ReacousticSubsystem.h"
 #include "Misc/PackageName.h"
 #include "Sound/SoundWaveProcedural.h"
@@ -214,10 +215,10 @@ bool FReacousticSoundAssetTypeActions::AssetsActivatedOverride(const TArray<UObj
 
 void FReacousticContentBrowserMenuExtension::RegisterMenus()
 {
-	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu.SoundWave");
-	FToolMenuSection& Section = Menu->FindOrAddSection("GetAssetActions");
+	UToolMenu* MenuSoundWave = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu.SoundWave");
+	FToolMenuSection& SectionSoundWave = MenuSoundWave->FindOrAddSection("GetAssetActions");
 
-	Section.AddDynamicEntry("SoundWaveAssetConversion_CreateReacousticSound", FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
+	SectionSoundWave.AddDynamicEntry("SoundWaveAssetConversion_CreateReacousticSound", FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
 	{
 		if (const UContentBrowserAssetContextMenuContext* Context = InSection.FindContext<UContentBrowserAssetContextMenuContext>())
 		{
@@ -230,6 +231,22 @@ void FReacousticContentBrowserMenuExtension::RegisterMenus()
 
 				InSection.AddMenuEntry("SoundWave_CreateReacousticSound", Label, ToolTip, Icon, UIAction);
 			}
+		}
+	}));
+
+	UToolMenu* MenuReacousticAsset = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu.ReacousticSoundAsset");
+	FToolMenuSection& SectionReacousticAsset = MenuReacousticAsset->FindOrAddSection("GetAssetActions");
+
+	SectionReacousticAsset.AddDynamicEntry("ReacousticSoundAsset_OpenInEditor", FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
+	{
+		if (const UContentBrowserAssetContextMenuContext* Context = InSection.FindContext<UContentBrowserAssetContextMenuContext>())
+		{
+			const TAttribute<FText> Label = LOCTEXT("ReacousticSoundAsset_OpenInEditor", "Open in Reacoustic Association Editor");
+			const TAttribute<FText> ToolTip = LOCTEXT("ReacousticSoundAsset_OpenInEditorTooltip", "Opens the selected Reacoustic sound in the custom editor.");
+			const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.SoundWave");
+			const FToolMenuExecuteAction UIAction = FToolMenuExecuteAction::CreateStatic(&FReacousticContentBrowserMenuExtension::ExecuteOpenReacousticEditor);
+
+			InSection.AddMenuEntry("ReacousticSoundAsset_OpenInEditor", Label, ToolTip, Icon, UIAction);
 		}
 	}));
 }
@@ -271,6 +288,21 @@ void FReacousticContentBrowserMenuExtension::ExecuteCreateReacousticSound(const 
 		}
 	}
 }
+
+void FReacousticContentBrowserMenuExtension::ExecuteOpenReacousticEditor(const FToolMenuContext& MenuContext)
+{
+	TSharedRef<SWindow> ReacousticWindow = SNew(SWindow)
+		.Title(LOCTEXT("ReacousticAssociationEditorTitle", "Reacoustic Association Editor"))
+		.SizingRule(ESizingRule::UserSized)
+		.AutoCenter(EAutoCenter::PrimaryWorkArea)
+		.ClientSize(FVector2D(400, 600));  // Adjust size as necessary
+
+	TSharedRef<ReacousticAssociationEditorWidget> Widget = SNew(ReacousticAssociationEditorWidget);
+
+	ReacousticWindow->SetContent(Widget);
+	FSlateApplication::Get().AddWindow(ReacousticWindow);
+}
+
 
 
 

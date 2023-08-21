@@ -52,25 +52,59 @@ void UReacousticSubsystem::UnregisterComponent(UReacousticComponent* Component)
 	ReacousticComponents.Remove(Component);
 }
 
-bool UReacousticSubsystem::IsReacousticCompatible(AActor* Actor)
+FReacousticValidityResult UReacousticSubsystem::CheckReacousticValidity(AActor* Actor)
 {
-	if (Actor->GetRootComponent() && Actor->GetRootComponent()->IsSimulatingPhysics())
+	FReacousticValidityResult Result;
+
+	if (Actor->GetRootComponent())
 	{
-		TArray<UStaticMeshComponent*> Components;
-		Actor->GetComponents<UStaticMeshComponent>(Components);
-		if(!Components.IsEmpty())
+		Result.HasRootComponent = true;
+
+		if (Actor->GetRootComponent()->IsSimulatingPhysics())
 		{
-			for(UStaticMeshComponent* Component : Components)
+			Result.IsSimulatingPhysics = true;
+
+			TArray<UStaticMeshComponent*> Components;
+			Actor->GetComponents<UStaticMeshComponent>(Components);
+			if (!Components.IsEmpty())
 			{
-				if(Component->BodyInstance.bNotifyRigidBodyCollision)
+				Result.StaticMeshComponents = Components;
+				//TODO: later i could specify which static meshes the sound should listen to.
+				for (UStaticMeshComponent* Component : Components)
 				{
-					return true;
+					if (Component->BodyInstance.bNotifyRigidBodyCollision)
+					{
+						Result.NotifyRigidBodyCollision = true;
+						Result.OwnerStaticMesh = Component->GetStaticMesh();
+					}
+					
+					UReacousticSoundUserData* SoundAssociation = Cast<UReacousticSoundUserData>(Component->GetStaticMesh()->GetAssetUserDataOfClass(UReacousticSoundUserData::StaticClass()));
+					if (SoundAssociation && SoundAssociation->ReacousticSound)  
+						{
+						Result.SoundAssociation = SoundAssociation->ReacousticSound;
+						}
+					
+					UReacousticComponent* ReacousticComp = Actor->FindComponentByClass<UReacousticComponent>();
+					if (ReacousticComp)
+					{
+						Result.HasReacousticComponent = true;
+						if (ReacousticComp->ReacousticSoundAsset)
+						{
+							Result.OverrideAsset = ReacousticComp->ReacousticSoundAsset;
+						}
+					}
 				}
+				
+				Result.Name = Actor->GetActorLabel();
+				
 			}
 		}
 	}
-	return false;
+
+	return Result;
 }
+
+
 
 /* Adds a reacousticComponent derived component to an actor. and returns the pointer to this component.*/
 void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubclassOf<UReacousticComponent> ComponentClass, UReacousticSoundAsset* MeshSoundAsset)
@@ -120,11 +154,10 @@ TArray<AActor*> UReacousticSubsystem::GetCompatibleActorsOfClass(UClass* ClassTy
     int CompatibleCount{0};
     for (AActor* Actor : FoundActors)
     {
-        if(IsReacousticCompatible(Actor))
-        {
+        
             Array.Add(Actor);
             CompatibleCount++;
-        }
+        
     }
     const FString Name{ClassType->GetName()};
     UE_LOG(LogReacousticSubsystem, Log, TEXT("Found %d actors of type %s out of which %d can be used by the Reacoustic system."), TotalCount, *Name, CompatibleCount);
@@ -180,38 +213,28 @@ UReacousticSoundAsset* UReacousticSubsystem::GetMeshSoundAsset(const UStaticMesh
 	}
 
 	// Get the static mesh from the component.
-	UStaticMesh* Mesh {StaticMeshComponent->GetStaticMesh()};
+	UStaticMesh* Mesh = StaticMeshComponent->GetStaticMesh();
 	if (!Mesh)
 	{
 		return nullptr;
 	}
 
 	// Try to get your custom asset user data from the mesh.
-	UReacousticSoundUserData* SoundUserData {Mesh->GetAssetUserData<UReacousticSoundUserData>()};
+	UReacousticSoundUserData* SoundUserData = Mesh->GetAssetUserData<UReacousticSoundUserData>();
+	if (!SoundUserData)
+	{
+		return nullptr;  // Add a return here, since SoundUserData can be null
+	}
 
-	return SoundUserData->ReacousticSound;
+	UReacousticSoundAsset* ReacousticSound = SoundUserData->ReacousticSound;
+	if (ReacousticSound == nullptr)
+	{
+		return nullptr;
+	}
+	return ReacousticSound;
 
-
-
-
-	//if (!StaticMeshComponent || !ReacousticSoundAssociationMap)
-	//{
-	//	return nullptr;
-	//}
-
-	
-	//for (const auto& [Mesh, SoundAsset] : ReacousticSoundAssociationMap->MeshMapEntries)
-	//{
-	//	UStaticMesh* MeshPtr {Mesh};
-
-	//	if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
-	//	{
-	//		return SoundAsset;
-	//	}
-	//}
-
-	return nullptr;
 }
+
 
 UReacousticSoundAsset* UReacousticSubsystem::GetSurfaceSoundAsset(const EPhysicalSurface SurfaceIn) const
 {

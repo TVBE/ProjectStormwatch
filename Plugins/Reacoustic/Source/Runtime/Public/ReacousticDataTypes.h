@@ -63,4 +63,23 @@ public:
 	TArray<FPhysicalMaterialToAudioMapEntry> PhysicalMaterialMapEntries;
 };
 
+struct FReacousticValidityResult
+{
+	bool HasRootComponent{false};
+	bool IsSimulatingPhysics{false};
+	TArray<UStaticMeshComponent*> StaticMeshComponents{nullptr};
+	UStaticMesh* OwnerStaticMesh{nullptr};
+	bool NotifyRigidBodyCollision{false};
+	UReacousticSoundAsset* SoundAssociation{nullptr};
+	bool HasReacousticComponent{false};
+	UReacousticSoundAsset* OverrideAsset{nullptr};
+	FString Name;
+	
+
+	bool IsValid() const
+	{
+		return HasRootComponent && IsSimulatingPhysics && !StaticMeshComponents.IsEmpty() && NotifyRigidBodyCollision && (SoundAssociation || OverrideAsset);
+	}
+};
+
 

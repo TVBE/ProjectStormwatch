@@ -54,8 +54,21 @@ public:
 	 *	@Component The component to register.
 	 */
 	void UnregisterComponent(UReacousticComponent* Component);
-	
-	
+
+	/**
+	 * Checks the validity of the provided actor to determine if it meets the criteria to be compatible with Reacoustic functionality.
+	 * @HasRootComponent
+	 * @IsSimulatingPhysics
+	 * @HasStaticMeshComponent
+	 * @NotifyRigidBodyCollision
+	 * @HasReacousticSoundAssociation
+	 * @HasValidOverrideAsset
+	 * 
+	 * @Actor The actor to be checked.
+	 */
+	FReacousticValidityResult CheckReacousticValidity(AActor* Actor);
+
+
 	/** A BP_Reacoustic component will be added to the physics actor if conditions are met.
 	 *	@Actor The actor to add the component to.
 	 *	@ComponentClass The reacoustic blueprint component to add.
@@ -77,8 +90,8 @@ public:
 	 *	@Actor The actor to check the condition for.
 	 *	@Return Whether the actor is compatible with Reacoustic or not.
 	 */
-	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Is Reacoustic Compatible"))
-	bool IsReacousticCompatible(AActor* Actor);
+
+
 
 private:
 	UFUNCTION(BlueprintCallable)
