@@ -1,4 +1,6 @@
-﻿#include "EdMode.h"
+﻿#pragma once
+
+#include "EdMode.h"
 #include "EditorModeRegistry.h"
 #include "ReacousticSidePanel.h"
 #include "Widgets/Layout/SScrollBox.h"

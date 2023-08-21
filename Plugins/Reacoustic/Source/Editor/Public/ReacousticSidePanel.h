@@ -4,14 +4,14 @@
 #include "Widgets/Views/SListView.h"
 #include "Widgets/Text/STextBlock.h"
 #include "AssetThumbnail.h"
-#include "Widgets/Docking/SDockTab.h"
+#include "Widgets/SCompoundWidget.h"
 
 
 
 
 
 
-class ReacousticSidePanel : public SDockTab
+class ReacousticSidePanel : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(ReacousticSidePanel) {}
