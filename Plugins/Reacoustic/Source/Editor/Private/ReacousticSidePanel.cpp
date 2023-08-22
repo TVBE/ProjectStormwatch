@@ -29,6 +29,11 @@ void ReacousticSidePanel::Construct(const FArguments& InArgs)
 	];
 }
 
+
+
+
+
+
 void ReacousticSidePanel::UpdateActorList(TArray<TSharedPtr<FReacousticValidityResult>> NewActorDataList)
 {
 	SidePanelArray.Empty();
@@ -71,8 +76,9 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 	/** Static meshes, parent entries */
 	if (Item.IsValid() && Item->Data.OwnerStaticMesh && Item->IsParent)
 	{
+		
 		FString MeshName = Item->Data.OwnerStaticMesh->GetName();
-		TSharedPtr<FAssetThumbnail> Thumbnail = MakeShareable(new FAssetThumbnail(Item->Data.OwnerStaticMesh, ThumbnailSize, ThumbnailSize, ThumbnailPool));
+		TSharedPtr<FAssetThumbnail> MeshThumbnail = MakeShareable(new FAssetThumbnail(Item->Data.OwnerStaticMesh, ThumbnailSize, ThumbnailSize, ThumbnailPool));
         
 		return SNew(STableRow<TSharedPtr<SidePanelEntry>>, OwnerTable)
 		[
@@ -84,7 +90,7 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 				.WidthOverride(ThumbnailSize)
 				.HeightOverride(ThumbnailSize)
 				[
-					Thumbnail->MakeThumbnailWidget()
+					MeshThumbnail->MakeThumbnailWidget()
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -95,6 +101,7 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 				.ColorAndOpacity(FColor::White)
 				.Text(FText::FromString(MeshName))
 			]
+
 		];
 	}
 	/** Actors, children entries */

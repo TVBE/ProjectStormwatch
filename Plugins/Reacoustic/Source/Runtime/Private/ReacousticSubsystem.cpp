@@ -94,8 +94,16 @@ FReacousticValidityResult UReacousticSubsystem::CheckReacousticValidity(AActor* 
 						}
 					}
 				}
+				//TODO: refactor to an editor only actor analysis later.
+				FString Name{TEXT("Unknown")};
+				Name = Actor->GetName();
+
+				#if WITH_EDITOR
+				Name = Actor->GetActorLabel();
+				#endif
 				
-				Result.Name = Actor->GetActorLabel();
+				Result.Name = Name;
+
 				
 			}
 		}

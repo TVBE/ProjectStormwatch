@@ -32,6 +32,7 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
+
 	void UpdateActorList(TArray<TSharedPtr<FReacousticValidityResult>> NewActorDataList);
 	
 	/** Generates a row for the MeshActorTreeView */
@@ -39,6 +40,4 @@ public:
 
 	/** Provides child items for a given item in the MeshActorTreeView */
 	void OnGetChildrenForMeshActorTree(TSharedPtr<SidePanelEntry> InParent, TArray<TSharedPtr<SidePanelEntry>>& OutChildren);
-	
-	TSharedRef<ITableRow> OnGenerateRowForActorList(TSharedPtr<SidePanelEntry> Item, const TSharedRef<STableViewBase>& OwnerTable);
 };
