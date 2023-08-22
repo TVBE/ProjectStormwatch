@@ -59,7 +59,7 @@ public class ReacousticEditor : ModuleRules
 				"PhysicsCore",
 				"AudioSynesthesia",
 				"UnrealEd",
-				"PropertyEditor", "AITestSuite",
+				"PropertyEditor", "AITestSuite", "WorkspaceMenuStructure",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

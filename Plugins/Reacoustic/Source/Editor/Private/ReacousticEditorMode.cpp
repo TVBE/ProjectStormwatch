@@ -3,8 +3,14 @@
 #include "AITestsCommon.h"
 #include "Engine/StaticMeshActor.h"
 #include "EngineUtils.h"
+#include "LevelEditor.h"
 #include "ReacousticComponent.h"
 #include "ReacousticSoundUserData.h"
+#include "Toolkits/ToolkitManager.h"
+
+#include "WorkspaceMenuStructure.h"
+#include "WorkspaceMenuStructureModule.h"
+
 
 
 const FEditorModeID ReacousticEditorMode::EM_ReacousticEditorModeId = TEXT("EM_ReacousticEditorMode");
@@ -12,62 +18,101 @@ const FEditorModeID ReacousticEditorMode::EM_ReacousticEditorModeId = TEXT("EM_R
 void ReacousticEditorMode::Enter()
 {
 	FEdMode::Enter();
-
-
-	const FName TabName = FName(TEXT("ReacousticSidePanelTab"));
-
-
+	
 	if (!FGlobalTabmanager::Get()->HasTabSpawner(TabName))
 	{
-
 		FGlobalTabmanager::Get()->RegisterNomadTabSpawner(TabName, FOnSpawnTab::CreateLambda([this](const FSpawnTabArgs& Args)
-{
-	SidePanelWidget = SNew(ReacousticSidePanel);
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
-		[
-			SidePanelWidget.ToSharedRef()
-		];
-}))
+		{
+			SidePanelWidget = SNew(ReacousticSidePanel);
+			return SNew(SDockTab)
+				.TabRole(ETabRole::PanelTab)
+				[
+					SidePanelWidget.ToSharedRef()
+				];
+		}))
+			.SetGroup(WorkspaceMenu::GetMenuStructure().GetLevelEditorCategory())
+			.SetDisplayName(FText::FromString("Reacoustic"))
+			.SetTooltipText(FText::FromString("Open the Reacoustic Side Panel"));
 
-		.SetTooltipText(FText::FromString("Open the Reacoustic Side Panel"));
 
-
-		FGlobalTabmanager::Get()->TryInvokeTab(TabName);
+		FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>("LevelEditor");
 		
-
-		UpdateHighlightedActorsList();
+		TSharedPtr<FTabManager> LevelEditorTabManager = LevelEditorModule.GetLevelEditorTabManager();
+		
+		ReacousticTab = LevelEditorTabManager->TryInvokeTab(TabName);
+		if (ReacousticTab.IsValid())
+		{
+			LevelEditorTabManager->InsertNewDocumentTab("LevelEditorSelection", FTabManager::ESearchPreference::PreferLiveTab, ReacousticTab.ToSharedRef());
 		}
-
-	FCoreUObjectDelegates::OnObjectPropertyChanged.AddRaw(this, &ReacousticEditorMode::OnPropertyChanged);
-
-
-		GEditor->RedrawLevelEditingViewports(true);
 	}
+	UpdateHighlightedActorsList();
+}
+
+
+
+//void ReacousticEditorMode::Enter()
+//{
+//	FEdMode::Enter();
+//
+//
+//	const FName TabName = FName(TEXT("ReacousticSidePanelTab"));
+//
+//
+//	if (!FGlobalTabmanager::Get()->HasTabSpawner(TabName))
+//	{
+//
+//		FGlobalTabmanager::Get()->RegisterNomadTabSpawner(TabName, FOnSpawnTab::CreateLambda([this](const FSpawnTabArgs& Args)
+//{		
+//	SidePanelWidget = SNew(ReacousticSidePanel);
+//	return SNew(SDockTab)
+//		.TabRole(ETabRole::NomadTab)
+//		[
+//			SidePanelWidget.ToSharedRef()
+//		];
+//}))
+//		.SetGroup(WorkspaceMenu::GetMenuStructure().GetLevelEditorCategory())
+//		.SetTooltipText(FText::FromString("Open the Reacoustic Side Panel"));
+//		FGlobalTabmanager::Get()->TryInvokeTab(TabName);
+//		
+//
+//		UpdateHighlightedActorsList();
+//		}
+//
+//	FCoreUObjectDelegates::OnObjectPropertyChanged.AddRaw(this, &ReacousticEditorMode::OnPropertyChanged);
+//
+//
+//	Toolkit = MakeShareable(new FReacousticEditorModeToolkit());
+//	Toolkit->Init(Owner->GetToolkitHost());
+//	Toolkit->RegisterTabSpawners(FGlobalTabmanager::Get());
+//
+//	
+////	Toolkit = MakeShareable(new FReacousticEditorModeToolkit());
+////	Toolkit->Init(Owner->GetToolkitHost());
+////
+////	UE_LOG(LogTemp, Warning, TEXT("Initializing Reacoustic Editor Mode Toolkit..."));
+//	GEditor->RedrawLevelEditingViewports(true);
+//}
 
 
 void ReacousticEditorMode::Exit()
 {
-	const FName TabName = FName(TEXT("ReacousticSidePanelTab"));
+
+	FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>("LevelEditor");
 
 
-	TSharedPtr<SDockTab> ExistingTab = FGlobalTabmanager::Get()->FindExistingLiveTab(TabName);
-	if (ExistingTab.IsValid())
+	TSharedPtr<FTabManager> LevelEditorTabManager = LevelEditorModule.GetLevelEditorTabManager();
+	
+	if (ReacousticTab.IsValid())
 	{
-		ExistingTab->RequestCloseTab();
+		ReacousticTab->RequestCloseTab();
+		UE_LOG(LogTemp, Warning, TEXT("Existing tab valid"));
 	}
-
-
+	
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(TabName);
 
-
-	GEditor->SelectNone(true, true);
-
-
-	GEditor->RedrawLevelEditingViewports(true);
 	FEdMode::Exit();
-	FCoreUObjectDelegates::OnObjectPropertyChanged.RemoveAll(this);
 }
+
 
 void ReacousticEditorMode::OnPropertyChanged(UObject* Object, FPropertyChangedEvent& PropertyChangedEvent)
 {

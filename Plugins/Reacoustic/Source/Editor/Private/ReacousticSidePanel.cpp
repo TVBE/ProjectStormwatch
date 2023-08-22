@@ -16,7 +16,7 @@ void ReacousticSidePanel::Construct(const FArguments& InArgs)
 		.AutoHeight()
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString("Reacoustic Side Panel"))
+			.Text(FText::FromString("Level-Asset Association"))
 		]
 		+ SVerticalBox::Slot()
 		.AutoHeight()
