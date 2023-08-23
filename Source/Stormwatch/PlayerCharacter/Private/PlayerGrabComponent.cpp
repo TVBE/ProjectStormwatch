@@ -323,6 +323,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredComponent(GrabbedComponent);
 		if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
 		{
 			Target = HitResult.ImpactPoint;
@@ -372,7 +373,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 				GetWorld()->GetGravityZ(),
 				ESuggestProjVelocityTraceOption::DoNotTrace,
 				FCollisionResponseParams::DefaultResponseParam,
-				TArray<AActor*>{GetOwner(),GrabbedComponent->GetAttachParentActor()},
+				TArray<AActor*>{GetOwner(),GetGrabbedActor()},
 				false))
 		{
 			TossVelocity = ThrowVelocity;

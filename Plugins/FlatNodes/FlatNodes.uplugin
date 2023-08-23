@@ -12,7 +12,7 @@
 	"SupportURL": "https://github.com/brumenn/FlatNodes/issues",
 	"EngineVersion": "5.2.1",
 	"CanContainContent": true,
-	"Installed": true,
+	"Installed": false,
 	"Modules": [
 		{
 			"Name": "FlatNodes",
