@@ -15,7 +15,7 @@
 class ReacousticSoundDataRef_Map;
 
 UCLASS(Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
-class REACOUSTIC_API UReacousticComponent : public UActorComponent
+class REACOUSTIC_API UReacousticComponent : public USceneComponent
 {
 	GENERATED_BODY()
 	DECLARE_LOG_CATEGORY_CLASS(LogReacousticComponent, Log, All)

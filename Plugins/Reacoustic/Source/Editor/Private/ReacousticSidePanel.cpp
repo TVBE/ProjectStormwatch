@@ -71,9 +71,13 @@ void ReacousticSidePanel::UpdateActorList(TArray<TSharedPtr<FReacousticValidityR
 /**Receives the actor data and sorts them by corresponding static meshes.*/
 TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TSharedPtr<SidePanelEntry> Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
-	const float ThumbnailSize = 16.0f;
+	const float ThumbnailSize = 32.0f;
 
-	/** Static meshes, parent entries */
+
+
+
+	
+	////////////////////////** Static meshes, parent entries *///////////////////////////
 	if (Item.IsValid() && Item->Data.OwnerStaticMesh && Item->IsParent)
 	{
 		
@@ -101,11 +105,15 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 				.ColorAndOpacity(FColor::White)
 				.Text(FText::FromString(MeshName))
 			]
-
+			//TODO; Add mesh association.
 		];
 	}
-	/** Actors, children entries */
-	else
+
+
+
+	
+	
+	//////////////////** Actors, children entries *//////////////////////
 	{
 		auto DetermineColor = [&]() -> FColor
 		{
@@ -115,6 +123,7 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 			}
 			return FColor::Orange;
 		};
+	
 
 		FColor BackgroundColor = DetermineColor(); 
 
@@ -125,23 +134,37 @@ TSharedRef<ITableRow> ReacousticSidePanel::OnGenerateRowForMeshActorTree(TShared
 		}
 
 		return SNew(STableRow<TSharedPtr<FReacousticValidityResult>>, OwnerTable)
+[
+	SNew(SHorizontalBox)
+	+ SHorizontalBox::Slot()
+	.AutoWidth()
+	.Padding(2.0f, 0.0f, 5.0f, 0.0f)
+	[
+		SNew(SBorder)
+		.BorderBackgroundColor(BackgroundColor)
+		.Padding(FMargin(5.0f))
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(2.0f, 0.0f, 5.0f, 0.0f)
-			[
-				/** Background Color */
-				SNew(SBorder)
-				.BorderBackgroundColor(BackgroundColor)
-				.Padding(FMargin(5.0f))  
-				[
-					SNew(STextBlock)
-					.Visibility(EVisibility::Visible)
-					.Text(FText::FromString(Name))
-				]
-			]
-		];
+			SNew(STextBlock)
+			.Visibility(EVisibility::Visible)
+			.Text(FText::FromString(Name))
+		]
+	]
+	+ SHorizontalBox::Slot()
+	.AutoWidth()
+	.Padding(2.0f, 0.0f, 5.0f, 0.0f)
+	[
+		SNew(SCheckBox)
+		.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState) {
+			// TODO: Set this up.
+			AActor* MyActor = nullptr;
+			this->OnHasReacousticComponentBoolChanged(MyActor);
+		})
+		.IsChecked(Item->Data.HasReacousticComponent)
+	]
+
+	//TODO; Add all relevant properties.
+];
+
 
 	}
 }
@@ -168,6 +191,10 @@ void ReacousticSidePanel::OnGetChildrenForMeshActorTree(TSharedPtr<SidePanelEntr
 	SidePanelTreeView->SetItemExpansion(InParent, true);
 }
 
-
+void ReacousticSidePanel::OnHasReacousticComponentBoolChanged(AActor* Actor)
+{
+	//TODO: add or remove the component from the actor in question.
+	//TODO: later, accept method of specifying specific static mesh in actor to add reacoustic comp to.
+}
 
 

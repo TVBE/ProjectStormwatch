@@ -40,4 +40,5 @@ public:
 
 	/** Provides child items for a given item in the MeshActorTreeView */
 	void OnGetChildrenForMeshActorTree(TSharedPtr<SidePanelEntry> InParent, TArray<TSharedPtr<SidePanelEntry>>& OutChildren);
+	void OnHasReacousticComponentBoolChanged(AActor* Actor);
 };
