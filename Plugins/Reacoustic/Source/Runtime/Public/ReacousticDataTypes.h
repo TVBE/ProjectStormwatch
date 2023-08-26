@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "ReacousticSoundAsset.h"
+#include "Engine/DataAsset.h"
 #include "Sound/SoundWave.h"
 #include "Sound/SoundConcurrency.h"
 #include "Sound/SoundAttenuation.h"

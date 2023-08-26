@@ -27,17 +27,19 @@ class REACOUSTIC_API UReacousticSoundAsset : public UOnsetNRT
 	void PreEditChange(FProperty* Property);
 	void Serialize(FArchive& Ar);
 	void Serialize(FStructuredArchiveRecord Record);
+
+	
 	
 public:
 	void TriggerOnsetNRTAnalysis();
 	
 
 	/** BASIC CATEGORY */
-	
 
+	
 	/** The sound to play when the object is sliding or rolling */
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="SlidingRollingSound"), Category = "Basic")
-	TObjectPtr<USoundWave> SlidingRollingSound;
+	TObjectPtr<USoundWave> SlidingRollingSound{};
 
 	/** The attenuation settings for the impact sound */
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="Sound_Attenuation", MakeStructureDefaultValue="/Script/Engine.SoundAttenuation'/Game/ThirdPartyContent/BallisticsVFX/SFX/Attentuations/ImpactsAttenuation.ImpactsAttenuation'"), Category = "Basic setting")
@@ -59,8 +61,8 @@ public:
 
 	/** How fast the object is expected to hit things in M/s
 	 *eg: a thrown ball would be 20 M/s. A baseball thrown by a world class pitcher would be 40 M/s*/
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="30.000000"), Category = "Physics")
-	double MaxSpeedScalar{20};
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, meta=(DisplayName="MaxSpeedScalar"), Category = "Physics")
+	double MaxSpeedScalar{10};
 
 
 	/** TEMPORAL BEHAVIOUR CATEGORY */
@@ -96,7 +98,6 @@ public:
 	
 private:
 	/** ReacousticSoundAssets are persistent stateful assets to prevent similar transients from triggering per asset.*/
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray<float> TimestampHistory;
-	
 };

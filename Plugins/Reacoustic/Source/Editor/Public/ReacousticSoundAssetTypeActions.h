@@ -23,7 +23,6 @@ public:
 	EVisibility GetThumbnailOverlayVisibility() const;
 	virtual TSharedPtr<SWidget> GetThumbnailOverlay(const FAssetData& AssetData) const override;
 	FReply OnThumbnailOverlayClicked() const;
-	bool AssetsActivatedOverride(const TArray<UObject*>& InObjects, EAssetTypeActivationMethod::Type ActivationType) override;
 	
 	 
 

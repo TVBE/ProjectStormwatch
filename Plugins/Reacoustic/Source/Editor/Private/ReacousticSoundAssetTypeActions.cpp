@@ -48,6 +48,8 @@ const TArray<FText>& FReacousticSoundAssetTypeActions::GetSubMenus() const
 }
 
 
+
+
 void FReacousticSoundAssetTypeActions::PlaySound(USoundBase* Sound) const
 {
 	if ( Sound )
@@ -204,13 +206,6 @@ FReply FReacousticSoundAssetTypeActions::OnThumbnailOverlayClicked() const
 	return FReply::Handled();
 }
 
-//TODO:Use this to implement custom drag and drop functionality
-bool FReacousticSoundAssetTypeActions::AssetsActivatedOverride(const TArray<UObject*>& InObjects,
-	EAssetTypeActivationMethod::Type ActivationType)
-{
-	UE_LOG(LogTemp, Warning, TEXT("This works!"));
-	return FAssetTypeActions_Base::AssetsActivatedOverride(InObjects, ActivationType);
-}
 
 
 void FReacousticContentBrowserMenuExtension::RegisterMenus()
@@ -302,7 +297,6 @@ void FReacousticContentBrowserMenuExtension::ExecuteOpenReacousticEditor(const F
 	ReacousticWindow->SetContent(Widget);
 	FSlateApplication::Get().AddWindow(ReacousticWindow);
 }
-
 
 
 

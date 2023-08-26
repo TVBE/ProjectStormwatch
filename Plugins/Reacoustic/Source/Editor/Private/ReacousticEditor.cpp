@@ -1,13 +1,23 @@
 ﻿// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
-
 #include "ReacousticEditor.h"
 #include "ReacousticSoundAssetTypeActions.h"
 #include "Internationalization/Internationalization.h"
 #include "AssetToolsModule.h"
 #include "ReacousticStaticMeshDetailCustomization.h"
 #include "IAssetTools.h"
+#include "ComponentAssetBroker.h"
+#include "ContentBrowserDelegates.h"
+#include "ContentBrowserMenuContexts.h"
 #include "EditorModeRegistry.h"
+#include "IAssetTools.h"
 #include "ReacousticEditorMode.h"
+#include "ReacousticSoundAssetBroker.h"
+#include "ReacousticSoundAssetTypeActions.h"
+#include "ReacousticStaticMeshDetailCustomization.h"
+#include "HAL/PlatformFilemanager.h"
+#include "Internationalization/Internationalization.h"
+#include "Misc/Paths.h"
+
 
 #define LOCTEXT_NAMESPACE "ReacousticEditor"
 IMPLEMENT_MODULE(FReacousticEditorModule, ReacousticEditor)
@@ -24,7 +34,7 @@ void FReacousticEditorModule::StartupModule()
 	FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(ReacousticSoundAssetTypeActions.ToSharedRef());
 	FReacousticContentBrowserMenuExtension::RegisterMenus();
 	
-	// Register custom detail views
+	/** Register custom sidepanel view for the editor mode.*/
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	if(&PropertyModule)
@@ -33,7 +43,6 @@ void FReacousticEditorModule::StartupModule()
 		
 		PropertyModule.RegisterCustomClassLayout("StaticMesh", FOnGetDetailCustomizationInstance::CreateStatic(&ReacousticStaticMeshDetailCustomization::MakeInstance));
 		UE_LOG(LogTemp, Log, TEXT("Registered custom class layout for StaticMesh."));
-
 	}
 
 
@@ -45,7 +54,17 @@ void FReacousticEditorModule::StartupModule()
 		true // Whether the mode should be visible in the editor
 	);
 	
+	/** register custom broker that converts reacoustic sound assets to reacoustic components.*/
+	FComponentAssetBrokerage::RegisterBroker(MakeShareable(new FReacousticSoundAssetBroker()), UReacousticComponent::StaticClass(), true, true);
+
+
+        
+
 }
+
+
+
+
 
 
 void FReacousticEditorModule::ShutdownModule()
@@ -54,13 +73,15 @@ void FReacousticEditorModule::ShutdownModule()
 	FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(ReacousticSoundAssetTypeActions.ToSharedRef());
 
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-    
-	// Make sure to unregister during shutdown
+	
 	PropertyModule.UnregisterCustomClassLayout("StaticMesh");
 
 	FEditorModeRegistry::Get().UnregisterMode(ReacousticEditorMode::EM_ReacousticEditorModeId);
-
+	
+	FComponentAssetBrokerage::UnregisterBroker(MakeShareable(new FReacousticSoundAssetBroker()));
 }
+
+
 
 #undef LOCTEXT_NAMESPACE
 

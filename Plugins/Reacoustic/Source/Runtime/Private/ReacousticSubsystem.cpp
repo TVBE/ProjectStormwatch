@@ -284,10 +284,14 @@ FImpactValueToTimestampResult UReacousticSubsystem::GetTimeStampWithStrenght(URe
 	//TODO: normalize this manually after the vacation.
 	SoundAsset->GetNormalizedChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengthsNormalized);
 	SoundAsset->GetChannelOnsetsBetweenTimes(0,SoundAsset->Sound->GetDuration(),0,OutOnsetTimestamps, OutOnsetStrengths);
-
-	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
-	if (OutOnsetTimestamps.Num() == OutOnsetStrengths.Num())
+	if(OutOnsetTimestamps.Num() == 0 || OutOnsetStrengths.Num() == 0 && OutOnsetTimestamps.Num() != OutOnsetStrengths.Num())
 	{
+		UE_LOG(LogReacousticSubsystem,Warning,TEXT("GetChannelOnsetsBetweenTimes returned no timestamps.") )
+		return FImpactValueToTimestampResult{-1,-1,-1};
+	}
+	/** Iterate over TMap and find the key asociated with the volume value closest to impact value */
+
+
 		for (int i = 0; i < OutOnsetTimestamps.Num(); ++i)
 		{
 			float timestamp = OutOnsetTimestamps[i];
@@ -320,8 +324,7 @@ FImpactValueToTimestampResult UReacousticSubsystem::GetTimeStampWithStrenght(URe
 				BestStrenght = strength;
 			}
 		}
-	}
-
+	
 	/** If we found a matching timestamp, update LatestMatchingElements */
 	if(BestTimeStamp != -1)
 	{

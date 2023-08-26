@@ -12,8 +12,13 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+
+
 private:
 	TSharedPtr<FReacousticSoundAssetTypeActions> ReacousticSoundAssetTypeActions;
+
+
+
 
 #define REACOUSTIC_ASSET_COLOR FColor(0, 255, 130)
 	

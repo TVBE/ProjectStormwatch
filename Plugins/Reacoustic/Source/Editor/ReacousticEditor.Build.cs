@@ -38,7 +38,8 @@ public class ReacousticEditor : ModuleRules
 				"UnrealEd", 
 				"EditorStyle",
 				"EditorFramework",
-				"LevelEditor"
+				"LevelEditor",
+				"Core", "CoreUObject", "Engine", "InputCore",
 				
 				
 				
@@ -59,7 +60,7 @@ public class ReacousticEditor : ModuleRules
 				"PhysicsCore",
 				"AudioSynesthesia",
 				"UnrealEd",
-				"PropertyEditor", "AITestSuite", "WorkspaceMenuStructure",
+				"PropertyEditor", "AITestSuite", "WorkspaceMenuStructure","ContentBrowser"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

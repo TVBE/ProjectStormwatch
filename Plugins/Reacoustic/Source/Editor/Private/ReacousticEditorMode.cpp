@@ -4,6 +4,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "EngineUtils.h"
 #include "LevelEditor.h"
+#include "LevelEditorDragDropHandler.h"
 #include "ReacousticComponent.h"
 #include "ReacousticSoundUserData.h"
 #include "Toolkits/ToolkitManager.h"
@@ -18,11 +19,14 @@ const FEditorModeID ReacousticEditorMode::EM_ReacousticEditorModeId = TEXT("EM_R
 void ReacousticEditorMode::Enter()
 {
 	FEdMode::Enter();
-	
+	UE_LOG(LogTemp, Warning, TEXT("Entering ReacousticEditorMode::Enter"));
+
 	if (!FGlobalTabmanager::Get()->HasTabSpawner(TabName))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Tab Spawner not found for TabName, registering..."));
 		FGlobalTabmanager::Get()->RegisterNomadTabSpawner(TabName, FOnSpawnTab::CreateLambda([this](const FSpawnTabArgs& Args)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Spawning ReacousticSidePanel"));
 			SidePanelWidget = SNew(ReacousticSidePanel);
 			return SNew(SDockTab)
 				.TabRole(ETabRole::PanelTab)
@@ -34,19 +38,46 @@ void ReacousticEditorMode::Enter()
 			.SetDisplayName(FText::FromString("Reacoustic"))
 			.SetTooltipText(FText::FromString("Open the Reacoustic Side Panel"));
 
-
-		FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>("LevelEditor");
-		
-		TSharedPtr<FTabManager> LevelEditorTabManager = LevelEditorModule.GetLevelEditorTabManager();
-		
-		ReacousticTab = LevelEditorTabManager->TryInvokeTab(TabName);
-		if (ReacousticTab.IsValid())
-		{
-			LevelEditorTabManager->InsertNewDocumentTab("LevelEditorSelection", FTabManager::ESearchPreference::PreferLiveTab, ReacousticTab.ToSharedRef());
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Registered Tab Spawner for TabName"));
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Tab Spawner found for TabName"));
+	}
+
+	FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>("LevelEditor");
+	UE_LOG(LogTemp, Warning, TEXT("Fetched LevelEditorModule"));
+
+	TSharedPtr<FTabManager> LevelEditorTabManager = LevelEditorModule.GetLevelEditorTabManager();
+	UE_LOG(LogTemp, Warning, TEXT("Fetched LevelEditorTabManager"));
+
+	// Check if the tab is already in live areas
+	TSharedPtr<SDockTab> ExistingTab = LevelEditorTabManager->FindExistingLiveTab(TabName);
+	if (ExistingTab.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Existing tab valid"));
+		ReacousticTab = ExistingTab;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Existing tab not found, invoking..."));
+		ReacousticTab = LevelEditorTabManager->TryInvokeTab(TabName);
+	}
+
+	if (ReacousticTab.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ReacousticTab is valid"));
+		LevelEditorTabManager->InsertNewDocumentTab("LevelEditorSelection", FTabManager::ESearchPreference::PreferLiveTab, ReacousticTab.ToSharedRef());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ReacousticTab is not valid"));
+	}
+
 	UpdateHighlightedActorsList();
+	UE_LOG(LogTemp, Warning, TEXT("Exiting ReacousticEditorMode::Enter"));
 }
+
 
 
 
