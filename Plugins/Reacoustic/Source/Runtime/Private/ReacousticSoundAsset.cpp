@@ -2,6 +2,8 @@
 
 #include "ReacousticSoundAsset.h"
 
+#include "PhysicsProxy/SingleParticlePhysicsProxy.h"
+
 DEFINE_LOG_CATEGORY_CLASS(UReacousticSoundAsset, LogReacousticSound);
 
 
@@ -48,7 +50,8 @@ TArray<float> UReacousticSoundAsset::GetTimestampHistory() const
 
 void UReacousticSoundAsset::UpdateTimestampHistory(const float& NewElement)
 {
-	if (TimestampHistory.Num() >= 10)
+
+	if (TimestampHistory.Num() >= 20)
 	{
 		TimestampHistory.RemoveAt(0);
 	}

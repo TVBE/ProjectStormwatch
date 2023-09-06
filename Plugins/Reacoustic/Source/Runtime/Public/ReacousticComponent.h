@@ -30,12 +30,9 @@ protected:
 	UAudioComponent* AudioComponent {nullptr};
 
 	
-
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Reacoustic Surface Sound"))
 	UReacousticSoundAsset* SurfaceSoundAsset{nullptr};
-
-	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundAssociationMap* ReacousticSoundAssociationMap {nullptr};
+	
 	
 	
 	/** Used to choose the impact sound during a hit.*/
@@ -67,9 +64,12 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Latest Hit Results", AllowPrivateAccess = "true"))
 	TArray<float> LatestMatchingElements;
 
-public:	
-	UReacousticComponent();
 	
+public:
+
+	
+	UReacousticComponent(const FObjectInitializer& ObjectInitializer);
+
 	/** Callback function for the OnHit event delegate of a physics enabled static mesh component.
 	 *	@HitComp The component that was hit.
 	 *	@OtherActor The other actor that was hit by the component.

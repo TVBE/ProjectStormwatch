@@ -165,7 +165,7 @@ void ReacousticEditorMode::UpdateHighlightedActorsList()
 	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		AActor* Actor = *ActorItr;
-		if (Actor && !Actor->IsPendingKill())
+		if (Actor && !IsValid(Actor))
 		{
 			UReacousticSubsystem* ReacousticSubsystem = GEditor->GetEditorWorldContext().World()->GetSubsystem<UReacousticSubsystem>();
 			FReacousticValidityResult Result = ReacousticSubsystem->CheckReacousticValidity(Actor);

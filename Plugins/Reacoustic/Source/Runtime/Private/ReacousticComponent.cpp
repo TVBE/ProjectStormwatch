@@ -5,7 +5,7 @@
 
 DEFINE_LOG_CATEGORY_CLASS(UReacousticComponent, LogReacousticComponent);
 
-UReacousticComponent::UReacousticComponent()
+UReacousticComponent::UReacousticComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -224,7 +224,6 @@ void UReacousticComponent::TransferData(UReacousticSoundAsset* SoundDataAsset, U
 	if(SoundDataAsset && ReferenceMap)
 	{
 		ReacousticSoundAsset = SoundDataAsset;
-		ReacousticSoundAssociationMap = ReferenceMap;
 	}
 	else
 	{
