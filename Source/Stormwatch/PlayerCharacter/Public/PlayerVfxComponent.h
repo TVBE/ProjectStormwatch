@@ -21,20 +21,15 @@ class STORMWATCH_API UPlayerVfxComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	// COMPONENTS
-	/** The particle emitter for the player's left foot. */
 	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter)
 	UNiagaraComponent* LeftFootEmitter;
 	
-	/** The particle emitter for the player's right foot. */
 	UPROPERTY(BlueprintGetter = GetRightFootParticleEmitter)
 	UNiagaraComponent* RightFootEmitter;
 	
 public:	
-	// Sets default values for this component's properties
 	UPlayerVfxComponent();
 
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
@@ -47,11 +42,9 @@ private:
 	void CleanupComponent();
 
 public:
-	/** Returns the left foot ParticleSystem. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
 	FORCEINLINE UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootEmitter; }
 
-	/** Returns the right foot ParticleSystem. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
 	FORCEINLINE UNiagaraComponent* GetRightFootParticleEmitter() const {return RightFootEmitter; }
 };

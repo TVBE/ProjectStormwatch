@@ -163,14 +163,6 @@ FVector UPlayerDragComponent::GetDragLocation() const
 	return ComponentTransform.TransformPosition(ConstraintLocalPosition);
 }
 
-
-/** The update loop that scales the zoomaxis value from the mouse input */
-void UPlayerDragComponent::UpdateZoomAxisValue(float ZoomAxis)
-{
-	if (!Configuration){UE_LOG(LogDragComponent, Warning, TEXT("UpdateZoomAxisValue called with null Configuration"));return;}
-	CurrentZoomAxisValue = FMath::Clamp(((CurrentZoomAxisValue + 0.1 * ZoomAxis) * 0.9), -2.0, 2.0);
-}
-
 void UPlayerDragComponent::ApplyToPhysicsHandle()
 {
 	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.

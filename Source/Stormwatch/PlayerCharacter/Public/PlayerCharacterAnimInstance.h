@@ -25,11 +25,9 @@ class STORMWATCH_API UPlayerCharacterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	/** The delegate to be broadcasted when the mesh encounters a footstep AnimNotify. */
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FFootstepDelegate OnFootstep;
 
-	/** The delegate to be broadcasted when the mesh encounters a handstep AnimNotify. */
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FFootstepDelegate OnHandstep;
 
@@ -40,7 +38,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsMoving {false};
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	bool IsMovingLongitudinally {false};
 
@@ -49,10 +47,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool StopLongitudinalMovement {false};
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	bool IsTurningLeft {false};
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	bool IsTurningRight {false};
 
@@ -73,7 +71,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsSprinting {false};
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	bool DoSprintStart {false};
 
@@ -85,7 +83,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	float Speed {0.0f};
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	float TurnSpeed {0.0f};
 
@@ -117,14 +115,14 @@ protected:
 
 	/** Returns data about a footstep at the specified foot, like the object or physical material underneath the foot at the time of the footstep.
 	 *	@param Foot The foot that is performing the step.
-	 *	@Return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep. 
+	 *	@Return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep.
 	 */
 	UFUNCTION(BlueprintPure)
 	FStepData GetFootstepData(const ELeftRight Foot);
 
 	/** Returns data about a 'handstep' at the specified hand, like the object or physical material underneath the hand at the time of the handstep.
 	*	@Param Hand The hand that is performing the step.
-	*	@Return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep. 
+	*	@Return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep.
 	*/
 	UFUNCTION(BlueprintPure)
 	FStepData GetHandstepData(const ELeftRight Hand);

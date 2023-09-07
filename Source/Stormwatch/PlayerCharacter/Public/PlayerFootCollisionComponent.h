@@ -9,8 +9,8 @@
 
 /** Component that pushes physics objects aside. We attach these components to the feet of the player character.
  *	This helps us to prevent the physicsbodies from being stepped on or glitching out when the capsule component of the player character overlaps.*/
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter", Meta = (DisplayName = "Foot Collision Component",
-		ShortToolTip = "Collision component that pushes physics actors away from the player's feet."))
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	   Meta = (DisplayName = "Foot Collision Component", ShortToolTip = "Collision component that pushes physics actors away from the player's feet."))
 class STORMWATCH_API UPlayerFootCollisionComponent : public USceneComponent
 {
 	GENERATED_BODY()
@@ -19,11 +19,11 @@ private:
 	/** The collision component that is added to the owner when this scene component begins play. */
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class USphereComponent* CollisionSphere;
-	
+
 	/** The radius of the sphere. */
 	UPROPERTY(EditAnywhere)
 	float SphereRadius {30.0f};
-	
+
 	/** The maximum push strength of the collision component. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Base Push Strength"))
 	float PushStrength {20.0f};

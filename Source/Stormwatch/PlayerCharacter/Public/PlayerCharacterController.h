@@ -20,12 +20,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bo
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, Value);
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta =
-	(DisplayName = "Player Character Controller", ShortToolTip = "The controller for the player character."))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
+	   Meta = (DisplayName = "Player Character Controller", ShortToolTip = "The controller for the player character."))
 class STORMWATCH_API APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 	/** The character configuration to use for this player character. */
 	UPROPERTY()
@@ -51,7 +51,7 @@ protected:
 	/** If true, the player is currently pressing the crouch button. */
 	UPROPERTY(BlueprintReadOnly, Category = "Input")
 	bool IsCrouchPending {false};
- 
+
 private:
 	/** Pointer to the interaction component of the player character. */
 	UPROPERTY()
@@ -64,7 +64,7 @@ private:
 	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
 	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
 	uint8 RotationInputLockCount {1};
-	
+
 	/** When true, the player can receive user input for movement. */
 	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput)
 	bool CanProcessMovementInput {false};
@@ -88,7 +88,19 @@ private:
 
 public:
 	APlayerCharacterController();
-	
+
+	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
+
+	virtual void SetupInputComponent() override;
+
+	virtual void OnPossess(APawn* InPawn) override;
+
 	/** Returns whether the PlayerController has any movement input or not. */
 	UFUNCTION(BlueprintPure, Category = "Input", Meta = (DisplayName = "Has Any Movement Input"))
 	bool GetHasMovementInput() const;
@@ -116,7 +128,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerRotationInputLock(const bool Value);
-	
+
 	/** Fades in the screen for the player from black by a specified amount.
 	 *	@Duration The fade-in duration.
 	 */
@@ -129,22 +141,14 @@ protected:
 	FHitResult GetCameraLookAtQuery() const;
 
 private:
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void Tick(float DeltaSeconds) override;
-	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
-	virtual void SetupInputComponent() override;
-	virtual void OnPossess(APawn* InPawn) override;
-	
-
 	/** Updates the player control rotation. */
 	UFUNCTION()
 	void UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds);
-	
+
 	/** Checks if the player character can currently sprint. */
 	UFUNCTION()
 	bool CanCharacterSprint() const;
-	
+
 	/** Checks if any player actions are currently pending and tries to complete them. */
 	UFUNCTION()
 	void UpdatePendingActions();
@@ -156,9 +160,9 @@ private:
 	/** Tries to find an InteractionComponent in the player character. */
 	UFUNCTION()
 	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
-	
+
 	void CalculateRotationMultiplier(const FVector2D InputDirection);
-	
+
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
 	UFUNCTION()
 	void HandleHorizontalRotation(float Value);
@@ -202,7 +206,7 @@ private:
 	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
 	UFUNCTION()
 	void HandleFlashlightActionPressed();
-	
+
 	/** Handles the callback for when the player has pressed the PrimaryAction button. */
 	UFUNCTION()
 	void HandlePrimaryActionPressed();
@@ -246,5 +250,5 @@ public:
 
 	/** Returns the player control rotation. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE FRotator GetPlayerControlRotation() const {return PlayerControlRotation; }
+	FORCEINLINE FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
 };

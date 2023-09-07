@@ -13,7 +13,7 @@ class APlayerCharacter;
 class UPlayerFlashlightConfiguration;
 enum class EPlayerGroundMovementType : uint8;
 
-/** UPlayerFlashlightController is an Actor Component responsible for controlling the player's flashlight. 
+/** UPlayerFlashlightController is an Actor Component responsible for controlling the player's flashlight.
  *	This class provides a simple and convenient way for designers to customize the player's flashlight behavior.
  *	@Brief ActorComponent for controlling the player's flashlight.
  */
@@ -32,7 +32,7 @@ private:
 	/** The SpringArmComponent the flashlight is attached to. */
 	UPROPERTY(BlueprintGetter = GetFlashlightSpringArm)
 	USpringArmComponent* FlashlightSpringArm;
-	
+
 	/** The configuration asset to use for this component. */
 	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
 	TSoftObjectPtr<UPlayerFlashlightConfiguration> ConfigurationAsset;
@@ -40,7 +40,7 @@ private:
 	/** Pointer to the configuration asset for this component. */
 	UPROPERTY()
 	UPlayerFlashlightConfiguration* Configuration;
-	
+
 	/** Pointer to the camera of the owner. */
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* Mesh;
@@ -52,14 +52,14 @@ private:
 	/** Pointer to the player character movement component of the owner.*/
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Player Character Movement Component", AllowPrivateAccess = "true"))
 	UPlayerCharacterMovementComponent* Movement;
-	
+
 	/** Alpha value for blending the flashlight rotation based on movement. */
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	float MovementAlpha {0.f};
-	
-public:	
+
+public:
 	UPlayerFlashlightComponent();
-	
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Enables or disables the flashlight. */
@@ -102,15 +102,15 @@ private:
 public:
 	/** Returns the flashlight component. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE USpotLightComponent* GetFlashlight() const {return Flashlight; }
+	FORCEINLINE USpotLightComponent* GetFlashlight() const { return Flashlight; }
 
 	/** Returns the flashlight SpringArmComponent. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE USpringArmComponent* GetFlashlightSpringArm() const {return FlashlightSpringArm; }
+	FORCEINLINE USpringArmComponent* GetFlashlightSpringArm() const { return FlashlightSpringArm; }
 
 	/** Returns the Flashlight configuration. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const {return Configuration; }
+	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const { return Configuration; }
 };
 
 /** Enumeration for defining the socket rotation axis. */
@@ -130,35 +130,34 @@ enum class EFlashlightSocketContext : uint8
 	Camera			UMETA(DisplayName = "Camera", ToolTip = "We assume the flashlight is mounted to camera."),
 };
 
-
-UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
+UCLASS(BlueprintType, ClassGroup = PlayerCharacter)
 class STORMWATCH_API UPlayerFlashlightConfiguration : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	
+
 	/** The mounting position of the flashlight. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment", Meta = (DisplayName = "Attachment Context"))
 	EFlashlightSocketContext AttachmentContext {EFlashlightSocketContext::Chest};
-	
+
 	/** The chest attachment socket. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment", Meta = (DisplayName = "Chest Socket",
-		EditCondition = "AttachmentContext == EFlashlightSocketContext::Chest", EditConditionHides))
+																				EditCondition = "AttachmentContext == EFlashlightSocketContext::Chest", EditConditionHides))
 	FName ChestSocket {FName()};
 
 	/** The head attachment socket. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment", Meta = (DisplayName = "Head Socket",
-		EditCondition = "AttachmentContext == EFlashlightSocketContext::Head", EditConditionHides))
+																				EditCondition = "AttachmentContext == EFlashlightSocketContext::Head", EditConditionHides))
 	FName HeadSocket {FName()};
-	
+
 	/** When enabled, the flashlight will lag behind the player's orientation.*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Enable Rotation Lag", InlineEditConditionToggle))
 	bool IsRotationLagEnabled {true};
 
 	/** The rotation lag of the flashlight. Lower values result in slower movement. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Rotation Lag",
-		ClampMin = "0.0", ClampMax = "20.0", UIMin = "0.0", UIMax = "20.0", EditCondition = "IsRotationLagEnabled"))
+																				ClampMin = "0.0", ClampMax = "20.0", UIMin = "0.0", UIMax = "20.0", EditCondition = "IsRotationLagEnabled"))
 	float RotationLag {8.5f};
 
 	/** When enabled, the flashlight will sway according to the player's movement.*/
@@ -167,52 +166,52 @@ public:
 
 	/** The sway intensity of the flashlight. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Sway Intensity",
-		ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0", EditCondition = "IsSwayEnabled"))
+																				ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0", EditCondition = "IsSwayEnabled"))
 	float RotationSway {0.75f};
 
 	/** When enabled, the flashlight rotation is influenced by the rotation of the socket that the flashlight springarm is attached to. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Enable Socket Rotation",
-		EditCondition = "AttachmentContext != EFlashlightSocketContext::Camera"))
+																				EditCondition = "AttachmentContext != EFlashlightSocketContext::Camera"))
 	bool IsSocketRotationEnabled {true};
-	
+
 	/** Determines how much the flashlight orientation is affected by the skeletal mesh of the player character. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Socket Rotation Intensity",
-		ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0",
-		EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
+																				ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0",
+																				EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
 	float SocketRotation {1.25f};
 
 	/** When enabled, the flashlight will tilt into the lateral direction of the player. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Socket Rotation Axis",
-		EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
+																				EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
 	EFlashlightSocketRotationAxis Axis {EFlashlightSocketRotationAxis::Full};
 
 	/** When enabled, the flashlight will pitch to whatever object the player is looking at. This is only available if the flashlight is mounted on the chest of the character. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Enable Auto Focus",
-		EditCondition = "AttachmentContext == EFlashlightSocketContext::Chest", EditConditionHides))
+																				EditCondition = "AttachmentContext == EFlashlightSocketContext::Chest", EditConditionHides))
 	bool IsAutoFocusEnabled {true};
 
 	/** The offset to use when the player is idle. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight|Offsets", Meta = (DisplayName = "Idle",
-		AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
+																						AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
 	FVector2D IdleOffset {FVector2D()};
 
 	/** The offset to use when the player is walking. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight|Offsets", Meta = (DisplayName = "Walking",
-		AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
+																						AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
 	FVector2D WalkingOffset {FVector2D()};
 
 	/** The offset to use when the player is sprinting. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight|Offsets", Meta = (DisplayName = "Sprinting",
-		AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
+																						AdvancedDisplay, EditCondition = "IsSocketRotationEnabled && AttachmentContext != EFlashlightSocketContext::Camera", EditConditionHides))
 	FVector2D SprintingOffset {FVector2D()};
-	
+
 	/** Determines how much the flashlight is allowed to orient up or down. Value is measures from the player character's forward vector. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Flashlight", Meta = (DisplayName = "Pitch Range", ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0"))
 	float PitchRange {60.0f};
-	
+
 	/** The intensity of the flashlight. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Light",
-		Meta = (DisplayName = "Intensity", ClampMin = "0.0"))
+			  Meta = (DisplayName = "Intensity", ClampMin = "0.0"))
 	float Intensity {1.25f};
 
 	/** The color of the flashlight. */
@@ -254,12 +253,12 @@ public:
 	/** The light profile for the flashlight. */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "LightProfile", Meta = (DisplayName = "IES Texture"))
 	UTextureLightProfile* IESTexture;
-	
+
 	/** Constructor with default values. */
 	UPlayerFlashlightConfiguration()
 	{
 	}
-	
+
 	/** Applies the flashlight configuration to a UFlashlightComponent instance. */
 	void ApplyToFlashlightComponent(const UPlayerFlashlightComponent* Component);
 };

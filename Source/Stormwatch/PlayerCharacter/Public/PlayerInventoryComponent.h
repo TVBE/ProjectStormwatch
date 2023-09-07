@@ -10,8 +10,8 @@
 
 class UPlayerInteractionComponent;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
-	DisplayName = "Player Inventory Component"))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
+	   Meta = (BlueprintSpawnableComponent, DisplayName = "Player Inventory Component"))
 class STORMWATCH_API UPlayerInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -26,15 +26,15 @@ private:
 	AActor* SelectedActor;
 
 	/** The amount of hotbar slots available for the inventory. */
-	UPROPERTY(BlueprintGetter = GetHotbarSize, EditDefaultsOnly, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Hotbar Slots",
-		ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
+	UPROPERTY(BlueprintGetter = GetHotbarSize, EditDefaultsOnly, Category = "PlayerInventoryComponent",
+			  Meta = (DisplayName = "Hotbar Slots", ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
 	int32 HotbarSlots {4};
 
 	/** The entry of AActor pointers in the hotbar. This property can be treated as 'the hotbar'. */
 	UPROPERTY(BlueprintGetter = GetHotbar)
 	TArray<AActor*> Hotbar;
 
-public:	
+public:
 	UPlayerInventoryComponent();
 
 	/** Checks if an actor or one of its components implements the IInventoryObject interface.

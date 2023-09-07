@@ -57,10 +57,9 @@ struct FInteractableObjectData
 	}
 };
 
-
 /** PlayerCharacter component that checks for interactable objects in front of the player character. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
-	Meta = (DisplayName = "Player Interaction Component", ShortToolTip = "Component that handles player interaction."))
+	   Meta = (DisplayName = "Player Interaction Component", ShortToolTip = "Component that handles player interaction."))
 class STORMWATCH_API UPlayerInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -78,7 +77,7 @@ private:
 	/** The use component that is used to use actors. */
 	UPROPERTY(BlueprintGetter = GetUseComponent)
 	UPlayerUseComponent* UseComponent;
-	
+
 	/** The physics grab component that is used to grab actors. */
 	UPROPERTY(BlueprintGetter = GetGrabComponent)
 	UPlayerGrabComponent* GrabComponent;
@@ -92,7 +91,7 @@ private:
 	 *	Therefore, we cannot always assume that the component is actually present in the playercharacter instance. */
 	UPROPERTY()
 	UPlayerInventoryComponent* InventoryComponent;
-	
+
 	/** The camera component of the Player Character. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
@@ -100,11 +99,11 @@ private:
 	/** If true, the interaction component is currently performing a tertiary interaction. */
 	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
 	bool IsTertiaryInteractionActive {false};
-	
+
 	/** The location of the camera. */
 	UPROPERTY()
 	FVector CameraLocation;
-	
+
 	/** The hit result for the initial visibility line trace collision query performed from the camera. */
 	UPROPERTY()
 	FHitResult CameraTraceHitResult {FHitResult()};
@@ -133,18 +132,18 @@ private:
 	/** The closest interactable object to the camera. */
 	UPROPERTY()
 	FInteractableObjectData ClosestInteractableObject;
-	
+
 	/** The actor that is currently being interacted with. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
 	AActor* CurrentInteractingActor;
-	
+
 	/** The collision query data for the camera trace. */
 	FCollisionQueryParams CameraTraceQueryParams;
-	
+
 	/** The timer for the update function. */
 	UPROPERTY()
 	FTimerHandle UpdateTimerHandle;
-	
+
 	/** For setting the parameters of the PlayerGrabComponent. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player grab compoent"))
 	TSoftObjectPtr<UPlayerGrabConfiguration> PlayerGrabConfiguration;
@@ -159,19 +158,19 @@ private:
 	bool IsDebugVisEnabled {false};
 #endif
 
-public:	
+public:
 	UPlayerInteractionComponent();
-	
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Begins the primary interaction action. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteration|Actions", Meta = (DisplayName = "Begin Primary Interaction", BlueprintProtected))
 	void BeginPrimaryInteraction();
-	
+
 	/** Ends the primary interaction action. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Primary Interaction", BlueprintProtected))
 	void EndPrimaryInteraction();
-	
+
 	/** Begins the secondary interaction action. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Begin Secondary Interaction", BlueprintProtected))
 	void BeginSecondaryInteraction();
@@ -195,7 +194,7 @@ public:
 	/** Ends the inventory action. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Inventory Interaction", BlueprintProtected))
 	void EndInventoryInteraction();
-	
+
 	/** Handles scroll input. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Add Scroll Input", BlueprintProtected))
 	void AddScrollInput(const float Input);
@@ -212,14 +211,14 @@ protected:
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 	virtual void BeginPlay() override;
-	 
+
 	/** Checks if any interactable objects are in front of the player. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Check For Interactable Objects", BlueprintProtected))
 	AActor* CheckForInteractableActor();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "Begin Interaction"))
 	void EventBeginInteraction(const EInteractionActionType Type, const UObject* Object);
-    
+
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "End Interaction"))
 	void EventEndInteraction(const EInteractionActionType Type, const UObject* Object);
 
@@ -249,7 +248,7 @@ private:
 	*	Returns all UObjects that implements the interface that it finds. */
 	template <typename TInterface>
 	TArray<UObject*> FindInteractableObjects(AActor* Actor) const;
-	
+
 	template <class TInterface>
 	void AddInteractableObjectsOfType(AActor* Actor, EInteractionType InteractionType);
 
@@ -260,7 +259,7 @@ private:
 	/** Checks whether an actor is occluded. Is used to prevent the interaction component from highlighting objects behind walls or other objects. */
 	UFUNCTION()
 	bool IsActorOccluded(const AActor* Actor);
-	
+
 	/** Converts a UObject pointer to an AActor pointer.
 	 *	Either by checking if the UObject is an AActor,
 	 *	or by casting the UObject to an UActorComponent and retrieving the owner from the component. */
@@ -282,7 +281,7 @@ public:
 	/** Returns a pointer to the drag component. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerDragComponent* GetDragComponent() const { return DragComponent; }
-	
+
 	/** Returns the object the interaction component is currently interacting with. */
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
@@ -317,4 +316,3 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
 };
-

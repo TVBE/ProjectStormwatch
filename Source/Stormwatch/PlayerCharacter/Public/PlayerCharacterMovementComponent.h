@@ -44,25 +44,19 @@ class STORMWATCH_API UPlayerCharacterMovementComponent : public UCharacterMoveme
 	GENERATED_BODY()
 
 public:
-	// DELEGATES
-	/** Delegate that is called when a locomotion event occurs. */
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Locomotion Event"))
 	FLocomotionEventDelegate OnLocomotionEvent;
 
-	/** Delegate that is called when the player character jumps. */
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Jump Event"))
 	FJumpDelegate OnJump;
 	
-	/** Delegate that is called when the player character lands. */
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Landing Event"))
 	FLandingDelegate OnLanding;
 
 private:
-	/** When true, the player is currently sprinting. */
 	UPROPERTY(BlueprintGetter = GetIsSprinting)
 	bool IsSprinting {false};
 
-	/** When true, the player is currently in the process of jumping. */
 	UPROPERTY(BlueprintGetter = GetIsJumping)
 	bool IsJumping {false};
 
@@ -87,7 +81,6 @@ protected:
 	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
 
 public:
-	
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsSprinting() const {return IsSprinting; }
 
