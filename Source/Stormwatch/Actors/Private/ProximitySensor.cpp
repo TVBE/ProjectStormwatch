@@ -3,7 +3,6 @@
 
 #include "ProximitySensor.h"
 
-#include "AutomationTestModule.h"
 #include "Nightstalker.h"
 #include "PlayerCharacter.h"
 #include "Components/CapsuleComponent.h"

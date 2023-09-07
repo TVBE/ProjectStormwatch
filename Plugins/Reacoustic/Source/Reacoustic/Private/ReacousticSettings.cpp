@@ -7,7 +7,6 @@
 #include "AudioAnalyzerNRT.h"
 #include "OnsetNRT.h"
 #include "Engine/DataTable.h"
-#include "Evaluation/Blending/MovieSceneBlendType.h"
 #include "Serialization/JsonTypes.h"
 
 UReacousticProjectSettings::UReacousticProjectSettings(const FObjectInitializer& ObjectInitializer)

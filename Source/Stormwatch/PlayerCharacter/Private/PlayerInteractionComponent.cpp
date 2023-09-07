@@ -152,10 +152,12 @@ void UPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult)
 		CameraTraceQueryParams
 	);
 
+#if WITH_EDITORONLY_DATA
 	if (IsDebugVisEnabled)
 	{
 		DrawDebugLine(GetWorld(), CameraLocation, EndLocation, FColor::White, false, 0.0f, 0, 3.0f);
 	}
+#endif
 }
 
 /** Performs a multi sphere trace at the hit location of a hit result and populates and array of hit results. */
@@ -176,10 +178,12 @@ void UPlayerInteractionComponent::PerformInteractableObjectTrace(TArray<FHitResu
 		QueryParams
 	);
 
+#if WITH_EDITORONLY_DATA
 	if (IsDebugVisEnabled)
 	{
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, ObjectTraceRadius, 32, FColor::White, false, 0.0f, 0, 2.0f);
 	}
+#endif
 }
 
 /** Returns the actor closest to the hit location of a hit result. */

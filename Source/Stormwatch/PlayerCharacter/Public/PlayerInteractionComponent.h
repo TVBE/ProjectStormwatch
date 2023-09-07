@@ -153,7 +153,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player drag compoent"))
 	TSoftObjectPtr<UPlayerDragConfiguration> PlayerDragConfiguration;
 
-
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
