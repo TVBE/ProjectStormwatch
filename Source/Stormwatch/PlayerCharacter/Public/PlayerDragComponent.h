@@ -119,7 +119,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
-	float MaxZoomLevel{1000.f};
+	float MaxZoomLevel {1000.f};
 
 	/** The amount that the rotation speed decreases when dragging objects.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player Physics Grab")
