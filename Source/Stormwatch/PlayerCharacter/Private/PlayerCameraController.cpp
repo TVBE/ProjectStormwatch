@@ -292,7 +292,7 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator
 /** Called by TickComponent. */
 void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent* Camera, const float DeltaTime)
 {
-	if (const UPlayerCharacterConfiguration* CharacterConfiguration {PlayerCharacter->GetCharacterConfiguration()})
+	if (const UPlayerCharacterSettings* CharacterConfiguration {PlayerCharacter->GetCharacterConfiguration()})
 	{
 		float TargetFOV {Configuration->DefaultFOV};
 		const FVector WorldVelocity {PlayerCharacter->GetMovementComponent()->Velocity};

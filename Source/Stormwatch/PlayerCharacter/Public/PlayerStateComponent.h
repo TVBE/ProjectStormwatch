@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacter.h"
 #include "PlayerStateComponent.generated.h"
 
 class UPlayerStateConfiguration;
@@ -15,6 +16,38 @@ enum class EPlayerStateValue : uint8
 	Exertion			UMETA(DisplayName = "Exertion"),
 	Fear				UMETA(DisplayName = "Fear"),
 	Vigilence			UMETA(DisplayName = "Vigilance"),
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerStateSettings : public FPlayerSettings
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** The amount of pain that is restored every update interval. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Pain", Meta = (DisplayName = "Pain Reduction Amount"))
+	float PainReductionAmount {2.0f};
+
+	/** The amount of exertion that is removed per update interval when the player is not performing intensive movements.*/
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Exertion Reduction Amount"))
+	float ExertionReductionAmount {2.0f};
+
+	/** The amount of exertion that is added per update interval when the player sprints. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Sprint Exertion Cost"))
+	float SprintExertionCost {3.0f};
+
+	/** The amount of exertion that is added when the player jumps. */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Jump Exertion Cost"))
+	float JumpExertionCost {5.0f};
+};
+
+UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
+class STORMWATCH_API UPlayerStateSettings : public UPlayerCharacterConfigDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	FPlayerStateSettings Settings {};
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPainChangedDelegate, const float, Value);
@@ -147,32 +180,4 @@ public:
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerState|Events", Meta = (DisplayName = "On Update"))
 	void EventOnUpdate();
-};
-
-UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class STORMWATCH_API UPlayerStateConfiguration : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	/** The amount of pain that is restored every update interval. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Pain", Meta = (DisplayName = "Pain Reduction Amount"))
-	float PainReductionAmount {2.0f};
-
-	/** The amount of exertion that is removed per update interval when the player is not performing intensive movements.*/
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Exertion Reduction Amount"))
-	float ExertionReductionAmount {2.0f};
-
-	/** The amount of exertion that is added per update interval when the player sprints. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Sprint Exertion Cost"))
-	float SprintExertionCost {3.0f};
-
-	/** The amount of exertion that is added when the player jumps. */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Exertion", Meta = (DisplayName = "Jump Exertion Cost"))
-	float JumpExertionCost {5.0f};
-
-	/** Constructor with default values. */
-	UPlayerStateConfiguration()
-	{
-	}
 };

@@ -10,7 +10,7 @@
 class UPlayerInteractionComponent;
 class UStormwatchWorldSubsystem;
 class APlayerCharacter;
-class UPlayerCharacterConfiguration;
+class UPlayerCharacterSettings;
 class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
 
@@ -29,7 +29,7 @@ class STORMWATCH_API APlayerCharacterController : public APlayerController
 public:
 	/** The character configuration to use for this player character. */
 	UPROPERTY()
-	UPlayerCharacterConfiguration* CharacterConfiguration;
+	UPlayerCharacterSettings* CharacterConfiguration;
 
 	/** Delegate for when the player controller should start or stop processing player movement input. */
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")

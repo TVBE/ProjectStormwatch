@@ -6,10 +6,11 @@
 #include "CoreMinimal.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
+#include "PlayerCharacterConfig.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-class UPlayerCharacterConfiguration;
+class UPlayerCharacterSettings;
 class UPlayerStateConfiguration;
 class APlayerCharacterController;
 class UCameraComponent;
@@ -26,6 +27,238 @@ enum class ELeftRight : uint8;
 enum class EPlayerLandingType : uint8;
 struct FStepData;
 
+UENUM(BlueprintType)
+enum class ECrouchToggleMode : uint8
+{
+	PressAndHold	UMETA(DisplayName = "Press And Hold"),
+	Toggle			UMETA(DisplayName = "Toggle")
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerCharacterSettings : public FPlayerSettings
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Defines the default movement speed.*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General",
+			  Meta = (DisplayName = "Default Movement Speed", ForceUnits = "cm/s", 
+					  ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
+	float WalkSpeed {300.f};
+
+	/** The maximum allowed slope angle the player character can climb on. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", 
+			  Meta = (DisplayName = "Max Walkable Floor Angle", Units = "Degrees", 
+					  ClampMin = "0", ClampMax = "60", UIMin = "0", UIMax = "60"))
+	float MaxWalkableFloorAngle {35.0f};
+
+	/** The maximum step height the player can perform. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", 
+			  Meta = (DisplayName = "Max Step Height", Units = "Centimeters", ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
+	float MaxStepHeight {30.0f};
+
+	/** When set to enabled, the character is allowed to jump. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
+			  Meta = (DisplayName = "Enable Jumping"))
+	bool JumpingEnabled {true};
+
+	/** Defines the jump velocity of the character. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
+			  Meta = (DisplayName = "Jump Velocity", ClampMin = "0.0", UIMin = "0.0", ClampMax = "1000.0", UIMax = "1000.0", EditCondition = "JumpingEnabled"))
+	float JumpVelocity {440.f};
+
+	/** When set to enabled, the character is allowed to sprint. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
+			  Meta = (DisplayName = "Enable Sprinting"))
+	bool SprintingEnabled {true};
+
+	/** Defines the movement speed when sprinting. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
+			  Meta = (DisplayName = "Sprint Speed", ForceUnits = "cm/s", EditCondition = "SprintingEnabled", ClampMin = "400", ClampMax = "800", UiMin = "400", UIMax = "800"))
+	float SprintSpeed {600.f};
+
+	/** When set to enabled, the character is allowed to crouch. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
+			  Meta = (Displayname = "Enable Crouching"))
+	bool CrouchingEnabled {true};
+
+	/** Defines the characters movement speed while crouched. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
+			  Meta = (Displayname = "Crouch Speed", ForceUnits = "cm/s", EditCondition = "CrouchingEnabled", ClampMin = "0", ClampMax = "300", UiMin = "0", UIMax = "300"))
+	float CrouchSpeed {200.f};
+
+	/** Defines the crouch toggle mode. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
+			  Meta = (EditCondition = "CrouchingEnabled", AdvancedDisplay = "true"))
+	ECrouchToggleMode CrouchToggleMode {ECrouchToggleMode::PressAndHold};
+
+	/** Defines the rotation rate when using a gamepad.*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera",
+			  Meta = (Displayname = "Gamepad Rotation Rate"))
+	float RotationRate {150.f};
+
+	/** When true, camera rotation smoothing is applied to the player. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
+	bool RotationSmoothingEnabled {false};
+
+	/** The rotation smoothing speed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing",
+			  Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
+	float RotationSmoothingSpeed {8.0f};
+
+	/** If true, the player is slowed down when stepping over larger physics bodies. */
+	//UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", 
+	//		  Meta = (DisplayName = "Slow Down Character When Stepping Over Physics Bodies"))
+	//bool StepOverEnabled {true};
+
+	/** The minimum weight of an object required to slow down the player. */
+	//UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
+	//		  Meta = (DisplayName = "Weight Threshold", Units = "Kilograms", ClampMin = "0", EditCondition = "StepOverEnabled"))
+	//float StepOverWeightThreshold {10.0f};
+
+	/** The minimum size of an object required to slow down the player */
+	//UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
+	//		  Meta = (DisplayName = "Size Threshold", ClampMin = "0", EditCondition = "StepOverEnabled"))
+	//float StepOverSizeThreshold {100.0f};
+
+	/** The base speed modifier to apply when the player is performing step-overs. */
+	//UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
+	//		  Meta = (DisplayName = "Base Modifier", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "StepOverEnabled"))
+	//float StepOverBaseSpeedModifier {0.6};
+
+	/** The Weight range in which we apply interaction rotation scaling.
+	 *  X defines the minimum amount of weight before we start fading in the scaling. 
+	 *  Y defines the maximum amount of weight for when we start applying maximum scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight",
+			  Meta = (DisplayName = "Weight Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionRotationWeightRange {FVector2D(8, 25)};
+
+	/** The Weight scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight",
+			  Meta = (DisplayName = "Weight Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationWeightScalars {FVector2D(1.0, 0.4)};
+
+	/** The Bounding box range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size",
+			  Meta = (DisplayName = "Size Range", ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
+	FVector2D InteractionRotationSizeRange {FVector2D(500000, 1000000)};
+
+	/** The Bounding box scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size",
+			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationSizeScalars {FVector2D(1.0, 0.4)};
+
+	/** The Object distance range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance",
+			  Meta = (DisplayName = "Distance Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
+	FVector2D InteractionRotationDistanceRange {FVector2D(25, 150)};
+
+	/** The distance scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance",
+			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationDistanceScalars {FVector2D(1.0, 0.5)};
+
+	/** The offset range in which we apply interaction rotation scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset",
+			  Meta = (DisplayName = "Offset Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
+	FVector2D InteractionRotationOffsetRange {FVector2D(8, 20)};
+
+	/** The offset scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset",
+			  Meta = (DisplayName = "Offset Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionRotationOffsetScalars {FVector2D(1.0, 0.1)};
+
+	/** The Scaling floor for weight and bounding box sized combined. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation ",
+			  Meta = (DisplayName = "Multiplier Floor", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float InteractionRotationFloor {0.4};
+
+	/** The Weight range in which we apply interaction speed scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight",
+			  Meta = (DisplayName = "Weight Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	FVector2D InteractionSpeedWeightRange {FVector2D(8, 25)};
+
+	/** The Weight scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight",
+			  Meta = (DisplayName = "Weight Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionSpeedWeightScalars {FVector2D(1.0, 0.6)};
+
+	/** The Bounding box range in which we apply interaction speed scaling. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size",
+			  Meta = (DisplayName = "Size Range", ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
+	FVector2D InteractionSpeedSizeRange {FVector2D(500000, 1000000)};
+
+	/** The Bounding box scaling range. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size",
+			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	FVector2D InteractionSpeedSizeScalars {FVector2D(1.0, 0.6)};
+
+	/** The Scaling floor for weight and bounding box sized combined. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed ",
+			  Meta = (DisplayName = "Multiplier Floor", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float InteractionSpeedFloor {0.6};
+
+	/** Constructor with default values. */
+	FPlayerCharacterSettings()
+	{
+	}
+
+	friend bool operator==(const FPlayerCharacterSettings& Lhs, const FPlayerCharacterSettings& Rhs)
+	{
+		return Lhs.WalkSpeed == Rhs.WalkSpeed
+			&& Lhs.MaxWalkableFloorAngle == Rhs.MaxWalkableFloorAngle
+			&& Lhs.MaxStepHeight == Rhs.MaxStepHeight
+			&& Lhs.JumpingEnabled == Rhs.JumpingEnabled
+			&& Lhs.JumpVelocity == Rhs.JumpVelocity
+			&& Lhs.SprintingEnabled == Rhs.SprintingEnabled
+			&& Lhs.SprintSpeed == Rhs.SprintSpeed
+			&& Lhs.CrouchingEnabled == Rhs.CrouchingEnabled
+			&& Lhs.CrouchSpeed == Rhs.CrouchSpeed
+			&& Lhs.CrouchToggleMode == Rhs.CrouchToggleMode
+			&& Lhs.RotationRate == Rhs.RotationRate
+			&& Lhs.RotationSmoothingEnabled == Rhs.RotationSmoothingEnabled
+			&& Lhs.RotationSmoothingSpeed == Rhs.RotationSmoothingSpeed
+			// && Lhs.StepOverEnabled == Rhs.StepOverEnabled
+			// && Lhs.StepOverWeightThreshold == Rhs.StepOverWeightThreshold
+			// && Lhs.StepOverSizeThreshold == Rhs.StepOverSizeThreshold
+			// && Lhs.StepOverBaseSpeedModifier == Rhs.StepOverBaseSpeedModifier
+			&& Lhs.InteractionRotationWeightRange == Rhs.InteractionRotationWeightRange
+			&& Lhs.InteractionRotationWeightScalars == Rhs.InteractionRotationWeightScalars
+			&& Lhs.InteractionRotationSizeRange == Rhs.InteractionRotationSizeRange
+			&& Lhs.InteractionRotationSizeScalars == Rhs.InteractionRotationSizeScalars
+			&& Lhs.InteractionRotationDistanceRange == Rhs.InteractionRotationDistanceRange
+			&& Lhs.InteractionRotationDistanceScalars == Rhs.InteractionRotationDistanceScalars
+			&& Lhs.InteractionRotationOffsetRange == Rhs.InteractionRotationOffsetRange
+			&& Lhs.InteractionRotationOffsetScalars == Rhs.InteractionRotationOffsetScalars
+			&& Lhs.InteractionRotationFloor == Rhs.InteractionRotationFloor
+			&& Lhs.InteractionSpeedWeightRange == Rhs.InteractionSpeedWeightRange
+			&& Lhs.InteractionSpeedWeightScalars == Rhs.InteractionSpeedWeightScalars
+			&& Lhs.InteractionSpeedSizeRange == Rhs.InteractionSpeedSizeRange
+			&& Lhs.InteractionSpeedSizeScalars == Rhs.InteractionSpeedSizeScalars
+			&& Lhs.InteractionSpeedFloor == Rhs.InteractionSpeedFloor;
+	}
+};
+
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
+class STORMWATCH_API UPlayerCharacterSettings : public UPlayerCharacterConfigDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	FPlayerCharacterSettings Settings {};
+
+	virtual void Apply(APlayerCharacter* Character);
+};
+
+USTRUCT()
+struct FPlayerCharacterPreset
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPlayerCharacterSettings* CharacterSettings {nullptr};
+};
+
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Character", ShortToolTip = "The main player character for Stormwatch."))
 class STORMWATCH_API APlayerCharacter : public ACharacter
@@ -35,10 +268,13 @@ class STORMWATCH_API APlayerCharacter : public ACharacter
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCharacter, Log, All)
 
 private:
-	/** The character configuration data asset. */
-	UPROPERTY(BlueprintGetter = GetCharacterConfiguration, EditAnywhere, Category = "Configuration",
-			  Meta = (DisplayName = "Character Configuration", DisplayPriority = "0"))
-	UPlayerCharacterConfiguration* Configuration;
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetSettings, Category = "Settings",
+			  Meta = (ShowOnlyInnerProperties))
+	FPlayerCharacterSettings Settings {};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Preset", 
+			  Meta = (ShowOnlyInnerProperties))
+	FPlayerCharacterPreset Presets {};
 
 	/** The camera for the player. */
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetCamera, Category = "Components")
@@ -184,43 +420,36 @@ private:
 	void HandleLandingEnd();
 
 public:
-	/** Returns the Character configuration. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerCharacterConfiguration* GetCharacterConfiguration() const { return Configuration; }
+	FORCEINLINE const FPlayerCharacterSettings& GetSettings() const { return Settings; }
 
-	/** Returns the PlayerCharacterController that is controlling this PlayerCharacter. */
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE UPlayerCharacterSettings* GetCharacterConfiguration() const { return Configuration; }
+
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE APlayerCharacterController* GetPlayerCharacterController() const { return PlayerCharacterController; }
 
-	/** Returns the camera component. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 
-	/** Returns the Player Camera Controller. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerCameraController* GetCameraController() const { return CameraController; }
 
-	/** Returns the PlayerCharacterMovementComponent. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const { return PlayerCharacterMovement; }
 
-	/** Returns the target speed of the player character. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetTargetSpeed() const { return TargetSpeed; }
 
-	/** Returns the scaled speed of the player character. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetScaledSpeed() const { return ScaledSpeed; }
 
-	/** Returns if the character is currently turning in place. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE bool GetIsTurningInPlace() const { return IsTurningInPlace; }
 
-	/** Returns the character yaw delta between the facing direction of the character and the camera. */
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE float GetYawDelta() const { return YawDelta; }
 
-	/** Returns whether the character is currently sprinting. */
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsSprinting() const
 	{
@@ -230,180 +459,6 @@ public:
 		}
 		return false;
 	}
-};
-
-UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerCharacterConfiguration : public UDataAsset
-{
-	GENERATED_BODY()
-
-	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCharacterConfiguration, Log, All)
-
-public:
-	/** Defines the default movement speed.*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General",
-			  Meta = (DisplayName = "Default Movement Speed", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "400", UiMin = "0", UIMax = "400"))
-	float WalkSpeed {300.f};
-
-	/** The maximum allowed slope angle the player character can climb on. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", Meta = (DisplayName = "Max Walkable Floor Angle", Units = "Degrees",
-																			 ClampMin = "0", ClampMax = "60", UIMin = "0", UIMax = "60"))
-	float MaxWalkableFloorAngle {35.0f};
-
-	/** The maximum step height the player can perform. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "General", Meta = (DisplayName = "Max Step Height", Units = "Centimeters",
-																			 ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
-	float MaxStepHeight {30.0f};
-
-	/** When set to enabled, the character is allowed to jump. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
-			  Meta = (DisplayName = "Enable Jumping"))
-	bool IsJumpingEnabled {true};
-
-	/** Defines the jump velocity of the character. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping",
-			  Meta = (DisplayName = "Jump Velocity", ClampMin = "0.0", UIMin = "0.0", ClampMax = "1000.0", UIMax = "1000.0"))
-	float JumpVelocity {440.f};
-
-	/** When set to enabled, the character is allowed to sprint. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
-			  Meta = (DisplayName = "Enable Sprinting"))
-	bool IsSprintingEnabled {true};
-
-	/** Defines the movement speed when sprinting. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprinting",
-			  Meta = (DisplayName = "Sprint Speed", ForceUnits = "cm/s", EditCondition = "IsSprintingEnabled", ClampMin = "400", ClampMax = "800", UiMin = "400", UIMax = "800"))
-	float SprintSpeed {600.f};
-
-	/** When set to enabled, the character is allowed to crouch. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
-			  Meta = (Displayname = "Enable Crouching"))
-	bool IsCrouchingEnabled {true};
-
-	/** Defines the characters movement speed while crouched. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
-			  Meta = (Displayname = "Crouch Speed", ForceUnits = "cm/s", EditCondition = "IsCrouchingEnabled", ClampMin = "0", ClampMax = "300", UiMin = "0", UIMax = "300"))
-	float CrouchSpeed {200.f};
-
-	/** When set to enabled, The crouch button will act as a toggle for the crouch action.
-	 *	Enable this if you do not want the player to have to hold down the crouch button to remain crouched. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crouching",
-			  Meta = (Displayname = "Crouch Toggle Mode", EditCondition = "IsCrouchingEnabled", AdvancedDisplay = "true"))
-	bool EnableCrouchToggle {false};
-
-	/** Defines the rotation rate when using a gamepad.*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera",
-			  Meta = (Displayname = "Gamepad Rotation Rate"))
-	float RotationRate {150.f};
-
-	/** When true, camera rotation smoothing is applied to the player. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing", Meta = (DisplayName = "Enable Rotation Smoothing"))
-	bool IsRotationSmoothingEnabled {false};
-
-	/** The rotation smoothing speed. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation Smoothing",
-			  Meta = (Displayname = "Rotation Smoothing Speed", ClampMin = "0", ClampMax = "20", UiMin = "0", UIMax = "20"))
-	float RotationSmoothingSpeed {8};
-
-	/** If true, the player is slowed down when stepping over larger physics bodies. */
-	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver", Meta = (DisplayName = "Slow Down Character When Stepping Over Physics Bodies"))
-	bool IsStepOverEnabled {true};
-
-	/** The minimum weight of an object required to slow down the player. */
-	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
-			  Meta = (DisplayName = "Weight Threshold", Units = "Kilograms", ClampMin = "0", EditCondition = "IsStepOverEnabled"))
-	float StepOverWeightThreshold {10.0f};
-
-	/** The minimum size of an object required to slow down the player */
-	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
-			  Meta = (DisplayName = "Size Threshold", ClampMin = "0", EditCondition = "IsStepOverEnabled"))
-	float StepOverSizeThreshold {100.0f};
-
-	/** The base speed modifier to apply when the player is performing step-overs. */
-	UPROPERTY(BlueprintReadOnly, Category = "Collision|StepOver",
-			  Meta = (DisplayName = "Base Modifier", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "IsStepOverEnabled"))
-	float StepOverBaseSpeedModifier {0.6};
-
-	/** The Weight range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight",
-			  Meta = (DisplayName = "Weight Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
-	FVector2D InteractionRotationWeightRange {FVector2D(8, 25)};
-
-	/** The Weight scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Weight",
-			  Meta = (DisplayName = "Weight Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationWeightScalars {FVector2D(1.0, 0.4)};
-
-	/** The Bounding box range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size",
-			  Meta = (DisplayName = "Size Range", ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
-	FVector2D InteractionRotationSizeRange {FVector2D(500000, 1000000)};
-
-	/** The Bounding box scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Size",
-			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationSizeScalars {FVector2D(1.0, 0.4)};
-
-	/** The Object distance range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance",
-			  Meta = (DisplayName = "Distance Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
-	FVector2D InteractionRotationDistanceRange {FVector2D(25, 150)};
-
-	/** The distance scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Distance",
-			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationDistanceScalars {FVector2D(1.0, 0.5)};
-
-	/** The offset range in which we apply interaction rotation scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset",
-			  Meta = (DisplayName = "Offset Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "200"))
-	FVector2D InteractionRotationOffsetRange {FVector2D(8, 20)};
-
-	/** The offset scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation|Offset",
-			  Meta = (DisplayName = "Offset Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionRotationOffsetScalars {FVector2D(1.0, 0.1)};
-
-	/** The Scaling floor for weight and bounding box sized combined. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Rotation ",
-			  Meta = (DisplayName = "Multiplier Floor", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	float InteractionRotationFloor {0.4};
-
-	/** The Weight range in which we apply interaction speed scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight",
-			  Meta = (DisplayName = "Weight Range", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
-	FVector2D InteractionSpeedWeightRange {FVector2D(8, 25)};
-
-	/** The Weight scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Weight",
-			  Meta = (DisplayName = "Weight Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionSpeedWeightScalars {FVector2D(1.0, 0.6)};
-
-	/** The Bounding box range in which we apply interaction speed scaling. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size",
-			  Meta = (DisplayName = "Size Range", ClampMin = "0", ClampMax = "2000000", UIMin = "0", UIMax = "2000000"))
-	FVector2D InteractionSpeedSizeRange {FVector2D(500000, 1000000)};
-
-	/** The Bounding box scaling range. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed|Size",
-			  Meta = (DisplayName = "Size Scalars", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	FVector2D InteractionSpeedSizeScalars {FVector2D(1.0, 0.6)};
-
-	/** The Scaling floor for weight and bounding box sized combined. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction|Speed ",
-			  Meta = (DisplayName = "Multiplier Floor", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
-	float InteractionSpeedFloor {0.6};
-
-	/** Constructor with default values. */
-	UPlayerCharacterConfiguration()
-	{
-	}
-
-	/** Applies the character configuration to a PlayerCharacter instance. */
-	void ApplyToPlayerCharacter(const APlayerCharacter* PlayerCharacter);
-
-	/** Applies some values of the character configuration to the player controller and it's corresponding camera manager. */
-	void ApplyToPlayerController(APlayerController* PlayerController);
 };
 
 

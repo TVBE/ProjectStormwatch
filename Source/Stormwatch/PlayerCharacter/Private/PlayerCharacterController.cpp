@@ -370,7 +370,7 @@ void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rot
 		}
 	}
 	
-	if (CharacterConfiguration && CharacterConfiguration->IsRotationSmoothingEnabled)
+	if (CharacterConfiguration && CharacterConfiguration->RotationSmoothingEnabled)
 	{
 		PlayerControlRotation = FMath::RInterpTo(PlayerControlRotation, Rotation, DeltaSeconds, CharacterConfiguration->RotationSmoothingSpeed);
 	}
