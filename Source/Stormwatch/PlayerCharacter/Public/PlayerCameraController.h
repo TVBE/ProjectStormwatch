@@ -273,13 +273,9 @@ UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCameraController, Log, All)
 
 private:
-	/** The configuration asset to use for this component. */
-	UPROPERTY(EditAnywhere, Category = "Configuration", Meta = (DisplayName = "Configuration"))
-	TSoftObjectPtr<UPlayerCameraConfiguration> ConfigurationAsset;
-
-	/** Pointer to the configuration asset for this component. */
-	UPROPERTY(BlueprintGetter = GetConfiguration)
-	UPlayerCameraConfiguration* Configuration;
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetSettings, Category = "Settings",
+			  Meta = (ShowOnlyInnerProperties))
+	FPlayerCameraSettings Settings {};
 
 	/** Pointer to the PlayerCharacter. */
 	UPROPERTY()
@@ -367,7 +363,6 @@ private:
 	float GetFocalDistance(UCameraComponent* Camera) const;
 
 public:
-	/** Returns the Camera configuration. */
-	UFUNCTION(BlueprintGetter, Category = "Camera|Configuration", Meta = (DisplayName = "Get Configuration"))
-	FORCEINLINE UPlayerCameraConfiguration* GetConfiguration() const { return Configuration; }
+	UFUNCTION(BlueprintGetter)
+	const FPlayerSettings& const { return Settings; }
 };

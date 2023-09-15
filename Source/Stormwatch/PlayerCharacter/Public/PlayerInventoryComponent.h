@@ -66,17 +66,17 @@ private:
 public:
 	/** Returns the current selected slot index. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Current Selected Hotbar Slot Index"))
-	FORCEINLINE int32 GetCurrentSelectedSlotIndex() const { return SelectedSlot; }
+	int32 GetCurrentSelectedSlotIndex() const { return SelectedSlot; }
 
 	/** Returns the current selected slot actor. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Current Selected Hotbar Slot Actor"))
-	FORCEINLINE AActor* GetCurrentSelectedSlotActor() const { return SelectedActor; }
+	AActor* GetCurrentSelectedSlotActor() const { return SelectedActor; }
 
 	/** Returns the hotbar size. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Hotbar Size"))
-	FORCEINLINE int32 GetHotbarSize() const { return HotbarSlots; }
+	int32 GetHotbarSize() const { return HotbarSlots; }
 
 	/** Returns the hotbar. */
 	UFUNCTION(BlueprintGetter, Category = "PlayerInventoryComponent", Meta = (DisplayName = "Get Hotbar"))
-	FORCEINLINE TArray<AActor*> GetHotbar() const { return Hotbar; }
+	TArray<AActor*> GetHotbar() const { return Hotbar; }
 };

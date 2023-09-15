@@ -89,8 +89,16 @@ private:
 	/** The inventory component that is used to store actors in the player's inventory.
 	 *	The inventory component is not added by this component.
 	 *	Therefore, we cannot always assume that the component is actually present in the playercharacter instance. */
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetInventoryComponent)
 	UPlayerInventoryComponent* InventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Settings", 
+			  Meta = (ShowOnlyInnerProperties))
+	FPlayerGrabSettings GrabSettings {};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Settings",
+			  Meta = (ShowOnlyInnerProperties))
+	FPlayerDragSettings DragSettings {};
 
 	/** The camera component of the Player Character. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
@@ -164,39 +172,48 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Begins the primary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteration|Actions", Meta = (DisplayName = "Begin Primary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "Begin Primary Interaction", BlueprintProtected))
 	void BeginPrimaryInteraction();
 
 	/** Ends the primary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Primary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "End Primary Interaction", BlueprintProtected))
 	void EndPrimaryInteraction();
 
 	/** Begins the secondary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Begin Secondary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "Begin Secondary Interaction", BlueprintProtected))
 	void BeginSecondaryInteraction();
 
 	/** Ends the secondary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Secondary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "End Secondary Interaction", BlueprintProtected))
 	void EndSecondaryInteraction();
 
 	/** Begins the tertiary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Begin Tertiary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "Begin Tertiary Interaction", BlueprintProtected))
 	void BeginTertiaryInteraction();
 
 	/** Ends the tertiary interaction action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Tertiary Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "End Tertiary Interaction", BlueprintProtected))
 	void EndTertiaryInteraction();
 
 	/** Begins the inventory action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Begin Inventory Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "Begin Inventory Interaction", BlueprintProtected))
 	void BeginInventoryInteraction();
 
 	/** Ends the inventory action. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "End Inventory Interaction", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "End Inventory Interaction", BlueprintProtected))
 	void EndInventoryInteraction();
 
 	/** Handles scroll input. */
-	UFUNCTION(BlueprintCallable, Category = "PlayerInteraction|Actions", Meta = (DisplayName = "Add Scroll Input", BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Actions", 
+			  Meta = (DisplayName = "Add Scroll Input", BlueprintProtected))
 	void AddScrollInput(const float Input);
 
 	/** Adds pitch input to the interaction component. */
@@ -270,41 +287,41 @@ private:
 	bool GetClosestObjectToLocation(FInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FInteractableObjectData> Objects);
 
 public:
-	/** Returns a pointer to the use component. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerUseComponent* GetUseComponent() const { return UseComponent; }
+	UPlayerUseComponent* GetUseComponent() const { return UseComponent; }
 
-	/** Returns a pointer to the grab component. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerGrabComponent* GetGrabComponent() const { return GrabComponent; }
+	UPlayerGrabComponent* GetGrabComponent() const { return GrabComponent; }
 
-	/** Returns a pointer to the drag component. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerDragComponent* GetDragComponent() const { return DragComponent; }
+	UPlayerDragComponent* GetDragComponent() const { return DragComponent; }
+
+	UFUNCTION(BlueprintGetter)
+	UPlayerInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
 
 	/** Returns the object the interaction component is currently interacting with. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
+	AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
 
 	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetIsTertiaryInteractionActive() const { return IsTertiaryInteractionActive; }
+	bool GetIsTertiaryInteractionActive() const { return IsTertiaryInteractionActive; }
 
 	/** Returns whether there is an object in front of the player that can be interacted with. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
+	bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
 
 	/** Returns a pointer to an object that is currently available for interaction. Returns a nullptr if no interactable object is in front of the player. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
+	AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
 
 	/** Returns data about all interactable objects in an actor. This could be the actor itself as well. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE TArray<FInteractableObjectData> GetCurrentInteractableObjects() const { return CurrentInteractableObjects; }
+	TArray<FInteractableObjectData> GetCurrentInteractableObjects() const { return CurrentInteractableObjects; }
 
 	/** Returns data about the the closest interactable object */
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool GetClosestInteractableObject(FInteractableObjectData& InteractableObjectData)
+	bool GetClosestInteractableObject(FInteractableObjectData& InteractableObjectData)
 	{
 		if (!CurrentInteractableActor) { return false; }
 
@@ -314,5 +331,5 @@ public:
 
 	/** Returns the most recent camera trace result. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
+	FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
 };

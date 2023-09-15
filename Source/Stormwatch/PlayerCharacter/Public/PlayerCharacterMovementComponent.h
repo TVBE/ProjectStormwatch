@@ -82,8 +82,8 @@ protected:
 
 public:
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetIsSprinting() const {return IsSprinting; }
+	bool GetIsSprinting() const {return IsSprinting; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetIsJumping() const {return IsJumping; }
+	bool GetIsJumping() const {return IsJumping; }
 };

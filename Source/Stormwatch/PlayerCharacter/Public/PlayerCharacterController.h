@@ -27,10 +27,6 @@ class STORMWATCH_API APlayerCharacterController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	/** The character configuration to use for this player character. */
-	UPROPERTY()
-	UPlayerCharacterSettings* CharacterConfiguration;
-
 	/** Delegate for when the player controller should start or stop processing player movement input. */
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
@@ -115,22 +111,28 @@ public:
 	/** Sets CanProcessRotationInput. This function can only be called by a PlayerSubsystem. */
 	void SetCanProcessRotationInput(const bool Value);
 
-	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 *	@Value Whether a lock should be added or removed.
-	 *	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
+	/**
+	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
+	 * 
+	 *	@param Value		Whether a lock should be added or removed.
+	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerMovementInputLock(const bool Value);
 
-	/** Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	*	@Value Whether a lock should be added or removed.
-	*	@Return If the player can now process movement input or not. This will only be the case if there are zero locks present.
-	*/
+	/** 
+	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
+	 *	
+	 *  @param Value		Whether a lock should be added or removed.
+	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerRotationInputLock(const bool Value);
 
-	/** Fades in the screen for the player from black by a specified amount.
-	 *	@Duration The fade-in duration.
+	/** 
+	 *  Fades in the screen for the player from black by a specified amount.
+	 * 
+	 *	@param Duration		The fade-in duration.
 	 */
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Fade From Black"))
 	void FadePlayerCameraFromBlack(const float Duration);
@@ -242,13 +244,13 @@ private:
 public:
 	/** Returns whether the player controller can process movement input. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+	bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
 
 	/** Returns whether the player controller can process rotation input. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+	bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
 
 	/** Returns the player control rotation. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
+	FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
 };

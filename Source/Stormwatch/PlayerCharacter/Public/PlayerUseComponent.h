@@ -52,8 +52,8 @@ private:
 
 public:
 	/** Returns the actor that is currently in use. */
-	FORCEINLINE AActor* GetActorInUse() const { return ActorInUse; }
+	AActor* GetActorInUse() const { return ActorInUse; }
 
 	/** Returns the object that is currently in use. This object implements the IUsableObject interface. */
-	FORCEINLINE UObject* GetObjectInUse() const { return ObjectInUse; }
+	UObject* GetObjectInUse() const { return ObjectInUse; }
 };

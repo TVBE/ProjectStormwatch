@@ -57,7 +57,7 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::Jump()
 {
-	if (Configuration && Configuration->IsJumpingEnabled)
+	if (Settings.JumpingEnabled)
 	{
 		Super::Jump();
 	}
@@ -121,11 +121,7 @@ void APlayerCharacter::BeginPlay()
 			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
 	}
-
-	if (Configuration)
-	{
-		TargetSpeed = Configuration->WalkSpeed;
-	}
+		TargetSpeed = Settings.WalkSpeed;
 }
 
 /** Called when the controller is changed. */
@@ -151,36 +147,29 @@ void APlayerCharacter::UpdateMovementSpeed()
 {
 	float InteractionMultiplier {1.0f};
 
-	if (InteractionComponent)
-	{
-		const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
-		const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
+	if (!InteractionComponent || !PlayerCharacterMovement) { return; }
 
-		if (GrabComponent->GetGrabbedComponent() || DragComponent->GetGrabbedComponent())
-		{
-			if (const UPrimitiveComponent * PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()})
-			{
-				const float Mass {PrimitiveComponent->GetMass()};
-				const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
-				const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
+	const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
+	const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
 
-				const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-					(Configuration->InteractionSpeedWeightRange, Configuration->InteractionSpeedWeightScalars, Mass))};
+	if (!GrabComponent->GetGrabbedComponent() || !DragComponent->GetGrabbedComponent()) { return; }
 
-				const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-					(Configuration->InteractionSpeedSizeRange, Configuration->InteractionSpeedSizeScalars, BoundingBoxSize))};
+	const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()};
+	
+	const float Mass {PrimitiveComponent->GetMass()};
+	const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
+	const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
 
-				InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, Configuration->InteractionSpeedFloor, 1.0);
-			}
-		}
-	}
+	const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(Settings.InteractionSpeedWeightRange, Settings.InteractionSpeedWeightScalars, Mass))};
+	const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(Settings.InteractionSpeedSizeRange, Settings.InteractionSpeedSizeScalars, BoundingBoxSize))};
 
-	ScaledSpeed = TargetSpeed * InteractionMultiplier;
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = ScaledSpeed;
-		GetCharacterMovement()->MaxWalkSpeedCrouched = Configuration->CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
-	}
+	InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 
+										  Settings.InteractionSpeedFloor, 1.0);
+
+	PlayerCharacterMovement->MaxWalkSpeed = ScaledSpeed;
+	PlayerCharacterMovement->MaxWalkSpeedCrouched = Settings.CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -244,7 +233,7 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::StartSprinting()
 {
-	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting() && Configuration)
+	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting())
 	{
 		TargetSpeed = Settings.SprintSpeed;
 		PlayerCharacterMovement->SetIsSprinting(true);
@@ -351,15 +340,15 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void UPlayerCharacterSettings::Apply(APlayerCharacter* Character)
-{
-	if (!Character) { return; }
-	if (UCharacterMovementComponent * MovementComponent {Character->GetCharacterMovement()})
-	{
-		MovementComponent->MaxWalkSpeed = Settings.WalkSpeed;
-		MovementComponent->JumpZVelocity = Settings.JumpVelocity;
-		MovementComponent->MaxWalkSpeedCrouched = Settings.CrouchSpeed;
-		MovementComponent->SetWalkableFloorAngle(Settings.MaxWalkableFloorAngle);
-		MovementComponent->MaxStepHeight = Settings.MaxStepHeight;
-	}
-}
+//void UPlayerCharacterSettings::Apply(APlayerCharacter* Character)
+//{
+//	if (!Character) { return; }
+//	if (UCharacterMovementComponent * MovementComponent {Character->GetCharacterMovement()})
+//	{
+//		MovementComponent->MaxWalkSpeed = Settings.WalkSpeed;
+//		MovementComponent->JumpZVelocity = Settings.JumpVelocity;
+//		MovementComponent->MaxWalkSpeedCrouched = Settings.CrouchSpeed;
+//		MovementComponent->SetWalkableFloorAngle(Settings.MaxWalkableFloorAngle);
+//		MovementComponent->MaxStepHeight = Settings.MaxStepHeight;
+//	}
+//}

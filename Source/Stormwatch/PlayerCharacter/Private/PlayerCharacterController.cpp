@@ -1,5 +1,5 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
-// Written by Tim Verberne..
+// Written by Tim Verberne.
 
 #include "PlayerCharacterController.h"
 #include "PlayerCharacter.h"
@@ -10,7 +10,6 @@
 #include "PlayerGrabComponent.h"
 #include "PlayerDragComponent.h"
 #include "Camera/CameraComponent.h"
-
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Rotator.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -28,26 +27,6 @@ APlayerCharacterController::APlayerCharacterController()
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	/** Get a pointer to the PlayerCharacter instance this controller is controlling. */
-	if (!GetPawn())
-	{
-		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController is not assigned to a pawn."));
-		return;
-	}
-	PlayerCharacter = Cast<APlayerCharacter>(this->GetPawn());
-	if (PlayerCharacter)
-	{
-		if (PlayerCharacter->GetCharacterConfiguration())
-		{
-			CharacterConfiguration = PlayerCharacter->GetCharacterConfiguration();	
-		}
-	}
-	else
-	{
-		const FString PawnName {UKismetSystemLibrary::GetDisplayName(GetPawn())};
-		UE_LOG(LogPlayerCharacterController, Warning, TEXT("PlayerCharacterController expected a Pawn of type PlayerCharacter, but got assigned to an instance of %s instead"), *PawnName);
-	}
 }
 
 /** Called when the controller possesses a pawn. */
@@ -56,6 +35,10 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	if (!InPawn) { return; }
+
+	PlayerCharacter = Cast<APlayerCharacter>(this->GetPawn());
+
+	if (!PlayerCharacter) { return;  }
 	
 	/** Registers the controller to the player character subsystem. */
 	if (const UWorld* World {GetWorld()})
@@ -65,23 +48,18 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 			PlayerSubsystem->RegisterPlayerController(this);
 		}
 	}
-	
-	if (const UPlayerCameraController* CameraController {Cast<UPlayerCameraController>(InPawn->FindComponentByClass(UPlayerCameraController::StaticClass()))})
+
+	if (const UPlayerCameraController* CameraController {PlayerCharacter->GetCameraController()}) 
 	{
-		if (const UPlayerCameraConfiguration* Configuration {CameraController->GetConfiguration()})
-		{
-			PlayerCameraManager->ViewPitchMax = Configuration->MaximumViewPitch;
-			PlayerCameraManager->ViewPitchMin = Configuration->MinimumViewPitch;
-		}
+		PlayerCameraManager->ViewPitchMax = CameraController->GetSettings().MaximumViewPitch;
+		PlayerCameraManager->ViewPitchMin = CameraController->GetSettings().MinimumViewPitch;
 	}
-	
-	InteractionComponent = Cast<UPlayerInteractionComponent>(InPawn->FindComponentByClass(UPlayerInteractionComponent::StaticClass()));
 }
 
 /** Called when the controller is constructed. */
 void APlayerCharacterController::SetupInputComponent()
 {
-	Super :: SetupInputComponent ();
+	Super::SetupInputComponent ();
 
 	InputComponent->BindAxis(TEXT("Horizontal Rotation"), this, &APlayerCharacterController::HandleHorizontalRotation);
 	InputComponent->BindAxis(TEXT("Vertical Rotation"), this,  &APlayerCharacterController::HandleVerticalRotation);

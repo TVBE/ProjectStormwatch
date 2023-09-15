@@ -453,34 +453,34 @@ private:
 
 public:
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE const FPlayerCharacterSettings& GetSettings() const { return Settings; }
+	const FPlayerCharacterSettings& GetSettings() const { return Settings; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE APlayerCharacterController* GetPlayerCharacterController() const { return PlayerCharacterController; }
+	APlayerCharacterController* GetPlayerCharacterController() const { return PlayerCharacterController; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+	UCameraComponent* GetCamera() const { return Camera; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerCameraController* GetCameraController() const { return CameraController; }
+	UPlayerCameraController* GetCameraController() const { return CameraController; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const { return PlayerCharacterMovement; }
+	UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const { return PlayerCharacterMovement; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE float GetTargetSpeed() const { return TargetSpeed; }
+	float GetTargetSpeed() const { return TargetSpeed; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE float GetScaledSpeed() const { return ScaledSpeed; }
+	float GetScaledSpeed() const { return ScaledSpeed; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE bool GetIsTurningInPlace() const { return IsTurningInPlace; }
+	bool GetIsTurningInPlace() const { return IsTurningInPlace; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE float GetYawDelta() const { return YawDelta; }
+	float GetYawDelta() const { return YawDelta; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool IsSprinting() const
+	bool IsSprinting() const
 	{
 		if (PlayerCharacterMovement)
 		{

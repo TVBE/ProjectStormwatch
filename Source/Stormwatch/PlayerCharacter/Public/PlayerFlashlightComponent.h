@@ -102,15 +102,15 @@ private:
 public:
 	/** Returns the flashlight component. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE USpotLightComponent* GetFlashlight() const { return Flashlight; }
+	USpotLightComponent* GetFlashlight() const { return Flashlight; }
 
 	/** Returns the flashlight SpringArmComponent. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE USpringArmComponent* GetFlashlightSpringArm() const { return FlashlightSpringArm; }
+	USpringArmComponent* GetFlashlightSpringArm() const { return FlashlightSpringArm; }
 
 	/** Returns the Flashlight configuration. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const { return Configuration; }
+	UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const { return Configuration; }
 };
 
 /** Enumeration for defining the socket rotation axis. */

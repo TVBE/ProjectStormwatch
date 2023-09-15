@@ -116,14 +116,14 @@ public:
 	UPROPERTY()
 	UPlayerInteractionComponent* InteractionComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Drag Configuration")
-	FPlayerDragSettings* Configuration;
-
 	/** Multiplier used to change the rotation speed of the camera when dragging an object. */
 	UPROPERTY()
 	float CameraRotationMultiplier {1.0f};
 
 private:
+	UPROPERTY(BlueprintGetter = GetSettings, Category = "Settings")
+	FPlayerDragSettings Settings {};
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
 
@@ -152,6 +152,8 @@ private:
 public:
 	virtual void OnRegister() override;
 
+	void Initialize(FPlayerDragSettings& InSettings) { Settings = InSettings; }
+
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -175,7 +177,7 @@ private:
 public:
 	/** Returns the actor that is currently being grabbed. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
-	FORCEINLINE AActor* GetDraggedActor() const
+	AActor* GetDraggedActor() const
 	{
 		if (const UPrimitiveComponent * Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
 		return nullptr;
@@ -183,5 +185,8 @@ public:
 
 	/** Returns the location the drag component is dragging the mesh from. */
 	FVector GetDragLocation() const;
+
+	UFUNCTION(BlueprintGetter)
+	const FPlayerDragSettings& GetSettings() const { return Settings; }
 };
 

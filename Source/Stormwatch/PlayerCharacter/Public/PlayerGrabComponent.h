@@ -156,10 +156,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
 	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;
 
-	/** Pointer to the configuration data asset instance for this component. */
-	UPROPERTY()
-	UPlayerGrabConfiguration* Configuration;
-
 	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
 	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
 	bool RotationMode;
@@ -169,6 +165,9 @@ public:
 	float CameraRotationMultiplier {1.0f};
 
 private:
+	UPROPERTY(BlueprintGetter = GetSettings, Category = "Settings")
+	FPlayerGrabSettings Settings {};
+
 	/** Pointer to the camera component of the player. */
 	UPROPERTY()
 	UCameraComponent* Camera;
@@ -240,13 +239,10 @@ private:
 	UPROPERTY()
 	FVector ThrowVelocity;
 
-	UFUNCTION()
-	void UpdateThrowTimer(float DeltaTime);
-
-	void VisualizeProjectilePath(AActor* ProjectileActor, FVector StartLocation, FVector LaunchVelocity);
-
 public:
 	UPlayerGrabComponent();
+
+	void Initialize(FPlayerGrabSettings& InSettings) { Settings = InSettings; }
 
 	/** Grabs an actor. */
 	UFUNCTION(BlueprintCallable)
@@ -289,10 +285,18 @@ private:
 
 	void StopPrimingThrow();
 
+	UFUNCTION()
+	void UpdateThrowTimer(float DeltaTime);
+
+	void VisualizeProjectilePath(AActor* ProjectileActor, FVector StartLocation, FVector LaunchVelocity);
+
 public:
+	UFUNCTION(BlueprintGetter)
+	const FPlayerGrabSettings& GetSettings() const { return Settings; }
+
 	/** Returns the actor that is currently being grabbed. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
-	FORCEINLINE AActor* GetGrabbedActor() const
+	AActor* GetGrabbedActor() const
 	{
 		if (const UPrimitiveComponent * Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
 		return nullptr;
@@ -300,13 +304,13 @@ public:
 
 	/** Returns whether the grab component is currently in rotation mode or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Rotation Mode Active"))
-	FORCEINLINE bool GetIsRotationModeActive() const { return RotationMode; }
+	bool GetIsRotationModeActive() const { return RotationMode; }
 
 	/** Returns whether the grab component is priming throw on an object or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
-	FORCEINLINE bool GetIsPrimingThrow() const { return IsPrimingThrow; }
+	bool GetIsPrimingThrow() const { return IsPrimingThrow; }
 
 	/** Returns whether the grab component will throw an object on release or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
-	FORCEINLINE bool GetWillThrowOnRelease() const { return WillThrowOnRelease; }
+	bool GetWillThrowOnRelease() const { return WillThrowOnRelease; }
 };

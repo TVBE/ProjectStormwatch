@@ -2,16 +2,13 @@
 // Written by Tim Verberne.
 
 #include "PlayerCameraController.h"
-
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/KismetMathLibrary.h"
-
 #if WITH_EDITOR
 #include "Editor/UnrealEd/Public/Editor.h"
 #endif

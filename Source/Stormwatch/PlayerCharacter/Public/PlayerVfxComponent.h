@@ -43,8 +43,8 @@ private:
 
 public:
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Left Foot Particle Emitter"))
-	FORCEINLINE UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootEmitter; }
+	UNiagaraComponent* GetLeftFootParticleEmitter() const {return LeftFootEmitter; }
 
 	UFUNCTION(BlueprintGetter, Category = "PlayerCharacter|Components", Meta = (DisplayName = "Right Foot Particle Emitter"))
-	FORCEINLINE UNiagaraComponent* GetRightFootParticleEmitter() const {return RightFootEmitter; }
+	UNiagaraComponent* GetRightFootParticleEmitter() const {return RightFootEmitter; }
 };

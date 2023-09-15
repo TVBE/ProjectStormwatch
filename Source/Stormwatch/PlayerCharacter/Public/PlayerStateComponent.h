@@ -19,7 +19,7 @@ enum class EPlayerStateValue : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerStateSettings : public FPlayerSettings
+struct FPlayerStateSettings
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -40,13 +40,13 @@ struct FPlayerStateSettings : public FPlayerSettings
 	float JumpExertionCost {5.0f};
 };
 
-UCLASS(BlueprintType, ClassGroup = (PlayerCharacter))
-class STORMWATCH_API UPlayerStateSettings : public UPlayerCharacterConfigDataAsset
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
+class STORMWATCH_API UPlayerStateSettings : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
 	FPlayerStateSettings Settings {};
 };
 
@@ -132,50 +132,35 @@ private:
 	void UpdatePlayerState();
 
 protected:
-	/** Increments a state value with a given amount, up to the maximum allowed value of that type.
-	 *	@Param Type The state value to increment.
-	 *	@Param Value The value to increment the state value with.
-	 *	@Return The state value after the incrementation.
-	 */
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Increment Value", BlueprintProtected))
 	float IncrementStateValue(const EPlayerStateValue Type, const float Value);
 
-	/** Decrements a state value with a given amount, up to the minimum allowed value of that type.
-	 *	@Param Type The state value to decrement.
-	 *	@Param Value The value to decrement the state value with.
-	 *	@Return The state value after the decrementation.
-	 */
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Decrement Value", BlueprintProtected))
 	float DecrementStateValue(const EPlayerStateValue Type, const float Value);
 
-	/** Sets a state value with a given amount, up to the maximum allowed value of that type.
-	 *	@Param Type The state value to set.
-	 *	@Param Value The value to set the state value with.
-	 *	@Return The state value after the setter.
-	 */
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Set Value", BlueprintProtected))
 	float SetStateValue(const EPlayerStateValue Type, const float Value);
 
 public:
 	/** Returns the configuration for the player state component. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Configuration", Meta = (DisplayName = "Get Configuration"))
-	FORCEINLINE UPlayerStateConfiguration* GetConfiguration() const { return Configuration; }
+	UPlayerStateConfiguration* GetConfiguration() const { return Configuration; }
 
 	/** Returns the current pain of the player character. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Pain", Meta = (DisplayName = "Get Pain"))
-	FORCEINLINE float GetPain() const { return Pain; }
+	float GetPain() const { return Pain; }
 
 	/** Returns the current exertion of the player character. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Exertion", Meta = (DisplayName = "Get Exertion"))
-	FORCEINLINE float GetExertion() const { return Exertion; }
+	float GetExertion() const { return Exertion; }
 
 	/** Returns the current fear value of the player character. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Fear", Meta = (DisplayName = "Get Fear"))
-	FORCEINLINE float GetFear() const { return Fear; }
+	float GetFear() const { return Fear; }
 
 	/** Returns the current vigilance value of the player character. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Vigilance", Meta = (DisplayName = "Get Vigilance"))
-	FORCEINLINE float GetVigilance() const { return Vigilance; }
+	float GetVigilance() const { return Vigilance; }
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "PlayerState|Events", Meta = (DisplayName = "On Update"))

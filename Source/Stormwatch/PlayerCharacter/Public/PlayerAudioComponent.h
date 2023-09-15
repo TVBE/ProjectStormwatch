@@ -51,5 +51,5 @@ private:
 public:
 	/** Returns the body AudioComponent. */
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
+	UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
 };
