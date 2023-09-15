@@ -35,7 +35,7 @@ enum class ECrouchToggleMode : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerCharacterSettings : public FPlayerSettings
+struct FPlayerCharacterSettings
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -198,9 +198,7 @@ struct FPlayerCharacterSettings : public FPlayerSettings
 	float InteractionSpeedFloor {0.6};
 
 	/** Constructor with default values. */
-	FPlayerCharacterSettings()
-	{
-	}
+	FPlayerCharacterSettings() {}
 
 	friend bool operator==(const FPlayerCharacterSettings& Lhs, const FPlayerCharacterSettings& Rhs)
 	{
@@ -236,18 +234,52 @@ struct FPlayerCharacterSettings : public FPlayerSettings
 			&& Lhs.InteractionSpeedSizeScalars == Rhs.InteractionSpeedSizeScalars
 			&& Lhs.InteractionSpeedFloor == Rhs.InteractionSpeedFloor;
 	}
+
+	/**
+	 * Interpolates between two structs based on an alpha value.
+	 * 
+	 * @param Output	The result of the interpolation.
+	 * @param Lhs		The left hand side of the interpolation. Corresponds to alpha = 0;
+	 * @param Rhs		The right hand side of the interpolation. Corresponds to alpha = 1;
+	 * @param Alpha		The alpha to use for the interpolation, is clamped between 0 and 1.
+	 */
+	static void Interpolate(FPlayerCharacterSettings& Output, const FPlayerCharacterSettings& Lhs, 
+							const FPlayerCharacterSettings& Rhs, float Alpha)
+	{
+		Alpha = FMath::Clamp(Alpha, 0.0f, 1.0f);
+
+		Output.WalkSpeed =							FMath::Lerp(Lhs.WalkSpeed, Rhs.WalkSpeed, Alpha);
+		Output.MaxWalkableFloorAngle =				FMath::Lerp(Lhs.MaxWalkableFloorAngle, Rhs.MaxWalkableFloorAngle, Alpha);
+		Output.MaxStepHeight =						FMath::Lerp(Lhs.MaxStepHeight, Rhs.MaxStepHeight, Alpha);
+		Output.JumpVelocity =						FMath::Lerp(Lhs.JumpVelocity, Rhs.JumpVelocity, Alpha);
+		Output.SprintSpeed =						FMath::Lerp(Lhs.SprintSpeed, Rhs.SprintSpeed, Alpha);
+		Output.CrouchSpeed =						FMath::Lerp(Lhs.CrouchSpeed, Rhs.CrouchSpeed, Alpha);
+		Output.RotationRate =						FMath::Lerp(Lhs.RotationRate, Rhs.RotationRate, Alpha);
+		Output.RotationSmoothingSpeed =				FMath::Lerp(Lhs.RotationSmoothingSpeed, Rhs.RotationSmoothingSpeed, Alpha);
+		Output.InteractionRotationWeightRange =		FMath::Lerp(Lhs.InteractionRotationWeightRange, Rhs.InteractionRotationWeightRange, Alpha);
+		Output.InteractionRotationSizeRange =		FMath::Lerp(Lhs.InteractionRotationSizeRange, Rhs.InteractionRotationSizeRange, Alpha);
+		Output.InteractionRotationDistanceRange =	FMath::Lerp(Lhs.InteractionRotationDistanceRange, Rhs.InteractionRotationDistanceRange, Alpha);
+		Output.InteractionRotationOffsetRange =		FMath::Lerp(Lhs.InteractionRotationOffsetRange, Rhs.InteractionRotationOffsetRange, Alpha);
+		Output.InteractionSpeedWeightRange =		FMath::Lerp(Lhs.InteractionSpeedWeightRange, Rhs.InteractionSpeedWeightRange, Alpha);
+		Output.InteractionSpeedSizeRange =			FMath::Lerp(Lhs.InteractionSpeedSizeRange, Rhs.InteractionSpeedSizeRange, Alpha);
+		Output.InteractionSpeedFloor =				FMath::Lerp(Lhs.InteractionSpeedFloor, Rhs.InteractionSpeedFloor, Alpha);
+
+		Output.JumpingEnabled =						Alpha > 0.5f ? Rhs.JumpingEnabled : Lhs.JumpingEnabled;
+		Output.SprintingEnabled =					Alpha > 0.5f ? Rhs.SprintingEnabled : Lhs.SprintingEnabled;
+		Output.CrouchingEnabled =					Alpha > 0.5f ? Rhs.CrouchingEnabled : Lhs.CrouchingEnabled;
+		Output.CrouchToggleMode =					Alpha > 0.5f ? Rhs.CrouchToggleMode : Lhs.CrouchToggleMode;
+		Output.RotationSmoothingEnabled =			Alpha > 0.5f ? Rhs.RotationSmoothingEnabled : Lhs.RotationSmoothingEnabled;
+	}
 };
 
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerCharacterSettings : public UPlayerCharacterConfigDataAsset
+class STORMWATCH_API UPlayerCharacterSettings : public  UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
 	FPlayerCharacterSettings Settings {};
-
-	virtual void Apply(APlayerCharacter* Character);
 };
 
 USTRUCT()
@@ -422,9 +454,6 @@ private:
 public:
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE const FPlayerCharacterSettings& GetSettings() const { return Settings; }
-
-	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UPlayerCharacterSettings* GetCharacterConfiguration() const { return Configuration; }
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE APlayerCharacterController* GetPlayerCharacterController() const { return PlayerCharacterController; }

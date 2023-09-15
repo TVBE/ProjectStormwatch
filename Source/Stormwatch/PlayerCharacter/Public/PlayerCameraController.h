@@ -173,38 +173,79 @@ struct FPlayerCameraSettings
 
 	friend bool operator==(const FPlayerCameraSettings& Lhs, const FPlayerCameraSettings& Rhs)
 	{
-		return
-			Lhs.CameraOffset == Rhs.CameraOffset &&
-			Lhs.CrouchedCameraOffset == Rhs.CrouchedCameraOffset &&
-			Lhs.MaximumViewPitch == Rhs.MaximumViewPitch &&
-			Lhs.MinimumViewPitch == Rhs.MinimumViewPitch &&
-			Lhs.IsDynamicFOVEnabled == Rhs.IsDynamicFOVEnabled &&
-			Lhs.DefaultFOV == Rhs.DefaultFOV &&
-			Lhs.SprintFOV == Rhs.SprintFOV &&
-			Lhs.IsDynamicDOFEnabled == Rhs.IsDynamicDOFEnabled &&
-			Lhs.MinimumFocalDistance == Rhs.MinimumFocalDistance &&
-			Lhs.MaximumFocalDistance == Rhs.MaximumFocalDistance &&
-			Lhs.MacroBlurFocus == Rhs.MacroBlurFocus &&
-			Lhs.LongShotBlurFocus == Rhs.LongShotBlurFocus &&
-			Lhs.MacroBlurAmount == Rhs.MacroBlurAmount &&
-			Lhs.LongShotBlurAmount == Rhs.LongShotBlurAmount &&
-			Lhs.DynamicDofSpeed == Rhs.DynamicDofSpeed &&
-			Lhs.IsDynamicVignetteEnabled == Rhs.IsDynamicVignetteEnabled &&
-			Lhs.DefaultVignetteIntensity == Rhs.DefaultVignetteIntensity &&
-			Lhs.SprintVignetteIntensity == Rhs.SprintVignetteIntensity &&
-			Lhs.IsCameraSwayEnabled == Rhs.IsCameraSwayEnabled &&
-			Lhs.CameraSwayIntensity == Rhs.CameraSwayIntensity &&
-			Lhs.SocketRotationIntensity == Rhs.SocketRotationIntensity &&
-			Lhs.CrouchedSocketRotationIntensity == Rhs.CrouchedSocketRotationIntensity &&
-			Lhs.IsCentripetalRotationEnabled == Rhs.IsCentripetalRotationEnabled &&
-			Lhs.MaxCentripetalRotation == Rhs.MaxCentripetalRotation &&
-			Lhs.CentripetalRotationIntensity == Rhs.CentripetalRotationIntensity &&
-			Lhs.VelocityCentripetalRotation == Rhs.VelocityCentripetalRotation &&
-			Lhs.RotationCentripetalRotation == Rhs.RotationCentripetalRotation &&
-			Lhs.IsCentripetalRotationSprintOnly == Rhs.IsCentripetalRotationSprintOnly &&
-			Lhs.CentripetalRotationNonSprintMultiplier == Rhs.CentripetalRotationNonSprintMultiplier;
+		return Lhs.CameraOffset == Rhs.CameraOffset
+			&& Lhs.CrouchedCameraOffset == Rhs.CrouchedCameraOffset
+			&& Lhs.MaximumViewPitch == Rhs.MaximumViewPitch
+			&& Lhs.MinimumViewPitch == Rhs.MinimumViewPitch
+			&& Lhs.IsDynamicFOVEnabled == Rhs.IsDynamicFOVEnabled
+			&& Lhs.DefaultFOV == Rhs.DefaultFOV
+			&& Lhs.SprintFOV == Rhs.SprintFOV
+			&& Lhs.IsDynamicDOFEnabled == Rhs.IsDynamicDOFEnabled
+			&& Lhs.MinimumFocalDistance == Rhs.MinimumFocalDistance
+			&& Lhs.MaximumFocalDistance == Rhs.MaximumFocalDistance
+			&& Lhs.MacroBlurFocus == Rhs.MacroBlurFocus
+			&& Lhs.LongShotBlurFocus == Rhs.LongShotBlurFocus
+			&& Lhs.MacroBlurAmount == Rhs.MacroBlurAmount
+			&& Lhs.LongShotBlurAmount == Rhs.LongShotBlurAmount
+			&& Lhs.DynamicDofSpeed == Rhs.DynamicDofSpeed
+			&& Lhs.IsDynamicVignetteEnabled == Rhs.IsDynamicVignetteEnabled
+			&& Lhs.DefaultVignetteIntensity == Rhs.DefaultVignetteIntensity
+			&& Lhs.SprintVignetteIntensity == Rhs.SprintVignetteIntensity
+			&& Lhs.IsCameraSwayEnabled == Rhs.IsCameraSwayEnabled
+			&& Lhs.CameraSwayIntensity == Rhs.CameraSwayIntensity
+			&& Lhs.SocketRotationIntensity == Rhs.SocketRotationIntensity
+			&& Lhs.CrouchedSocketRotationIntensity == Rhs.CrouchedSocketRotationIntensity
+			&& Lhs.IsCentripetalRotationEnabled == Rhs.IsCentripetalRotationEnabled
+			&& Lhs.MaxCentripetalRotation == Rhs.MaxCentripetalRotation
+			&& Lhs.CentripetalRotationIntensity == Rhs.CentripetalRotationIntensity
+			&& Lhs.VelocityCentripetalRotation == Rhs.VelocityCentripetalRotation
+			&& Lhs.RotationCentripetalRotation == Rhs.RotationCentripetalRotation
+			&& Lhs.IsCentripetalRotationSprintOnly == Rhs.IsCentripetalRotationSprintOnly
+			&& Lhs.CentripetalRotationNonSprintMultiplier == Rhs.CentripetalRotationNonSprintMultiplier;
 	}
 
+	/**
+	 * Interpolates between two structs based on an alpha value.
+	 *
+	 * @param Output	The result of the interpolation.
+	 * @param Lhs		The left hand side of the interpolation. Corresponds to alpha = 0;
+	 * @param Rhs		The right hand side of the interpolation. Corresponds to alpha = 1;
+	 * @param Alpha		The alpha to use for the interpolation, is clamped between 0 and 1.
+	 */
+	static void Interpolate(FPlayerCameraSettings& Output, const FPlayerCameraSettings& Lhs,
+							FPlayerCameraSettings& Rhs, float Alpha) 
+	{
+		Output.CameraOffset =								FMath::Lerp(Lhs.CameraOffset, Rhs.CameraOffset, Alpha);
+		Output.CrouchedCameraOffset =						FMath::Lerp(Lhs.CrouchedCameraOffset, Rhs.CrouchedCameraOffset, Alpha);
+		Output.MaximumViewPitch =							FMath::Lerp(Lhs.MaximumViewPitch, Rhs.MaximumViewPitch, Alpha);
+		Output.MinimumViewPitch =							FMath::Lerp(Lhs.MinimumViewPitch, Rhs.MinimumViewPitch, Alpha);
+		Output.DefaultFOV =									FMath::Lerp(Lhs.DefaultFOV, Rhs.DefaultFOV, Alpha);
+		Output.SprintFOV =									FMath::Lerp(Lhs.SprintFOV, Rhs.SprintFOV, Alpha);
+		Output.MinimumFocalDistance =						FMath::Lerp(Lhs.MinimumFocalDistance, Rhs.MinimumFocalDistance, Alpha);
+		Output.MaximumFocalDistance =						FMath::Lerp(Lhs.MaximumFocalDistance, Rhs.MaximumFocalDistance, Alpha);
+		Output.MacroBlurFocus =								FMath::Lerp(Lhs.MacroBlurFocus, Rhs.MacroBlurFocus, Alpha);
+		Output.LongShotBlurFocus =							FMath::Lerp(Lhs.LongShotBlurFocus, Rhs.LongShotBlurFocus, Alpha);
+		Output.MacroBlurAmount =							FMath::Lerp(Lhs.MacroBlurAmount, Rhs.MacroBlurAmount, Alpha);
+		Output.LongShotBlurAmount =							FMath::Lerp(Lhs.LongShotBlurAmount, Rhs.LongShotBlurAmount, Alpha);
+		Output.DynamicDofSpeed =							FMath::Lerp(Lhs.DynamicDofSpeed, Rhs.DynamicDofSpeed, Alpha);
+		Output.DefaultVignetteIntensity =					FMath::Lerp(Lhs.DefaultVignetteIntensity, Rhs.DefaultVignetteIntensity, Alpha);
+		Output.SprintVignetteIntensity =					FMath::Lerp(Lhs.SprintVignetteIntensity, Rhs.SprintVignetteIntensity, Alpha);
+		Output.CameraSwayIntensity =						FMath::Lerp(Lhs.CameraSwayIntensity, Rhs.CameraSwayIntensity, Alpha);
+		Output.SocketRotationIntensity =					FMath::Lerp(Lhs.SocketRotationIntensity, Rhs.SocketRotationIntensity, Alpha);
+		Output.CrouchedSocketRotationIntensity =			FMath::Lerp(Lhs.CrouchedSocketRotationIntensity, Rhs.CrouchedSocketRotationIntensity, Alpha);
+		Output.MaxCentripetalRotation =						FMath::Lerp(Lhs.MaxCentripetalRotation, Rhs.MaxCentripetalRotation, Alpha);
+		Output.CentripetalRotationIntensity =				FMath::Lerp(Lhs.CentripetalRotationIntensity, Rhs.CentripetalRotationIntensity, Alpha);
+		Output.VelocityCentripetalRotation =				FMath::Lerp(Lhs.VelocityCentripetalRotation, Rhs.VelocityCentripetalRotation, Alpha);
+		Output.RotationCentripetalRotation =				FMath::Lerp(Lhs.RotationCentripetalRotation, Rhs.RotationCentripetalRotation, Alpha);
+		Output.CentripetalRotationNonSprintMultiplier =		FMath::Lerp(Lhs.CentripetalRotationNonSprintMultiplier, Rhs.CentripetalRotationNonSprintMultiplier, Alpha);
+
+		Output.IsDynamicFOVEnabled =						Alpha > 0.5f ? Lhs.IsDynamicFOVEnabled : Rhs.IsDynamicFOVEnabled;
+		Output.IsDynamicDOFEnabled =						Alpha > 0.5f ? Lhs.IsDynamicDOFEnabled : Rhs.IsDynamicDOFEnabled;
+		Output.IsDynamicVignetteEnabled =					Alpha > 0.5f ? Lhs.IsDynamicVignetteEnabled : Rhs.IsDynamicVignetteEnabled;
+		Output.IsCameraSwayEnabled =						Alpha > 0.5f ? Lhs.IsCameraSwayEnabled : Rhs.IsCameraSwayEnabled;
+		Output.IsCentripetalRotationEnabled =				Alpha > 0.5f ? Lhs.IsCentripetalRotationEnabled : Rhs.IsCentripetalRotationEnabled;
+		Output.IsCentripetalRotationSprintOnly =			Alpha > 0.5f ? Lhs.IsCentripetalRotationSprintOnly : Rhs.IsCentripetalRotationSprintOnly;
+	}
 
 	/** Applies the camera configuration to a PlayerCharacter instance. */
 	void ApplyToCamera(UCameraComponent* Camera);
@@ -216,8 +257,8 @@ class STORMWATCH_API UPlayerCameraSettings : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
-	FPlayerCharacterSettings Setting {};
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	FPlayerCameraSettings Setting {};
 };
 
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.

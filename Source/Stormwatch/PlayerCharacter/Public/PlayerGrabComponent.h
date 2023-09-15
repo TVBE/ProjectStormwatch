@@ -16,6 +16,134 @@ class APlayerCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, const AActor*, GrabbedActor);
 
+USTRUCT(BlueprintType)
+struct FPlayerGrabSettings
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** The location where the holding hand should be relative to the physics grab component.*/
+	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	FVector RelativeHoldingHandLocation {70.0f, 60.0f, -30.0f};
+
+	/** The distance on which the player will let the prop go*/
+	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	float LetGoDistance {150.0f};
+
+	/** The amount that the rotation speed decreases when holding objects at a distance.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
+	float CameraRotationDecreasingStrength {0.3f};
+
+	/** The distance where the object will move towards the hand location.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
+	float BeginHandOffsetDistance {50.0f};
+
+	/** The minimum zoom level. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom",
+			  Meta = (Units = "cm", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
+	float MinZoomLevel {0.0f};
+
+	/** The maximum zoom level. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", 
+			  Meta = (Units = "cm", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
+	float MaxZoomLevel {200.0f};
+
+	/** The speed at which you can zoom. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float ZoomSpeed {1500.0f};
+
+	/** The speed at which the object will return to your hand depending on how fast you walk. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float ReturnZoomSpeed {1000.0f};
+
+	/** The time it takes to start priming the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	float PrimeDelay {0.1f};
+
+	/** The curve to set the minimum and maximum strength the player can throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UCurveFloat* ThrowStrengthCurve {nullptr};
+
+	/** The time it will take to fully charge a throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	float ThrowChargeTime {1.3f};
+
+	/** The zoom level for the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	float ThrowingZoomLevel {0.0f};
+
+	/** The speed at which the items goes to the throwing zoom level*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	float ToThrowingZoomSpeed {1000.0f};
+
+	/**The distance the object will back up when you charge the throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	FVector ThrowingBackupVector {-10.0, 0.0, 0.0};
+
+	/**The strength of the shaking when charging a throw.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	float ThrowingShakeSize {0.07f};
+
+	/** Linear damping of the handle spring. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+			  Meta = (DisplayName = "Linear Damping"))
+	float MaxZoomLinearDamping {200.0f};
+
+	/** Linear stiffness of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+			  Meta = (DisplayName = "Linear Stiffness"))
+	float MaxZoomLinearStiffness {750.0f};
+
+	/** Angular damping of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+			  Meta = (DisplayName = "Angular Damping"))
+	float MaxZoomAngularDamping {500.0f};
+
+	/** Angular stiffness of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+			  Meta = (DisplayName = "Angular Stiffness"))
+	float MaxZoomAngularStiffness {1500.0f};
+
+	/** How quickly we interpolate the physics target transform */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+			  Meta = (DisplayName = "Interpolation Speed"))
+	float MaxZoomInterpolationSpeed {50.0f};
+
+	/** Linear damping of the handle spring. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+			  Meta = (DisplayName = "Linear Damping"))
+	float MinZoomLinearDamping {200.0f};
+
+	/** Linear stiffness of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+			  Meta = (DisplayName = "Linear Stiffness"))
+	float MinZoomLinearStiffness {750.0f};
+
+	/** Angular damping of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+			  Meta = (DisplayName = "Angular Damping"))
+	float MinZoomAngularDamping {500.0f};
+
+	/** Angular stiffness of the handle spring */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+			  Meta = (DisplayName = "Angular Stiffness"))
+	float MinZoomAngularStiffness {1500.0f};
+
+	/** How quickly we interpolate the physics target transform */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+			  Meta = (DisplayName = "Interpolation Speed"))
+	float MinZoomInterpolationSpeed {50.0f};
+};
+
+UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
+class STORMWATCH_API UPlayerGrabSettings : public  UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
+	FPlayerGrabSettings Settings {};
+};
+
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
 class UPlayerGrabComponent : public UPhysicsHandleComponent
@@ -181,113 +309,4 @@ public:
 	/** Returns whether the grab component will throw an object on release or not. */
 	UFUNCTION(BlueprintGetter, Category = "GrabComponent", Meta = (DisplayName = "Is Priming Throw"))
 	FORCEINLINE bool GetWillThrowOnRelease() const { return WillThrowOnRelease; }
-};
-
-/** Configuration asset to fine tune all variables within the physics grab component*/
-UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerGrabConfiguration : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	/** The location where the holding hand should be relative to the physics grab component.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Player Physics Grab")
-	FVector RelativeHoldingHandLocation {70.0f, 60.0f, -30.0f};
-
-	/** The distance on which the player will let the prop go*/
-	UPROPERTY(EditDefaultsOnly, Category = "Player Physics Grab")
-	float LetGoDistance {150.0f};
-
-	/** The minimum zoom level in UE units. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float MinZoomLevel {0.0f};
-
-	/** The maximum zoom level in UE units.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float MaxZoomLevel {200.0f};
-
-	/** The amount that the rotation speed decreases when holding objects at a distance.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float CameraRotationDecreasingStrength {0.3f};
-
-	/** The distance where the object will move towards the hand location.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float BeginHandOffsetDistance {50.0f};
-
-	/**The speed at which you can zoom.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float ZoomSpeed {1500.0f};
-
-	/** The speed at which the object will return to your hand depending on how fast you walk.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
-	float WalkingRetunZoomSpeed {1000.0f};
-
-	// ... Throw variables ...
-
-	/** The time it takes to start priming the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	float PrePrimingThrowDelayTime {0.1f};
-
-	/** The curve to set the minimum and maximum strength the player can throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	UCurveFloat* ThrowingStrengthCure;
-
-	/** The time it will take to fully charge a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	float ThrowChargeTime {1.3f};
-
-	/** The zoom level for the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	float ThrowingZoomLevel {0.0f};
-
-	/** The speed at which the items goes to the throwing zoom level*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	float ToThrowingZoomSpeed {1000.0f};
-
-	/**The distance the object will back up when you charge the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	FVector ThrowingBackupVector {-10.0, 0.0, 0.0};
-	/**The strength of the shaking when charging a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Throw")
-	float ThrowingShakeSize {0.07f};
-
-	/** Linear damping of the handle spring. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Linear Damping"))
-	float MaxZoomLinearDamping {200.0f};
-
-	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Linear Stiffness"))
-	float MaxZoomLinearStiffness {750.0f};
-
-	/** Angular damping of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Angular Damping"))
-	float MaxZoomAngularDamping {500.0f};
-
-	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Angular Stiffness"))
-	float MaxZoomAngularStiffness {1500.0f};
-
-	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", Meta = (DisplayName = "Interpolation Speed"))
-	float MaxZoomInterpolationSpeed {50.0f};
-
-	/** Linear damping of the handle spring. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Linear Damping"))
-	float MinZoomLinearDamping {200.0f};
-
-	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Linear Stiffness"))
-	float MinZoomLinearStiffness {750.0f};
-
-	/** Angular damping of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Angular Damping"))
-	float MinZoomAngularDamping {500.0f};
-
-	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Angular Stiffness"))
-	float MinZoomAngularStiffness {1500.0f};
-
-	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", Meta = (DisplayName = "Interpolation Speed"))
-	float MinZoomInterpolationSpeed {50.0f};
 };

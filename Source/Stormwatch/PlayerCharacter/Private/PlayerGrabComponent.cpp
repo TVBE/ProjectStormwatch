@@ -140,7 +140,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 	{
 		if (Movement && Movement->GetIsSprinting())
 		{
-			CurrentZoomLevel = CurrentZoomLevel - Configuration->WalkingRetunZoomSpeed * DeltaTime;
+			CurrentZoomLevel = CurrentZoomLevel - Configuration->ReturnZoomSpeed * DeltaTime;
 		}
 		else
 		{
@@ -178,14 +178,14 @@ void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
 		/**Normalize this rotation and apply it to the relative rotation of the object.*/
 		CameraRelativeRotation = DeltaRotation.GetNormalized() * CameraRelativeRotation;
 	}
-	
 }
 
 void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 {
     /** Preview the target location*/
 	PerformThrow(1);
-	if (PrePrimingThrowTimer <= Configuration->PrePrimingThrowDelayTime)
+
+	if (PrePrimingThrowTimer <= Configuration->PrimeDelay)
 	{
 		PrePrimingThrowTimer += DeltaTime;
 	}
@@ -318,7 +318,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		const float ThrowingStrength{Configuration->ThrowingStrengthCure->GetFloatValue(ThrowingTimeLine)};
+		const float ThrowingStrength{Configuration->ThrowStrengthCurve->GetFloatValue(ThrowingTimeLine)};
 		FVector Target {FVector()};
 		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;

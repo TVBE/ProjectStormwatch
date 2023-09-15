@@ -8,9 +8,9 @@
 #include "PlayerInteractionComponent.generated.h"
 
 class UPlayerGrabConfiguration;
-class UPlayerDragConfiguration;
+class FPlayerDragSettings;
 class UPlayerDragComponent;
-class UPlayerDragConfiguration;
+class FPlayerDragSettings;
 class UPlayerUseComponent;
 class UPlayerInventoryComponent;
 class UPlayerGrabComponent;
@@ -150,7 +150,7 @@ private:
 
 	/** For setting the parameters of the PlayerDragComponent. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player drag compoent"))
-	TSoftObjectPtr<UPlayerDragConfiguration> PlayerDragConfiguration;
+	TSoftObjectPtr<FPlayerDragSettings> PlayerDragConfiguration;
 
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
