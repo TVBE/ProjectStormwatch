@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
@@ -64,6 +65,8 @@ class STORMWATCH_API UPlayerInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	PLAYER_COMPONENT_BODY()
+
 public:
 	/** The length of the initial line trace. */
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
@@ -75,15 +78,15 @@ public:
 
 private:
 	/** The use component that is used to use actors. */
-	UPROPERTY(BlueprintGetter = GetUseComponent)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetUseComponent, Instanced, Category = "Use")
 	UPlayerUseComponent* UseComponent;
 
 	/** The physics grab component that is used to grab actors. */
-	UPROPERTY(BlueprintGetter = GetGrabComponent)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetGrabComponent, Instanced, Category = "Grab")
 	UPlayerGrabComponent* GrabComponent;
 
 	/** The physics drag component that is used to drag actors. */
-	UPROPERTY(BlueprintGetter = GetDragComponent)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDragComponent, Instanced, Category = "Drag")
 	UPlayerDragComponent* DragComponent;
 
 	/** The inventory component that is used to store actors in the player's inventory.
@@ -91,14 +94,6 @@ private:
 	 *	Therefore, we cannot always assume that the component is actually present in the playercharacter instance. */
 	UPROPERTY(BlueprintGetter = GetInventoryComponent)
 	UPlayerInventoryComponent* InventoryComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Settings", 
-			  Meta = (ShowOnlyInnerProperties))
-	FPlayerGrabSettings GrabSettings {};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Settings",
-			  Meta = (ShowOnlyInnerProperties))
-	FPlayerDragSettings DragSettings {};
 
 	/** The camera component of the Player Character. */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))

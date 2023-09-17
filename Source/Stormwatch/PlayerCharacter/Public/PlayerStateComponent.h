@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "PlayerCharacter.h"
 #include "PlayerStateComponent.generated.h"
 
@@ -40,16 +41,6 @@ struct FPlayerStateSettings
 	float JumpExertionCost {5.0f};
 };
 
-UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerStateSettings : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
-	FPlayerStateSettings Settings {};
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPainChangedDelegate, const float, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExertionChangedDelegate, const float, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFearChangedDelegate, const float, Value);
@@ -63,6 +54,8 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", M
 class STORMWATCH_API UPlayerStateComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 public:
 	/** Called when the Pain value is changed. */
@@ -84,7 +77,7 @@ public:
 private:
 	/** The configuration asset to use for this playerstate component. */
 	UPROPERTY(EditAnywhere, Category = "PlayerState|Configuration", Meta = (DisplayName = "Configuration Asset", DisplayPriority = "0"))
-	TSoftObjectPtr<UPlayerStateConfiguration> ConfigurationAsset;
+	FPlayerStateSettings Settings;
 
 	/** Pointer to the player state configuration. */
 	UPROPERTY(BlueprintGetter = GetConfiguration)

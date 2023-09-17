@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerAudioComponent.generated.h"
 
@@ -20,6 +21,8 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 class STORMWATCH_API UPlayerAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerAudio, Log, All)
 

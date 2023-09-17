@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerVocalComponent.generated.h"
 
@@ -13,6 +14,8 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", M
 class STORMWATCH_API UPlayerCharacterVocalComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 public:	
 	UPlayerCharacterVocalComponent();

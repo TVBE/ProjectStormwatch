@@ -10,7 +10,7 @@
 class UPlayerInteractionComponent;
 class UStormwatchWorldSubsystem;
 class APlayerCharacter;
-class UPlayerCharacterSettings;
+class UPlayerCharacterSettingsDataAsset;
 class UPlayerCharacterMovementComponent;
 struct FTimerHandle;
 

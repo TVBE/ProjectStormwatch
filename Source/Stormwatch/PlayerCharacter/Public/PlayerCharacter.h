@@ -6,13 +6,14 @@
 #include "CoreMinimal.h"
 #include "PlayerCharacterController.h"
 #include "PlayerCharacterMovementComponent.h"
-#include "PlayerCharacterConfig.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-class UPlayerCharacterSettings;
-class UPlayerStateConfiguration;
 class APlayerCharacterController;
+class UPlayerCharacterSettingsDataAsset;
+class UPlayerCameraSettingsDataAsset;
+class UPlayerGrabSettingsDataAsset;
+class UPlayerDragSettingsDataAsset;
 class UCameraComponent;
 class USpotLightComponent;
 class USpringArmComponent;
@@ -273,22 +274,13 @@ struct FPlayerCharacterSettings
 };
 
 UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerCharacterSettings : public  UDataAsset
+class STORMWATCH_API UPlayerCharacterSettingsDataAsset : public  UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
 	FPlayerCharacterSettings Settings {};
-};
-
-USTRUCT()
-struct FPlayerCharacterPreset
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UPlayerCharacterSettings* CharacterSettings {nullptr};
 };
 
 UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "PlayerCharacter",
@@ -303,10 +295,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetSettings, Category = "Settings",
 			  Meta = (ShowOnlyInnerProperties))
 	FPlayerCharacterSettings Settings {};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Preset", 
-			  Meta = (ShowOnlyInnerProperties))
-	FPlayerCharacterPreset Presets {};
 
 	/** The camera for the player. */
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetCamera, Category = "Components")
@@ -434,12 +422,14 @@ private:
 	UFUNCTION()
 	void UpdateYawDelta();
 
-	/** Returns a scaled yaw delta value that is used for turn-in-place rotation.
-	 *	@Param YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
-	 *	@Param DeltaTime The frame time in seconds.
-	 *	@Param Factor A multiplier that affects the rotation speed.
-	 *	@Param Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
-	 *	@Return A float value representing a rotator's yaw axis.
+	/** 
+	 *  Returns a scaled yaw delta value that is used for turn-in-place rotation.
+	 * 
+	 *	@param YawDelta The delta yaw rotation between the player's control rotation and the character's mesh rotation.
+	 *	@param DeltaTime The frame time in seconds.
+	 *	@param Factor A multiplier that affects the rotation speed.
+	 *	@param Clamp The maximum allowed YawDelta angle before the rotation speed should be clamped to prevent the camera from rotation too much in relation to the character's neck. //TODO: This doesn't work properly currently.
+	 *	@return A float value representing a rotator's yaw axis.
 	 */
 	static float CalculateTurnInPlaceRotation(const float YawDelta, const float DeltaTime, const float Factor, const float Clamp);
 

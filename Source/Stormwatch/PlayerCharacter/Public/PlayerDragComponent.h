@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerDragComponent.generated.h"
@@ -12,12 +13,25 @@ class UPlayerInteractionComponent;
 class UCameraComponent;
 class APlayerCharacter;
 
-/** Configuration asset to fine tune all variables within the drag component */
-USTRUCT(BlueprintType, ClassGroup = "PlayerCharacter")
-struct FPlayerDragSettings
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	   Meta = (DisplayName = "Player Drag Component", ShortToolTip = "Component for dragging physics objects."))
+	class STORMWATCH_API UPlayerDragComponent : public UPhysicsHandleComponent
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
+	PLAYER_COMPONENT_BODY()
+
+	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
+
+public:
+	UPROPERTY()
+	UPlayerInteractionComponent* InteractionComponent;
+
+	/** Multiplier used to change the rotation speed of the camera when dragging an object. */
+	UPROPERTY()
+	float CameraRotationMultiplier {1.0f};
+
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab Settings")
 	float LetGoDistance {300.f};
 
@@ -53,76 +67,6 @@ struct FPlayerDragSettings
 	/** How quickly we interpolate the physics target transform */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle")
 	float InterpolationSpeed {300.0f};
-
-	FPlayerDragSettings() {}
-
-	friend bool operator==(const FPlayerDragSettings& Lhs, const FPlayerDragSettings& Rhs)
-	{
-		return Lhs.LetGoDistance == Rhs.LetGoDistance
-			&& Lhs.ZoomSpeed == Rhs.ZoomSpeed
-			&& Lhs.MinZoomLevel == Rhs.MinZoomLevel
-			&& Lhs.MaxZoomLevel == Rhs.MaxZoomLevel
-			&& Lhs.CameraRotationDecreasingStrength == Rhs.CameraRotationDecreasingStrength
-			&& Lhs.LinearDamping == Rhs.LinearDamping
-			&& Lhs.LinearStiffness == Rhs.LinearStiffness
-			&& Lhs.AngularDamping == Rhs.AngularDamping
-			&& Lhs.AngularStiffness == Rhs.AngularStiffness
-			&& Lhs.InterpolationSpeed == Rhs.InterpolationSpeed;
-	}
-
-	/**
-	 * Interpolates between two structs based on an alpha value.
-	 *
-	 * @param Output	The result of the interpolation.
-	 * @param Lhs		The left hand side of the interpolation. Corresponds to alpha = 0;
-	 * @param Rhs		The right hand side of the interpolation. Corresponds to alpha = 1;
-	 * @param Alpha		The alpha to use for the interpolation, is clamped between 0 and 1.
-	 */
-	static void Interpolate(FPlayerDragSettings& Output, const FPlayerDragSettings& Lhs,
-							const FPlayerDragSettings& Rhs, float Alpha)
-	{
-		Output.LetGoDistance =						FMath::Lerp(Lhs.LetGoDistance, Rhs.LetGoDistance, Alpha);
-		Output.ZoomSpeed =							FMath::Lerp(Lhs.ZoomSpeed, Rhs.ZoomSpeed, Alpha);
-		Output.MinZoomLevel =						FMath::Lerp(Lhs.MinZoomLevel, Rhs.MinZoomLevel, Alpha);
-		Output.MaxZoomLevel =						FMath::Lerp(Lhs.MaxZoomLevel, Rhs.MaxZoomLevel, Alpha);
-		Output.CameraRotationDecreasingStrength =	FMath::Lerp(Lhs.CameraRotationDecreasingStrength, Rhs.CameraRotationDecreasingStrength, Alpha);
-		Output.LinearDamping =						FMath::Lerp(Lhs.LinearDamping, Rhs.LinearDamping, Alpha);
-		Output.LinearStiffness =					FMath::Lerp(Lhs.LinearStiffness, Rhs.LinearStiffness, Alpha);
-		Output.AngularDamping =						FMath::Lerp(Lhs.AngularDamping, Rhs.AngularDamping, Alpha);
-		Output.AngularStiffness =					FMath::Lerp(Lhs.AngularStiffness, Rhs.AngularStiffness, Alpha);
-		Output.InterpolationSpeed =					FMath::Lerp(Lhs.InterpolationSpeed, Rhs.InterpolationSpeed, Alpha);
-	}
-};
-
-UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerDragSettings : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
-	FPlayerDragSettings Settings {};
-};
-
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
-	   Meta = (DisplayName = "Player Drag Component", ShortToolTip = "Component for dragging physics objects."))
-	class STORMWATCH_API UPlayerDragComponent : public UPhysicsHandleComponent
-{
-	GENERATED_BODY()
-
-	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
-
-public:
-	UPROPERTY()
-	UPlayerInteractionComponent* InteractionComponent;
-
-	/** Multiplier used to change the rotation speed of the camera when dragging an object. */
-	UPROPERTY()
-	float CameraRotationMultiplier {1.0f};
-
-private:
-	UPROPERTY(BlueprintGetter = GetSettings, Category = "Settings")
-	FPlayerDragSettings Settings {};
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
@@ -185,8 +129,5 @@ public:
 
 	/** Returns the location the drag component is dragging the mesh from. */
 	FVector GetDragLocation() const;
-
-	UFUNCTION(BlueprintGetter)
-	const FPlayerDragSettings& GetSettings() const { return Settings; }
 };
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerPerceptionComponent.generated.h"
 
@@ -14,6 +15,8 @@ UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", M
 class STORMWATCH_API UPlayerPerceptionComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerPerception, Log, All)
 

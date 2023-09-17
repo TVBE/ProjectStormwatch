@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerVfxComponent.generated.h"
 
@@ -19,6 +20,8 @@ UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnable
 class STORMWATCH_API UPlayerVfxComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 private:
 	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter)

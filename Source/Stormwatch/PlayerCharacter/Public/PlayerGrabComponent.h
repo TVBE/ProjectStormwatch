@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,11 +17,29 @@ class APlayerCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, const AActor*, GrabbedActor);
 
-USTRUCT(BlueprintType)
-struct FPlayerGrabSettings
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
+	   Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
+class UPlayerGrabComponent : public UPhysicsHandleComponent
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
+	PLAYER_COMPONENT_BODY()
+
+	DECLARE_LOG_CATEGORY_CLASS(LogGrabComponent, Log, All)
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
+	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;
+
+	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
+	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
+	bool RotationMode;
+
+	/** A multiplier used to change the rotation speed of the camera when grabbing an object.*/
+	UPROPERTY()
+	float CameraRotationMultiplier {1.0f};
+
+private:
 	/** The location where the holding hand should be relative to the physics grab component.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
 	FVector RelativeHoldingHandLocation {70.0f, 60.0f, -30.0f};
@@ -43,7 +62,7 @@ struct FPlayerGrabSettings
 	float MinZoomLevel {0.0f};
 
 	/** The maximum zoom level. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom",
 			  Meta = (Units = "cm", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
 	float MaxZoomLevel {200.0f};
 
@@ -84,89 +103,54 @@ struct FPlayerGrabSettings
 	float ThrowingShakeSize {0.07f};
 
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
 			  Meta = (DisplayName = "Linear Damping"))
 	float MaxZoomLinearDamping {200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
 			  Meta = (DisplayName = "Linear Stiffness"))
 	float MaxZoomLinearStiffness {750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
 			  Meta = (DisplayName = "Angular Damping"))
 	float MaxZoomAngularDamping {500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
 			  Meta = (DisplayName = "Angular Stiffness"))
 	float MaxZoomAngularStiffness {1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
 			  Meta = (DisplayName = "Interpolation Speed"))
 	float MaxZoomInterpolationSpeed {50.0f};
 
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
 			  Meta = (DisplayName = "Linear Damping"))
 	float MinZoomLinearDamping {200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
 			  Meta = (DisplayName = "Linear Stiffness"))
 	float MinZoomLinearStiffness {750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
 			  Meta = (DisplayName = "Angular Damping"))
 	float MinZoomAngularDamping {500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
 			  Meta = (DisplayName = "Angular Stiffness"))
 	float MinZoomAngularStiffness {1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom", 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
 			  Meta = (DisplayName = "Interpolation Speed"))
 	float MinZoomInterpolationSpeed {50.0f};
-};
-
-UCLASS(BlueprintType, ClassGroup = "PlayerCharacter")
-class STORMWATCH_API UPlayerGrabSettings : public  UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
-	FPlayerGrabSettings Settings {};
-};
-
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
-	   Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
-class UPlayerGrabComponent : public UPhysicsHandleComponent
-{
-	GENERATED_BODY()
-
-	DECLARE_LOG_CATEGORY_CLASS(LogGrabComponent, Log, All)
-
-public:
-	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Physics Grab Component Released"))
-	FOnGrabbedObjectReleasedDelegate OnGrabbedObjectReleased;
-
-	/** If true, the grab component is currently in rotation mode. Any view input will be used to rotate the object. */
-	UPROPERTY(BlueprintGetter = GetIsRotationModeActive)
-	bool RotationMode;
-
-	/** A multiplier used to change the rotation speed of the camera when grabbing an object.*/
-	UPROPERTY()
-	float CameraRotationMultiplier {1.0f};
-
-private:
-	UPROPERTY(BlueprintGetter = GetSettings, Category = "Settings")
-	FPlayerGrabSettings Settings {};
 
 	/** Pointer to the camera component of the player. */
 	UPROPERTY()
@@ -179,60 +163,42 @@ private:
 	UPROPERTY(BlueprintGetter = GetWillThrowOnRelease)
 	bool WillThrowOnRelease;
 
-	UPROPERTY()
 	bool WillReleaseOnEndInteraction;
 
-	UPROPERTY()
 	FVector TargetLocation;
 
-	UPROPERTY()
 	float CurrentZoomLevel;
 
 	float PreviousZoomLevel;
 
-	UPROPERTY()
 	float CurrentZoomAxisValue;
 
-	UPROPERTY()
 	float CurrentRotationZoomAxisValue;
 
-	UPROPERTY()
 	FVector LastLocation;
 
-	UPROPERTY()
 	FQuat CameraRelativeRotation;
 
-	UPROPERTY()
 	FRotator RotationDifference;
 
-	UPROPERTY()
 	FRotator CameraRotation;
 
-	UPROPERTY()
 	FQuat CameraQuat;
 
-	UPROPERTY()
 	FVector RotatedHandOffset;
 
-	UPROPERTY()
 	float WillThrowOnReleaseMultiplier;
 
-	UPROPERTY()
 	float PrePrimingThrowTimer;
 
-	UPROPERTY()
 	float ThrowingTimeLine;
 
-	UPROPERTY()
 	FVector ReleaseLocation;
 
-	UPROPERTY()
 	FQuat MouseInputRotation {0.0,0.0,0.0,1.0};
 
-	UPROPERTY()
 	UPlayerCharacterMovementComponent* Movement;
 
-	UPROPERTY()
 	float GrabbedComponentSize;
 
 	/** The velocity the object wil be thrown in. (Used to calculate the thrwoing trajecory) */

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerInventoryComponent.generated.h"
 
@@ -15,6 +16,8 @@ UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 class STORMWATCH_API UPlayerInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	PLAYER_COMPONENT_BODY()
 
 private:
 	/** The currently selected slot in the Inventory. */

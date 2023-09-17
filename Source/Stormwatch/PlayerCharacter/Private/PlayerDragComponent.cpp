@@ -30,11 +30,6 @@ void UPlayerDragComponent::OnRegister()
         Gravity = World->GetGravityZ();
     }
 
-	if(!Configuration)
-	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Created Default configuration since it's not set."));
-		Configuration = NewObject<FPlayerDragSettings>();
-	}
 	ApplyToPhysicsHandle();
 }
 
@@ -48,17 +43,10 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (GrabbedComponent)
-    {
-		// UpdateLocalConstraint();
-    	
-        if (!Configuration)
-        {
-        	return;
-        }
-    	
+    {    	
     	UpdateTargetLocation(DeltaTime);
-    	// UpdateCameraRotationSpeed(DeltaTime);
-        if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+
+        if (LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
         {
             ReleaseActor();
         }
@@ -70,7 +58,7 @@ void UPlayerDragComponent::UpdateCameraRotationSpeed(float DeltaTime)
 	if(GrabbedComponent)
 	{
 		CameraRotationMultiplier = 1 / (FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation)
-			* Configuration->CameraRotationDecreasingStrength * 0.1);
+			* CameraRotationDecreasingStrength * 0.1);
 	}
 	else
 	{
@@ -135,17 +123,17 @@ void UPlayerDragComponent::ReleaseActor()
 /** The looping function that updates the target location and rotation of the currently dragged object*/
 void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 {
-	if (!GrabbedComponent || !Camera || !Configuration) { UE_LOG(LogDragComponent, Warning, TEXT("UpdateTargetForceWithLocation called with null pointers"));return; }
+	if (!GrabbedComponent || !Camera) { UE_LOG(LogDragComponent, Warning, TEXT("UpdateTargetForceWithLocation called with null pointers"));return; }
 	AActor* CompOwner = this->GetOwner();
 
 	if (CompOwner)
 	{
 		{
-			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * Configuration->ZoomSpeed * DeltaTime;
+			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
 		}
 
 		/** Clamp the zoom level within the min max of configuration*/
-		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
+		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
 	}
 	
 	
@@ -166,11 +154,11 @@ FVector UPlayerDragComponent::GetDragLocation() const
 void UPlayerDragComponent::ApplyToPhysicsHandle()
 {
 	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.
-	SetLinearDamping(Configuration->LinearDamping);
-	SetLinearStiffness(Configuration->LinearStiffness);
-	SetAngularDamping(Configuration->AngularDamping);
-	SetAngularStiffness(Configuration->AngularStiffness);
-	SetInterpolationSpeed(Configuration->InterpolationSpeed);
+	SetLinearDamping(LinearDamping);
+	SetLinearStiffness(LinearStiffness);
+	SetAngularDamping(AngularDamping);
+	SetAngularStiffness(AngularStiffness);
+	SetInterpolationSpeed(InterpolationSpeed);
 }
 
 

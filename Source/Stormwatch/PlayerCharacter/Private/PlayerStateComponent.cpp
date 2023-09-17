@@ -7,8 +7,8 @@ void UPlayerStateComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 	
-	if (ConfigurationAsset.IsNull()) {return; }
-	Configuration = ConfigurationAsset.LoadSynchronous();
+	if (Settings.IsNull()) {return; }
+	Configuration = Settings.LoadSynchronous();
 }
 
 void UPlayerStateComponent::BeginPlay()

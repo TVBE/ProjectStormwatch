@@ -45,7 +45,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (GrabbedComponent && Configuration)
+	if (GrabbedComponent)
 	{
 		UpdateTargetLocationWithRotation(DeltaTime);
 
@@ -58,7 +58,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		if (!IsPrimingThrow)
 		{
 			/** Check if the distance between the location and target location is too big, let the object go. */
-			if (Configuration->LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+			if (LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
 			{
 				ReleaseObject();
 			}
@@ -74,14 +74,14 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UPlayerGrabComponent::UpdatePhysicsHandle()
 {
 	const float Alpha {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(FVector2D(Configuration->MinZoomLevel, Configuration->MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
+		(FVector2D(MinZoomLevel, MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
 
 	
-	LinearDamping = FMath::Lerp(Configuration->MinZoomLinearDamping, Configuration->MaxZoomLinearDamping, Alpha);
-	LinearStiffness = FMath::Lerp(Configuration->MinZoomLinearStiffness, Configuration->MaxZoomLinearStiffness, Alpha);
-	AngularDamping = FMath::Lerp(Configuration->MinZoomAngularDamping, Configuration->MaxZoomAngularDamping, Alpha);
-	AngularStiffness = FMath::Lerp(Configuration->MinZoomAngularStiffness, Configuration->MaxZoomAngularStiffness, Alpha);
-	InterpolationSpeed = FMath::Lerp(Configuration->MinZoomInterpolationSpeed, Configuration->MaxZoomInterpolationSpeed, Alpha);
+	LinearDamping = FMath::Lerp(MinZoomLinearDamping, MaxZoomLinearDamping, Alpha);
+	LinearStiffness = FMath::Lerp(MinZoomLinearStiffness, MaxZoomLinearStiffness, Alpha);
+	AngularDamping = FMath::Lerp(MinZoomAngularDamping, MaxZoomAngularDamping, Alpha);
+	AngularStiffness = FMath::Lerp(MinZoomAngularStiffness, MaxZoomAngularStiffness, Alpha);
+	InterpolationSpeed = FMath::Lerp(MinZoomInterpolationSpeed, MaxZoomInterpolationSpeed, Alpha);
 
 	/** Update the constrainthandle. */
 	if (ConstraintHandle.IsValid() && ConstraintHandle.Constraint->IsType(Chaos::EConstraintType::JointConstraintType))
@@ -106,16 +106,16 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 	CameraRotation = Camera->GetComponentRotation();
 	CameraQuat = Camera->GetComponentQuat();
 
-	const FVector MinValues = FVector(-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize,-Configuration->ThrowingShakeSize);
-	const FVector MaxValues = FVector(Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize,Configuration->ThrowingShakeSize);
+	const FVector MinValues = FVector(-ThrowingShakeSize,-ThrowingShakeSize,-ThrowingShakeSize);
+	const FVector MaxValues = FVector(ThrowingShakeSize,ThrowingShakeSize,ThrowingShakeSize);
 	const FVector ThrowingShake = FMath::RandPointInBox(FBox(MinValues, MaxValues));
-	const FVector ThrowingVector = (ThrowingShake + Configuration->ThrowingBackupVector)*FMath::Clamp((ThrowingTimeLine),0.0,1.0);
+	const FVector ThrowingVector = (ThrowingShake + ThrowingBackupVector)*FMath::Clamp((ThrowingTimeLine),0.0,1.0);
 	
 	/** Rotate the hand offset vector using the camera's world rotation. */
-	RotatedHandOffset =CameraRotation.RotateVector(Configuration->RelativeHoldingHandLocation + ThrowingVector);
+	RotatedHandOffset =CameraRotation.RotateVector(RelativeHoldingHandLocation + ThrowingVector);
 
-	const float HandOffsetScalar {static_cast<float>(FMath::Clamp((((Configuration->BeginHandOffsetDistance)
-		- CurrentZoomLevel) / (Configuration->BeginHandOffsetDistance + Configuration->BeginHandOffsetDistance * GrabbedComponentSize)), 0.0, 1000.0))};
+	const float HandOffsetScalar {static_cast<float>(FMath::Clamp((((BeginHandOffsetDistance)
+		- CurrentZoomLevel) / (BeginHandOffsetDistance + BeginHandOffsetDistance * GrabbedComponentSize)), 0.0, 1000.0))};
 
 	
 	FVector NormalizedRotatedHandOffset = RotatedHandOffset.GetSafeNormal();
@@ -133,21 +133,21 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 /** The looping function that updates the target location and rotation of the currently grabbed object*/
 void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 {
-	if (!GrabbedComponent || !Configuration) { return; }
+	if (!GrabbedComponent) { return; }
 	AActor* CompOwner = this->GetOwner();
 	
 	if (CompOwner)
 	{
 		if (Movement && Movement->GetIsSprinting())
 		{
-			CurrentZoomLevel = CurrentZoomLevel - Configuration->ReturnZoomSpeed * DeltaTime;
+			CurrentZoomLevel = CurrentZoomLevel - ReturnZoomSpeed * DeltaTime;
 		}
 		else
 		{
-			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * Configuration->ZoomSpeed * DeltaTime;
+			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
 		}
 		
-		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, Configuration->MinZoomLevel, Configuration->MaxZoomLevel);
+		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
 	}
 	
 	if (Camera)
@@ -156,7 +156,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 		TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
 
 		FRotator TargetRotation{FRotator(CameraQuat * CameraRelativeRotation)};
-		if (CurrentZoomLevel > Configuration->BeginHandOffsetDistance)
+		if (CurrentZoomLevel > BeginHandOffsetDistance)
 		{
 			//TODO; Slerp the rotation to a surface.
 		}
@@ -185,7 +185,7 @@ void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
     /** Preview the target location*/
 	PerformThrow(1);
 
-	if (PrePrimingThrowTimer <= Configuration->PrimeDelay)
+	if (PrePrimingThrowTimer <= PrimeDelay)
 	{
 		PrePrimingThrowTimer += DeltaTime;
 	}
@@ -193,9 +193,9 @@ void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 	{
 		WillThrowOnRelease = true;
 			
-		if (CurrentZoomLevel != Configuration->ThrowingZoomLevel)
+		if (CurrentZoomLevel != ThrowingZoomLevel)
 		{
-			CurrentZoomLevel += Configuration->ToThrowingZoomSpeed * (Configuration->ThrowingZoomLevel - CurrentZoomLevel) *0.001;
+			CurrentZoomLevel += ToThrowingZoomSpeed * (ThrowingZoomLevel - CurrentZoomLevel) *0.001;
 		}
 			
 		if (PrePrimingThrowTimer <= 1.0)
@@ -203,7 +203,7 @@ void UPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 			/**The timeline to be used by various on tick functions that update location.
 			*We normalize the value here since it otherwise would be need to be normalised multiple times later.
 			*/
-			ThrowingTimeLine += FMath::Clamp(DeltaTime/Configuration->ThrowChargeTime, 0.0,1.0);
+			ThrowingTimeLine += FMath::Clamp(DeltaTime/ThrowChargeTime, 0.0,1.0);
 		}
 	}
 }
@@ -318,7 +318,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 		
 		bool ThrowOverHands{false};
 		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		const float ThrowingStrength{Configuration->ThrowStrengthCurve->GetFloatValue(ThrowingTimeLine)};
+		const float ThrowingStrength{ThrowStrengthCurve->GetFloatValue(ThrowingTimeLine)};
 		FVector Target {FVector()};
 		FVector TraceStart {Camera->GetComponentLocation()};
 		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
