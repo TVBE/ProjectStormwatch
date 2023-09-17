@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "PlayerCharacterMovementComponent.generated.h"
+#include "PlayerMovementComponent.generated.h"
 
 UENUM(BlueprintType)
 enum class EPlayerGroundMovementType : uint8
@@ -39,7 +39,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EPlayerLandingType
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
 
 UCLASS(ClassGroup = "PlayerCharacter", Meta = (DisplayName = "Player Character Movement Component"))
-class STORMWATCH_API UPlayerCharacterMovementComponent : public UCharacterMovementComponent
+class STORMWATCH_API UPlayerMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
@@ -61,7 +61,7 @@ private:
 	bool IsJumping {false};
 
 public:
-	UPlayerCharacterMovementComponent();
+	UPlayerMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	

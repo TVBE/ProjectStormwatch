@@ -117,7 +117,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 	if (!GrabbedComponent) { return; }
 
 	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
-	UPlayerCharacterMovementComponent* MovementComponent {GetPlayerCharacter()->GetPlayerCharacterMovement()};
+	UPlayerMovementComponent* MovementComponent {GetPlayerCharacter()->GetPlayerMovement()};
 	
 	if (MovementComponent && MovementComponent->GetIsSprinting())
 	{

@@ -6,11 +6,11 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "StepData.h"
-#include "PlayerCharacterAnimInstance.generated.h"
+#include "PlayerAnimInstance.generated.h"
 
 class APlayerCharacter;
 class APlayerCharacterController;
-class UPlayerCharacterMovementComponent;
+class UPlayerMovementComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFootstepDelegate, FStepData, FootstepData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHandstepDelegate, FStepData, HandstepData);
@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHandstepDelegate, FStepData, Handst
  *	We mainly declare functions here to be used a BlueprintCallable UFunctions.
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
-class STORMWATCH_API UPlayerCharacterAnimInstance : public UAnimInstance
+class STORMWATCH_API UPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
@@ -129,7 +129,7 @@ protected:
 
 private:
 	/** Checks the movement state of the character and updates certain state machine conditions. */
-	void CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerCharacterMovementComponent& CharacterMovement);
+	void CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerMovementComponent& CharacterMovement);
 
 	/** Checks whether the character is turning in place, and updates certain state machine conditions accordingly. */
 	void CheckTurnInplaceConditions(const APlayerCharacter& Character);
@@ -138,7 +138,7 @@ private:
 	static float GetDirection(const APlayerCharacter& Character);
 
 	/** Returns the speed that the character is moving at. */
-	static float GetSpeed(const APlayerCharacter& Character, const UPlayerCharacterMovementComponent& CharacterMovement);
+	static float GetSpeed(const APlayerCharacter& Character, const UPlayerMovementComponent& CharacterMovement);
 
 	/** Updates the time the player is falling, if the player is falling. */
 	void UpdateFallTime(const float DeltaTime);

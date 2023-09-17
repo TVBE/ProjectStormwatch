@@ -3,7 +3,7 @@
 
 #include "PlayerFlashlightComponent.h"
 #include "PlayerCharacter.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 #include "LogCategories.h"
 #include "Components/SpotLightComponent.h"
 #include "Camera/CameraComponent.h"
@@ -39,7 +39,7 @@ void UPlayerFlashlightComponent::OnRegister()
 	if (!PlayerCharacter) { return; }
 	Mesh = PlayerCharacter->GetMesh();
 	Camera = PlayerCharacter->GetCamera();
-	Movement = PlayerCharacter->GetPlayerCharacterMovement();
+	Movement = PlayerCharacter->GetPlayerMovement();
 	if (!Mesh || !Camera || !Movement) { return; }
 	
 	/** Construct FlashlightSpringArm. */

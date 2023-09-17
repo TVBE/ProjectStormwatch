@@ -4,7 +4,7 @@
 #include "PlayerCharacter.h"
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 #include "StormwatchWorldSubystem.h"
 #include "StormwatchGameMode.h"
 #include "PlayerBodyCollisionComponent.h"
@@ -68,9 +68,9 @@ void APlayerCharacter::PostInitProperties()
 {
 	ValidateConfigurationAssets();
 
-	if (UPlayerCharacterMovementComponent * PlayerCharacterMovementComponent {Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement())})
+	if (UPlayerMovementComponent * PlayerMovementComponent {Cast<UPlayerMovementComponent>(GetCharacterMovement())})
 	{
-		PlayerCharacterMovement = PlayerCharacterMovementComponent;
+		PlayerMovement = PlayerMovementComponent;
 	}
 
 	/** Set components to call their virtual InitializeComponent functions. */
@@ -102,9 +102,9 @@ void APlayerCharacter::PostInitializeComponents()
 	ApplyConfigurationAssets();
 
 	/** Subscribe to the OnLanding event of the player character movement component. */
-	if (PlayerCharacterMovement)
+	if (PlayerMovement)
 	{
-		PlayerCharacterMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
+		PlayerMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
 	}
 }
 
@@ -147,7 +147,7 @@ void APlayerCharacter::UpdateMovementSpeed()
 {
 	float InteractionMultiplier {1.0f};
 
-	if (!InteractionComponent || !PlayerCharacterMovement) { return; }
+	if (!InteractionComponent || !PlayerMovement) { return; }
 
 	const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
 	const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
@@ -168,8 +168,8 @@ void APlayerCharacter::UpdateMovementSpeed()
 	InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 
 										  Settings.InteractionSpeedFloor, 1.0);
 
-	PlayerCharacterMovement->MaxWalkSpeed = ScaledSpeed;
-	PlayerCharacterMovement->MaxWalkSpeedCrouched = Settings.CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
+	PlayerMovement->MaxWalkSpeed = ScaledSpeed;
+	PlayerMovement->MaxWalkSpeedCrouched = Settings.CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -233,19 +233,19 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::StartSprinting()
 {
-	if (PlayerCharacterMovement && !PlayerCharacterMovement->GetIsSprinting())
+	if (PlayerMovement && !PlayerMovement->GetIsSprinting())
 	{
 		TargetSpeed = Settings.SprintSpeed;
-		PlayerCharacterMovement->SetIsSprinting(true);
+		PlayerMovement->SetIsSprinting(true);
 	}
 }
 
 void APlayerCharacter::StopSprinting()
 {
-	if (PlayerCharacterMovement && PlayerCharacterMovement->GetIsSprinting())
+	if (PlayerMovement && PlayerMovement->GetIsSprinting())
 	{
 		TargetSpeed = Settings.WalkSpeed;
-		PlayerCharacterMovement->SetIsSprinting(false);
+		PlayerMovement->SetIsSprinting(false);
 	}
 }
 

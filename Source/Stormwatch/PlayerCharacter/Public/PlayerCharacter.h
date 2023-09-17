@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "PlayerCharacterController.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -20,7 +20,7 @@ class USpringArmComponent;
 class UPlayerVfxComponent;
 class UPlayerCameraController;
 class UPlayerFlashlightComponent;
-class UPlayerCharacterMovementComponent;
+class UPlayerMovementComponent;
 class UPlayerBodyCollisionComponent;
 class UPlayerFootCollisionComponent;
 class UNiagaraComponent;
@@ -210,10 +210,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraController, Category = "Components")
 	UPlayerCameraController* CameraController;
 
-	/** The PlayerCharacterMovementComponent that handles the PlayerCharacter's movement. */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetPlayerCharacterMovement, Category = "Components",
+	/** The PlayerMovementComponent that handles the PlayerCharacter's movement. */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetPlayerMovement, Category = "Components",
 			  Meta = (DisplayName = "Player Character Movement Component"))
-	UPlayerCharacterMovementComponent* PlayerCharacterMovement;
+	UPlayerMovementComponent* PlayerMovement;
 
 	/** The interaction component. */
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInteractionComponent, Category = "Components")
@@ -374,10 +374,10 @@ public:
 	}
 
 	UFUNCTION(BlueprintGetter)
-	UPlayerCharacterMovementComponent* GetPlayerCharacterMovement() const
+	UPlayerMovementComponent* GetPlayerMovement() const
 	{
-		check(PlayerCharacterMovement);
-		return PlayerCharacterMovement;
+		check(PlayerMovement);
+		return PlayerMovement;
 	}
 
 	UFUNCTION(BlueprintGetter)
@@ -402,9 +402,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsSprinting() const
 	{
-		if (PlayerCharacterMovement)
+		if (PlayerMovement)
 		{
-			return PlayerCharacterMovement->GetIsSprinting();
+			return PlayerMovement->GetIsSprinting();
 		}
 		return false;
 	}

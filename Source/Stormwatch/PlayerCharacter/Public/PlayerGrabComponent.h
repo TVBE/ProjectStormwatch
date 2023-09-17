@@ -3,12 +3,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "PlayerCharacterMovementComponent.h"
-#include "Components/ActorComponent.h"
+#include "PlayerCharacterPhysicsHandleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Math/Vector.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerGrabComponent.generated.h"
 
 class UCameraComponent;
@@ -18,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, co
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Grab Component", ShortToolTip = "Component for grabbing physics objects."))
-class UPlayerGrabComponent : public UPhysicsHandleComponent
+class UPlayerGrabComponent : public UPlayerCharacterPhysicsHandleComponent
 {
 	GENERATED_BODY()
 

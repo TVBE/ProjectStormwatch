@@ -1,33 +1,33 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 // Written by Tim Verberne.
 
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 
-UPlayerCharacterMovementComponent::UPlayerCharacterMovementComponent()
+UPlayerMovementComponent::UPlayerMovementComponent()
 {
 	NavAgentProps.bCanCrouch = true;
 }
 
-void UPlayerCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                       FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UPlayerCharacterMovementComponent::BeginPlay()
+void UPlayerMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-bool UPlayerCharacterMovementComponent::DoJump(bool bReplayingMoves)
+bool UPlayerMovementComponent::DoJump(bool bReplayingMoves)
 {
 	OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::Jump);
 	OnJump.Broadcast();
 	return Super::DoJump(bReplayingMoves);
 }
 
-void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
+void UPlayerMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
 	/*if (Velocity.Z < -800)
 	{
@@ -51,7 +51,7 @@ void UPlayerCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, flo
 }
 
 /** Checks the current movement state and returns a corresponding enumeration value. */
-EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementType() const
+EPlayerGroundMovementType UPlayerMovementComponent::GetGroundMovementType() const
 {
 	if (IsSprinting)
 	{
@@ -65,7 +65,7 @@ EPlayerGroundMovementType UPlayerCharacterMovementComponent::GetGroundMovementTy
 }
 
 /** Called by the player controller. */
-void UPlayerCharacterMovementComponent::SetIsSprinting(const bool Value)
+void UPlayerMovementComponent::SetIsSprinting(const bool Value)
 {
 	if (!PawnOwner || IsSprinting == Value)
 	{

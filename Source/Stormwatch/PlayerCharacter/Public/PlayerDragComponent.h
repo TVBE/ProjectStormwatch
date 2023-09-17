@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "PlayerCharacterPhysicsHandleComponent.h"
 #include "PlayerDragComponent.generated.h"
 
 class UPlayerInteractionComponent;
@@ -14,7 +12,7 @@ class APlayerCharacter;
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Drag Component", ShortToolTip = "Component for dragging physics objects."))
-	class STORMWATCH_API UPlayerDragComponent : public UPhysicsHandleComponent
+	class STORMWATCH_API UPlayerDragComponent : public UPlayerCharacterPhysicsHandleComponent
 {
 	GENERATED_BODY()
 

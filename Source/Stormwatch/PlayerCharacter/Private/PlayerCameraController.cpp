@@ -4,7 +4,7 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
@@ -145,9 +145,9 @@ void UPlayerCameraController::UpdateCameraRotation(const UCameraComponent*, cons
 void UPlayerCameraController::GetCameraSwayRotation(FRotator& Rotator)
 {
 	/** Get the current ground movement type from the PlayerController. */
-	if (!GetPlayerCharacter()->GetPlayerCharacterMovement()) { return; }
+	if (!GetPlayerCharacter()->GetPlayerMovement()) { return; }
 	
-	const EPlayerGroundMovementType MovementType {GetPlayerCharacter()->GetPlayerCharacterMovement()->GetGroundMovementType()};
+	const EPlayerGroundMovementType MovementType {GetPlayerCharacter()->GetPlayerMovement()->GetGroundMovementType()};
 	/** Get a oscillation multiplier value according to the ground movement type. */
 	float IntensityMultiplier {0.0};
 	switch(MovementType)
@@ -175,7 +175,7 @@ void UPlayerCameraController::GetCameraSwayRotation(FRotator& Rotator)
 /** Called by UpdateCameraRotation. */
 void UPlayerCameraController::GetCameraCentripetalRotation(FRotator& Rotator)
 {
-	const UPlayerCharacterMovementComponent* CharacterMovement {GetPlayerCharacter()->GetPlayerCharacterMovement()};
+	const UPlayerMovementComponent* CharacterMovement {GetPlayerCharacter()->GetPlayerMovement()};
 	if (!CharacterMovement) { return; }
 	if (IsCentripetalRotationSprintOnly && !CharacterMovement->GetIsSprinting()) { return; }
 	
@@ -203,11 +203,11 @@ void UPlayerCameraController::GetCameraCentripetalRotation(FRotator& Rotator)
 
 void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime)
 {
-	if (!GetPlayerCharacter()->GetPlayerCharacterMovement()) { return; }
+	if (!GetPlayerCharacter()->GetPlayerMovement()) { return; }
 	
 	
 	/** Get the current ground movement type from the PlayerController. */
-	const EPlayerGroundMovementType MovementType {GetPlayerCharacter()->GetPlayerCharacterMovement()->GetGroundMovementType()};
+	const EPlayerGroundMovementType MovementType {GetPlayerCharacter()->GetPlayerMovement()->GetGroundMovementType()};
 	
 	/** Get a oscillation multiplier value according to the ground movement type. */
 	float IntensityMultiplier {0.0};
@@ -259,9 +259,9 @@ void UPlayerCameraController::UpdateCameraFieldOfView(UCameraComponent* Camera, 
 
 void UPlayerCameraController::UpdateCameraVignetteIntensity(UCameraComponent* Camera, const float DeltaTime)
 {
-	if (GetPlayerCharacter()->GetPlayerCharacterMovement())
+	if (GetPlayerCharacter()->GetPlayerMovement())
 	{
-		const float TargetVignetteIntensity {GetPlayerCharacter()->GetPlayerCharacterMovement()->GetIsSprinting()
+		const float TargetVignetteIntensity {GetPlayerCharacter()->GetPlayerMovement()->GetIsSprinting()
 			? SprintVignetteIntensity : DefaultVignetteIntensity};
 		
 		if (Camera->PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)

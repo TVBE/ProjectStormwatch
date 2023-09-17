@@ -7,7 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerFlashlightComponent.generated.h"
 
-class UPlayerCharacterMovementComponent;
+class UPlayerMovementComponent;
 class UCameraComponent;
 class APlayerCharacter;
 class UPlayerFlashlightConfiguration;
@@ -51,7 +51,7 @@ private:
 
 	/** Pointer to the player character movement component of the owner.*/
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Player Character Movement Component", AllowPrivateAccess = "true"))
-	UPlayerCharacterMovementComponent* Movement;
+	UPlayerMovementComponent* Movement;
 
 	/** Alpha value for blending the flashlight rotation based on movement. */
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))

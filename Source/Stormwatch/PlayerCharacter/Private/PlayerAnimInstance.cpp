@@ -1,14 +1,14 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 // Written by Tim Verberne.
 
-#include "PlayerCharacterAnimInstance.h"
+#include "PlayerAnimInstance.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
-#include "PlayerCharacterMovementComponent.h"
+#include "PlayerMovementComponent.h"
 
 #include "KismetAnimationLibrary.h"
 
-void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
+void UPlayerAnimInstance::NativeInitializeAnimation()
 {
 	if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
@@ -17,7 +17,7 @@ void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 }
 
-void UPlayerCharacterAnimInstance::NativeBeginPlay()
+void UPlayerAnimInstance::NativeBeginPlay()
 {
 	if(!PlayerCharacter && GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
@@ -26,12 +26,12 @@ void UPlayerCharacterAnimInstance::NativeBeginPlay()
 	Super::NativeBeginPlay();
 }
 
-void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (PlayerCharacter)
 	{
 		const APlayerCharacterController* Controller {PlayerCharacter->GetPlayerCharacterController()};
-		const UPlayerCharacterMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerCharacterMovement()};
+		const UPlayerMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerMovement()};
 		if (Controller && CharacterMovement)
 		{
 			CheckMovementState(*PlayerCharacter, *Controller, *CharacterMovement);
@@ -62,7 +62,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }
 
-void UPlayerCharacterAnimInstance::GetStepData(FStepData& StepData, const FVector Location)
+void UPlayerAnimInstance::GetStepData(FStepData& StepData, const FVector Location)
 {
 	StepData.Location = Location;
 
@@ -86,7 +86,7 @@ void UPlayerCharacterAnimInstance::GetStepData(FStepData& StepData, const FVecto
 	}
 }
 
-FStepData UPlayerCharacterAnimInstance::GetFootstepData(const ELeftRight Foot)
+FStepData UPlayerAnimInstance::GetFootstepData(const ELeftRight Foot)
 {
 	FStepData StepData {FStepData()};
 	const FName Socket {Foot == ELeftRight::Left ? "foot_l_socket" : "foot_r_socket"};
@@ -98,7 +98,7 @@ FStepData UPlayerCharacterAnimInstance::GetFootstepData(const ELeftRight Foot)
 	return StepData;
 }
 
-FStepData UPlayerCharacterAnimInstance::GetHandstepData(const ELeftRight Hand)
+FStepData UPlayerAnimInstance::GetHandstepData(const ELeftRight Hand)
 {
 	FStepData StepData {FStepData()};
 	const FName Socket {Hand == ELeftRight::Left ? "hand_l_socket" : "hand_r_socket"};
@@ -111,7 +111,7 @@ FStepData UPlayerCharacterAnimInstance::GetHandstepData(const ELeftRight Hand)
 }
 
 /** Check the movement state of the player character, and update animation variables accordingly. */
-void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerCharacterMovementComponent& CharacterMovement)
+void UPlayerAnimInstance::CheckMovementState(const APlayerCharacter& Character, const APlayerCharacterController& Controller, const UPlayerMovementComponent& CharacterMovement)
 {
 	IsMovementPending = Controller.GetHasMovementInput();
 	IsMoving = IsMovementPending && (CharacterMovement.IsMovingOnGround() || CharacterMovement.IsFalling());
@@ -121,7 +121,7 @@ void UPlayerCharacterAnimInstance::CheckMovementState(const APlayerCharacter& Ch
 }
 
 /** Check if the player character is turning in place, and update animation variables accordingly. */
-void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerCharacter& Character)
+void UPlayerAnimInstance::CheckTurnInplaceConditions(const APlayerCharacter& Character)
 {
 	if (Character.GetIsTurningInPlace())
 	{
@@ -147,14 +147,14 @@ void UPlayerCharacterAnimInstance::CheckTurnInplaceConditions(const APlayerChara
 }
 
 /** Get the character's movement direction. */
-float UPlayerCharacterAnimInstance::GetDirection(const APlayerCharacter& Character)
+float UPlayerAnimInstance::GetDirection(const APlayerCharacter& Character)
 {
 	const float UnmappedDirection {UKismetAnimationLibrary::CalculateDirection(Character.GetVelocity(), Character.GetActorRotation())};
 	return FMath::GetMappedRangeValueClamped(FVector2D(-171.5, 171.5), FVector2D(-180, 180), UnmappedDirection);
 }
 
 /** Get the character's speed based on its movement input vector.*/
-float UPlayerCharacterAnimInstance::GetSpeed(const APlayerCharacter& Character, const UPlayerCharacterMovementComponent& CharacterMovement)
+float UPlayerAnimInstance::GetSpeed(const APlayerCharacter& Character, const UPlayerMovementComponent& CharacterMovement)
 {
 	if (!CharacterMovement.GetLastInputVector().IsNearlyZero())
 	{
@@ -163,7 +163,7 @@ float UPlayerCharacterAnimInstance::GetSpeed(const APlayerCharacter& Character, 
 	return 0.0f;
 }
 /** Update the time that the character has been falling, and calculate a normalized alpha value. */
-void UPlayerCharacterAnimInstance::UpdateFallTime(const float DeltaTime)
+void UPlayerAnimInstance::UpdateFallTime(const float DeltaTime)
 {
 	FallTime += DeltaTime;
 	VerticalAlpha = FMath::Clamp(FallTime, 0, 1);

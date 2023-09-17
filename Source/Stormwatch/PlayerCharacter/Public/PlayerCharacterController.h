@@ -11,7 +11,7 @@ class UPlayerInteractionComponent;
 class UStormwatchWorldSubsystem;
 class APlayerCharacter;
 class UPlayerCharacterSettingsDataAsset;
-class UPlayerCharacterMovementComponent;
+class UPlayerMovementComponent;
 struct FTimerHandle;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPlayerCharacterController, Log, All)
