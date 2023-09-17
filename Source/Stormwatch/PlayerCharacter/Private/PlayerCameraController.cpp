@@ -47,7 +47,7 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (GetPlayerCharacter() && PlayerCharacterController)
+	if (GetPlayerCharacter() && GetPlayerCharacterController())
 		if (UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()})
 	{
 		UpdateCameraRotation(Camera, DeltaTime); /** Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera. */

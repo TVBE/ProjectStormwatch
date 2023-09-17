@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerAudioComponent.generated.h"
 
@@ -18,11 +17,9 @@ class UAudioComponent;
  */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	   Meta = (BlueprintSpawnableComponent, DisplayName = "Player Audio Component", ShortToolTip = "Audio component for the player character."))
-class STORMWATCH_API UPlayerAudioComponent : public UActorComponent
+class STORMWATCH_API UPlayerAudioComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
-
-	PLAYER_COMPONENT_BODY()
 
 	DECLARE_LOG_CATEGORY_CLASS(LogPlayerAudio, Log, All)
 
@@ -36,16 +33,17 @@ private:
 	TSoftObjectPtr<UMetaSoundSource> BodyAudioComponentSoundAsset;
 
 public:
-	/** Sets default values for this component's properties. */
 	UPlayerAudioComponent();
 
-	/** Called every frame. */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	virtual void OnRegister() override;
+
 	virtual void OnUnregister() override;
+
 	virtual void BeginPlay() override;
+
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:

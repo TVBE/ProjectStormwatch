@@ -2,10 +2,8 @@
 // Written by Tim Verberne.
 
 #include "PlayerInventoryComponent.h"
-
 #include "InventoryObjectInterface.h"
 #include "PlayerInteractionComponent.h"
-
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "PlayerCharacterMovementComponent.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,8 +22,6 @@ class UPlayerGrabComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
 
-	PLAYER_COMPONENT_BODY()
-
 	DECLARE_LOG_CATEGORY_CLASS(LogGrabComponent, Log, All)
 
 public:
@@ -41,120 +38,126 @@ public:
 
 private:
 	/** The location where the holding hand should be relative to the physics grab component.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	UPROPERTY(EditInstanceOnly, Category = "Grab")
 	FVector RelativeHoldingHandLocation {70.0f, 60.0f, -30.0f};
 
 	/** The distance on which the player will let the prop go*/
-	UPROPERTY(EditDefaultsOnly, Category = "Grab")
+	UPROPERTY(EditInstanceOnly, Category = "Grab", 
+			  Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
 	float LetGoDistance {150.0f};
 
 	/** The amount that the rotation speed decreases when holding objects at a distance.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
+	UPROPERTY(EditInstanceOnly, Category = "Grab", 
+			  Meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2"))
 	float CameraRotationDecreasingStrength {0.3f};
 
 	/** The distance where the object will move towards the hand location.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grab")
+	UPROPERTY(EditInstanceOnly, Category = "Grab", 
+			  Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
 	float BeginHandOffsetDistance {50.0f};
 
 	/** The minimum zoom level. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom",
-			  Meta = (Units = "cm", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
+	UPROPERTY(EditInstanceOnly, Category = "Zoom",
+			  Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
 	float MinZoomLevel {0.0f};
 
 	/** The maximum zoom level. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom",
-			  Meta = (Units = "cm", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
+	UPROPERTY(EditInstanceOnly, Category = "Zoom",
+			  Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
 	float MaxZoomLevel {200.0f};
 
 	/** The speed at which you can zoom. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	UPROPERTY(EditInstanceOnly, Category = "Zoom", 
+			  Meta = (ClampMin = "0"))
 	float ZoomSpeed {1500.0f};
 
 	/** The speed at which the object will return to your hand depending on how fast you walk. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	UPROPERTY(EditInstanceOnly, Category = "Zoom", 
+			  Meta = (ClampMin = "0"))
 	float ReturnZoomSpeed {1000.0f};
 
 	/** The time it takes to start priming the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw", 
+			  Meta = (Units = "Seconds", ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float PrimeDelay {0.1f};
 
 	/** The curve to set the minimum and maximum strength the player can throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw")
 	UCurveFloat* ThrowStrengthCurve {nullptr};
 
 	/** The time it will take to fully charge a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw", 
+			  Meta = (Units = "Seconds", ClampMin = "0", ClampMax = "3", UIMin = "0", UIMax = "3"))
 	float ThrowChargeTime {1.3f};
 
 	/** The zoom level for the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw", 
+			  Meta = (ClampMin = "0"))
 	float ThrowingZoomLevel {0.0f};
 
 	/** The speed at which the items goes to the throwing zoom level*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw", 
+			  Meta = (ClampMin = "0"))
 	float ToThrowingZoomSpeed {1000.0f};
 
 	/**The distance the object will back up when you charge the throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw")
 	FVector ThrowingBackupVector {-10.0, 0.0, 0.0};
 
 	/**The strength of the shaking when charging a throw.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Throw")
+	UPROPERTY(EditInstanceOnly, Category = "Throw", 
+			  Meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float ThrowingShakeSize {0.07f};
 
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
-			  Meta = (DisplayName = "Linear Damping"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Max Zoom",
+			  Meta = (DisplayName = "Linear Damping", ClampMin = "0"))
 	float MaxZoomLinearDamping {200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
-			  Meta = (DisplayName = "Linear Stiffness"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Max Zoom",
+			  Meta = (DisplayName = "Linear Stiffness", ClampMin = "0"))
 	float MaxZoomLinearStiffness {750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
-			  Meta = (DisplayName = "Angular Damping"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Max Zoom",
+			  Meta = (DisplayName = "Angular Damping", ClampMin = "0"))
 	float MaxZoomAngularDamping {500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
-			  Meta = (DisplayName = "Angular Stiffness"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Max Zoom",
+			  Meta = (DisplayName = "Angular Stiffness", ClampMin = "0"))
 	float MaxZoomAngularStiffness {1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Max Zoom",
-			  Meta = (DisplayName = "Interpolation Speed"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Max Zoom",
+			  Meta = (DisplayName = "Interpolation Speed", ClampMin = "0"))
 	float MaxZoomInterpolationSpeed {50.0f};
 
 	/** Linear damping of the handle spring. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
-			  Meta = (DisplayName = "Linear Damping"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Min Zoom",
+			  Meta = (DisplayName = "Linear Damping", ClampMin = "0"))
 	float MinZoomLinearDamping {200.0f};
 
 	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
-			  Meta = (DisplayName = "Linear Stiffness"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Min Zoom",
+			  Meta = (DisplayName = "Linear Stiffness", ClampMin = "0"))
 	float MinZoomLinearStiffness {750.0f};
 
 	/** Angular damping of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
-			  Meta = (DisplayName = "Angular Damping"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Min Zoom",
+			  Meta = (DisplayName = "Angular Damping", ClampMin = "0"))
 	float MinZoomAngularDamping {500.0f};
 
 	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
-			  Meta = (DisplayName = "Angular Stiffness"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Min Zoom",
+			  Meta = (DisplayName = "Angular Stiffness", ClampMin = "0"))
 	float MinZoomAngularStiffness {1500.0f};
 
 	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle|Min Zoom",
-			  Meta = (DisplayName = "Interpolation Speed"))
+	UPROPERTY(EditInstanceOnly, Category = "Physics Handle|Min Zoom",
+			  Meta = (DisplayName = "Interpolation Speed", ClampMin = "0"))
 	float MinZoomInterpolationSpeed {50.0f};
-
-	/** Pointer to the camera component of the player. */
-	UPROPERTY()
-	UCameraComponent* Camera;
 
 	/** If true, the grab component is currently priming an object for throwing. */
 	UPROPERTY(BlueprintGetter = GetIsPrimingThrow)
@@ -197,18 +200,14 @@ private:
 
 	FQuat MouseInputRotation {0.0,0.0,0.0,1.0};
 
-	UPlayerCharacterMovementComponent* Movement;
-
 	float GrabbedComponentSize;
 
-	/** The velocity the object wil be thrown in. (Used to calculate the thrwoing trajecory) */
-	UPROPERTY()
 	FVector ThrowVelocity;
 
 public:
 	UPlayerGrabComponent();
 
-	void Initialize(FPlayerGrabSettings& InSettings) { Settings = InSettings; }
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Grabs an actor. */
 	UFUNCTION(BlueprintCallable)
@@ -238,8 +237,6 @@ public:
 	void UpdateMouseImputRotation(FVector2d MouseDelta);
 
 protected:
-	virtual void OnRegister() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void BeginPlay() override;
 
 private:
@@ -257,9 +254,6 @@ private:
 	void VisualizeProjectilePath(AActor* ProjectileActor, FVector StartLocation, FVector LaunchVelocity);
 
 public:
-	UFUNCTION(BlueprintGetter)
-	const FPlayerGrabSettings& GetSettings() const { return Settings; }
-
 	/** Returns the actor that is currently being grabbed. */
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
 	AActor* GetGrabbedActor() const

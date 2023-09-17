@@ -1,7 +1,6 @@
 // Copyright Notice
 
 #include "PlayerPerceptionComponent.h"
-
 #include "StormwatchFunctionLibrary.h"
 #include "Nightstalker.h"
 #include "NightstalkerAIFunctionLibrary.h"
@@ -14,7 +13,6 @@ UPlayerPerceptionComponent::UPlayerPerceptionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
-	
 }
 
 void UPlayerPerceptionComponent::OnRegister()

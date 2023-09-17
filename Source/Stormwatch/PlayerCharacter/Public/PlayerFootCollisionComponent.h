@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
+"
 #include "Components/SceneComponent.h"
 #include "PlayerFootCollisionComponent.generated.h"
 

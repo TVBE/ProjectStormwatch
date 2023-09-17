@@ -2,7 +2,6 @@
 // Written by Tim Verberne.
 
 #include "PlayerUseComponent.h"
-
 #include "UsableObjectInterface.h"
 
 UPlayerUseComponent::UPlayerUseComponent()

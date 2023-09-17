@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerVfxComponent.generated.h"
 
@@ -17,11 +16,11 @@ class APlayerCharacter;
  */
 UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player VFX Component", ShortToolTip = "Component that manages player VFX."))
-class STORMWATCH_API UPlayerVfxComponent : public UActorComponent
+class STORMWATCH_API UPlayerVfxComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
-	PLAYER_COMPONENT_BODY()
+	
 
 private:
 	UPROPERTY(BlueprintGetter = GetLeftFootParticleEmitter)
@@ -37,8 +36,11 @@ public:
 
 protected:
 	virtual void OnRegister() override;
+
 	virtual void OnUnregister() override;
+
 	virtual void BeginPlay() override;
+
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:

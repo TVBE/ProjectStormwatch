@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
@@ -61,11 +60,9 @@ struct FInteractableObjectData
 /** PlayerCharacter component that checks for interactable objects in front of the player character. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Interaction Component", ShortToolTip = "Component that handles player interaction."))
-class STORMWATCH_API UPlayerInteractionComponent : public UActorComponent
+class STORMWATCH_API UPlayerInteractionComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
-
-	PLAYER_COMPONENT_BODY()
 
 public:
 	/** The length of the initial line trace. */
@@ -147,14 +144,6 @@ private:
 	UPROPERTY()
 	FTimerHandle UpdateTimerHandle;
 
-	/** For setting the parameters of the PlayerGrabComponent. */
-	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player grab compoent"))
-	TSoftObjectPtr<UPlayerGrabConfiguration> PlayerGrabConfiguration;
-
-	/** For setting the parameters of the PlayerDragComponent. */
-	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Settings for player drag compoent"))
-	TSoftObjectPtr<FPlayerDragSettings> PlayerDragConfiguration;
-
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
@@ -221,7 +210,9 @@ public:
 
 protected:
 	virtual void OnRegister() override;
+
 	virtual void OnUnregister() override;
+
 	virtual void BeginPlay() override;
 
 	/** Checks if any interactable objects are in front of the player. */

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerFlashlightComponent.generated.h"
 
@@ -19,7 +18,7 @@ enum class EPlayerGroundMovementType : uint8;
  *	@Brief ActorComponent for controlling the player's flashlight.
  */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UPlayerFlashlightComponent : public UActorComponent
+class STORMWATCH_API UPlayerFlashlightComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
 

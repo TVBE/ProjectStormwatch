@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerDragComponent.generated.h"
@@ -19,8 +18,6 @@ UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within =
 {
 	GENERATED_BODY()
 
-	PLAYER_COMPONENT_BODY()
-
 	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
 
 public:
@@ -32,51 +29,29 @@ public:
 	float CameraRotationMultiplier {1.0f};
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grab Settings")
-	float LetGoDistance {300.f};
+	/** The distance at which point a dragged object will be automatically released. */
+	UPROPERTY(EditInstanceOnly, Category = "Grab Settings", 
+			  Meta = (DisplayName = "Release Distance", Units = "Centimeters", ClampMin = "0", ClampMax = "500", UIMin = "0", UIMax = "500"))
+	float AutoReleaseDistance {300.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
+			  Meta = (ClampMin = "0"))
 	float ZoomSpeed {0.0f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
+			  Meta = (ClampMin = "0"))
 	float MinZoomLevel {0.0f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Zoom Settings")
+	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
+			  Meta = (ClampMin = "0"))
 	float MaxZoomLevel {1000.f};
 
 	/** The amount that the rotation speed decreases when dragging objects.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Physics Grab")
+	UPROPERTY(EditInstanceOnly, Category = "Player Physics Grab", 
+			  Meta = (ClampMin = "0"))
 	float CameraRotationDecreasingStrength {0.8f};
 
-	/** Linear damping of the handle spring. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle")
-	float LinearDamping {60.0f};
-
-	/** Linear stiffness of the handle spring */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Handle")
-	float LinearStiffness {40.0f};
-
-	/** Angular damping of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle")
-	float AngularDamping {0.0f};
-
-	/** Angular stiffness of the handle spring */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle")
-	float AngularStiffness {0.0f};
-
-	/** How quickly we interpolate the physics target transform */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Physics Handle")
-	float InterpolationSpeed {300.0f};
-
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	UCameraComponent* Camera;
-
 	bool ApplyForceOnCenterMass {false};
-
-	UPROPERTY()
-	class UPlayerCharacterMovementComponent* Movement;
-
-	float Gravity;
 
 	FVector DraggedLocationOffset;
 
@@ -94,11 +69,7 @@ private:
 	float CurrentZoomAxisValue;
 
 public:
-	virtual void OnRegister() override;
-
-	void Initialize(FPlayerDragSettings& InSettings) { Settings = InSettings; }
-
-	virtual void BeginPlay() override;
+	UPlayerDragComponent() {};
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -108,6 +79,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Drag")
 	void ReleaseActor();
 
+protected:
+	virtual void OnRegister() override;
+
+	virtual void BeginPlay() override;
+
 private:
 	void UpdateTargetLocation(float DeltaTime);
 
@@ -116,7 +92,7 @@ private:
 	void UpdateLocalConstraint();
 
 	UFUNCTION()
-	void ApplyToPhysicsHandle();
+	void UpdatePhysicsHandle();
 
 public:
 	/** Returns the actor that is currently being grabbed. */

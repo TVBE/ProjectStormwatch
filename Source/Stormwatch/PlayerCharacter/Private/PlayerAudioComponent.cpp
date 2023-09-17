@@ -3,12 +3,11 @@
 
 #include "PlayerAudioComponent.h"
 #include "PlayerCharacter.h"
-
+#include "PlayerCharacterController.h"
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UPlayerAudioComponent, LogPlayerAudio)
-
 
 UPlayerAudioComponent::UPlayerAudioComponent()
 {

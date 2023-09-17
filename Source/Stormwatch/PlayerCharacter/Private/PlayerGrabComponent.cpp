@@ -24,24 +24,12 @@ UPlayerGrabComponent::UPlayerGrabComponent()
 	PrimaryComponentTick.TickGroup = TG_PrePhysics;
 }
 
-void UPlayerGrabComponent::OnRegister()
-{
-	Super::OnRegister();
-
-	if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetOwner())})
-	{
-		Camera = PlayerCharacter->GetCamera();
-		Movement = PlayerCharacter->GetPlayerCharacterMovement();
-	}
-}
-
 void UPlayerGrabComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
+void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -74,58 +62,51 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UPlayerGrabComponent::UpdatePhysicsHandle()
 {
 	const float Alpha {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(FVector2D(MinZoomLevel, MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
+	(FVector2D(MinZoomLevel, MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
 
-	
 	LinearDamping = FMath::Lerp(MinZoomLinearDamping, MaxZoomLinearDamping, Alpha);
 	LinearStiffness = FMath::Lerp(MinZoomLinearStiffness, MaxZoomLinearStiffness, Alpha);
 	AngularDamping = FMath::Lerp(MinZoomAngularDamping, MaxZoomAngularDamping, Alpha);
 	AngularStiffness = FMath::Lerp(MinZoomAngularStiffness, MaxZoomAngularStiffness, Alpha);
 	InterpolationSpeed = FMath::Lerp(MinZoomInterpolationSpeed, MaxZoomInterpolationSpeed, Alpha);
 
-	/** Update the constrainthandle. */
-	if (ConstraintHandle.IsValid() && ConstraintHandle.Constraint->IsType(Chaos::EConstraintType::JointConstraintType))
+	if (!ConstraintHandle.IsValid() || !ConstraintHandle.Constraint->IsType(Chaos::EConstraintType::JointConstraintType)) { return; }
+	
+	FPhysicsCommand::ExecuteWrite(ConstraintHandle, [&](const FPhysicsConstraintHandle& InConstraintHandle)
 	{
-		FPhysicsCommand::ExecuteWrite(ConstraintHandle, [&](const FPhysicsConstraintHandle& InConstraintHandle)
+		if (Chaos::FJointConstraint * Constraint {static_cast<Chaos::FJointConstraint*>(ConstraintHandle.Constraint)})
 		{
-			if (Chaos::FJointConstraint* Constraint {static_cast<Chaos::FJointConstraint*>(ConstraintHandle.Constraint)})
-			{
-				Constraint->SetLinearDriveStiffness(Chaos::FVec3(LinearStiffness));
-				Constraint->SetLinearDriveDamping(Chaos::FVec3(LinearDamping));
+			Constraint->SetLinearDriveStiffness(Chaos::FVec3(LinearStiffness));
+			Constraint->SetLinearDriveDamping(Chaos::FVec3(LinearDamping));
 
-				Constraint->SetAngularDriveStiffness(Chaos::FVec3(AngularStiffness));
-				Constraint->SetAngularDriveDamping(Chaos::FVec3(AngularDamping));
-			}
-		});
-	}
+			Constraint->SetAngularDriveStiffness(Chaos::FVec3(AngularStiffness));
+			Constraint->SetAngularDriveDamping(Chaos::FVec3(AngularDamping));
+		}
+	});
 }
 
 void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& HandOffset)
 {
-	/** Get the camera's world rotation. */
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
 	CameraRotation = Camera->GetComponentRotation();
 	CameraQuat = Camera->GetComponentQuat();
 
-	const FVector MinValues = FVector(-ThrowingShakeSize,-ThrowingShakeSize,-ThrowingShakeSize);
-	const FVector MaxValues = FVector(ThrowingShakeSize,ThrowingShakeSize,ThrowingShakeSize);
-	const FVector ThrowingShake = FMath::RandPointInBox(FBox(MinValues, MaxValues));
-	const FVector ThrowingVector = (ThrowingShake + ThrowingBackupVector)*FMath::Clamp((ThrowingTimeLine),0.0,1.0);
+	const FVector MinValues {FVector(-ThrowingShakeSize,-ThrowingShakeSize,-ThrowingShakeSize)};
+	const FVector MaxValues {FVector(ThrowingShakeSize,ThrowingShakeSize,ThrowingShakeSize)};
+	const FVector ThrowingShake {FMath::RandPointInBox(FBox(MinValues, MaxValues))};
+	const FVector ThrowingVector {(ThrowingShake + ThrowingBackupVector) * FMath::Clamp((ThrowingTimeLine),0.0,1.0)};
 	
-	/** Rotate the hand offset vector using the camera's world rotation. */
 	RotatedHandOffset =CameraRotation.RotateVector(RelativeHoldingHandLocation + ThrowingVector);
 
 	const float HandOffsetScalar {static_cast<float>(FMath::Clamp((((BeginHandOffsetDistance)
 		- CurrentZoomLevel) / (BeginHandOffsetDistance + BeginHandOffsetDistance * GrabbedComponentSize)), 0.0, 1000.0))};
 
-	
-	FVector NormalizedRotatedHandOffset = RotatedHandOffset.GetSafeNormal();
+	FVector NormalizedRotatedHandOffset {RotatedHandOffset.GetSafeNormal()};
 
+	float OffsetScalar {HandOffsetScalar * GrabbedComponentSize};
 
-	float OffsetScalar = HandOffsetScalar * GrabbedComponentSize;
-
-
-	FVector RotatedScaledHandOffset = OffsetScalar * (RotatedHandOffset + NormalizedRotatedHandOffset * GrabbedComponentSize);
-
+	FVector RotatedScaledHandOffset {OffsetScalar * (RotatedHandOffset + NormalizedRotatedHandOffset * GrabbedComponentSize)};
 
 	RotatedHandOffset = Camera->GetComponentLocation() + RotatedScaledHandOffset;
 }
@@ -134,34 +115,30 @@ void UPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector& 
 void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 {
 	if (!GrabbedComponent) { return; }
-	AActor* CompOwner = this->GetOwner();
-	
-	if (CompOwner)
-	{
-		if (Movement && Movement->GetIsSprinting())
-		{
-			CurrentZoomLevel = CurrentZoomLevel - ReturnZoomSpeed * DeltaTime;
-		}
-		else
-		{
-			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
-		}
-		
-		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
-	}
-	
-	if (Camera)
-	{
-		UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
-		TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
 
-		FRotator TargetRotation{FRotator(CameraQuat * CameraRelativeRotation)};
-		if (CurrentZoomLevel > BeginHandOffsetDistance)
-		{
-			//TODO; Slerp the rotation to a surface.
-		}
-		SetTargetLocationAndRotation(TargetLocation, TargetRotation);
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+	UPlayerCharacterMovementComponent* MovementComponent {GetPlayerCharacter()->GetPlayerCharacterMovement()};
+	
+	if (MovementComponent && MovementComponent->GetIsSprinting())
+	{
+		CurrentZoomLevel = CurrentZoomLevel - ReturnZoomSpeed * DeltaTime;
 	}
+	else
+	{
+		CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
+	}
+		
+	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
+	
+	UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
+	TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
+
+	FRotator TargetRotation {FRotator(CameraQuat * CameraRelativeRotation)};
+	if (CurrentZoomLevel > BeginHandOffsetDistance)
+	{
+		//TODO; Slerp the rotation to a surface.
+	}
+	SetTargetLocationAndRotation(TargetLocation, TargetRotation);
 }
 
 /** Updates on tick when you are manually rotating the object.*/

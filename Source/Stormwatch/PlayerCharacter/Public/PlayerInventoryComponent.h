@@ -5,7 +5,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerInventoryComponent.generated.h"
 
@@ -13,11 +12,9 @@ class UPlayerInteractionComponent;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	   Meta = (BlueprintSpawnableComponent, DisplayName = "Player Inventory Component"))
-class STORMWATCH_API UPlayerInventoryComponent : public UActorComponent
+class STORMWATCH_API UPlayerInventoryComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
-
-	PLAYER_COMPONENT_BODY()
 
 private:
 	/** The currently selected slot in the Inventory. */
@@ -54,8 +51,9 @@ public:
 	AActor* TakeActorFromInventory();
 
 protected:
-	virtual void BeginPlay() override;
 	virtual void OnComponentCreated() override;
+
+	virtual void BeginPlay() override;
 
 private:
 	/** Called when the interaction component has detected a new interactable actor in front of the player. */

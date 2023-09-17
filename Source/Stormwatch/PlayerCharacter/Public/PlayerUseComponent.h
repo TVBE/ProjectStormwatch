@@ -4,17 +4,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerUseComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter",
 	   Meta = (DisplayName = "Player Use Component", ShortToolTip = "Component for using objects."))
-class UPlayerUseComponent : public UActorComponent
+class UPlayerUseComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
-	PLAYER_COMPONENT_BODY()
+	
 
 private:
 	/** The actor that is currently in use. */

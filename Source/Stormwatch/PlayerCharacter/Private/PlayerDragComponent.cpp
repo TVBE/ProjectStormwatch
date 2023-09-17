@@ -14,23 +14,8 @@ DEFINE_LOG_CATEGORY_CLASS(UPlayerDragComponent, LogDragComponent)
 void UPlayerDragComponent::OnRegister()
 {
     Super::OnRegister();
-
-    if (const APlayerCharacter* PlayerCharacter{ Cast<APlayerCharacter>(GetOwner()) })
-    {
-        Camera = PlayerCharacter->GetCamera();
-        Movement = PlayerCharacter->GetPlayerCharacterMovement();
-    }
-    else
-    {
-        UE_LOG(LogDragComponent, Warning, TEXT("Player character is not valid."));
-    }
 	
-    if (const UWorld* World = GetWorld())
-    {
-        Gravity = World->GetGravityZ();
-    }
-
-	ApplyToPhysicsHandle();
+	UpdatePhysicsHandle();
 }
 
 void UPlayerDragComponent::BeginPlay()
@@ -46,7 +31,7 @@ void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     {    	
     	UpdateTargetLocation(DeltaTime);
 
-        if (LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
+        if (AutoReleaseDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
         {
             ReleaseActor();
         }
@@ -84,15 +69,26 @@ void UPlayerDragComponent::UpdateLocalConstraint()
 	}
 }
 
-
 void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVector& Location)
 {
-	if (!ActorToGrab){UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab is null"));return;}
-	if (GrabbedComponent){UE_LOG(LogDragComponent, Warning, TEXT("Already dragging a component"));return;}
-
+	if (!ActorToGrab)
+	{
+		UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab is null"));
+		return;
+	}
+	if (GrabbedComponent)
+	{
+		UE_LOG(LogDragComponent, Warning, TEXT("Already dragging a component"));
+		return;
+	}
 	UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))};
-	if (!StaticMeshComponent){UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab does not have a static mesh component"));return;}
+	if (!StaticMeshComponent)
+	{
+		UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab does not have a StaticMeshComponent."));
+		return;
+	}
 	
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
 
 	TargetLocationZ = Location.Z;
 	GrabComponentAtLocation(StaticMeshComponent, NAME_None, Location);
@@ -100,13 +96,10 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 	
 	GrabOffset = StaticMeshComponent->GetCenterOfMass() - (Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector());
 
-	// UE_LOG(LogTemp, Display, TEXT("GrabOffset %f %f %f"),GrabOffset.X,GrabOffset.Y,GrabOffset.Z);
-	
-	SetComponentTickEnabled(true);
-	//GrabbedComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-
 	const FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	DraggedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max) / 2;
+	
+	SetComponentTickEnabled(true);
 }
 
 void UPlayerDragComponent::ReleaseActor()
@@ -123,20 +116,16 @@ void UPlayerDragComponent::ReleaseActor()
 /** The looping function that updates the target location and rotation of the currently dragged object*/
 void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 {
-	if (!GrabbedComponent || !Camera) { UE_LOG(LogDragComponent, Warning, TEXT("UpdateTargetForceWithLocation called with null pointers"));return; }
-	AActor* CompOwner = this->GetOwner();
-
-	if (CompOwner)
+	if (!GrabbedComponent)
 	{
-		{
-			CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
-		}
-
-		/** Clamp the zoom level within the min max of configuration*/
-		CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
+		UE_LOG(LogDragComponent, Warning, TEXT("Attempting to update drag target location while no component is being grabbed."));
+		return;
 	}
-	
-	
+
+	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
+
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
 	FVector TargetLocationPre = Camera->GetComponentLocation() + CurrentZoomLevel * Camera->GetForwardVector() ;
 	TargetLocation = FVector(TargetLocationPre.X,TargetLocationPre.Y, TargetLocationZ);
 	SetTargetLocation(TargetLocation );
@@ -151,9 +140,8 @@ FVector UPlayerDragComponent::GetDragLocation() const
 	return ComponentTransform.TransformPosition(ConstraintLocalPosition);
 }
 
-void UPlayerDragComponent::ApplyToPhysicsHandle()
+void UPlayerDragComponent::UpdatePhysicsHandle()
 {
-	// Set the member variables of this PhysicsHandleComponent to the values in this data asset.
 	SetLinearDamping(LinearDamping);
 	SetLinearStiffness(LinearStiffness);
 	SetAngularDamping(AngularDamping);

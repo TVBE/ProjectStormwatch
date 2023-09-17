@@ -20,12 +20,10 @@ private:
 public:
 	UPlayerBodyCollisionComponent();
 
-protected:
-	virtual void OnRegister() override;
-	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+protected:
+	virtual void OnRegister() override;
 
-
-
+	virtual void BeginPlay() override;
 };

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "PlayerCharacter.h"
 #include "PlayerStateComponent.generated.h"
 
@@ -51,11 +50,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVigilanceChangedDelegate, const f
  */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player State Component", ShortToolTip = "Component that manages the player's state."))
-class STORMWATCH_API UPlayerStateComponent : public UActorComponent
+class STORMWATCH_API UPlayerStateComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
-
-	PLAYER_COMPONENT_BODY()
 
 public:
 	/** Called when the Pain value is changed. */
@@ -78,10 +75,6 @@ private:
 	/** The configuration asset to use for this playerstate component. */
 	UPROPERTY(EditAnywhere, Category = "PlayerState|Configuration", Meta = (DisplayName = "Configuration Asset", DisplayPriority = "0"))
 	FPlayerStateSettings Settings;
-
-	/** Pointer to the player state configuration. */
-	UPROPERTY(BlueprintGetter = GetConfiguration)
-	UPlayerStateConfiguration* Configuration;
 
 	/** The pain value of the player character. If the player performs damaging actions, like falling from a great height, this value will be temporarily reduced.
 	 *	The value will be increased back again over time. We use this value to play effects that resemble the player character being hurt. */
@@ -111,20 +104,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Reset Player State"))
 	void ResetPlayerState();
 
-private:
+protected:
 	virtual void OnComponentCreated() override;
+
 	virtual void BeginPlay() override;
+
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	float IncrementValue(float& Property, float Value);
-	float DecrementValue(float& Property, float Value);
-	float SetValue(float& Property, float Value);
-
-	/** Updates the player character state. */
-	UFUNCTION()
-	void UpdatePlayerState();
-
-protected:
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Increment Value", BlueprintProtected))
 	float IncrementStateValue(const EPlayerStateValue Type, const float Value);
 
@@ -134,11 +120,18 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "PlayerState", Meta = (DisplayName = "Set Value", BlueprintProtected))
 	float SetStateValue(const EPlayerStateValue Type, const float Value);
 
-public:
-	/** Returns the configuration for the player state component. */
-	UFUNCTION(BlueprintPure, Category = "PlayerState|Configuration", Meta = (DisplayName = "Get Configuration"))
-	UPlayerStateConfiguration* GetConfiguration() const { return Configuration; }
+private:
+	float IncrementValue(float& Property, float Value);
 
+	float DecrementValue(float& Property, float Value);
+
+	float SetValue(float& Property, float Value);
+
+	/** Updates the player character state. */
+	UFUNCTION()
+	void UpdatePlayerState();
+
+public:
 	/** Returns the current pain of the player character. */
 	UFUNCTION(BlueprintPure, Category = "PlayerState|Pain", Meta = (DisplayName = "Get Pain"))
 	float GetPain() const { return Pain; }

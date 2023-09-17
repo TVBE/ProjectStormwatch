@@ -4,25 +4,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StormwatchMacros.h"
 #include "Components/ActorComponent.h"
 #include "PlayerVocalComponent.generated.h"
 
 /** Actor component that handles all vocal audio for the player character. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent,
 	DisplayName = "Player Vocal Component", ShortToolTip = "Component that handles vocal audio for the player character."))
-class STORMWATCH_API UPlayerCharacterVocalComponent : public UActorComponent
+class STORMWATCH_API UPlayerCharacterVocalComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
-
-	PLAYER_COMPONENT_BODY()
 
 public:	
 	UPlayerCharacterVocalComponent();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

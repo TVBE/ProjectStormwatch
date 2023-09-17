@@ -3,21 +3,25 @@
 
 #pragma once
 
-#define PLAYER_COMPONENT_BODY() \
+#define  \
 protected: \
-    APlayerCharacter* GetPlayerCharacter() const \
+        class APlayerCharacter* GetPlayerCharacter() const; \
+        class APlayerCharacterController* GetPlayerCharacterController() const; \
+private: // Ensures members after this macro are private by default. \
+
+#define  \
+    APlayerCharacter* PlayerComponent::GetPlayerCharacter() const \
     { \
-        return static_cast<APlayerCharacter>(GetOwner()); \
+        return static_cast<APlayerCharacter*>(this->GetOwner()); \
     } \
-    APlayerCharacterController* GetPlayerCharacterController() const \
+    APlayerCharacterController* PlayerComponent::GetPlayerCharacterController() const \
     { \
-        APlayerCharacter* PlayerCharacter = GetPlayerCharacter(); \
+        APlayerCharacter* PlayerCharacter = this->GetPlayerCharacter(); \
         if (PlayerCharacter) \
         { \
             return static_cast<APlayerCharacterController*>(PlayerCharacter->GetController()); \
         } \
         return nullptr; \
-    } \
-private:
+    }
 
 

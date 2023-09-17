@@ -2,7 +2,6 @@
 // Written by Nino Saglia & Tim Verberne.
 
 #include "PlayerInteractionComponent.h"
-
 #include "DraggableObjectInterface.h"
 #include "GrabbableObjectInterface.h"
 #include "InventoryObjectInterface.h"
