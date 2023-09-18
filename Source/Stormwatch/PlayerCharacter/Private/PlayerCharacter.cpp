@@ -5,6 +5,10 @@
 #include "PlayerCameraController.h"
 #include "PlayerCharacterController.h"
 #include "PlayerMovementComponent.h"
+#include "PlayerUseComponent.h"
+#include "PlayerGrabComponent.h"
+#include "PlayerDragComponent.h"
+#include "PlayerInventoryComponent.h"
 #include "StormwatchWorldSubystem.h"
 #include "StormwatchGameMode.h"
 #include "PlayerBodyCollisionComponent.h"
@@ -25,63 +29,47 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	/** Construct camera. */
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(this->RootComponent);
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
 
-	/** Construct camera controller. */
 	CameraController = CreateDefaultSubobject<UPlayerCameraController>(TEXT("Camera Controller"));
 	CameraController->bEditableWhenInherited = true;
 
-	/** Construct body collision component. */
+	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("Interaction Component"));
+	InteractionComponent->bEditableWhenInherited = true;
+
+	UseComponent = CreateDefaultSubobject<UPlayerUseComponent>(TEXT("Use Component"));
+	UseComponent->bEditableWhenInherited = true;
+
+	GrabComponent = CreateDefaultSubobject<UPlayerGrabComponent>(TEXT("Grab Component"));
+	GrabComponent->bEditableWhenInherited = true;
+
+	DragComponent = CreateDefaultSubobject<UPlayerDragComponent>(TEXT("Drag Component"));
+	DragComponent->bEditableWhenInherited = true;
+
+	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("Inventory Component"));
+	InventoryComponent->bEditableWhenInherited = true;
+
 	BodyCollision = CreateDefaultSubobject<UPlayerBodyCollisionComponent>(TEXT("Body Collision"));
 	BodyCollision->SetupAttachment(GetMesh());
 	BodyCollision->SetRelativeLocation(FVector(0, 0, 100));
 	BodyCollision->SetCapsuleHalfHeight(72);
 	BodyCollision->SetCapsuleRadius(34);
 
-	/** Construct foot collision components. */
 	LeftFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Left Foot Collision"));
 	LeftFootCollision->SetupAttachment(GetMesh(), FName("foot_l_socket"));
 
 	RightFootCollision = CreateDefaultSubobject<UPlayerFootCollisionComponent>(TEXT("Right Foot Collision"));
 	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
-
-	/** Construct interaction component. */
-	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("Interaction Component"));
-	CameraController->bEditableWhenInherited = true;
 }
 
-void APlayerCharacter::Jump()
-{
-	if (Settings.JumpingEnabled)
-	{
-		Super::Jump();
-	}
-}
-
-/** Called after the constructor but before the components are initialized. */
-void APlayerCharacter::PostInitProperties()
-{
-	ValidateConfigurationAssets();
-
-	if (UPlayerMovementComponent * PlayerMovementComponent {Cast<UPlayerMovementComponent>(GetCharacterMovement())})
-	{
-		PlayerMovement = PlayerMovementComponent;
-	}
-
-	/** Set components to call their virtual InitializeComponent functions. */
-	CameraController->bWantsInitializeComponent = true;
-
-	Super::PostInitProperties();
-}
-
-/** Called after all default property values have been fully initialized, but before any of the components are initialized. */
 void APlayerCharacter::OnConstruction(const FTransform& Transform)
 {
+	ensureMsgf(GetCharacterMovement()->IsA(UPlayerMovementComponent::StaticClass()), TEXT("GetCharacterMovement is not of class PlayerCharacterMovementComponent!"));
+
 	/** Registers this player character to the player character subsystem. */
 	if (const UWorld * World {GetWorld()})
 	{
@@ -94,24 +82,16 @@ void APlayerCharacter::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 }
 
-/** Called after InitializeComponents. */
-void APlayerCharacter::PostInitializeComponents()
+/** Called when the game starts or when spawned. */
+void APlayerCharacter::BeginPlay()
 {
-	Super::PostInitializeComponents();
-
-	ApplyConfigurationAssets();
+	Super::BeginPlay();
 
 	/** Subscribe to the OnLanding event of the player character movement component. */
 	if (PlayerMovement)
 	{
 		PlayerMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
 	}
-}
-
-/** Called when the game starts or when spawned. */
-void APlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
 
 	/** Notify the GameMode that the character has Begun Play. */
 	if (GetWorld() && GetWorld()->GetAuthGameMode())
@@ -121,17 +101,15 @@ void APlayerCharacter::BeginPlay()
 			GameMode->NotifyPlayerCharacterBeginPlay(this);
 		}
 	}
-		TargetSpeed = Settings.WalkSpeed;
+		TargetSpeed = WalkSpeed;
 }
 
 /** Called when the controller is changed. */
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if (NewController)
-	{
-		PlayerCharacterController = Cast<APlayerCharacterController>(NewController);
-	}
+	if (!NewController) { return; }
+	ensureMsgf(NewController->IsA(APlayerCharacterController::StaticClass()), TEXT("APlayerCharacter was possessed by an invalid PlayerController."));
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -147,11 +125,6 @@ void APlayerCharacter::UpdateMovementSpeed()
 {
 	float InteractionMultiplier {1.0f};
 
-	if (!InteractionComponent || !PlayerMovement) { return; }
-
-	const UPlayerGrabComponent* GrabComponent {InteractionComponent->GetGrabComponent()};
-	const UPlayerDragComponent* DragComponent {InteractionComponent->GetDragComponent()};
-
 	if (!GrabComponent->GetGrabbedComponent() || !DragComponent->GetGrabbedComponent()) { return; }
 
 	const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()};
@@ -161,15 +134,15 @@ void APlayerCharacter::UpdateMovementSpeed()
 	const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
 
 	const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(Settings.InteractionSpeedWeightRange, Settings.InteractionSpeedWeightScalars, Mass))};
+		(InteractionSpeedWeightRange, InteractionSpeedWeightScalars, Mass))};
 	const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(Settings.InteractionSpeedSizeRange, Settings.InteractionSpeedSizeScalars, BoundingBoxSize))};
+		(InteractionSpeedSizeRange, InteractionSpeedSizeScalars, BoundingBoxSize))};
 
-	InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier, 
-										  Settings.InteractionSpeedFloor, 1.0);
+	InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier,
+										  InteractionSpeedFloor, 1.0);
 
 	PlayerMovement->MaxWalkSpeed = ScaledSpeed;
-	PlayerMovement->MaxWalkSpeedCrouched = Settings.CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
+	PlayerMovement->MaxWalkSpeedCrouched = CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
 }
 
 void APlayerCharacter::UpdateYawDelta()
@@ -231,11 +204,19 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 	Super::UnCrouch(bClientSimulation);
 }
 
+void APlayerCharacter::Jump()
+{
+	if (JumpingEnabled)
+	{
+		Super::Jump();
+	}
+}
+
 void APlayerCharacter::StartSprinting()
 {
 	if (PlayerMovement && !PlayerMovement->GetIsSprinting())
 	{
-		TargetSpeed = Settings.SprintSpeed;
+		TargetSpeed = SprintSpeed;
 		PlayerMovement->SetIsSprinting(true);
 	}
 }
@@ -244,7 +225,7 @@ void APlayerCharacter::StopSprinting()
 {
 	if (PlayerMovement && PlayerMovement->GetIsSprinting())
 	{
-		TargetSpeed = Settings.WalkSpeed;
+		TargetSpeed = WalkSpeed;
 		PlayerMovement->SetIsSprinting(false);
 	}
 }
@@ -266,30 +247,22 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 		break;
 	}
 
-	if (const UWorld * World {GetWorld()})
+	if (APlayerCharacterController * PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
 	{
-		if (APlayerCharacterController * PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
-		{
-			PlayerController->SetPlayerMovementInputLock(true);
-			PlayerController->SetPlayerRotationInputLock(true);
-		}
-		GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
+		PlayerController->SetPlayerMovementInputLock(true);
+		PlayerController->SetPlayerRotationInputLock(true);
 	}
+	GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &APlayerCharacter::HandleLandingEnd, StunDuration, false);
+	
 	GetCharacterMovement()->StopMovementImmediately();
 }
 
 void APlayerCharacter::HandleLandingEnd()
 {
-	if (PlayerCharacterController)
+	if (APlayerCharacterController* PlayerController {Cast<APlayerCharacterController>(GetController())})
 	{
-		if (const UWorld * World {GetWorld()})
-		{
-			if (APlayerCharacterController * PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
-			{
-				PlayerController->SetPlayerMovementInputLock(false);
-				PlayerController->SetPlayerRotationInputLock(false);
-			}
-		}
+		PlayerController->SetPlayerMovementInputLock(false);
+		PlayerController->SetPlayerRotationInputLock(false);
 	}
 }
 
@@ -313,12 +286,12 @@ bool APlayerCharacter::CanPerformJump() const
 {
 	constexpr float RequiredClearance {60};
 	const float Clearance {GetClearanceAbovePawn()};
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && Settings.JumpingEnabled && !GetMovementComponent()->IsFalling());
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && JumpingEnabled && !GetMovementComponent()->IsFalling());
 }
 
 bool APlayerCharacter::CanCrouch() const
 {
-	return Super::CanCrouch() && Settings.CrouchingEnabled;
+	return Super::CanCrouch() && CrouchingEnabled;
 }
 
 bool APlayerCharacter::CanStandUp() const
@@ -330,13 +303,11 @@ bool APlayerCharacter::CanStandUp() const
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (const UWorld * World {GetWorld()})
+	if (UStormwatchWorldSubsystem * Subsystem {GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>()})
 	{
-		if (UStormwatchWorldSubsystem * Subsystem {World->GetSubsystem<UStormwatchWorldSubsystem>()})
-		{
-			Subsystem->UnregisterPlayerCharacter(this);
-		}
+		Subsystem->UnregisterPlayerCharacter(this);
 	}
+
 	Super::EndPlay(EndPlayReason);
 }
 

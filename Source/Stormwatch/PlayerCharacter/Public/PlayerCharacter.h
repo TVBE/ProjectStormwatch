@@ -10,10 +10,10 @@
 #include "PlayerCharacter.generated.h"
 
 class APlayerCharacterController;
-class UPlayerCharacterSettingsDataAsset;
-class UPlayerCameraSettingsDataAsset;
-class UPlayerGrabSettingsDataAsset;
-class UPlayerDragSettingsDataAsset;
+class UPlayerUseComponent;
+class UPlayerGrabComponent;
+class UPlayerDragComponent;
+class UPlayerInventoryComponent;
 class UCameraComponent;
 class USpotLightComponent;
 class USpringArmComponent;
@@ -212,16 +212,27 @@ private:
 
 	/** The PlayerMovementComponent that handles the PlayerCharacter's movement. */
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetPlayerMovement, Category = "Components",
-			  Meta = (DisplayName = "Player Character Movement Component"))
+			  Meta = (DisplayName = "Player Movement Component"))
 	UPlayerMovementComponent* PlayerMovement;
 
 	/** The interaction component. */
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInteractionComponent, Category = "Components")
 	UPlayerInteractionComponent* InteractionComponent;
 
-	/** The PlayerCharacterController that is currently controlling this PlayerCharacter. */
-	UPROPERTY(BlueprintGetter = GetPlayerCharacterController)
-	APlayerCharacterController* PlayerCharacterController;
+	/** The use component that is used to use actors. */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetUseComponent, Category = "Components")
+	UPlayerUseComponent* UseComponent;
+
+	/** The physics grab component that is used to grab actors. */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetGrabComponent, Category = "Components")
+	UPlayerGrabComponent* GrabComponent;
+
+	/** The physics drag component that is used to drag actors. */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDragComponent, Category = "Components")
+	UPlayerDragComponent* DragComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInventoryComponent, Category = "Components")
+	UPlayerInventoryComponent* InventoryComponent;
 
 	/** The body collision component for the player. */
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
@@ -261,12 +272,6 @@ public:
 
 	/** Called every frame. */
 	virtual void Tick(float DeltaTime) override;
-
-	/** Called after the constructor but before BeginPlay. */
-	virtual void PostInitProperties() override;
-
-	/** Is called after all of the actor's components have been created and initialized, but before the BeginPlay function is called. */
-	virtual void PostInitializeComponents() override;
 
 	/** Performs a jump.*/
 	virtual void Jump() override;
@@ -314,12 +319,6 @@ protected:
 	/** Updates the character's rotation. */
 	void UpdateRotation(const float& DeltaTime);
 
-	/** Validates the configuration data assets. */
-	void ValidateConfigurationAssets();
-
-	/** Applies the configuration data assets to the character. */
-	void ApplyConfigurationAssets();
-
 	/** Updates the character's movement speed. */
 	void UpdateMovementSpeed();
 
@@ -351,14 +350,6 @@ public:
 	/** We assume that the following pointers are always valid during the lifetime of a PlayerCharacter instance. 
 	 *  This allows us to skip ptr validity checks in any object that calls these getter functions. 
 	 *  Should any of these be null, we explicitly crash the program. */
-
-	UFUNCTION(BlueprintGetter)
-	APlayerCharacterController* GetPlayerCharacterController() const
-	{
-		check(PlayerCharacterController);
-		return PlayerCharacterController;
-	}
-
 	UFUNCTION(BlueprintGetter)
 	UCameraComponent* GetCamera() const
 	{
@@ -388,6 +379,34 @@ public:
 	}
 
 	UFUNCTION(BlueprintGetter)
+	UPlayerUseComponent* GetUseComponent() const
+	{
+		check(UseComponent);
+		return UseComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	UPlayerGrabComponent* GetGrabComponent() const
+	{
+		check(GrabComponent);
+		return GrabComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	UPlayerDragComponent* GetDragComponent() const
+	{
+		check(DragComponent);
+		return DragComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	UPlayerInventoryComponent* GetInventoryComponent() const
+	{
+		check(InventoryComponent);
+		return InventoryComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
 	float GetTargetSpeed() const { return TargetSpeed; }
 
 	UFUNCTION(BlueprintGetter)
@@ -408,6 +427,26 @@ public:
 		}
 		return false;
 	}
+
+	float GetWalkSpeed() const { return WalkSpeed; }
+
+	float GetMaxWalkableFloorAngle() const { return MaxWalkableFloorAngle; }
+
+	float GetMaxStepHeight() const { return MaxStepHeight; }
+
+	bool IsJumpingEnabled() const { return JumpingEnabled; }
+
+	float GetJumpVelocity() const { return JumpVelocity; }
+
+	bool IsSprintingEnabled() const { return SprintingEnabled; }
+
+	float GetSprintSpeed() const { return SprintSpeed; }
+
+	bool IsCrouchingEnabled() const { return CrouchingEnabled; }
+
+	float GetCrouchSpeed() const { return CrouchSpeed; }
+
+	float GetRotationRate() const { return RotationRate; }
 };
 
 

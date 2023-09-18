@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "PlayerCharacterComponent.h"
 #include "PlayerAudioComponent.generated.h"
 
 class UMetaSoundSource;

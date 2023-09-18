@@ -24,46 +24,21 @@ void UPlayerInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
 	
-	if (const APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetOwner())})
-	{
-		Camera = PlayerCharacter->GetCamera();
-	}
-
 	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
 	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
-
-	/** Add the necessary components to the owner. */
-	UseComponent = Cast<UPlayerUseComponent>(GetOwner()->AddComponentByClass(UPlayerUseComponent::StaticClass(), false, FTransform(), false));
-	GrabComponent = Cast<UPlayerGrabComponent>(GetOwner()->AddComponentByClass(UPlayerGrabComponent::StaticClass(), false, FTransform(), false));
-	DragComponent = Cast<UPlayerDragComponent>(GetOwner()->AddComponentByClass(UPlayerDragComponent::StaticClass(), false, FTransform(), false));
-	
-	if (GrabComponent)
-	{
-		GrabComponent->Configuration = PlayerGrabConfiguration.LoadSynchronous();
-	}
-
-	if (DragComponent)
-	{
-		DragComponent->Configuration = PlayerDragConfiguration.LoadSynchronous();
-	}
 }
 
 void UPlayerInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (GetOwner())
-	{
-		InventoryComponent = Cast<UPlayerInventoryComponent>(GetOwner()->FindComponentByClass(UPlayerInventoryComponent::StaticClass()));
-	}
-	if (DragComponent)
-	{
-		DragComponent->InteractionComponent = this;
-	}
 }
 
 void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+	UPlayerUseComponent* UseComponent {GetPlayerCharacter()->GetUseComponent()};
 
 	if (GrabComponent && GrabComponent->GetGrabbedActor())
 	{
@@ -99,9 +74,9 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 {
-	if (!Camera) { return nullptr; }
-	
-	CameraLocation = Camera->GetComponentLocation();
+	const UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
+	const FVector CameraLocation {Camera->GetComponentLocation()};
 	
 	/** We reset the camera trace hit result instead of constructing a new one every check to prevent unnecessary memory allocation every frame. */
 	CameraTraceHitResult.Reset(0, false);
@@ -141,6 +116,10 @@ AActor* UPlayerInteractionComponent::CheckForInteractableActor()
 /** Performs a line trace in the direction of the camera's forward vector. */
 void UPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult)
 {
+	const UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
+	const FVector CameraLocation {Camera->GetComponentLocation()};
+
 	const FVector EndLocation = CameraLocation + Camera->GetForwardVector() * CameraTraceLength;
 	
 	GetWorld()->LineTraceSingleByChannel(
@@ -230,6 +209,10 @@ void UPlayerInteractionComponent::UpdateInteractableObjectData(AActor* NewIntera
 bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 {
 	if (!Actor) { return false; }
+
+	const UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
+	const FVector CameraLocation {Camera->GetComponentLocation()};
 	
 	const FVector EndLocation = Actor->GetActorLocation();
 	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, nullptr);
@@ -409,7 +392,9 @@ bool UPlayerInteractionComponent::GetClosestObjectToLocation(FInteractableObject
 
 void UPlayerInteractionComponent::BeginPrimaryInteraction()
 {
-	if (CurrentInteractableActor && UseComponent)
+	UPlayerUseComponent* UseComponent {GetPlayerCharacter()->GetUseComponent()};
+
+	if (CurrentInteractableActor)
 	{
 		if (UObject* InteractableObject {FindInteractableObject<UUsableObject>(CurrentInteractableActor)})
 		{
@@ -420,44 +405,51 @@ void UPlayerInteractionComponent::BeginPrimaryInteraction()
 
 void UPlayerInteractionComponent::EndPrimaryInteraction()
 {
-	if (!UseComponent || !UseComponent->GetObjectInUse()) { return; }
+	UPlayerUseComponent* UseComponent {GetPlayerCharacter()->GetUseComponent()};
+
+	if (!UseComponent->GetObjectInUse()) { return; }
+
 	UseComponent->EndUse();
 }
 
 void UPlayerInteractionComponent::BeginSecondaryInteraction()
 {
-	if (GrabComponent && DragComponent)
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+	UPlayerDragComponent* DragComponent {GetPlayerCharacter()->GetDragComponent()};
+
+	if (GrabComponent->GetGrabbedActor())
 	{
-		if (GrabComponent->GetGrabbedActor())
+		GrabComponent->BeginPrimingThrow();
+		return;
+	}
+
+	if (!CurrentInteractableActor) { return; }
+	
+	if (UObject* GrabbableObject {FindInteractableObject<UGrabbableObject>(CurrentInteractableActor)})
+	{
+		GrabComponent->GrabActor(CurrentInteractableActor);
+	}
+	else if (UObject* DraggableObject {FindInteractableObject<UDraggableObject>(CurrentInteractableActor)})
+	{
+		FVector GrabLocation {FVector()};
+		if (CameraTraceHitResult.GetActor() == CurrentInteractableActor)
 		{
-			GrabComponent->BeginPrimingThrow();
+			GrabLocation = CameraTraceHitResult.ImpactPoint;
 		}
-		else if (CurrentInteractableActor)
+		else if (CameraTraceHitResult.GetActor() != CurrentInteractableActor)
 		{
-			if (UObject* GrabbableObject {FindInteractableObject<UGrabbableObject>(CurrentInteractableActor)})
-			{
-				GrabComponent->GrabActor(CurrentInteractableActor);
-			}
-			else if (UObject* DraggableObject {FindInteractableObject<UDraggableObject>(CurrentInteractableActor)})
-			{
-				FVector GrabLocation {FVector()};
-				if (CameraTraceHitResult.GetActor() == CurrentInteractableActor)
-				{
-					GrabLocation = CameraTraceHitResult.ImpactPoint;
-				}
-				else if (CameraTraceHitResult.GetActor() != CurrentInteractableActor)
-				{
-					GrabLocation = GetNearestPointOnMesh(CameraTraceHitResult, CurrentInteractableActor);
-				}
-				DragComponent->DragActorAtLocation(CurrentInteractableActor, GrabLocation);
-			}
+			GrabLocation = GetNearestPointOnMesh(CameraTraceHitResult, CurrentInteractableActor);
 		}
+		DragComponent->DragActorAtLocation(CurrentInteractableActor, GrabLocation);
 	}
 }
 
 void UPlayerInteractionComponent::EndSecondaryInteraction()
 {
-	if (GrabComponent && GrabComponent->GetWillThrowOnRelease())
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+	UPlayerDragComponent* DragComponent {GetPlayerCharacter()->GetDragComponent()};
+
+	if (GrabComponent->GetWillThrowOnRelease())
 	{
 		GrabComponent->PerformThrow(false);
 	}
@@ -468,27 +460,33 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 			GrabComponent->ReleaseObject();
 		}
 	}
-	if(DragComponent)
-	{
-		DragComponent->ReleaseActor();
-	}
+
+	DragComponent->ReleaseActor();
 }
 
 void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+
 	IsTertiaryInteractionActive = true;
+
 	GrabComponent->BeginTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+
 	IsTertiaryInteractionActive = false;
+
 	GrabComponent->EndTetriaryInteraction();
 }
 
 void UPlayerInteractionComponent::BeginInventoryInteraction()
 {
-	if (CurrentInteractableActor && InventoryComponent)
+	UPlayerInventoryComponent* InventoryComponent {GetPlayerCharacter()->GetInventoryComponent()};
+
+	if (CurrentInteractableActor)
 	{
 		if (UObject* InteractableObject {FindInteractableObject<UInventoryObject>(CurrentInteractableActor)})
 		{
@@ -503,7 +501,9 @@ void UPlayerInteractionComponent::EndInventoryInteraction()
 
 void UPlayerInteractionComponent::AddScrollInput(const float Input)
 {
-	if (GrabComponent && GrabComponent->GetGrabbedActor())
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+
+	if (GrabComponent->GetGrabbedActor())
 	{
 		GrabComponent->UpdateZoomAxisValue(Input);
 	}
@@ -511,7 +511,9 @@ void UPlayerInteractionComponent::AddScrollInput(const float Input)
 
 void UPlayerInteractionComponent::AddPitchInput(const float Input)
 {
-	if (IsTertiaryInteractionActive && GrabComponent && GrabComponent->GetGrabbedActor())
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+
+	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
 		GrabComponent->UpdateMouseImputRotation(FVector2D(0, Input));
 	}
@@ -519,7 +521,9 @@ void UPlayerInteractionComponent::AddPitchInput(const float Input)
 
 void UPlayerInteractionComponent::AddYawInput(const float Input)
 {
-	if (IsTertiaryInteractionActive && GrabComponent && GrabComponent->GetGrabbedActor())
+	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
+
+	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
 		GrabComponent->UpdateMouseImputRotation(FVector2D(Input, 0));
 	}

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-"
 #include "Components/SceneComponent.h"
 #include "PlayerFootCollisionComponent.generated.h"
 
@@ -37,9 +36,6 @@ private:
 	/** If true, we scale the push strength to the weight of the object. */
 	UPROPERTY(EditAnywhere)
 	bool ScaleForceByMass {true};
-
-	UPROPERTY()
-	ACharacter* Character;
 
 public:
 	UPlayerFootCollisionComponent();

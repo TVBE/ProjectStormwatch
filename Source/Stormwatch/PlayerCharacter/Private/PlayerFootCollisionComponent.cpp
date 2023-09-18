@@ -3,6 +3,7 @@
 
 #include "PlayerFootCollisionComponent.h"
 #include "Components/SphereComponent.h"
+#include "PlayerCharacter.h"
 #include "GameFramework/Character.h"
 
 #if WITH_REACOUSTIC
@@ -17,8 +18,6 @@ UPlayerFootCollisionComponent::UPlayerFootCollisionComponent()
 void UPlayerFootCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Character = Cast<ACharacter>(GetOwner());
 	
 	CollisionSphere = Cast<USphereComponent>(GetOwner()->AddComponentByClass(USphereComponent::StaticClass(),
 		false, this->GetRelativeTransform(), true));
@@ -43,11 +42,11 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 {
 	FVector ImpulseDirection = (OtherComp->GetComponentLocation() - GetComponentLocation()).GetSafeNormal();
 
-	const FVector PlayerForwardVector {Character->GetActorForwardVector()};
+	const FVector PlayerForwardVector {GetOwner()->GetActorForwardVector()};
 
 	if (const float DotProduct {static_cast<float>(FVector::DotProduct(ImpulseDirection, PlayerForwardVector))}; DotProduct > 0.0f)
 	{
-		const FVector PlayerRightVector {Character->GetActorRightVector()};
+		const FVector PlayerRightVector {GetOwner()->GetActorRightVector()};
 		
 		if (const float LateralDotProduct {static_cast<float>(FVector::DotProduct(ImpulseDirection, PlayerRightVector))}; LateralDotProduct < 0.0f)
 			{
@@ -99,4 +98,5 @@ if (ImpulseStrength > 1)
 	}
 }
 #endif
-};
+}
+;

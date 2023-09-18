@@ -19,9 +19,6 @@ UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within =
 	DECLARE_LOG_CATEGORY_CLASS(LogDragComponent, Log, All)
 
 public:
-	UPROPERTY()
-	UPlayerInteractionComponent* InteractionComponent;
-
 	/** Multiplier used to change the rotation speed of the camera when dragging an object. */
 	UPROPERTY()
 	float CameraRotationMultiplier {1.0f};
@@ -47,7 +44,7 @@ private:
 	/** The amount that the rotation speed decreases when dragging objects.*/
 	UPROPERTY(EditInstanceOnly, Category = "Player Physics Grab", 
 			  Meta = (ClampMin = "0"))
-	float CameraRotationDecreasingStrength {0.8f};
+	float CameraRotationDamping {0.8f};
 
 	bool ApplyForceOnCenterMass {false};
 

@@ -21,7 +21,6 @@ void UPlayerDragComponent::OnRegister()
 void UPlayerDragComponent::BeginPlay()
 {
     Super::BeginPlay();
-	SetComponentTickEnabled(false);
 }
 
 void UPlayerDragComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -43,7 +42,7 @@ void UPlayerDragComponent::UpdateCameraRotationSpeed(float DeltaTime)
 	if(GrabbedComponent)
 	{
 		CameraRotationMultiplier = 1 / (FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation)
-			* CameraRotationDecreasingStrength * 0.1);
+			* CameraRotationDamping * 0.1);
 	}
 	else
 	{
@@ -53,19 +52,17 @@ void UPlayerDragComponent::UpdateCameraRotationSpeed(float DeltaTime)
 
 void UPlayerDragComponent::UpdateLocalConstraint()
 {
-	if (InteractionComponent)
+	UPlayerInteractionComponent* InteractionComponent {GetPlayerCharacter()->GetInteractionComponent()};
+
+	const FHitResult HitResult {InteractionComponent->GetCameraTraceHitResult()};
+	if (!HitResult.IsValidBlockingHit() || !(HitResult.GetComponent() == GrabbedComponent)) { return; }
+	
+	if (FVector::DistSquared(HitResult.ImpactPoint, GetDragLocation()) >= 1225)
 	{
-		const FHitResult HitResult {InteractionComponent->GetCameraTraceHitResult()};
-		if (HitResult.IsValidBlockingHit() && HitResult.GetComponent() == GrabbedComponent)
-		{
-			if (FVector::DistSquared(HitResult.ImpactPoint, GetDragLocation()) >= 1225)
-			{
-				/** TODO: Find method to prevent physics jump when re-grabbing object. */
-				InterpolationSpeed = 0.0f;
-				GrabComponentAtLocation(HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint);
-				InterpolationSpeed = 50.0f;
-			}
-		}
+		/** TODO: Find method to prevent physics jump when re-grabbing object. */
+		InterpolationSpeed = 0.0f;
+		GrabComponentAtLocation(HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint);
+		InterpolationSpeed = 50.0f;
 	}
 }
 

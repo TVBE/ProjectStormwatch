@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "PlayerCharacterComponent.h"
 #include "PlayerFlashlightComponent.generated.h"
 
 class UPlayerMovementComponent;

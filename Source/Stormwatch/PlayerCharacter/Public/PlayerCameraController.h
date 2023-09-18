@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "PlayerCharacterComponent.h"
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
 
@@ -207,6 +206,9 @@ public:
 	/** Fades the camera from black. */
 	void FadeFromBlack(const float Duration);
 
+	/** Sets the maximum and minimum view pitch of the camera manager. */
+	void SetCameraPitchLimits(TObjectPtr<APlayerCameraManager> CameraManager);
+
 protected:
 	virtual void OnRegister() override;
 
@@ -214,10 +216,10 @@ protected:
 
 private:
 	/** Updates the camera relative location. */
-	void UpdateCameraLocation(UCameraComponent* Camera);
+	void UpdateCameraLocation(UCameraComponent* Camera, const APlayerCharacter* Character);
 
 	/** Updates the camera world rotation*/
-	void UpdateCameraRotation(const UCameraComponent* Camera, const float DeltaTime);
+	void UpdateCameraRotation(const UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
 	void GetCameraSwayRotation(FRotator& Rotator);
@@ -229,13 +231,13 @@ private:
 	void GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
 
 	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView(UCameraComponent* Camera, const float DeltaTime);
+	void UpdateCameraFieldOfView(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(UCameraComponent* Camera, const float DeltaTime);
+	void UpdateCameraVignetteIntensity(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(UCameraComponent* Camera, const float DeltaTime);
+	void UpdateCameraDepthOfField(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
 	float GetFocalDistance(UCameraComponent* Camera) const;

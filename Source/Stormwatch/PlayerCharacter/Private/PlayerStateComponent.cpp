@@ -6,9 +6,6 @@
 void UPlayerStateComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
-	
-	if (Settings.IsNull()) {return; }
-	Configuration = Settings.LoadSynchronous();
 }
 
 void UPlayerStateComponent::BeginPlay()

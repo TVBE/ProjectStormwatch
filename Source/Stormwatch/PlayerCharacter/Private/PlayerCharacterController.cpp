@@ -51,8 +51,8 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 
 	if (const UPlayerCameraController* CameraController {PlayerCharacter->GetCameraController()}) 
 	{
-		PlayerCameraManager->ViewPitchMax = CameraController->GetSettings().MaximumViewPitch;
-		PlayerCameraManager->ViewPitchMin = CameraController->GetSettings().MinimumViewPitch;
+		PlayerCameraManager->ViewPitchMax = CameraController.MaximumViewPitch;
+		PlayerCameraManager->ViewPitchMin = CameraController.MinimumViewPitch;
 	}
 }
 
@@ -126,14 +126,14 @@ void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 {
 	if (!CanProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw, 0)};
-		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
+		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 
 void APlayerCharacterController::HandleLateralMovementInput(float Value)
 {
 	if (!CanProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
-		GetCharacter()->AddMovementInput((Rotation.Vector()), Value);
+		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 void APlayerCharacterController::HandleZoomDirectionInput(float Value)
 {
@@ -152,13 +152,13 @@ void APlayerCharacterController::HandleJumpActionPressed()
 		if (Clearance <= 175 && Clearance != -1.f)
 		{
 			// We limit the JumpZVelocity of the player under a certain clearance to prevent the character from bumping its head into the object above.
-			GetCharacter()->GetCharacterMovement()->JumpZVelocity = Clearance * 4.25;
+			GetPlayerCharacter()->GetCharacterMovement()->JumpZVelocity = Clearance * 4.25;
 		}
 		else
 		{
-			GetCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfiguration->JumpVelocity;
+			GetPlayerCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfiguration->JumpVelocity;
 		}
-		GetCharacter()->Jump();
+		GetPlayerCharacter()->Jump();
 	}
 }
 
@@ -538,7 +538,7 @@ void APlayerCharacterController::FadePlayerCameraFromBlack(const float Duration)
 
 bool APlayerCharacterController::CanCharacterSprint() const
 {
-	return CharacterConfiguration->IsSprintingEnabled && GetCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetCharacter()->bIsCrouched
+	return CharacterConfiguration->IsSprintingEnabled && GetPlayerCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetPlayerCharacter()->bIsCrouched
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 

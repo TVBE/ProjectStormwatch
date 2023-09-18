@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "PlayerCharacterComponent.h"
 #include "PlayerInteractionComponent.generated.h"
 
 class UPlayerGrabConfiguration;
@@ -66,43 +65,19 @@ class STORMWATCH_API UPlayerInteractionComponent : public UPlayerCharacterCompon
 
 public:
 	/** The length of the initial line trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
+			  Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
 	uint16 CameraTraceLength {300};
 
 	/** The radius of the interactable object multi sphere trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
+			  Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
 	uint16 ObjectTraceRadius {50};
 
 private:
-	/** The use component that is used to use actors. */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetUseComponent, Instanced, Category = "Use")
-	UPlayerUseComponent* UseComponent;
-
-	/** The physics grab component that is used to grab actors. */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetGrabComponent, Instanced, Category = "Grab")
-	UPlayerGrabComponent* GrabComponent;
-
-	/** The physics drag component that is used to drag actors. */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDragComponent, Instanced, Category = "Drag")
-	UPlayerDragComponent* DragComponent;
-
-	/** The inventory component that is used to store actors in the player's inventory.
-	 *	The inventory component is not added by this component.
-	 *	Therefore, we cannot always assume that the component is actually present in the playercharacter instance. */
-	UPROPERTY(BlueprintGetter = GetInventoryComponent)
-	UPlayerInventoryComponent* InventoryComponent;
-
-	/** The camera component of the Player Character. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction|Components", Meta = (DisplayName = "Camera", AllowPrivateAccess = "true"))
-	UCameraComponent* Camera;
-
 	/** If true, the interaction component is currently performing a tertiary interaction. */
 	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
 	bool IsTertiaryInteractionActive {false};
-
-	/** The location of the camera. */
-	UPROPERTY()
-	FVector CameraLocation;
 
 	/** The hit result for the initial visibility line trace collision query performed from the camera. */
 	UPROPERTY()
@@ -273,18 +248,6 @@ private:
 	bool GetClosestObjectToLocation(FInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FInteractableObjectData> Objects);
 
 public:
-	UFUNCTION(BlueprintGetter)
-	UPlayerUseComponent* GetUseComponent() const { return UseComponent; }
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerGrabComponent* GetGrabComponent() const { return GrabComponent; }
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerDragComponent* GetDragComponent() const { return DragComponent; }
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
-
 	/** Returns the object the interaction component is currently interacting with. */
 	UFUNCTION(BlueprintPure)
 	AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }

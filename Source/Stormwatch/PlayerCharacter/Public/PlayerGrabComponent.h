@@ -45,7 +45,7 @@ private:
 	/** The amount that the rotation speed decreases when holding objects at a distance.*/
 	UPROPERTY(EditInstanceOnly, Category = "Grab", 
 			  Meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2"))
-	float CameraRotationDecreasingStrength {0.3f};
+	float CameraRotationDamping {0.3f};
 
 	/** The distance where the object will move towards the hand location.*/
 	UPROPERTY(EditInstanceOnly, Category = "Grab", 

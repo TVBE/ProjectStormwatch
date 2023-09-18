@@ -50,7 +50,6 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			{
 				ReleaseObject();
 			}
-			
 		}
 		else
 		{
@@ -202,30 +201,23 @@ void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 /** Grab the object pass it to the physicshandle and capture the relative object rotation*/
 void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 {
-	/** check if there's a reference and cast to static mesh component to get a ref to the first static mesh. */
-	if (!ActorToGrab || GrabbedComponent)
-		{
-			UE_LOG(LogGrabComponent, Warning, TEXT("No actor references"));
-			return;
-		}
-	if (UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))})
-	{
-		CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
-		GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
+	if (!ActorToGrab || GrabbedComponent) { return; }
 
-		/** Get the GrabbedComponent rotation relative to the camera. */
+	UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))};
+	if (!StaticMeshComponent)
+	{
+		UE_LOG(LogGrabComponent, Warning, TEXT("Attempted to grab an Actor with no valid StaticMeshComponent."));
+		return;
+	}
+
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+
+	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
+	GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
+
 		
-		 CameraRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
+	CameraRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
 	
-		/** Start the tick function so that the update for the target location can start updating. */
-		SetComponentTickEnabled(true);
-	}
-	else
-	{
-		UE_LOG(LogGrabComponent,Warning,TEXT("NoStaticmeshFound"))
-	}
-
-
 	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
 	 *	If not, add the component to the grabbed actor. */
 	if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass()))})
@@ -239,34 +231,32 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	
 	FBox BoundingBox {GrabbedComponent->Bounds.GetBox()};
 	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
+
+	/** Start the enable tick so that the update for the target location can start updating. */
+	SetComponentTickEnabled(true);
 }
 
 void UPlayerGrabComponent::ReleaseObject()
 {
-	if(GrabbedComponent)
-	{
-		SetComponentTickEnabled(false);
+	if (!GrabbedComponent) { return; }
 
-		if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()))})
-		{
-			KineticComponent->HandleOnOwnerReleased();
-		}
-		
-		if(WillThrowOnRelease)
-		{
-		
-		}
-		else
-		{
-			/** If the object is not thrown, clamp the velocity.*/
-			FVector Velocity = GrabbedComponent->GetComponentVelocity();
-			GrabbedComponent->SetPhysicsLinearVelocity(Velocity.GetClampedToSize(0.0, 500.0));
-		}
-		WillThrowOnRelease = false;
-		ReleaseComponent();
-		UE_LOG(LogGrabComponent, VeryVerbose, TEXT("Released Object."))
-		StopPrimingThrow();
+	SetComponentTickEnabled(false);
+
+	if (UKineticActorComponent* KineticComponent {Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()))})
+	{
+		KineticComponent->HandleOnOwnerReleased();
 	}
+		
+	if(!WillThrowOnRelease)
+	{
+		/** If the object is not thrown, clamp the velocity.*/
+		FVector Velocity = GrabbedComponent->GetComponentVelocity();
+		GrabbedComponent->SetPhysicsLinearVelocity(Velocity.GetClampedToSize(0.0, 500.0));
+	}
+
+	WillThrowOnRelease = false;
+	ReleaseComponent();
+	StopPrimingThrow();
 }
 
 
@@ -290,83 +280,82 @@ void UPlayerGrabComponent::StopPrimingThrow()
 /** Execute a throw if the throw is priming*/
 void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 {
-	if(WillThrowOnRelease)
+	if (!WillThrowOnRelease) { return; }
+	
+	const UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
+		
+	bool ThrowOverHands {false};
+
+	/** Calculate the throwing strenght using the timeline we updated in the tick.*/
+	const float ThrowingStrength{ThrowStrengthCurve->GetFloatValue(ThrowingTimeLine)};
+
+	FVector Target {FVector()};
+	const FVector TraceStart {Camera->GetComponentLocation()};
+	const FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredComponent(GrabbedComponent);
+	if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
 	{
+		Target = HitResult.ImpactPoint;
+	}
+	else
+	{
+		Target = TraceEnd;
+	}
 		
-		bool ThrowOverHands{false};
-		/** Calculate the throwing strenght using the timeline we updated in the tick.*/
-		const float ThrowingStrength{ThrowStrengthCurve->GetFloatValue(ThrowingTimeLine)};
-		FVector Target {FVector()};
-		FVector TraceStart {Camera->GetComponentLocation()};
-		FVector TraceEnd {Camera->GetForwardVector() * 10000000 + TraceStart};FHitResult HitResult;
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredComponent(GrabbedComponent);
-		if  (this->GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams))
-		{
-			Target = HitResult.ImpactPoint;
-		}
-		else
-		{
-			Target = TraceEnd;
-		}
+	/** Calculate the direction from the player to the target */
+	FVector Direction = Target - GrabbedComponent->GetComponentLocation();
+	Direction.Normalize();
 		
-		/** Calculate the direction from the player to the target */
-		FVector Direction = Target - GrabbedComponent->GetComponentLocation();
-		Direction.Normalize();
-		
-		FVector FinalDirection{0,0,0};
-		if(Target != TraceEnd)
-		{
-			/** Calculate the angle to throw the object using a ballistic trajectory.*/
-			//float ThrowAngle = CalculateThrowAngle(ReleaseLocation,Target,ThrowingStrength,ThrowOverHands);
+	FVector FinalDirection{0,0,0};
+	if(Target != TraceEnd)
+	{
+		/** Calculate the angle to throw the object using a ballistic trajectory.*/
+		//float ThrowAngle = CalculateThrowAngle(ReleaseLocation,Target,ThrowingStrength,ThrowOverHands);
 			
-			/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
-			FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
-			RotationAxis.Normalize();
-			//FinalDirection = Direction.RotateAngleAxis(ThrowAngle, RotationAxis);
-			FinalDirection.Normalize();
+		/**Rotate the Direction vector around the cross product of the Direction vector and the world up vector by the angle Theta. */
+		FVector RotationAxis = Direction.CrossProduct(Direction,FVector::UpVector);
+		RotationAxis.Normalize();
+		//FinalDirection = Direction.RotateAngleAxis(ThrowAngle, RotationAxis);
+		FinalDirection.Normalize();
 
-			float VectorLength = RotationAxis.Size();
-		}
-		else
-		{
-			FinalDirection = Direction;
-		}
-
-		/** for now, we won't use the manual calculation for throwing angle if there isn't any solution*/
+		float VectorLength = RotationAxis.Size();
+	}
+	else
+	{
 		FinalDirection = Direction;
+	}
+
+	/** for now, we won't use the manual calculation for throwing angle if there isn't any solution*/
+	FinalDirection = Direction;
 		
-		ThrowVelocity = FinalDirection * ThrowingStrength;
+	ThrowVelocity = FinalDirection * ThrowingStrength;
 
-		FVector TossVelocity;
-		if(!UGameplayStatics::SuggestProjectileVelocity(
-				this,
-				TossVelocity,
-				GrabbedComponent->GetComponentLocation(),
-				Target,
-				ThrowingStrength,
-				false,
-				0,
-				GetWorld()->GetGravityZ(),
-				ESuggestProjVelocityTraceOption::DoNotTrace,
-				FCollisionResponseParams::DefaultResponseParam,
-				TArray<AActor*>{GetOwner(),GetGrabbedActor()},
-				false))
-		{
-			TossVelocity = ThrowVelocity;
-		}
-		VisualizeProjectilePath(GrabbedComponent->GetOwner(),GrabbedComponent->GetComponentLocation(),TossVelocity);
+	FVector TossVelocity;
+	if(!UGameplayStatics::SuggestProjectileVelocity(
+			this,
+			TossVelocity,
+			GrabbedComponent->GetComponentLocation(),
+			Target,
+			ThrowingStrength,
+			false,
+			0,
+			GetWorld()->GetGravityZ(),
+			ESuggestProjVelocityTraceOption::DoNotTrace,
+			FCollisionResponseParams::DefaultResponseParam,
+			TArray<AActor*>{GetOwner(),GetGrabbedActor()},
+			false))
+	{
+		TossVelocity = ThrowVelocity;
+	}
+	VisualizeProjectilePath(GrabbedComponent->GetOwner(),GrabbedComponent->GetComponentLocation(),TossVelocity);
 
-		if(!OnlyPreviewTrajectory)
-		{
-			/** Set the physics velocity of the grabbed component to the calculated throwing direction */
-			
-			GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
-			/** Release the grabbed component after the throw */
-			GrabbedComponent->WakeRigidBody();
-			ReleaseObject();
-			
-		}
+	if(!OnlyPreviewTrajectory)
+	{
+		GrabbedComponent->WakeRigidBody();
+		ReleaseObject();
+		GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
 	}
 }
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "PlayerCharacterComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerStateComponent.generated.h"
 
