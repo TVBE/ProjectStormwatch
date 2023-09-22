@@ -21,7 +21,56 @@ class STORMWATCH_API UPlayerFlashlightComponent : public UPlayerCharacterCompone
 {
 	GENERATED_BODY()
 
-	DECLARE_LOG_CATEGORY_CLASS(LogPlayerFlashlightComponent, Log, All)
+public:
+	UPlayerFlashlightComponent();
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Enables or disables the flashlight. */
+	UFUNCTION(BlueprintCallable)
+	void SetFlashlightEnabled(const bool Value);
+
+	/** Returns whether the flashlight is enabled or not. */
+	UFUNCTION(BlueprintPure)
+	bool IsFlashlightEnabled() const;
+
+	/** Updates the movement alpha value. */
+	void UpdateMovementAlpha(const float DeltaTime);
+
+	/** Calculates the flashlight focus rotation.
+	 *	@Return The target rotation for the flashlight to focus on whatever surface the player is looking at.
+	 */
+	FRotator GetFlashlightFocusRotation() const;
+
+	/** Calculates the flashlight sway rotation.
+	 *	@Return A rotator that can be added to the world rotation of the flashlight to introduce flashlight sway.
+	 */
+	FRotator GetFlashlightSwayRotation() const;
+
+	/** Returns the flashlight socket rotation with an offset depending on the movement type of the PlayerCharacter.
+	 *	@Socket The socket to get the rotation from.
+	 *	@MovementType The current ground movement type of the player.
+	 *	@Return The rotation of the socket with an offset depending on the ground movement type.
+	 */
+	FRotator GetSocketRotationWithOffset(const FName Socket, const EPlayerGroundMovementType MovementType) const;
+
+	/** Returns the flashlight component. */
+	UFUNCTION(BlueprintGetter)
+	USpotLightComponent* GetFlashlight() const { return Flashlight; }
+
+	/** Returns the flashlight SpringArmComponent. */
+	UFUNCTION(BlueprintGetter)
+	USpringArmComponent* GetFlashlightSpringArm() const { return FlashlightSpringArm; }
+
+	/** Returns the Flashlight configuration. */
+	UFUNCTION(BlueprintGetter)
+	UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const { return Configuration; }
+
+protected:
+	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	/** The flashlight for the player. */
@@ -56,60 +105,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	float MovementAlpha {0.f};
 
-public:
-	UPlayerFlashlightComponent();
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	/** Enables or disables the flashlight. */
-	UFUNCTION(BlueprintCallable)
-	void SetFlashlightEnabled(const bool Value);
-
-	/** Returns whether the flashlight is enabled or not. */
-	UFUNCTION(BlueprintPure)
-	bool IsFlashlightEnabled() const;
-
-	/** Updates the movement alpha value. */
-	void UpdateMovementAlpha(const float DeltaTime);
-
-	/** Calculates the flashlight focus rotation.
-	 *	@Return The target rotation for the flashlight to focus on whatever surface the player is looking at.
-	 */
-	FRotator GetFlashlightFocusRotation() const;
-
-	/** Calculates the flashlight sway rotation.
-	 *	@Return A rotator that can be added to the world rotation of the flashlight to introduce flashlight sway.
-	 */
-	FRotator GetFlashlightSwayRotation() const;
-
-	/** Returns the flashlight socket rotation with an offset depending on the movement type of the PlayerCharacter.
-	 *	@Socket The socket to get the rotation from.
-	 *	@MovementType The current ground movement type of the player.
-	 *	@Return The rotation of the socket with an offset depending on the ground movement type.
-	 */
-	FRotator GetSocketRotationWithOffset(const FName Socket, const EPlayerGroundMovementType MovementType) const;
-
-protected:
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 private:
 	void CleanupComponent();
 
-public:
-	/** Returns the flashlight component. */
-	UFUNCTION(BlueprintGetter)
-	USpotLightComponent* GetFlashlight() const { return Flashlight; }
-
-	/** Returns the flashlight SpringArmComponent. */
-	UFUNCTION(BlueprintGetter)
-	USpringArmComponent* GetFlashlightSpringArm() const { return FlashlightSpringArm; }
-
-	/** Returns the Flashlight configuration. */
-	UFUNCTION(BlueprintGetter)
-	UPlayerFlashlightConfiguration* GetFlashlightConfiguration() const { return Configuration; }
 };
 
 /** Enumeration for defining the socket rotation axis. */

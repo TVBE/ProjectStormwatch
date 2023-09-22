@@ -73,7 +73,6 @@ public:
 	UFUNCTION()
 	void HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
-
 	UFUNCTION(BlueprintNativeEvent, Category = Default, Meta = (DisplayName = "Initialize"))
 	void Initialize(USoundBase* SoundBase = nullptr);
 	

@@ -106,7 +106,6 @@ void UPlayerDragComponent::ReleaseActor()
 	ReleaseComponent();
 }
 
-/** The looping function that updates the target location and rotation of the currently dragged object*/
 void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 {
 	if (!GrabbedComponent)
