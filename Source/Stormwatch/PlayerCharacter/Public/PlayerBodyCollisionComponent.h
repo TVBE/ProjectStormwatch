@@ -13,10 +13,6 @@ class STORMWATCH_API UPlayerBodyCollisionComponent : public UCapsuleComponent
 {
 	GENERATED_BODY()
 
-private:
-	UPROPERTY()
-	TArray<UPrimitiveComponent*> PushedComponents;
-
 public:
 	UPlayerBodyCollisionComponent();
 
@@ -26,4 +22,8 @@ protected:
 	virtual void OnRegister() override;
 
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	TArray<UPrimitiveComponent*> PushedComponents;
 };
