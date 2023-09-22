@@ -6,21 +6,27 @@
 #include "PlayerCharacterComponent.h"
 #include "PlayerAudioComponent.generated.h"
 
-class UMetaSoundSource;
-class APlayerCharacter;
-class UAudioComponent;
-
-/** UPlayerAudioComponent is an Actor Component responsible for managing all audio specific to the player character.
- *	This class provides a simple and convenient way for designers to customize the player's audio implementation.
- *	@Brief ActorComponent for managing player audio.
- */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	   Meta = (BlueprintSpawnableComponent, DisplayName = "Player Audio Component", ShortToolTip = "Audio component for the player character."))
 class STORMWATCH_API UPlayerAudioComponent : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
-	DECLARE_LOG_CATEGORY_CLASS(LogPlayerAudio, Log, All)
+public:
+	UPlayerAudioComponent();
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Returns the body AudioComponent. */
+	UFUNCTION(BlueprintGetter)
+	class UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
+
+protected:
+	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	/** The AudioComponent for general player audio. */
@@ -29,27 +35,7 @@ private:
 
 	/** The Metasound Asset for the body audio component. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Body Audio Component Metasound Source"))
-	TSoftObjectPtr<UMetaSoundSource> BodyAudioComponentSoundAsset;
+	TSoftObjectPtr<class UMetaSoundSource> BodyAudioComponentSoundAsset;
 
-public:
-	UPlayerAudioComponent();
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-protected:
-	virtual void OnRegister() override;
-
-	virtual void OnUnregister() override;
-
-	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
 	void CleanupComponent();
-
-public:
-	/** Returns the body AudioComponent. */
-	UFUNCTION(BlueprintGetter)
-	UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
 };
