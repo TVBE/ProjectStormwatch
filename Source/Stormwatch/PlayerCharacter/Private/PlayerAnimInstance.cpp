@@ -10,27 +10,20 @@
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {
-	if(GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
-	{
-		PlayerCharacter = Cast<APlayerCharacter>(GetSkelMeshComponent()->GetOwner());
-	}
 	Super::NativeInitializeAnimation();
 }
 
 void UPlayerAnimInstance::NativeBeginPlay()
 {
-	if(!PlayerCharacter && GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
-	{
-		PlayerCharacter = Cast<APlayerCharacter>(GetSkelMeshComponent()->GetOwner());
-	}
 	Super::NativeBeginPlay();
 }
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+	APlayerCharacter* PlayerCharacter {Cast<APlayerCharacter>(GetSkelMeshComponent()->GetOwner())};
 	if (PlayerCharacter)
 	{
-		const APlayerCharacterController* Controller {PlayerCharacter->GetPlayerCharacterController()};
+		const APlayerCharacterController* Controller {Cast<APlayerCharacterController>(PlayerCharacter->GetController())};
 		const UPlayerMovementComponent* CharacterMovement {PlayerCharacter->GetPlayerMovement()};
 		if (Controller && CharacterMovement)
 		{

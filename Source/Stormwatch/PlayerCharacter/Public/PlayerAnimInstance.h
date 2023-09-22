@@ -25,6 +25,29 @@ class STORMWATCH_API UPlayerAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+	UPlayerAnimInstance();
+
+	virtual void NativeInitializeAnimation() override;
+	virtual void NativeBeginPlay() override;
+
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	/** Returns data about a footstep at the specified foot, like the object or physical material underneath the foot at the time of the footstep.
+	 *	@param Foot The foot that is performing the step.
+	 *	@return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep.
+	 */
+	UFUNCTION(BlueprintPure)
+	FStepData GetFootstepData(const ELeftRight Foot);
+
+	/** Returns data about a 'handstep' at the specified hand, like the object or physical material underneath the hand at the time of the handstep.
+	*	@param Hand The hand that is performing the step.
+	*	@return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep.
+	*/
+	UFUNCTION(BlueprintPure)
+	FStepData GetHandstepData(const ELeftRight Hand);
+
+	void GetStepData(FStepData& StepData, const FVector Location);
+
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FFootstepDelegate OnFootstep;
 
@@ -95,37 +118,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	float VerticalAlpha {0.0f};
-
-	/** Pointer to the player character that owns the skeletal mesh component that this anim instance is driving. */
-	UPROPERTY(BlueprintReadOnly)
-	APlayerCharacter* PlayerCharacter;
-
-protected:
-	/** Is called after the AnimInstance object is created and all of its properties have been initialized, but before the animation update loop begins. */
-	virtual void NativeInitializeAnimation() override;
-
-	/** Is called when the animation update loop begins. */
-	virtual void NativeBeginPlay() override;
-
-	/** Is called every frame. */
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
-	/** Returns step data at the specified location. */
-	void GetStepData(FStepData& StepData, const FVector Location);
-
-	/** Returns data about a footstep at the specified foot, like the object or physical material underneath the foot at the time of the footstep.
-	 *	@param Foot The foot that is performing the step.
-	 *	@Return StepData structure containing relevant information about the location and velocity of the foot at the time of the footstep.
-	 */
-	UFUNCTION(BlueprintPure)
-	FStepData GetFootstepData(const ELeftRight Foot);
-
-	/** Returns data about a 'handstep' at the specified hand, like the object or physical material underneath the hand at the time of the handstep.
-	*	@Param Hand The hand that is performing the step.
-	*	@Return StepData structure containing relevant information about the location and velocity of the hand at the time of the handstep.
-	*/
-	UFUNCTION(BlueprintPure)
-	FStepData GetHandstepData(const ELeftRight Hand);
 
 private:
 	/** Checks the movement state of the character and updates certain state machine conditions. */

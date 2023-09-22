@@ -11,6 +11,25 @@ class UCameraComponent;
 class APlayerCharacter;
 class APlayerCharacterController;
 
+struct CameraTickPacket
+{
+	UCameraComponent* Camera;
+
+	const APlayerCharacter* Character;
+
+	const APlayerCharacterController* Controller;
+
+	const float DeltaTime;
+
+	CameraTickPacket(UCameraComponent* InCamera, const APlayerCharacter* InCharacter, APlayerCharacterController* InController, float InDeltaTime)
+		: Camera(InCamera)
+		, Character(InCharacter)
+		, Controller(InController)
+		, DeltaTime(InDeltaTime)
+	{
+	}
+};
+
 /** UPlayerCameraController is an Actor Component responsible for managing the player camera's behavior, such as camera shakes and other effects.
  *	This class provides a simple and convenient way for designers to customize the camera's behavior and add special effects to the player's view. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
@@ -216,28 +235,28 @@ protected:
 
 private:
 	/** Updates the camera relative location. */
-	void UpdateCameraLocation(UCameraComponent* Camera, const APlayerCharacter* Character);
+	void UpdateCameraLocation(const CameraTickPacket& Packet);
 
 	/** Updates the camera world rotation*/
-	void UpdateCameraRotation(const UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
+	void UpdateCameraRotation(const CameraTickPacket& Packet);
 
 	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
-	void GetCameraSwayRotation(FRotator& Rotator);
+	void GetCameraSwayRotation(const CameraTickPacket& Packet, FRotator& Rotator);
 
 	/** Returns a rotation offset for the camera when the player rotates while sprinting. Used to simulate leaning when running into bends. */
-	void GetCameraCentripetalRotation(FRotator& Rotator);
+	void GetCameraCentripetalRotation(const CameraTickPacket& Packet, FRotator& Rotator);
 
 	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
-	void GetScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
+	void GetScaledHeadSocketDeltaRotation(const CameraTickPacket& Packet, FRotator& Rotator);
 
 	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
+	void UpdateCameraFieldOfView(const CameraTickPacket& Packet);
 
 	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
+	void UpdateCameraVignetteIntensity(const CameraTickPacket& Packet);
 
 	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(UCameraComponent* Camera, const APlayerCharacter* Character, const float DeltaTime);
+	void UpdateCameraDepthOfField(const CameraTickPacket& Packet);
 
 	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
 	float GetFocalDistance(UCameraComponent* Camera) const;
