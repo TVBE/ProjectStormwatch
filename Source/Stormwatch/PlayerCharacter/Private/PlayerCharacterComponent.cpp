@@ -26,7 +26,7 @@ APlayerCharacterController* UPlayerCharacterComponent::GetPlayerCharacterControl
 	APlayerCharacter* Character {GetPlayerCharacter()};
 	AController* Controller {Character->GetController()};
 
-	if (!Controller) { return nullptr;  }
+	if (!Controller) { return nullptr; }
 
-	return static_cast<APlayerCharacterController*>(Character->GetController());
+	return static_cast<APlayerCharacterController*>(Controller);
 }

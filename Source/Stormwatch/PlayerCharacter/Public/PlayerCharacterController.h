@@ -7,15 +7,6 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
 
-class UPlayerInteractionComponent;
-class UStormwatchWorldSubsystem;
-class APlayerCharacter;
-class UPlayerCharacterSettingsDataAsset;
-class UPlayerMovementComponent;
-struct FTimerHandle;
-
-DECLARE_LOG_CATEGORY_EXTERN(LogPlayerCharacterController, Log, All)
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, Value);
 
@@ -27,75 +18,17 @@ class STORMWATCH_API APlayerCharacterController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	/** Delegate for when the player controller should start or stop processing player movement input. */
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
-	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
-
-	/** Delegate for when the player controller should start or stop processing player rotation input. */
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
-	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
-
-protected:
-	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
-	UPROPERTY(BlueprintReadOnly)
-	APlayerCharacter* PlayerCharacter {nullptr};
-
-	/** If true, the player is currently pressing the sprint button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	bool IsSprintPending {false};
-
-	/** If true, the player is currently pressing the crouch button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	bool IsCrouchPending {false};
-
-private:
-	/** Pointer to the interaction component of the player character. */
-	UPROPERTY()
-	UPlayerInteractionComponent* InteractionComponent;
-
-	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
-	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
-	uint8 MovementInputLockCount {1};
-
-	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
-	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
-	uint8 RotationInputLockCount {1};
-
-	/** When true, the player can receive user input for movement. */
-	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput)
-	bool CanProcessMovementInput {false};
-
-	/** When true, the player can receive user input for camera rotation. */
-	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput)
-	bool CanProcessRotationInput {false};
-
-	/** Smoothed control rotation. */
-	UPROPERTY(BlueprintGetter = GetPlayerControlRotation)
-	FRotator PlayerControlRotation;
-
-	/** The interpolation speed of the player control rotation.*/
-	UPROPERTY(EditAnywhere, Category = "Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
-	float ControlInterpolationSpeed {10.0f};
-
-	/** The rotation multiplier for the control rotation. */
-	float InteractionRotationMultiplier {1.0f};
-
-	FVector2D InputRotation;
-
-public:
 	APlayerCharacterController();
 
 	virtual void BeginPlay() override;
-
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
-
 	virtual void SetupInputComponent() override;
 
-	virtual void OnPossess(APawn* InPawn) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Returns whether the PlayerController has any movement input or not. */
 	UFUNCTION(BlueprintPure, Category = "Input", Meta = (DisplayName = "Has Any Movement Input"))
@@ -113,34 +46,66 @@ public:
 
 	/**
 	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 * 
+	 *
 	 *	@param Value		Whether a lock should be added or removed.
 	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerMovementInputLock(const bool Value);
 
-	/** 
+	/**
 	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 *	
+	 *
 	 *  @param Value		Whether a lock should be added or removed.
 	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerRotationInputLock(const bool Value);
 
-	/** 
+	/**
 	 *  Fades in the screen for the player from black by a specified amount.
-	 * 
+	 *
 	 *	@param Duration		The fade-in duration.
 	 */
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Fade From Black"))
 	void FadePlayerCameraFromBlack(const float Duration);
 
+	/** Returns whether the player controller can process movement input. */
+	UFUNCTION(BlueprintGetter)
+	bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+
+	/** Returns whether the player controller can process rotation input. */
+	UFUNCTION(BlueprintGetter)
+	bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+
+	/** Returns the player control rotation. */
+	UFUNCTION(BlueprintGetter)
+	FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
+
+	/** Delegate for when the player controller should start or stop processing player movement input. */
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
+
+	/** Delegate for when the player controller should start or stop processing player rotation input. */
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
+
 protected:
 	/** Performs a collision query in front of the camera and returns the hit result. */
 	UFUNCTION(BlueprintPure, Category = "Controller", Meta = (DisplayName = "Get Camera Look At Query"))
 	FHitResult GetCameraLookAtQuery() const;
+
+	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
+	UPROPERTY(BlueprintReadOnly)
+	class APlayerCharacter* PlayerCharacter {nullptr};
+
+	/** If true, the player is currently pressing the sprint button. */
+	UPROPERTY(BlueprintReadOnly, Category = "Input")
+	bool IsSprintPending {false};
+
+	/** If true, the player is currently pressing the crouch button. */
+	UPROPERTY(BlueprintReadOnly, Category = "Input")
+	bool IsCrouchPending {false};
 
 private:
 	/** Updates the player control rotation. */
@@ -161,7 +126,7 @@ private:
 
 	/** Tries to find an InteractionComponent in the player character. */
 	UFUNCTION()
-	UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
+	class UPlayerInteractionComponent* SearchForPlayerInteractionComponent();
 
 	void CalculateRotationMultiplier(const FVector2D InputDirection);
 
@@ -241,16 +206,36 @@ private:
 	UFUNCTION()
 	void HandleInventoryActionReleased();
 
-public:
-	/** Returns whether the player controller can process movement input. */
-	UFUNCTION(BlueprintGetter)
-	bool GetCanProcessMovementInput() const { return CanProcessMovementInput; }
+	/** Pointer to the interaction component of the player character. */
+	UPROPERTY()
+	UPlayerInteractionComponent* InteractionComponent;
 
-	/** Returns whether the player controller can process rotation input. */
-	UFUNCTION(BlueprintGetter)
-	bool GetCanProcessRotationInput() const { return CanProcessRotationInput; }
+	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
+	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
+	uint8 MovementInputLockCount {1};
 
-	/** Returns the player control rotation. */
-	UFUNCTION(BlueprintGetter)
-	FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
+	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
+	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
+	uint8 RotationInputLockCount {1};
+
+	/** When true, the player can receive user input for movement. */
+	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput)
+	bool CanProcessMovementInput {false};
+
+	/** When true, the player can receive user input for camera rotation. */
+	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput)
+	bool CanProcessRotationInput {false};
+
+	/** Smoothed control rotation. */
+	UPROPERTY(BlueprintGetter = GetPlayerControlRotation)
+	FRotator PlayerControlRotation;
+
+	/** The interpolation speed of the player control rotation.*/
+	UPROPERTY(EditAnywhere, Category = "Control Rotation", Meta = (DisplayName = "Interpolation Speed"))
+	float ControlInterpolationSpeed {10.0f};
+
+	/** The rotation multiplier for the control rotation. */
+	float InteractionRotationMultiplier {1.0f};
+
+	FVector2D InputRotation;
 };

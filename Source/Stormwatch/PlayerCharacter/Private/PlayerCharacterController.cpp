@@ -16,20 +16,15 @@
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/PawnMovementComponent.h"
 
-DEFINE_LOG_CATEGORY(LogPlayerCharacterController)
-
-/** Called on construction. */
 APlayerCharacterController::APlayerCharacterController()
 {
 }
 
-/** Called when the game starts. */
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-/** Called when the controller possesses a pawn. */
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -56,7 +51,6 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	}
 }
 
-/** Called when the controller is constructed. */
 void APlayerCharacterController::SetupInputComponent()
 {
 	Super::SetupInputComponent ();
