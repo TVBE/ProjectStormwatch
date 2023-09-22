@@ -70,18 +70,15 @@ void UPlayerDragComponent::DragActorAtLocation(AActor* ActorToGrab, const FVecto
 {
 	if (!ActorToGrab)
 	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab is null"));
 		return;
 	}
 	if (GrabbedComponent)
 	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Already dragging a component"));
 		return;
 	}
 	UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorToGrab->GetComponentByClass(UStaticMeshComponent::StaticClass()))};
 	if (!StaticMeshComponent)
 	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Actor to grab does not have a StaticMeshComponent."));
 		return;
 	}
 	
@@ -107,7 +104,6 @@ void UPlayerDragComponent::ReleaseActor()
 	SetComponentTickEnabled(false);
 	
 	ReleaseComponent();
-	UE_LOG(LogDragComponent, VeryVerbose, TEXT("Released Object."));
 }
 
 /** The looping function that updates the target location and rotation of the currently dragged object*/
@@ -115,7 +111,6 @@ void UPlayerDragComponent::UpdateTargetLocation(float DeltaTime)
 {
 	if (!GrabbedComponent)
 	{
-		UE_LOG(LogDragComponent, Warning, TEXT("Attempting to update drag target location while no component is being grabbed."));
 		return;
 	}
 

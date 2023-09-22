@@ -28,5 +28,5 @@ APlayerCharacterController* UPlayerCharacterPhysicsHandleComponent::GetPlayerCha
 
 	if (!Controller) { return nullptr; }
 
-	return static_cast<APlayerCharacterController*>(Character->GetController());
+	return static_cast<APlayerCharacterController*>(Controller);
 }

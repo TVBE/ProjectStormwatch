@@ -20,7 +20,6 @@ public:
 protected:
 	virtual void OnRegister() override;
 
-
 	APlayerCharacter* GetPlayerCharacter() const;
 
 	APlayerCharacterController* GetPlayerCharacterController() const;
