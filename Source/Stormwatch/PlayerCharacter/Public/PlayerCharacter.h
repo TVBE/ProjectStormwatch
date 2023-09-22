@@ -9,25 +9,6 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-class APlayerCharacterController;
-class UPlayerUseComponent;
-class UPlayerGrabComponent;
-class UPlayerDragComponent;
-class UPlayerInventoryComponent;
-class UCameraComponent;
-class USpotLightComponent;
-class USpringArmComponent;
-class UPlayerVfxComponent;
-class UPlayerCameraController;
-class UPlayerFlashlightComponent;
-class UPlayerMovementComponent;
-class UPlayerBodyCollisionComponent;
-class UPlayerFootCollisionComponent;
-class UNiagaraComponent;
-enum class ELeftRight : uint8;
-enum class EPlayerLandingType : uint8;
-struct FStepData;
-
 UENUM(BlueprintType)
 enum class ECrouchToggleMode : uint8
 {
@@ -41,9 +22,139 @@ class STORMWATCH_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	DECLARE_LOG_CATEGORY_CLASS(LogPlayerCharacter, Log, All)
+public:
+	APlayerCharacter();
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void Jump() override;
+
+	virtual void Crouch(bool bClientSimulation) override;
+	virtual void UnCrouch(bool bClientSimulation) override;
+
+	void StartSprinting();
+	void StopSprinting();
+
+	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
+	UFUNCTION(BlueprintPure)
+	float GetClearanceAbovePawn() const;
+
+	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Can Jump"))
+	bool CanPerformJump() const;
+
+	bool CanCrouch() const override;
+
+	UFUNCTION(BlueprintPure)
+	bool CanStandUp() const;
+
+	UFUNCTION(BlueprintGetter)
+	float GetTargetSpeed() const { return TargetSpeed; }
+
+	UFUNCTION(BlueprintGetter)
+	float GetScaledSpeed() const { return ScaledSpeed; }
+
+	UFUNCTION(BlueprintGetter)
+	bool GetIsTurningInPlace() const { return IsTurningInPlace; }
+
+	UFUNCTION(BlueprintGetter)
+	float GetYawDelta() const { return YawDelta; }
+
+	UFUNCTION(BlueprintPure)
+	bool IsSprinting() const
+	{
+		if (PlayerMovement)
+		{
+			return PlayerMovement->GetIsSprinting();
+		}
+		return false;
+	}
+
+	float GetWalkSpeed() const { return WalkSpeed; }
+
+	float GetMaxWalkableFloorAngle() const { return MaxWalkableFloorAngle; }
+
+	float GetMaxStepHeight() const { return MaxStepHeight; }
+
+	bool IsJumpingEnabled() const { return JumpingEnabled; }
+	float GetJumpVelocity() const { return JumpVelocity; }
+
+	bool IsSprintingEnabled() const { return SprintingEnabled; }
+	float GetSprintSpeed() const { return SprintSpeed; }
+
+	bool IsCrouchingEnabled() const { return CrouchingEnabled; }
+	float GetCrouchSpeed() const { return CrouchSpeed; }
+
+	float GetRotationRate() const { return RotationRate; }
+
+	/** We assume that the following pointers are always valid during the lifetime of a PlayerCharacter instance.
+	 *  This allows us to skip ptr validity checks in any object that calls these getter functions.
+	 *  Should any of these be null, we explicitly crash the program. */
+	UFUNCTION(BlueprintGetter)
+	class UCameraComponent* GetCamera() const
+	{
+		check(Camera);
+		return Camera;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerCameraController* GetCameraController() const
+	{
+		check(CameraController);
+		return CameraController;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerMovementComponent* GetPlayerMovement() const
+	{
+		check(PlayerMovement);
+		return PlayerMovement;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	UPlayerInteractionComponent* GetInteractionComponent() const
+	{
+		check(InteractionComponent);
+		return InteractionComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerUseComponent* GetUseComponent() const
+	{
+		check(UseComponent);
+		return UseComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerGrabComponent* GetGrabComponent() const
+	{
+		check(GrabComponent);
+		return GrabComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerDragComponent* GetDragComponent() const
+	{
+		check(DragComponent);
+		return DragComponent;
+	}
+
+	UFUNCTION(BlueprintGetter)
+	class UPlayerInventoryComponent* GetInventoryComponent() const
+	{
+		check(InventoryComponent);
+		return InventoryComponent;
+	}
 
 protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	void UpdateRotation(const float& DeltaTime);
+	void UpdateMovementSpeed();
+
 	/** Defines the default movement speed.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "General",
 			  Meta = (DisplayName = "Default Movement Speed", ForceUnits = "cm/s",
@@ -236,11 +347,11 @@ private:
 
 	/** The body collision component for the player. */
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	UPlayerBodyCollisionComponent* BodyCollision;
+	class UPlayerBodyCollisionComponent* BodyCollision;
 
 	/** The foot collision component for the left foot. */
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	UPlayerFootCollisionComponent* LeftFootCollision;
+	class UPlayerFootCollisionComponent* LeftFootCollision;
 
 	/** The foot collision component for the right foot. */
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
@@ -266,62 +377,6 @@ private:
 	UPROPERTY()
 	FTimerHandle FallStunTimer;
 
-public:
-	/** Sets default values for this character's properties. */
-	APlayerCharacter();
-
-	/** Called every frame. */
-	virtual void Tick(float DeltaTime) override;
-
-	/** Performs a jump.*/
-	virtual void Jump() override;
-
-	/** Begins crouching. */
-	virtual void Crouch(bool bClientSimulation) override;
-
-	/** Stops crouching. */
-	virtual void UnCrouch(bool bClientSimulation) override;
-
-	/** Begins sprinting. */
-	void StartSprinting();
-
-	/** Stop sprinting. */
-	void StopSprinting();
-
-	/** Performs a collision query above the Pawn and returns the clearance. This will return -1.f if the query did not produce any hit results. */
-	UFUNCTION(BlueprintPure)
-	float GetClearanceAbovePawn() const;
-
-	/** Checks whether the player can currently jump. */
-	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Can Jump"))
-	bool CanPerformJump() const;
-
-	/** Checks whether the player can currently enter crouch. */
-	bool CanCrouch() const override;
-
-	/** Checks whether the player can stand up and stop crouching. */
-	UFUNCTION(BlueprintPure)
-	bool CanStandUp() const;
-
-protected:
-	/** Called when the game starts or when spawned. */
-	virtual void BeginPlay() override;
-
-	/** Called after all default properties have been initialized. */
-	virtual void OnConstruction(const FTransform& Transform) override;
-
-	/** Called when the pawn is possessed by a controller. */
-	virtual void PossessedBy(AController* NewController) override;
-
-	/** Called when the pawn is ready to be destroyed or when the game ends. */
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	/** Updates the character's rotation. */
-	void UpdateRotation(const float& DeltaTime);
-
-	/** Updates the character's movement speed. */
-	void UpdateMovementSpeed();
-
 private:
 	/** Updates the character's yaw delta. */
 	UFUNCTION()
@@ -345,108 +400,6 @@ private:
 	/** Handles the ending of a landing. */
 	UFUNCTION()
 	void HandleLandingEnd();
-
-public:
-	/** We assume that the following pointers are always valid during the lifetime of a PlayerCharacter instance. 
-	 *  This allows us to skip ptr validity checks in any object that calls these getter functions. 
-	 *  Should any of these be null, we explicitly crash the program. */
-	UFUNCTION(BlueprintGetter)
-	UCameraComponent* GetCamera() const
-	{
-		check(Camera);
-		return Camera;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerCameraController* GetCameraController() const
-	{
-		check(CameraController);
-		return CameraController;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerMovementComponent* GetPlayerMovement() const
-	{
-		check(PlayerMovement);
-		return PlayerMovement;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerInteractionComponent* GetInteractionComponent() const
-	{
-		check(InteractionComponent);
-		return InteractionComponent;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerUseComponent* GetUseComponent() const
-	{
-		check(UseComponent);
-		return UseComponent;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerGrabComponent* GetGrabComponent() const
-	{
-		check(GrabComponent);
-		return GrabComponent;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerDragComponent* GetDragComponent() const
-	{
-		check(DragComponent);
-		return DragComponent;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	UPlayerInventoryComponent* GetInventoryComponent() const
-	{
-		check(InventoryComponent);
-		return InventoryComponent;
-	}
-
-	UFUNCTION(BlueprintGetter)
-	float GetTargetSpeed() const { return TargetSpeed; }
-
-	UFUNCTION(BlueprintGetter)
-	float GetScaledSpeed() const { return ScaledSpeed; }
-
-	UFUNCTION(BlueprintGetter)
-	bool GetIsTurningInPlace() const { return IsTurningInPlace; }
-
-	UFUNCTION(BlueprintGetter)
-	float GetYawDelta() const { return YawDelta; }
-
-	UFUNCTION(BlueprintPure)
-	bool IsSprinting() const
-	{
-		if (PlayerMovement)
-		{
-			return PlayerMovement->GetIsSprinting();
-		}
-		return false;
-	}
-
-	float GetWalkSpeed() const { return WalkSpeed; }
-
-	float GetMaxWalkableFloorAngle() const { return MaxWalkableFloorAngle; }
-
-	float GetMaxStepHeight() const { return MaxStepHeight; }
-
-	bool IsJumpingEnabled() const { return JumpingEnabled; }
-
-	float GetJumpVelocity() const { return JumpVelocity; }
-
-	bool IsSprintingEnabled() const { return SprintingEnabled; }
-
-	float GetSprintSpeed() const { return SprintSpeed; }
-
-	bool IsCrouchingEnabled() const { return CrouchingEnabled; }
-
-	float GetCrouchSpeed() const { return CrouchSpeed; }
-
-	float GetRotationRate() const { return RotationRate; }
 };
 
 
