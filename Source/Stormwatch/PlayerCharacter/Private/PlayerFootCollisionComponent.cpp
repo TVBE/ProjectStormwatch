@@ -24,7 +24,7 @@ void UPlayerFootCollisionComponent::BeginPlay()
 	if (CollisionSphere)
 	{
 		CollisionSphere->SetupAttachment(this);
-		CollisionSphere->InitSphereRadius(SphereRadius);
+		CollisionSphere->InitSphereRadius(CollisionSphereRadius);
 		
 		CollisionSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 		CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -49,13 +49,13 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 		const FVector PlayerRightVector {GetOwner()->GetActorRightVector()};
 		
 		if (const float LateralDotProduct {static_cast<float>(FVector::DotProduct(ImpulseDirection, PlayerRightVector))}; LateralDotProduct < 0.0f)
-			{
+		{
 			ImpulseDirection -= PlayerRightVector * LateralOffsetFactor;
-			}
+		}
 		else 
-			{
+		{
 			ImpulseDirection += PlayerRightVector * LateralOffsetFactor;
-			}
+		}
 		ImpulseDirection.Normalize();
 	}
 
@@ -66,11 +66,11 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 		const float ObjectMass {OtherComp->GetMass()};
 		constexpr float MassExponent { 0.5f }; 
 		const float ScaledMass = FMath::Pow(ObjectMass, MassExponent);
-		ImpulseStrength = PushStrength * ScaledMass;
+		ImpulseStrength = MaxPushStrength * ScaledMass;
 	}
 	else
 	{
-		ImpulseStrength = PushStrength;
+		ImpulseStrength = MaxPushStrength;
 	}
 
 	OtherComp->AddImpulse(ImpulseDirection * ImpulseStrength);
