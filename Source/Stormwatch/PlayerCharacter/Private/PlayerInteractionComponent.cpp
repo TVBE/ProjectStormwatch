@@ -419,7 +419,7 @@ void UPlayerInteractionComponent::BeginSecondaryInteraction()
 
 	if (GrabComponent->GetGrabbedActor())
 	{
-		GrabComponent->BeginPrimingThrow();
+		GrabComponent->PrimeThrow();
 		return;
 	}
 
@@ -457,7 +457,7 @@ void UPlayerInteractionComponent::EndSecondaryInteraction()
 	{
 		if(GrabComponent->GetIsPrimingThrow())
 		{
-			GrabComponent->ReleaseObject();
+			GrabComponent->ReleaseActor();
 		}
 	}
 
@@ -515,7 +515,7 @@ void UPlayerInteractionComponent::AddPitchInput(const float Input)
 
 	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
-		GrabComponent->UpdateMouseImputRotation(FVector2D(0, Input));
+		GrabComponent->UpdateMouseInputRotation(FVector2D(0, Input));
 	}
 }
 
@@ -525,7 +525,7 @@ void UPlayerInteractionComponent::AddYawInput(const float Input)
 
 	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
-		GrabComponent->UpdateMouseImputRotation(FVector2D(Input, 0));
+		GrabComponent->UpdateMouseInputRotation(FVector2D(Input, 0));
 	}
 }
 

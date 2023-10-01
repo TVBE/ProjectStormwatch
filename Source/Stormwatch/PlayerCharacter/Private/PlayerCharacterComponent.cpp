@@ -13,7 +13,20 @@ UPlayerCharacterComponent::UPlayerCharacterComponent()
 
 void UPlayerCharacterComponent::OnRegister()
 {
+	Super::OnRegister();
+
 	checkf(Cast<APlayerCharacter>(GetOwner()), TEXT("%s requires owner to be of type APlayerCharacter."), *GetName());
+
+	APawn* Pawn {Cast<APawn>(GetOwner())};
+	Pawn->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCharacterComponent::OnControllerChanged);
+}
+
+void UPlayerCharacterComponent::OnUnregister()
+{
+	APawn* Pawn {Cast<APawn>(GetOwner())};
+	Pawn->ReceiveControllerChangedDelegate.RemoveDynamic(this, &UPlayerCharacterComponent::OnControllerChanged);
+
+	Super::OnUnregister();
 }
 
 APlayerCharacter* UPlayerCharacterComponent::GetPlayerCharacter() const

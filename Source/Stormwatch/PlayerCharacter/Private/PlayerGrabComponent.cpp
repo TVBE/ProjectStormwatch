@@ -48,7 +48,7 @@ void UPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			/** Check if the distance between the location and target location is too big, let the object go. */
 			if (LetGoDistance <= FVector::Distance(GrabbedComponent->GetComponentLocation(), TargetLocation))
 			{
-				ReleaseObject();
+				ReleaseActor();
 			}
 		}
 		else
@@ -141,7 +141,7 @@ void UPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
 }
 
 /** Updates on tick when you are manually rotating the object.*/
-void UPlayerGrabComponent::UpdateMouseImputRotation(FVector2d MouseInputDelta)
+void UPlayerGrabComponent::UpdateMouseInputRotation(FVector2d MouseInputDelta)
 {
 	if(RotationMode)
 	{
@@ -236,7 +236,7 @@ void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	SetComponentTickEnabled(true);
 }
 
-void UPlayerGrabComponent::ReleaseObject()
+void UPlayerGrabComponent::ReleaseActor()
 {
 	if (!GrabbedComponent) { return; }
 
@@ -260,7 +260,7 @@ void UPlayerGrabComponent::ReleaseObject()
 }
 
 
-void UPlayerGrabComponent::BeginPrimingThrow()
+void UPlayerGrabComponent::PrimeThrow()
 {
 	IsPrimingThrow = true;
 	PrePrimingThrowTimer = 0.0;
@@ -354,7 +354,7 @@ void UPlayerGrabComponent::PerformThrow(bool OnlyPreviewTrajectory)
 	if(!OnlyPreviewTrajectory)
 	{
 		GrabbedComponent->WakeRigidBody();
-		ReleaseObject();
+		ReleaseActor();
 		GrabbedComponent->SetPhysicsLinearVelocity(TossVelocity);
 	}
 }

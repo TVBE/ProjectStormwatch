@@ -16,30 +16,41 @@
 UPlayerCameraController::UPlayerCameraController()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 void UPlayerCameraController::OnRegister()
 {
 	Super::OnRegister();
 		
-	if (!GetPlayerCharacter()) { return; }
 	HeadSocketTransform = GetPlayerCharacter()->GetMesh()->GetSocketTransform("head", RTS_Actor);
 }
 
 void UPlayerCameraController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		const FLinearColor Color(0.0f, 0.0f, 0.0f, 1.0f);
-		PlayerController->PlayerCameraManager->SetManualCameraFade(1.0f, Color, false);
+}
 
-		if (APlayerCameraManager* CameraManager = PlayerController->PlayerCameraManager)
+void UPlayerCameraController::OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController)
+{
+	if (NewController)
+	{
+		SetComponentTickEnabled(true);
+
+		if (APlayerController * PlayerController {Cast<APlayerController>(NewController)})
 		{
-			CameraManager->ViewPitchMax = MaximumViewPitch;
-			CameraManager->ViewPitchMin = MinimumViewPitch;
+			SetCameraPitchLimits(PlayerController->PlayerCameraManager);
+
+			if (!PreviousController)
+			{
+				const FLinearColor Color(0.0f, 0.0f, 0.0f, 1.0f);
+				PlayerController->PlayerCameraManager->SetManualCameraFade(1.0f, Color, false);
+			}
 		}
+	}
+	else
+	{
+		SetComponentTickEnabled(false);
 	}
 }
 
@@ -47,112 +58,81 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (!GetPlayerCharacterController()) { return; }
-	
-	APlayerCharacter* Character {GetPlayerCharacter()};
-	APlayerCharacterController* Controller {GetPlayerCharacterController()};
-	UCameraComponent* Camera {Character->GetCamera()};
-
-	CameraTickPacket TickPacket {CameraTickPacket(Camera, Character, Controller, DeltaTime)};
-
-	UpdateCameraRotation(TickPacket); /** Even with camera sway and centripetal rotation disabled, we need to call this function every frame to update the actual orientation of the camera. */
-	UpdateCameraLocation(TickPacket);
-
-	if (IsDynamicFOVEnabled)
-	{
-		UpdateCameraFieldOfView(TickPacket);
-	}
+	UpdateCameraRotation(DeltaTime);
+	UpdateCameraLocation(DeltaTime);
 	if (IsDynamicVignetteEnabled)
 	{
-		UpdateCameraVignetteIntensity(TickPacket);
+		UpdateVignette(DeltaTime);
+	}
+	if (IsDynamicFOVEnabled)
+	{
+		UpdateFOV(DeltaTime);
 	}
 	if (IsDynamicDOFEnabled)
 	{
-		UpdateCameraDepthOfField(TickPacket);
+		UpdateDOF(DeltaTime);
 	}
 }
 
-void UPlayerCameraController::UpdateCameraLocation(const CameraTickPacket& Packet)
+void UPlayerCameraController::UpdateCameraLocation(const float DeltaTime)
+{	
+	FVector TargetLocation {CalculateTargetCameraLocation()};
+	const FRotator ControlRotation {GetControlRotation()};
+	TargetLocation = ControlRotation.RotateVector(TargetLocation);
+	TargetLocation += GetPlayerCharacter()->GetActorLocation();
+	
+	GetCamera()->SetWorldLocation(TargetLocation);
+}
+
+FVector UPlayerCameraController::CalculateTargetCameraLocation() const
 {
-	/** Get an alpha value based on the pitch of the camera. We do not want the camera to explicitly follow the head socket if the body of the player isn't visible (e.g. looking down),
-	 as this could be perceived as annoying by the user. */ 
-	const double PitchAlpha
-	{FMath::GetMappedRangeValueClamped(FVector2d(-30.0, -55.0), FVector2d(0.0, 1.0), Camera->GetComponentRotation().Pitch)};
-	
-	/** Get the delta position of the current head socket location in relation to the default location. This allows us to introduce some socket-bound headbobbing with scalable intensity. */
-	const FVector SocketLocation
-	{FVector(0, 0,(Packet.Character->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() - HeadSocketTransform.GetLocation()).Z * 0.5)};
-	
+	const float Alpha {GetViewPitchAlpha()};
+	const FVector SocketZOffset {GetHeadSocketZOffset()};
+
+	const APlayerCharacter* Character {GetPlayerCharacter()};
+
+	FVector MinAlphaLocation {CameraOffset + (SocketZOffset * !Character->GetIsTurningInPlace())};
+
 	FVector Result;
-	/** If the player is looking forward or up, we don't need to perform any additional calculations and can set the relative location to the CameraConfiguration's default value. */
-	if (PitchAlpha == 0.0)
+	if (Alpha == 0.0f)
 	{
-		Result = CameraOffset + (SocketLocation * !Packet.Character->GetIsTurningInPlace());
+		return MinAlphaLocation;
 	}
 	else
 	{
-		/** Get the target location if the player is not looking down. */
-		const FVector UprightCameraLocation {CameraOffset + (SocketLocation * !Packet.Character->GetIsTurningInPlace())};
+		FVector ForwardVector {Character->GetActorForwardVector()};
+		float ForwardVelocity {FVector::DotProduct(Character->GetVelocity(), ForwardVector)};
 
-		/** Get the character's forward vector. */
-		const FVector ForwardVector = Packet.Character->GetActorForwardVector();
+		FVector HeadSocketLocation {Character->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation()};
+		FVector DownwardAdjustment {FVector(CameraOffset.X * 0.625, 0, 0) - FVector(0, 0, (ForwardVelocity * 0.02))};
+		FVector MaxAlphaLocation {HeadSocketLocation + DownwardAdjustment};
 
-		/** Project the character's velocity onto its forward vector to get the forward velocity. */
-		const float ForwardVelocity = FVector::DotProduct(Packet.Character->GetVelocity(), ForwardVector);
-		
-		/** Calculate the target location if the player is looking down. */
-		const FVector DownwardCameraLocation {Packet.Character->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation() + FVector(CameraOffset.X * 0.625, 0, 0)
-		- FVector(0, 0, (ForwardVelocity * 0.02))}; // We lower the camera slightly when the character is moving forward to simulate the body leaning forward.
-		
-		/** Interpolate between the two target locations depending on PitchAlpha. */
-		Result = FMath::Lerp(UprightCameraLocation, DownwardCameraLocation, PitchAlpha); //NOTE: In UE 5.1 using FMath::Lerp() with two FVectors can cause semantic errors, but the code will compile and run just fine.
+		return FMath::Lerp(MinAlphaLocation, MaxAlphaLocation, Alpha);
 	}
-	/** Rotate the result with the base aim rotation. */
-	const FRotator ControlRotation {FRotator(0, GetPlayerCharacterController()->GetPlayerControlRotation().Yaw, 0)};
-	Result = ControlRotation.RotateVector(Result);
-	
-	/** Add the world location of the pawn to the result. */
-	Result = Result + Packet.Character->GetActorLocation();
-	
-	Camera->SetWorldLocation(Result);
 }
 
-/** Called by TickComponent. */
-void UPlayerCameraController::UpdateCameraRotation(const CameraTickPacket& Packet)
+void UPlayerCameraController::UpdateCameraRotation(const float DeltaTime)
 {
-	if (IsCameraSwayEnabled)
-	{
-		GetCameraSwayRotation(Packet, Sway);
-	}
-	
-	if (IsCentripetalRotationEnabled)
-	{
-		GetCameraCentripetalRotation(Packet, CentripetalRotation);
-	}
-	
+	FRotator TargetRotation {GetPlayerCharacterController()->GetPlayerControlRotation()};
 	if (!GetPlayerCharacter()->GetIsTurningInPlace())
 	{
-		GetScaledHeadSocketDeltaRotation(Packet, SocketRotation);
+		AddScaledHeadSocketDeltaRotation(TargetRotation, DeltaTime);
 	}
-	else
+	if (IsCameraSwayEnabled)
 	{
-		SocketRotation.Pitch = 0.0f;
-		SocketRotation.Roll = 0.0f;
-		SocketRotation.Yaw = 0.0f;
+		AddCameraSwayRotation(TargetRotation, DeltaTime);
 	}
-	
-		GetPlayerCharacter()->GetCamera()->SetWorldRotation(Sway + CentripetalRotation + SocketRotation + GetPlayerCharacterController()->GetPlayerControlRotation());
+	if (IsCentripetalRotationEnabled)
+	{
+		AddCameraCentripetalRotation(TargetRotation, DeltaTime);
+	}
+	GetCamera()->SetWorldRotation(TargetRotation);
 }
 
-/** Called by UpdateCameraRotation. */
-void UPlayerCameraController::GetCameraSwayRotation(const CameraTickPacket& Packet, FRotator& Rotator)
-{
-	/** Get the current ground movement type from the PlayerController. */
-	if (!GetPlayerCharacter()->GetPlayerMovement()) { return; }
-	
+void UPlayerCameraController::AddCameraSwayRotation(FRotator& Rotator, const float DeltaTime)
+{	
+	float IntensityMultiplier {0.0f};
 	const EPlayerGroundMovementType MovementType {GetPlayerCharacter()->GetPlayerMovement()->GetGroundMovementType()};
-	/** Get a oscillation multiplier value according to the ground movement type. */
-	float IntensityMultiplier {0.0};
 	switch(MovementType)
 	{
 	case EPlayerGroundMovementType::Idle: IntensityMultiplier = 0.1;
@@ -175,8 +155,13 @@ void UPlayerCameraController::GetCameraSwayRotation(const CameraTickPacket& Pack
 	Rotator.Roll = CameraShakeRoll;
 }
 
+float UPlayerCameraController::GetCameraSwayIntensity() const
+{
+	return 0.0f;
+}
+
 /** Called by UpdateCameraRotation. */
-void UPlayerCameraController::GetCameraCentripetalRotation(const CameraTickPacket& Packet, FRotator& Rotator)
+void UPlayerCameraController::AddCameraCentripetalRotation(FRotator& Rotator, const float DeltaTime)
 {
 	const UPlayerMovementComponent* CharacterMovement {GetPlayerCharacter()->GetPlayerMovement()};
 	if (!CharacterMovement) { return; }
@@ -204,7 +189,7 @@ void UPlayerCameraController::GetCameraCentripetalRotation(const CameraTickPacke
 	Rotator.Roll = CameraLeanRoll;
 }
 
-void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const CameraTickPacket& Packet, FRotator& Rotator)
+void UPlayerCameraController::AddScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime)
 {
 	if (!GetPlayerCharacter()->GetPlayerMovement()) { return; }
 	
@@ -246,7 +231,7 @@ void UPlayerCameraController::GetScaledHeadSocketDeltaRotation(const CameraTickP
 }
 
 /** Called by TickComponent. */
-void UPlayerCameraController::UpdateCameraFieldOfView(const CameraTickPacket& Packet)
+void UPlayerCameraController::UpdateFOV(const float DeltaTime)
 {
 	APlayerCharacter* Character {GetPlayerCharacter()};
 
@@ -264,7 +249,7 @@ void UPlayerCameraController::UpdateCameraFieldOfView(const CameraTickPacket& Pa
 	Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, 2.f);
 }
 
-void UPlayerCameraController::UpdateCameraVignetteIntensity(const CameraTickPacket& Packet)
+void UPlayerCameraController::UpdateVignette(const float DeltaTime)
 {
 	if (GetPlayerCharacter()->GetPlayerMovement())
 	{
@@ -280,7 +265,7 @@ void UPlayerCameraController::UpdateCameraVignetteIntensity(const CameraTickPack
 	}
 }
 
-void UPlayerCameraController::UpdateCameraDepthOfField(const CameraTickPacket& Packet)
+void UPlayerCameraController::UpdateDOF(const float DeltaTime)
 {
 	float FocalDistance {GetFocalDistance(Camera)};
 	FocalDistance = FMath::Clamp(FocalDistance, MinimumFocalDistance, MaximumFocalDistance);
@@ -303,12 +288,9 @@ void UPlayerCameraController::UpdateCameraDepthOfField(const CameraTickPacket& P
 		FMath::FInterpTo(Camera->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, DynamicDofSpeed);
 }
 
-float UPlayerCameraController::GetFocalDistance(UCameraComponent* Camera) const
+float UPlayerCameraController::GetFocalDistance() const
 {
-	if (!GetPlayerCharacter())
-	{
-		return 0.0f;
-	}
+	UCameraComponent* Camera {GetPlayerCharacter()->GetCamera()};
 	
 	FVector CameraLocation = Camera->GetComponentLocation();
 	FVector ForwardVector = Camera->GetForwardVector();
@@ -323,6 +305,30 @@ float UPlayerCameraController::GetFocalDistance(UCameraComponent* Camera) const
 		return (HitResult.Location - CameraLocation).Size();
 	}
 	return TraceLength;
+}
+
+float UPlayerCameraController::GetViewPitchAlpha() const
+{
+	return FMath::GetMappedRangeValueClamped(FVector2d(-30.0, -55.0),
+											 FVector2d(0.0, 1.0),
+											 GetCamera()->GetComponentRotation().Pitch);
+}
+
+FVector UPlayerCameraController::GetHeadSocketZOffset() const
+{
+	const FVector CurrentHeadSocketLocation = GetPlayerCharacter()->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation();
+	float ZOffset = (CurrentHeadSocketLocation - HeadSocketTransform.GetLocation()).Z * 0.5;
+	return FVector(0, 0, ZOffset);
+}
+
+UCameraComponent* UPlayerCameraController::GetCamera() const
+{
+	return GetPlayerCharacter()->GetCamera();
+}
+
+FRotator UPlayerCameraController::GetControlRotation() const
+{
+	return FRotator(0, GetPlayerCharacterController()->GetPlayerControlRotation().Yaw, 0);
 }
 
 void UPlayerCameraController::FadeFromBlack(const float Duration)

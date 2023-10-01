@@ -11,27 +11,8 @@ class UCameraComponent;
 class APlayerCharacter;
 class APlayerCharacterController;
 
-struct CameraTickPacket
-{
-	UCameraComponent* Camera;
-
-	const APlayerCharacter* Character;
-
-	const APlayerCharacterController* Controller;
-
-	const float DeltaTime;
-
-	CameraTickPacket(UCameraComponent* InCamera, const APlayerCharacter* InCharacter, APlayerCharacterController* InController, float InDeltaTime)
-		: Camera(InCamera)
-		, Character(InCharacter)
-		, Controller(InController)
-		, DeltaTime(InDeltaTime)
-	{
-	}
-};
-
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
-	   Meta = (BlueprintSpawnableComponent, DisplayName = "Player Camera Controller", ShortToolTip = "Camera controller for the player character."))
+	   Meta = (BlueprintSpawnableComponent))
 	class STORMWATCH_API UPlayerCameraController : public UPlayerCharacterComponent
 {
 	GENERATED_BODY()
@@ -49,36 +30,29 @@ public:
 
 protected:
 	virtual void OnRegister() override;
-
 	virtual void BeginPlay() override;
 
 private:
-	/** Updates the camera relative location. */
-	void UpdateCameraLocation(const CameraTickPacket& Packet);
+	void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) override;
 
-	/** Updates the camera world rotation*/
-	void UpdateCameraRotation(const CameraTickPacket& Packet);
+	void UpdateCameraLocation(const float DeltaTime);
+	void UpdateCameraRotation(const float DeltaTime);
+	void UpdateVignette(const float DeltaTime);
+	void UpdateFOV(const float DeltaTime);
+	void UpdateDOF(const float DeltaTime);
+	float GetFocalDistance() const;
 
-	/** Returns a rotation offset for the camera to simulate the camera shaking while moving. */
-	void GetCameraSwayRotation(const CameraTickPacket& Packet, FRotator& Rotator);
+	FVector CalculateTargetCameraLocation() const;
+	float GetViewPitchAlpha() const;
+	FVector GetHeadSocketZOffset() const;
 
-	/** Returns a rotation offset for the camera when the player rotates while sprinting. Used to simulate leaning when running into bends. */
-	void GetCameraCentripetalRotation(const CameraTickPacket& Packet, FRotator& Rotator);
+	void AddCameraSwayRotation(FRotator& Rotator, const float DeltaTime);
+	float GetCameraSwayIntensity() const;
+	void AddCameraCentripetalRotation(FRotator& Rotator, const float DeltaTime);
+	void AddScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
 
-	/** Returns a scaled head socket delta rotation from the skeletal mesh of the PlayerCharacterPawn. */
-	void GetScaledHeadSocketDeltaRotation(const CameraTickPacket& Packet, FRotator& Rotator);
-
-	/** Updates the camera's field of view according to the Player's movement. */
-	void UpdateCameraFieldOfView(const CameraTickPacket& Packet);
-
-	/** Updates the camera's vignette intensity according to the Player's movement.*/
-	void UpdateCameraVignetteIntensity(const CameraTickPacket& Packet);
-
-	/** Updates the camera's depth of field according to whatever the player is looking at.*/
-	void UpdateCameraDepthOfField(const CameraTickPacket& Packet);
-
-	/** Performs a linetrace in the forward vector of the camera and returns the length of the trace. */
-	float GetFocalDistance(UCameraComponent* Camera) const;
+	UCameraComponent* GetCamera() const;
+	FRotator GetControlRotation() const;
 
 	/** The default camera offset in relation to the Pawn's RootComponent. Use this to set the general camera position of the player in relation to their body. */
 	UPROPERTY(EditDefaultsOnly, Category = "Camera",
@@ -243,16 +217,4 @@ private:
 	/** The roll offset value of the camera lean rotation. */
 	UPROPERTY()
 	double CameraLeanRoll {0.0};
-
-	/** The camera sway rotation. */
-	UPROPERTY()
-	FRotator Sway {FRotator()};
-
-	/** The camera centripetal rotation. */
-	UPROPERTY()
-	FRotator CentripetalRotation {FRotator()};
-
-	/** The camera socket rotation. */
-	UPROPERTY()
-	FRotator SocketRotation {FRotator()};
 };

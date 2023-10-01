@@ -19,8 +19,10 @@ public:
 
 protected:
 	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
+
+	virtual void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) {};
 
 	APlayerCharacter* GetPlayerCharacter() const;
-
 	APlayerCharacterController* GetPlayerCharacterController() const;
 };
