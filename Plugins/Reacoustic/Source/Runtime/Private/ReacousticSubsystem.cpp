@@ -301,6 +301,11 @@ FImpactValueToTimestampResult UReacousticSubsystem::GetTimeStampWithStrenght(URe
 			/** If this element is in LatestMatchingElements, skip to the next iteration */
 			/** Iterate throug the recorded sound timestamps.*/
 			bool next{false};
+			if(SoundAsset->GetTimestampHistory().Num() == 0)
+			{
+				UE_LOG(LogReacousticSubsystem,Warning,TEXT("timestamp history is zero."))
+			}
+			
 			for (int32 j = 0; j < SoundAsset->GetTimestampHistory().Num(); j++)
 			{
 				float LatestMatchingTimestamp = SoundAsset->GetTimestampHistory()[j];
@@ -329,6 +334,10 @@ FImpactValueToTimestampResult UReacousticSubsystem::GetTimeStampWithStrenght(URe
 	if(BestTimeStamp != -1)
 	{
 		SoundAsset->UpdateTimestampHistory(BestTimeStamp);
+	}
+	else
+	{
+		UE_LOG(LogReacousticSubsystem,Warning,TEXT("Didn't find any matching timestamps."))
 	}
 	return FImpactValueToTimestampResult{BestTimeStamp,BestNormalizedStrenght,BestStrenght};
 }
