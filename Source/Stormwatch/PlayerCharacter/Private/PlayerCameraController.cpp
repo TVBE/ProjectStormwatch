@@ -60,15 +60,15 @@ void UPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType
 	
 	UpdateCameraRotation(DeltaTime);
 	UpdateCameraLocation(DeltaTime);
-	if (IsDynamicVignetteEnabled)
+	if (bDynamicVignetteEnabled)
 	{
 		UpdateVignette(DeltaTime);
 	}
-	if (IsDynamicFOVEnabled)
+	if (bDynamicFOVEnabled)
 	{
 		UpdateFOV(DeltaTime);
 	}
-	if (IsDynamicDOFEnabled)
+	if (bDynamicDOFEnabled)
 	{
 		UpdateDOF(DeltaTime);
 	}
@@ -118,11 +118,11 @@ void UPlayerCameraController::UpdateCameraRotation(const float DeltaTime)
 	{
 		AddScaledHeadSocketDeltaRotation(TargetRotation, DeltaTime);
 	}
-	if (IsCameraSwayEnabled)
+	if (bCameraSwayEnabled)
 	{
 		AddCameraSwayRotation(TargetRotation, DeltaTime);
 	}
-	if (IsCentripetalRotationEnabled)
+	if (bCentripetalRotationEnabled)
 	{
 		AddCameraCentripetalRotation(TargetRotation, DeltaTime);
 	}
@@ -165,11 +165,11 @@ void UPlayerCameraController::AddCameraCentripetalRotation(FRotator& Rotator, co
 {
 	const UPlayerMovementComponent* CharacterMovement {GetPlayerCharacter()->GetPlayerMovement()};
 	if (!CharacterMovement) { return; }
-	if (IsCentripetalRotationSprintOnly && !CharacterMovement->GetIsSprinting()) { return; }
+	if (bCentripetalRotationSprintOnly && !CharacterMovement->GetIsSprinting()) { return; }
 	
 	/** When the player is moving laterally while sprinting, we want the camera to lean into that direction. */
 	const float LateralVelocityMultiplier {0.002353f * VelocityCentripetalRotation};
-	const float SprintMultiplier {IsCentripetalRotationSprintOnly ? CentripetalRotationNonSprintMultiplier : 1.0f};
+	const float SprintMultiplier {bCentripetalRotationSprintOnly ? CentripetalRotationNonSprintMultiplier : 1.0f};
 	const FVector WorldVelocity {GetPlayerCharacter()->GetMovementComponent()->Velocity};
 	const FVector LocalVelocity {GetPlayerCharacter()->GetActorTransform().InverseTransformVector(WorldVelocity)};
 	const double LateralVelocityRoll {LocalVelocity.Y * LateralVelocityMultiplier * SprintMultiplier};

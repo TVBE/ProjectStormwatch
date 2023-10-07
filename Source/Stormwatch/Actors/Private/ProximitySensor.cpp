@@ -62,7 +62,7 @@ void AProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 
 	if (OverlappingActors.IsEmpty())
 	{
-		if (const UWorld* World {GetWorld()})
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 			{
@@ -83,7 +83,7 @@ void AProximitySensor::Poll()
 {
 	IsActorDetected = false;
 
-	if (IsBroken) { return; }
+	if (IsBroken) =  return; 
 	
 	if (!OverlappingActors.IsEmpty())
 	{

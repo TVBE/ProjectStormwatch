@@ -77,7 +77,7 @@ public:
 private:
 	/** If true, the interaction component is currently performing a tertiary interaction. */
 	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
-	bool IsTertiaryInteractionActive {false};
+	bool bTertiaryInteractionActive {false};
 
 	/** The hit result for the initial visibility line trace collision query performed from the camera. */
 	UPROPERTY()
@@ -122,7 +122,7 @@ private:
 #if WITH_EDITORONLY_DATA
 	/** When true, we will draw debug visualisation to the screen for every collision query. */
 	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
-	bool IsDebugVisEnabled {false};
+	bool bDebugVisEnabled {false};
 #endif
 
 public:
@@ -254,7 +254,7 @@ public:
 
 	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
 	UFUNCTION(BlueprintGetter)
-	bool GetIsTertiaryInteractionActive() const { return IsTertiaryInteractionActive; }
+	bool GetIsTertiaryInteractionActive() const { return bTertiaryInteractionActive; }
 
 	/** Returns whether there is an object in front of the player that can be interacted with. */
 	UFUNCTION(BlueprintPure)

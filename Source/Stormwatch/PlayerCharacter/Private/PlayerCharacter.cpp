@@ -68,43 +68,28 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::OnConstruction(const FTransform& Transform)
 {
-	ensureMsgf(GetCharacterMovement()->IsA(UPlayerMovementComponent::StaticClass()), TEXT("GetCharacterMovement is not of class PlayerCharacterMovementComponent!"));
-
-	/** Registers this player character to the player character subsystem. */
-	if (const UWorld * World {GetWorld()})
-	{
-		if (UStormwatchWorldSubsystem * PlayerSubsystem {World->GetSubsystem<UStormwatchWorldSubsystem>()})
-		{
-			PlayerSubsystem->RegisterPlayerCharacter(this);
-		}
-	}
-
 	Super::OnConstruction(Transform);
+
+	ensureMsgf(GetCharacterMovement()->IsA(UPlayerMovementComponent::StaticClass()), TEXT("GetCharacterMovement is not of class PlayerCharacterMovementComponent."));
+	check(GetWorld());
+	UStormwatchWorldSubsystem* StormwatchWorldSubsystem = GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>();
+	check(StormwatchWorldSubsystem);
+	StormwatchWorldSubsystem->RegisterPlayerCharacter(this);
 }
 
-/** Called when the game starts or when spawned. */
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/** Subscribe to the OnLanding event of the player character movement component. */
-	if (PlayerMovement)
-	{
-		PlayerMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLanding);
-	}
+	PlayerMovement->OnLanding.AddDynamic(this, &APlayerCharacter::HandleLandingStart);
 
-	/** Notify the GameMode that the character has Begun Play. */
-	if (GetWorld() && GetWorld()->GetAuthGameMode())
-	{
-		if (AStormwatchGameMode * GameMode {Cast<AStormwatchGameMode>(GetWorld()->GetAuthGameMode())})
-		{
-			GameMode->NotifyPlayerCharacterBeginPlay(this);
-		}
-	}
-		TargetSpeed = WalkSpeed;
+	AStormwatchGameMode* GameMode = Cast<AStormwatchGameMode>(GetWorld()->GetAuthGameMode());
+	check(GameMode);
+	GameMode->NotifyPlayerCharacterBeginPlay(this);
+
+	TargetSpeed = Settings.WalkSpeed;
 }
 
-/** Called when the controller is changed. */
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -121,40 +106,16 @@ void APlayerCharacter::Tick(float DeltaTime)
 	UpdateMovementSpeed();
 }
 
-void APlayerCharacter::UpdateMovementSpeed()
-{
-	float InteractionMultiplier {1.0f};
-
-	if (!GrabComponent->GetGrabbedComponent() || !DragComponent->GetGrabbedComponent()) { return; }
-
-	const UPrimitiveComponent* PrimitiveComponent {GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent()};
-	
-	const float Mass {PrimitiveComponent->GetMass()};
-	const FBoxSphereBounds Bounds {PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform())};
-	const float BoundingBoxSize {static_cast<float>(Bounds.GetBox().GetVolume())};
-
-	const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(InteractionSpeedWeightRange, InteractionSpeedWeightScalars, Mass))};
-	const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(InteractionSpeedSizeRange, InteractionSpeedSizeScalars, BoundingBoxSize))};
-
-	InteractionMultiplier *= FMath::Clamp(MassRotationMultiplier * BoundsRotationMultiplier,
-										  InteractionSpeedFloor, 1.0);
-
-	PlayerMovement->MaxWalkSpeed = ScaledSpeed;
-	PlayerMovement->MaxWalkSpeedCrouched = CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
-}
-
 void APlayerCharacter::UpdateYawDelta()
 {
-	double Delta {GetBaseAimRotation().Yaw - GetActorRotation().Yaw};
+	double Delta = GetBaseAimRotation().Yaw - GetActorRotation().Yaw;
 	Delta = FRotator::NormalizeAxis(Delta);
 	YawDelta = Delta;
 }
 
 void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 {
-	const UCharacterMovementComponent* MovementComponent {GetCharacterMovement()};
+	const UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (MovementComponent && ((MovementComponent->IsMovingOnGround() && abs(GetVelocity().X) > 1) || MovementComponent->IsFalling()))
 	{
 		if (GetController())
@@ -165,7 +126,7 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 	}
 	else
 	{
-		constexpr float YawDeltaThreshold {30.0f};
+		constexpr float YawDeltaThreshold = 30.0f;
 
 		if (IsTurningInPlace)
 		{
@@ -184,10 +145,10 @@ void APlayerCharacter::UpdateRotation(const float& DeltaTime)
 
 float APlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, const float DeltaTime, const float Factor, const float Clamp)
 {
-	float Rotation {YawDelta * Factor * DeltaTime};
+	float Rotation = YawDelta * Factor * DeltaTime;
 	if (abs(YawDelta) >= Clamp)
 	{
-		float RotationOvershoot {abs(YawDelta) - Clamp};
+		float RotationOvershoot = abs(YawDelta) - Clamp;
 		RotationOvershoot = (YawDelta >= 0.0) ? RotationOvershoot : -RotationOvershoot;
 		Rotation += RotationOvershoot;
 	}
@@ -230,9 +191,9 @@ void APlayerCharacter::StopSprinting()
 	}
 }
 
-void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
+void APlayerCharacter::HandleLandingStart(EPlayerLandingType Value)
 {
-	float StunDuration {0.0f};
+	float StunDuration = 0.0f;
 	switch (Value)
 	{
 	case EPlayerLandingType::Soft:
@@ -247,7 +208,7 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 		break;
 	}
 
-	if (APlayerCharacterController * PlayerController {Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController())})
+	if (APlayerCharacterController * PlayerController = Cast<APlayerCharacterController>(GetWorld()->GetFirstPlayerController()))
 	{
 		PlayerController->SetPlayerMovementInputLock(true);
 		PlayerController->SetPlayerRotationInputLock(true);
@@ -259,7 +220,7 @@ void APlayerCharacter::HandleLanding(EPlayerLandingType Value)
 
 void APlayerCharacter::HandleLandingEnd()
 {
-	if (APlayerCharacterController* PlayerController {Cast<APlayerCharacterController>(GetController())})
+	if (APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(GetController()))
 	{
 		PlayerController->SetPlayerMovementInputLock(false);
 		PlayerController->SetPlayerRotationInputLock(false);
@@ -268,8 +229,8 @@ void APlayerCharacter::HandleLandingEnd()
 
 float APlayerCharacter::GetClearanceAbovePawn() const
 {
-	const FVector Start {GetActorLocation()};
-	const FVector End {Start + FVector(0.f, 0.f, 500.f)};
+	const FVector Start = GetActorLocation();
+	const FVector End = Start + FVector(0.f, 0.f, 500.f);
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
@@ -284,8 +245,8 @@ float APlayerCharacter::GetClearanceAbovePawn() const
 
 bool APlayerCharacter::CanPerformJump() const
 {
-	constexpr float RequiredClearance {60};
-	const float Clearance {GetClearanceAbovePawn()};
+	constexpr float RequiredClearance = 60;
+	const float Clearance = GetClearanceAbovePawn();
 	return ((Clearance > RequiredClearance || Clearance == -1.f) && JumpingEnabled && !GetMovementComponent()->IsFalling());
 }
 
@@ -296,14 +257,14 @@ bool APlayerCharacter::CanCrouch() const
 
 bool APlayerCharacter::CanStandUp() const
 {
-	constexpr float RequiredClearance {100};
-	const float Clearance {GetClearanceAbovePawn()};
+	constexpr float RequiredClearance = 100;
+	const float Clearance = GetClearanceAbovePawn();
 	return (Clearance > RequiredClearance || Clearance == -1.f && GetMovementComponent()->IsCrouching());
 }
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (UStormwatchWorldSubsystem * Subsystem {GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>()})
+	if (UStormwatchWorldSubsystem * Subsystem = GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>())
 	{
 		Subsystem->UnregisterPlayerCharacter(this);
 	}

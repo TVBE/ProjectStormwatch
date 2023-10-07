@@ -41,5 +41,5 @@ private:
 
 	/** If true, we scale the push strength to the weight of the object. */
 	UPROPERTY(EditDefaultsOnly)
-	bool ScaleForceByMass {true};	
+	bool bScaleForceByMass {true};	
 };

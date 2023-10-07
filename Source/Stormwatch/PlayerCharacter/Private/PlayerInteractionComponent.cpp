@@ -131,7 +131,7 @@ void UPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult)
 	);
 
 #if WITH_EDITORONLY_DATA
-	if (IsDebugVisEnabled)
+	if (bDebugVisEnabled)
 	{
 		DrawDebugLine(GetWorld(), CameraLocation, EndLocation, FColor::White, false, 0.0f, 0, 3.0f);
 	}
@@ -157,7 +157,7 @@ void UPlayerInteractionComponent::PerformInteractableObjectTrace(TArray<FHitResu
 	);
 
 #if WITH_EDITORONLY_DATA
-	if (IsDebugVisEnabled)
+	if (bDebugVisEnabled)
 	{
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, ObjectTraceRadius, 32, FColor::White, false, 0.0f, 0, 2.0f);
 	}
@@ -218,7 +218,7 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	FCollisionQueryParams QueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, nullptr);
 	QueryParams.AddIgnoredActor(GetOwner());
 	
-	const bool IsHit = GetWorld()->LineTraceSingleByChannel(
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(
 		OcclusionTraceHitResult,
 		CameraLocation,
 		EndLocation + OcclusionOffset,
@@ -226,9 +226,7 @@ bool UPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 		QueryParams
 	);
 
-	/** If the line trace hits an object other than the target actor, we assume the target actor is occluded. */
-	const bool IsOccluded = IsHit && OcclusionTraceHitResult.GetActor() && OcclusionTraceHitResult.GetActor() != Actor;
-	return IsOccluded;
+	return bHit && OcclusionTraceHitResult.GetActor() && (OcclusionTraceHitResult.GetActor() != Actor);
 }
 
 template <typename TInterface>
@@ -311,10 +309,9 @@ inline FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* 
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(HitResult.GetActor());
 		
-		/** We treat the mesh component as our world context object. */
 		const UWorld* World {MeshComponent->GetWorld()};
 		
-		if (bool IsHit = World->LineTraceMultiByChannel(HitResults, Start, End, ECC_Visibility, CollisionParams))
+		if (bool bHit = World->LineTraceMultiByChannel(HitResults, Start, End, ECC_Visibility, CollisionParams))
 		{
 			for (const FHitResult& MultiHitResult : HitResults)
 			{
@@ -468,7 +465,7 @@ void UPlayerInteractionComponent::BeginTertiaryInteraction()
 {
 	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
 
-	IsTertiaryInteractionActive = true;
+	bTertiaryInteractionActive = true;
 
 	GrabComponent->BeginTetriaryInteraction();
 }
@@ -477,7 +474,7 @@ void UPlayerInteractionComponent::EndTertiaryInteraction()
 {
 	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
 
-	IsTertiaryInteractionActive = false;
+	bTertiaryInteractionActive = false;
 
 	GrabComponent->EndTetriaryInteraction();
 }
@@ -513,7 +510,7 @@ void UPlayerInteractionComponent::AddPitchInput(const float Input)
 {
 	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
 
-	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
+	if (bTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
 		GrabComponent->UpdateMouseInputRotation(FVector2D(0, Input));
 	}
@@ -523,7 +520,7 @@ void UPlayerInteractionComponent::AddYawInput(const float Input)
 {
 	UPlayerGrabComponent* GrabComponent {GetPlayerCharacter()->GetGrabComponent()};
 
-	if (IsTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
+	if (bTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
 	{
 		GrabComponent->UpdateMouseInputRotation(FVector2D(Input, 0));
 	}

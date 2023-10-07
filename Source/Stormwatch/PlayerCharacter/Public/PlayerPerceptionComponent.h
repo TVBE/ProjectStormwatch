@@ -8,7 +8,7 @@
 
 class UCameraComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNightstalkerPerceptionChangedDelegate, bool, IsNightstalkerDetected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNightstalkerPerceptionChangedDelegate, bool, bNightstalkerDetected);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UPlayerPerceptionComponent : public UPlayerCharacterComponent
@@ -36,9 +36,9 @@ protected:
 	float NightstalkerDetectionThreshold {0.3f};
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsNightstalkerVisible {false};
+	bool bNightstalkerVisible {false};
 
-	bool IsNightstalkerDetected {false};
+	bool bNightstalkerDetected {false};
 
 	UPROPERTY(BlueprintReadOnly)
 	float NightstalkerVisibilityDuration {0.0f};

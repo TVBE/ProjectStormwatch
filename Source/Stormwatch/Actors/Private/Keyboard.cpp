@@ -16,8 +16,8 @@ void AKeyboard::BeginPlay()
 FString AKeyboard::GetRandomCharacter()
 {
 	const FRandomStream RandomStream(FMath::Rand());
-	const int32 RandomIndex {RandomStream.RandRange(0, 25)};
-	const TCHAR RandomChar {TCHAR('A' + RandomIndex)};
+	const int32 RandomIndex = RandomStream.RandRange(0, 25);
+	const TCHAR RandomChar = TCHAR('A' + RandomIndex);
 	return FString(1, &RandomChar);
 }
 

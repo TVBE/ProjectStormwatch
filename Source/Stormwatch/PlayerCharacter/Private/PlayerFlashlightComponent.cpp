@@ -245,7 +245,7 @@ FRotator UPlayerFlashlightComponent::GetSocketRotationWithOffset(const FName Soc
 	return Rotation;
 }
 
-void UPlayerFlashlightComponent::SetFlashlightEnabled(const bool Value)
+void UPlayerFlashlightComponent::SetFlashlightEnabled(bool Value)
 {
 	if (Flashlight && FlashlightSpringArm)
 	{
@@ -308,9 +308,9 @@ void UPlayerFlashlightConfiguration::ApplyToFlashlightComponent(const UPlayerFla
 		Flashlight->AttenuationRadius = AttenuationRadius;
 		Flashlight->InnerConeAngle = InnerConeAngle;
 		Flashlight->OuterConeAngle = OuterConeAngle;
-		Flashlight->CastShadows = CastsShadows;
+		Flashlight->CastShadows = bCastShadows;
 		Flashlight->VolumetricScatteringIntensity = VolumetricScatteringIntensity;
-		Flashlight->SetUseInverseSquaredFalloff(UseInverseSquaredFalloff);
+		Flashlight->SetUseInverseSquaredFalloff(bUseInverseSquaredFalloff);
 		Flashlight->LightFalloffExponent = LightFalloffExponent;
 		if (LightFunctionMaterial)
 		{

@@ -42,13 +42,13 @@ void UPlayerPerceptionComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (IsNightstalkerVisible)
+	if (bNightstalkerVisible)
 	{
 		NightstalkerVisibilityDuration += DeltaTime;
 		if (NightstalkerVisibilityDuration >= NightstalkerDetectionThreshold)
 		{
 			OnNightstalkerPerceptionChanged.Broadcast(true);
-			IsNightstalkerDetected = true;
+			bNightstalkerDetected = true;
 		}
 	}
 }
@@ -87,17 +87,17 @@ void UPlayerPerceptionComponent::UpdatePerception_Implementation()
 			{
 				UE_LOG(LogPlayerPerception, VeryVerbose, TEXT("UpdatePerception: Nightstalker is not occluded."));
 				
-				IsNightstalkerVisible = true;
+				bNightstalkerVisible = true;
 				return;
 			}
 		}
 		
-		IsNightstalkerVisible = false;
+		bNightstalkerVisible = false;
 		NightstalkerVisibilityDuration = 0.0f;
 
-		if (IsNightstalkerDetected)
+		if (bNightstalkerDetected)
 		{
-			IsNightstalkerDetected = false;
+			bNightstalkerDetected = false;
 			OnNightstalkerPerceptionChanged.Broadcast(false);
 		}
 		

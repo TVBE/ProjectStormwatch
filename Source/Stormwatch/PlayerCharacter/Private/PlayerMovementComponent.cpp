@@ -13,6 +13,32 @@ void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
                                                       FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+
+}
+
+void UPlayerMovementComponent::UpdateMovementSpeed()
+{
+	float InteractionMultiplier = 1.0f;
+
+	if (!GrabComponent->GetGrabbedComponent() || !DragComponent->GetGrabbedComponent()) { return; }
+
+	const UPrimitiveComponent* PrimitiveComponent = GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent();
+
+	const float Mass = PrimitiveComponent->GetMass();
+	const FBoxSphereBounds Bounds = PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform());
+	const float BoundingBoxSize = static_cast<float>(Bounds.GetBox().GetVolume());
+
+	const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(Settings.InteractionSpeedWeightRange, Settings.InteractionSpeedWeightScalars, Mass))};
+	const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
+		(Settings.InteractionSpeedSizeRange, Settings.InteractionSpeedSizeScalars, BoundingBoxSize))};
+
+	InteractionMultiplier *= FMath::Clamp(Settings.MassRotationMultiplier * Settings.BoundsRotationMultiplier,
+										  InteractionSpeedFloor, 1.0);
+
+	PlayerMovement->MaxWalkSpeed = ScaledSpeed;
+	PlayerMovement->MaxWalkSpeedCrouched = CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
 }
 
 void UPlayerMovementComponent::BeginPlay()
@@ -64,17 +90,16 @@ EPlayerGroundMovementType UPlayerMovementComponent::GetGroundMovementType() cons
 	return EPlayerGroundMovementType::Idle;
 }
 
-/** Called by the player controller. */
-void UPlayerMovementComponent::SetIsSprinting(const bool Value)
+void UPlayerMovementComponent::SetIsSprinting(bool bValue)
 {
-	if (!PawnOwner || IsSprinting == Value)
+	if (!PawnOwner || IsSprinting == bValue)
 	{
 		return;
 	}
 	
-	IsSprinting = Value;
+	IsSprinting = bValue;
 	
-	if (Value)
+	if (bValue)
 	{
 		OnLocomotionEvent.Broadcast(EPlayerLocomotionEvent::SprintStart);
 	}

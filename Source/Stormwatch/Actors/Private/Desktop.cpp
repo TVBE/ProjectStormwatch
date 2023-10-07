@@ -46,10 +46,10 @@ void ADesktop::BeginPlay()
 
 void ADesktop::MoveCursor(FVector2D InputVelocity)
 {
-	FVector NewCursorPosition {CursorMesh->GetComponentLocation() + FVector(InputVelocity.X, InputVelocity.Y , 0)};
+	FVector NewCursorPosition = CursorMesh->GetComponentLocation() + FVector(InputVelocity.X, InputVelocity.Y , 0);
 	
-	const FVector ScreenSpaceMin {ScreenSpace->GetComponentLocation() - (ScreenSpace->GetScaledBoxExtent())};
-	const FVector ScreenSpaceMax {ScreenSpace->GetComponentLocation() + (ScreenSpace->GetScaledBoxExtent())};
+	const FVector ScreenSpaceMin = ScreenSpace->GetComponentLocation() - (ScreenSpace->GetScaledBoxExtent());
+	const FVector ScreenSpaceMax = ScreenSpace->GetComponentLocation() + (ScreenSpace->GetScaledBoxExtent());
 
 	NewCursorPosition.X = FMath::Clamp(NewCursorPosition.X, ScreenSpaceMin.X, ScreenSpaceMax.X);
 	NewCursorPosition.Y = FMath::Clamp(NewCursorPosition.Y, ScreenSpaceMin.Y, ScreenSpaceMax.Y);
@@ -60,9 +60,9 @@ void ADesktop::MoveCursor(FVector2D InputVelocity)
 void ADesktop::FormatDisplayText()
 {
 	DisplayText.Reset();
-	for (int i {0}; i < TextLineArray.Num(); ++i)
+	for (int i = 0; i < TextLineArray.Num(); ++i)
 	{
-		const FString& Line {TextLineArray[i]};
+		const FString& Line = TextLineArray[i];
 		DisplayText.Append(Line);
 		if (i != TextLineArray.Num() - 1)
 		{
@@ -79,7 +79,7 @@ void ADesktop::AppendCharacterToArray(const FString& Character)
 		TextLineArray.Add(NewLine);
 	}
 
-	FString& LastLine {TextLineArray.Last()};
+	FString& LastLine = TextLineArray.Last();
 	LastLine.AppendChar(Character[0]);
 
 	if (TextLineArray.Num() > MaxLines)
@@ -96,7 +96,7 @@ FString& ADesktop::GetLastLineWithSpace()
 		TextLineArray.Add(NewLine);
 	}
 
-	FString& LastLine {TextLineArray.Last()};
+	FString& LastLine = TextLineArray.Last();
 	if (LastLine.Len() >= MaxLineLength)
 	{
 		const FString NewLine;

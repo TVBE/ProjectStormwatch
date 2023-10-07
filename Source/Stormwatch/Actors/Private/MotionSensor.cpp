@@ -45,7 +45,7 @@ void AMotionSensor::Poll()
 
 		SetState(ESensorState::Detecting);
 
-		if (const UWorld* World {GetWorld()})
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 			{
@@ -65,7 +65,7 @@ void AMotionSensor::Poll()
 			
 			if (IsManualResetRequired)
 			{
-				if (const UWorld* World {GetWorld()})
+				if (const UWorld* World = GetWorld())
 				{
 					if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 					{
@@ -83,7 +83,7 @@ void AMotionSensor::Poll()
 		{
 			SetState(ESensorState::Alerted);
 			
-			if (const UWorld* World {GetWorld()})
+			if (const UWorld* World = GetWorld())
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 				{

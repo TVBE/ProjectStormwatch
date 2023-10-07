@@ -58,7 +58,7 @@ void AHeatPoint::BeginPlay()
 		}
 	}
 	
-	if (IsDebugVisEnabled)
+	if (bDebugVisEnabled)
 	{
 		SetDebugVisEnabled(true);
 	}
@@ -131,7 +131,7 @@ void AHeatPoint::SetDebugVisEnabled(bool IsEnabled)
 	if (DebugSphereMesh)
 	{
 		DebugSphereMesh->SetVisibility(IsEnabled);
-		IsDebugVisEnabled = true;
+		bDebugVisEnabled = true;
 	}
 }
 #endif

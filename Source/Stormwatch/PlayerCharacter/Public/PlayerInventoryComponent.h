@@ -19,7 +19,7 @@ class STORMWATCH_API UPlayerInventoryComponent : public UPlayerCharacterComponen
 private:
 	/** The currently selected slot in the Inventory. */
 	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotIndex)
-	int32 SelectedSlot {0};
+	int32 SelectedSlot = 0;
 
 	/** The actor in the hotbar at the index of the selected slot. */
 	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotActor)
@@ -28,7 +28,7 @@ private:
 	/** The amount of hotbar slots available for the inventory. */
 	UPROPERTY(BlueprintGetter = GetHotbarSize, EditDefaultsOnly, Category = "PlayerInventoryComponent",
 			  Meta = (DisplayName = "Hotbar Slots", ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
-	int32 HotbarSlots {4};
+	int32 HotbarSlots = 4;
 
 	/** The entry of AActor pointers in the hotbar. This property can be treated as 'the hotbar'. */
 	UPROPERTY(BlueprintGetter = GetHotbar)

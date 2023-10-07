@@ -61,7 +61,7 @@ void UPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overlapp
 
 	ImpulseDirection.Z = FMath::Max(0.0f, ImpulseDirection.Z);
 	float ImpulseStrength;
-	if (ScaleForceByMass)
+	if (bScaleForceByMass)
 	{
 		const float ObjectMass {OtherComp->GetMass()};
 		constexpr float MassExponent { 0.5f }; 

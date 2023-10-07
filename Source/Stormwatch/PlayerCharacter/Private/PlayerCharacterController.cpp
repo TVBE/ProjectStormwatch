@@ -86,7 +86,7 @@ void APlayerCharacterController::SetupInputComponent()
 
 void APlayerCharacterController::HandleHorizontalRotation(float Value)
 {
-	if (!CanProcessRotationInput) { return; }
+	if (!bProcessRotationInput) { return; }
 	
 	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
@@ -102,7 +102,7 @@ void APlayerCharacterController::HandleHorizontalRotation(float Value)
 
 void APlayerCharacterController::HandleVerticalRotation(float Value)
 {
-	if (!CanProcessRotationInput) { return; }
+	if (!bProcessRotationInput) { return; }
 	
 	if (InteractionComponent && InteractionComponent->GetIsTertiaryInteractionActive())
 	{
@@ -118,14 +118,14 @@ void APlayerCharacterController::HandleVerticalRotation(float Value)
 
 void APlayerCharacterController::HandleLongitudinalMovementInput(float Value)
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!bProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw, 0)};
 		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 
 void APlayerCharacterController::HandleLateralMovementInput(float Value)
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!bProcessMovementInput) { return; }
 		const FRotator Rotation {FRotator(0, GetControlRotation().Yaw+90, 0)};
 		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
@@ -139,7 +139,7 @@ void APlayerCharacterController::HandleZoomDirectionInput(float Value)
 
 void APlayerCharacterController::HandleJumpActionPressed()
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!bProcessMovementInput) { return; }
 	if (PlayerCharacter && PlayerCharacter->CanJump())
 	{
 		const float Clearance = PlayerCharacter->GetClearanceAbovePawn();
@@ -158,8 +158,8 @@ void APlayerCharacterController::HandleJumpActionPressed()
 
 void APlayerCharacterController::HandleSprintActionPressed()
 {
-	if (!CanProcessMovementInput) { return; }
-	IsSprintPending = true;
+	if (!bProcessMovementInput) { return; }
+	bSprintPending = true;
 	if (CanCharacterSprint())
 	{
 		PlayerCharacter->StartSprinting();
@@ -168,40 +168,40 @@ void APlayerCharacterController::HandleSprintActionPressed()
 
 void APlayerCharacterController::HandleSprintActionReleased()
 {
-	if (!CanProcessMovementInput) { return; }
-	IsSprintPending = false;
+	if (!bProcessMovementInput) { return; }
+	bSprintPending = false;
 	PlayerCharacter->StopSprinting();
 }
 
 void APlayerCharacterController::HandleCrouchActionPressed()
 {
-	if (!CanProcessMovementInput) { return; }
+	if (!bProcessMovementInput) { return; }
 	
 	if (CharacterConfiguration->EnableCrouchToggle)
 	{
 		if (!PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 		{
 			PlayerCharacter->Crouch(false);
-			IsCrouchPending = true;
+			bCrouchPending = true;
 			return;
 		}
 		if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
 			PlayerCharacter->UnCrouch(false);
-			IsCrouchPending = false;
+			bCrouchPending = false;
 		}
 	}
 	else if (PlayerCharacter->CanCrouch())
 	{
 		PlayerCharacter->Crouch(false);
-		IsCrouchPending = true;
+		bCrouchPending = true;
 	}
 }
 
 void APlayerCharacterController::HandleCrouchActionReleased()
 {
-	if (!CanProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
-	IsCrouchPending = false;
+	if (!bProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
+	bCrouchPending = false;
 	
 	if (PlayerCharacter->bIsCrouched)
 	{
@@ -211,7 +211,7 @@ void APlayerCharacterController::HandleCrouchActionReleased()
 
 void APlayerCharacterController::HandleFlashlightActionPressed()
 {
-	if (!PlayerCharacter || !CanProcessMovementInput) { return; }
+	if (!PlayerCharacter || !bProcessMovementInput) { return; }
 	if (UPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UPlayerFlashlightComponent>())
 	{
 		Flashlight->SetFlashlightEnabled(!Flashlight->IsFlashlightEnabled());
@@ -278,7 +278,7 @@ void APlayerCharacterController::HandleInventoryActionReleased()
 {
 }
 
-void APlayerCharacterController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
+void APlayerCharacterController::ProcessPlayerInput(float DeltaTime, bool bGamePaused)
 {
 	CalculateRotationMultiplier(InputRotation);
 	
@@ -354,10 +354,10 @@ void APlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rot
 
 void APlayerCharacterController::UpdateCurrentActions()
 {
-	if (!CanProcessMovementInput) {return;}
+	if (!bProcessMovementInput) {return;}
 	
 	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
-	if (!CanCharacterSprint() || !IsSprintPending)
+	if (!CanCharacterSprint() || !bSprintPending)
 	{
 		PlayerCharacter->StopSprinting();
 	}
@@ -366,7 +366,7 @@ void APlayerCharacterController::UpdateCurrentActions()
 void APlayerCharacterController::UpdatePendingActions()
 {
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
-	if (IsSprintPending && !PlayerCharacter->IsSprinting() && CanCharacterSprint())
+	if (bSprintPending && !PlayerCharacter->IsSprinting() && CanCharacterSprint())
 	{
 		if (!PlayerCharacter->bIsCrouched)
 		{
@@ -375,18 +375,18 @@ void APlayerCharacterController::UpdatePendingActions()
 		/** If the character is crouching, stand up before sprinting. */
 		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
 		{
-			IsCrouchPending = false;
+			bCrouchPending = false;
 			PlayerCharacter->UnCrouch(false);
 			PlayerCharacter->StartSprinting();
 		}
 	}
 	/** If crouch is pending and the character is not crouching, start crouching. */
-	if (IsCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
+	if (bCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
 	{
 		if (PlayerCharacter->IsSprinting())
 		{
 			PlayerCharacter->StopSprinting();
-			IsSprintPending = false;
+			bSprintPending = false;
 		}
 		PlayerCharacter->Crouch(false);
 	}
@@ -488,41 +488,41 @@ float APlayerCharacterController::GetHorizontalRotationInput() const
 	return 0.0;
 }
 
-void APlayerCharacterController::SetCanProcessMovementInput(const bool Value)
+void APlayerCharacterController::SetCanProcessMovementInput(bool bValue)
 {
-		CanProcessMovementInput = Value;
+		bProcessMovementInput = bValue;
 }
 
-void APlayerCharacterController::SetCanProcessRotationInput(const bool Value)
+void APlayerCharacterController::SetCanProcessRotationInput(bool bValue)
 {
-		CanProcessRotationInput = Value;
+		bProcessRotationInput = bValue;
 }
 
-bool APlayerCharacterController::SetPlayerMovementInputLock(const bool Value)
+bool APlayerCharacterController::SetPlayerMovementInputLock(bool bValue)
 {
-	MovementInputLockCount += Value ? 1 : -1;
-	const bool CanProcessInput {!MovementInputLockCount};
-	if (GetCanProcessMovementInput() != CanProcessInput)
+	MovementInputLockCount += bValue ? 1 : -1;
+	const bool bCanProcessInput {!MovementInputLockCount};
+	if (GetCanProcessMovementInput() != bCanProcessInput)
 	{
-		SetCanProcessMovementInput(CanProcessInput);
-		OnMovementInputLockChanged.Broadcast(CanProcessInput);
+		SetCanProcessMovementInput(bCanProcessInput);
+		OnMovementInputLockChanged.Broadcast(bCanProcessInput);
 	}
-	return CanProcessInput;
+	return bCanProcessInput;
 }
 
-bool APlayerCharacterController::SetPlayerRotationInputLock(const bool Value)
+bool APlayerCharacterController::SetPlayerRotationInputLock(bool bValue)
 {
-	RotationInputLockCount += Value ? 1 : -1;
-	const bool CanProcessInput {!RotationInputLockCount};
-	if (GetCanProcessRotationInput() != CanProcessInput)
+	RotationInputLockCount += bValue ? 1 : -1;
+	const bool bCanProcessInput {!RotationInputLockCount};
+	if (GetCanProcessRotationInput() != bCanProcessInput)
 	{
-		SetCanProcessRotationInput(CanProcessInput);
-		OnRotationInputLockChanged.Broadcast(CanProcessInput);
+		SetCanProcessRotationInput(bCanProcessInput);
+		OnRotationInputLockChanged.Broadcast(bCanProcessInput);
 	}
-	return CanProcessInput;
+	return bCanProcessInput;
 }
 
-void APlayerCharacterController::FadePlayerCameraFromBlack(const float Duration)
+void APlayerCharacterController::FadePlayerCameraFromBlack(float Duration)
 {
 	if (PlayerCharacter && PlayerCharacter->GetCameraController())
 	{

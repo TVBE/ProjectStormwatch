@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
 	AActor* GetDraggedActor() const
 	{
-		if (const UPrimitiveComponent * Component {GetGrabbedComponent()}) { return Component->GetOwner(); }
+		if (const UPrimitiveComponent * Component = GetGrabbedComponent()) { return Component->GetOwner(); }
 		return nullptr;
 	}
 
@@ -40,7 +40,7 @@ public:
 
 	/** Multiplier used to change the rotation speed of the camera when dragging an object. */
 	UPROPERTY()
-	float CameraRotationMultiplier {1.0f};
+	float CameraRotationMultiplier = 1.0f;
 
 protected:
 	virtual void OnRegister() override;
@@ -60,26 +60,26 @@ private:
 	/** The distance at which point a dragged object will be automatically released. */
 	UPROPERTY(EditInstanceOnly, Category = "Grab Settings", 
 			  Meta = (DisplayName = "Release Distance", Units = "Centimeters", ClampMin = "0", ClampMax = "500", UIMin = "0", UIMax = "500"))
-	float AutoReleaseDistance {300.f};
+	float AutoReleaseDistance = 300.f;
 
 	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
 			  Meta = (ClampMin = "0"))
-	float ZoomSpeed {0.0f};
+	float ZoomSpeed = 0.0f;
 
 	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
 			  Meta = (ClampMin = "0"))
-	float MinZoomLevel {0.0f};
+	float MinZoomLevel = 0.0f;
 
 	UPROPERTY(EditInstanceOnly, Category = "Zoom Settings", 
 			  Meta = (ClampMin = "0"))
-	float MaxZoomLevel {1000.f};
+	float MaxZoomLevel = 1000.f;
 
 	/** The amount that the rotation speed decreases when dragging objects.*/
 	UPROPERTY(EditInstanceOnly, Category = "Player Physics Grab", 
 			  Meta = (ClampMin = "0"))
-	float CameraRotationDamping {0.8f};
+	float CameraRotationDamping = 0.8f;
 
-	bool ApplyForceOnCenterMass {false};
+	bool bApplyForceOnCenterMass = false;
 
 	FVector DraggedLocationOffset;
 
