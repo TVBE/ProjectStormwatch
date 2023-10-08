@@ -1,5 +1,4 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
-// Written by Tim Verberne.
 
 #pragma once
 
@@ -18,14 +17,12 @@ class STORMWATCH_API UPlayerCharacterComponent : public UActorComponent
 public:
 	UPlayerCharacterComponent();
 
-	virtual bool IsValid() const { return true; }
-
 protected:
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 
 	virtual void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) {};
 
-	APlayerCharacter* GetPlayerCharacter() const;
-	APlayerCharacterController* GetPlayerCharacterController() const;
+	class APlayerCharacter* GetPlayerCharacter() const;
+	class APlayerCharacterController* GetPlayerCharacterController() const;
 };

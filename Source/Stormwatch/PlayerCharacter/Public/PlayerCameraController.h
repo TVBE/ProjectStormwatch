@@ -1,9 +1,8 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
-// Written by Tim Verberne.
 
 #pragma once
 
-#include "PlayerCharacterComponent.h"
+#include "PlayerCharacterSceneComponent.h"
 #include "UObject/WeakObjectPtr.h"
 #include "PlayerCameraController.generated.h"
 
@@ -13,7 +12,7 @@ class APlayerCharacterController;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter",
 	   Meta = (BlueprintSpawnableComponent))
-	class STORMWATCH_API UPlayerCameraController : public UPlayerCharacterComponent
+	class STORMWATCH_API UPlayerCameraController : public UPlayerCharacterSceneComponent
 {
 	GENERATED_BODY()
 

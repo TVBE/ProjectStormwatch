@@ -1,39 +1,39 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "PlayerCharacterComponent.h"
+#include "PlayerCharacterSceneComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerCharacterController.h"
 
-UPlayerCharacterComponent::UPlayerCharacterComponent()
+UPlayerCharacterSceneComponent::UPlayerCharacterSceneComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-void UPlayerCharacterComponent::OnRegister()
+void UPlayerCharacterSceneComponent::OnRegister()
 {
 	Super::OnRegister();
 
 	checkf(Cast<APlayerCharacter>(GetOwner()), TEXT("%s requires owner to be of type APlayerCharacter."), *GetName());
 
 	APawn* Pawn {Cast<APawn>(GetOwner())};
-	Pawn->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCharacterComponent::OnControllerChanged);
+	Pawn->ReceiveControllerChangedDelegate.AddDynamic(this, &UPlayerCharacterSceneComponent::OnControllerChanged);
 }
 
-void UPlayerCharacterComponent::OnUnregister()
+void UPlayerCharacterSceneComponent::OnUnregister()
 {
 	APawn* Pawn {Cast<APawn>(GetOwner())};
-	Pawn->ReceiveControllerChangedDelegate.RemoveDynamic(this, &UPlayerCharacterComponent::OnControllerChanged);
+	Pawn->ReceiveControllerChangedDelegate.RemoveDynamic(this, &UPlayerCharacterSceneComponent::OnControllerChanged);
 
 	Super::OnUnregister();
 }
 
-APlayerCharacter* UPlayerCharacterComponent::GetPlayerCharacter() const
+APlayerCharacter* UPlayerCharacterSceneComponent::GetPlayerCharacter() const
 {
 	return static_cast<APlayerCharacter*>(GetOwner());
 }
 
-APlayerCharacterController* UPlayerCharacterComponent::GetPlayerCharacterController() const
+APlayerCharacterController* UPlayerCharacterSceneComponent::GetPlayerCharacterController() const
 {
 	APlayerCharacter* Character {GetPlayerCharacter()};
 	AController* Controller {Character->GetController()};

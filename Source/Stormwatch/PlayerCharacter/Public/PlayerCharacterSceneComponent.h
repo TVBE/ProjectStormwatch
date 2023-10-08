@@ -1,19 +1,18 @@
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "PlayerCharacterPhysicsHandleComponent.generated.h"
-
-class APlayerCharacter;
-class APlayerCharacterController;
+#include "Components/SceneComponent.h"
+#include "PlayerCharacterSceneComponent.generated.h"
 
 UCLASS(Abstract)
-class STORMWATCH_API UPlayerCharacterPhysicsHandleComponent : public UPhysicsHandleComponent
+class STORMWATCH_API UPlayerCharacterSceneComponent : public USceneComponent
 {
 	GENERATED_BODY()
-
+	
 public:
-	UPlayerCharacterPhysicsHandleComponent();
+	UPlayerCharacterSceneComponent();
 
 protected:
 	virtual void OnRegister() override;

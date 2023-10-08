@@ -1,5 +1,4 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
-// Written by Nino Saglia & Tim Verberne.
 
 #include "PlayerCharacterPhysicsHandleComponent.h"
 #include "PlayerCharacter.h"

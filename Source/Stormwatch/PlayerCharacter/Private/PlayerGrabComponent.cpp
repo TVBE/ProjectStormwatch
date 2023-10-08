@@ -1,5 +1,4 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
-// Written by Nino Saglia & Tim Verberne.
 
 #include "PlayerGrabComponent.h"
 #include "KineticActorComponent.h"
@@ -192,7 +191,6 @@ void UPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 	
 }
 
-/** Grab the object pass it to the physicshandle and capture the relative object rotation*/
 void UPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 {
 	if (!ActorToGrab || GrabbedComponent) { return; }
