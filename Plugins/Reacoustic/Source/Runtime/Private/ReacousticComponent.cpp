@@ -255,7 +255,7 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 	auto IsDifferentLocation = [&]() {
 		DeltaLocationDistance = abs(FVector::Distance(LatestLocation, Hit.Location));
 		LatestLocation = Hit.ImpactPoint;
-		return DeltaLocationDistance > 0.5;
+		return DeltaLocationDistance > 0.05;
 	};
 
 	auto HasSufficientTimeBetweenHits = [&]() {
@@ -292,13 +292,21 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 
 	if (!IsDifferentLocation()) {
 		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: LOCATION DISTANCE"));
-	} else if (!HasSufficientTimeBetweenHits()) {
+	} 
+	
+	else if (!HasSufficientTimeBetweenHits()) {
 		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: DELTA HIT TIME"));
-	} else if (!IsDifferentOrientation()) {
+	} 
+	
+	else if (!IsDifferentOrientation()) {
 		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: DELTA FORWARD VECTOR"));
-	} else if (IsValidHitState()) {
+	} 
+	
+	else if (IsValidHitState()) {
 		HitIsValid = true;
-	} else {
+	} 
+	
+	else {
 		UE_LOG(LogReacousticComponent, Verbose, TEXT("Prevented hit by: STATE ARRAY"));
 	}
 
