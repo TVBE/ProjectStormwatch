@@ -114,6 +114,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	virtual void TriggerManualHit_Implementation(float HitStrength);
@@ -121,5 +122,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Reacoustic", Meta = (DisplayName = "Get Scaled Impact Value"))
 	static float CalculateImpactValue(const FVector& NormalImpulse, const UPrimitiveComponent* HitComponent, const AActor* OtherActor);
 
+	
+	UReacousticSubsystem* GetReacousticSubsystem();
 	UReacousticSubsystem* CachedSubsystem;
 };

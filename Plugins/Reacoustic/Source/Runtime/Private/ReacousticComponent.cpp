@@ -13,19 +13,7 @@ UReacousticComponent::UReacousticComponent(const FObjectInitializer& ObjectIniti
 void UReacousticComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if(const UWorld* World {GetWorld()})
-	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
-		{
-			Subsystem->RegisterComponent(this);
-			CachedSubsystem = Subsystem;
-		}
-	}
-	else
-	{
-		const FString ComponentName {this->GetName()};
-		UE_LOG(LogReacousticComponent, Warning, TEXT("%s was unable to register itself to the Reacoustic subsystem."), *ComponentName);
-	}
+
 
 	TArray<UActorComponent*> Components;
 		if(GetOwner())
@@ -40,7 +28,6 @@ void UReacousticComponent::BeginPlay()
 						if (StaticMeshComponent->IsSimulatingPhysics() && StaticMeshComponent->BodyInstance.bNotifyRigidBodyCollision)
 						{
 							MeshComponent = StaticMeshComponent;
-							// StaticMeshComponent->SetGenerateOverlapEvents(true);
 							break;
 						}
 					}
@@ -70,20 +57,9 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-	const UWorld* World = GetWorld();
-	if (!World) 
-	{
-		return;
-	}
-
-	if(!CachedSubsystem)
-	{
-		// Handle this case. Maybe log an error and return?
-		UE_LOG(LogReacousticComponent, Error, TEXT("CachedSubsystem is null!"));
-		return;
-	}
-
-	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : CachedSubsystem->GetMeshSoundAsset(MeshComponent);
+	if (!GetReacousticSubsystem()) {return;}
+	
+	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : GetReacousticSubsystem()->GetMeshSoundAsset(MeshComponent);
 
 	if(!AssetToTransfer)
 	{
@@ -91,31 +67,9 @@ inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBas
 		UE_LOG(LogReacousticComponent, Error, TEXT("AssetToTransfer is null!"));
 		return;
 	}
-
-	TransferData(AssetToTransfer, CachedSubsystem->ReacousticSoundAssociationMap);
-
-	if(!ReacousticSoundAsset)
-	{
-		UE_LOG(LogReacousticComponent, Warning, TEXT("No sound asset found, destroying component"));
-    
-		if(AudioComponent)
-		{
-			AudioComponent->Stop();
-		}
-		else
-		{
-			UE_LOG(LogReacousticComponent, Warning, TEXT("AudioComponent is null!"));
-		}
-    
-		DestroyComponent();
-		return;
-	}
-
-
-
-
-
-	/** Make sure htere's an audio component.*/
+	
+	TransferData(AssetToTransfer, GetReacousticSubsystem()->ReacousticSoundAssociationMap);
+	
 	if(!AudioComponent)
 	{
 		AudioComponent = NewObject<UAudioComponent>(GetOwner());
@@ -154,24 +108,43 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 	return (RelativeVelocity.Length() * D * 0.1); 
 }
 
-
+UReacousticSubsystem* UReacousticComponent::GetReacousticSubsystem()
+{
+	if(CachedSubsystem)
+	{
+		return CachedSubsystem;
+	}
+		
+	if (const UWorld* World = GetWorld())
+	{
+	
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>())
+		{
+			Subsystem->RegisterComponent(this);
+			CachedSubsystem = Subsystem;
+		}
+		
+		return CachedSubsystem;
+	}
+		
+	return nullptr;
+}
 
 
 void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if(FilterImpact(HitComp,OtherActor,OtherComp,NormalImpulse,Hit))
 	{
-		/** Make sure the subsystem is still referenced.*/
-		CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
-		
+
+		if(!GetReacousticSubsystem()){return;}
 		/** Get the surface sound for this impact.*/
 		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-		SurfaceSoundAsset = CachedSubsystem->GetSurfaceSoundAsset(SurfaceType);
+		SurfaceSoundAsset = GetReacousticSubsystem()->GetSurfaceSoundAsset(SurfaceType);
 		if(ReacousticSoundAsset)
 		{
 			float ImpactValue = CalculateImpactValue(NormalImpulse,HitComp,OtherActor)/ReacousticSoundAsset->MaxSpeedScalar;
 		
-			FImpactValueToTimestampResult Result {CachedSubsystem->GetTimeStampWithStrenght(ReacousticSoundAsset,ImpactValue)};
+			FImpactValueToTimestampResult Result {GetReacousticSubsystem()->GetTimeStampWithStrenght(ReacousticSoundAsset,ImpactValue)};
 			UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Strenght: %f"),ImpactValue);
 			UE_LOG(LogReacousticComponent, Verbose, TEXT("Impact Timestamp Result: %f"),Result.Timestamp);
 			UE_LOG(LogReacousticComponent, Verbose, TEXT("Normalized Strenght: %f"),Result.NormalizedOnsetStrength);
@@ -321,11 +294,9 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 
 FImpactValueToTimestampResult UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
-	/** Make sure the subsystem is still referenced.*/
-	CachedSubsystem = CachedSubsystem ? CachedSubsystem : GetWorld()->GetSubsystem<UReacousticSubsystem>();
-
-	/** Use the reacoustic subsystem to pass on the timestamp and strength value.*/
-	return CachedSubsystem->GetTimeStampWithStrenght(SoundAsset, ImpactValue);
+	if(!GetReacousticSubsystem()){FImpactValueToTimestampResult{};}
+	
+	return GetReacousticSubsystem()->GetTimeStampWithStrenght(SoundAsset, ImpactValue);
 
 }
 
