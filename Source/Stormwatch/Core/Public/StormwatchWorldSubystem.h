@@ -7,8 +7,8 @@
 #include "StormwatchWorldSubystem.generated.h"
 
 class ANightstalker;
-class APlayerCharacter;
-class APlayerCharacterController;
+class ABHPlayerCharacter;
+class ABHPlayerCharacterController;
 
 /** World Subsystem that provides access to the Player Character and its subobjects.
  *	Provides high level functions for changing the PlayerCharacter's behavior. */
@@ -22,46 +22,46 @@ class STORMWATCH_API UStormwatchWorldSubsystem : public UWorldSubsystem
 private:
 	/** The Player Character in the world. */
 	UPROPERTY()
-	APlayerCharacter* PlayerCharacter {nullptr};
+	ABHPlayerCharacter* PlayerCharacter = nullptr;
 
 	/** The Player Controller for the Player Character. */
 	UPROPERTY()
-	APlayerCharacterController* PlayerController {nullptr};
+	ABHPlayerCharacterController* PlayerController = nullptr;
 	
 	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
 	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
-	uint8 MovementInputLockCount {1};
+	uint8 MovementInputLockCount = 1;
 
 	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
 	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
-	uint8 RotationInputLockCount {1};
+	uint8 RotationInputLockCount = 1;
 
 public:
 	/** Registers a Player Character to the subsystem.
 	 *	@Character The PlayerCharacter to register. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void RegisterPlayerCharacter(APlayerCharacter* Character);
+	void RegisterPlayerCharacter(ABHPlayerCharacter* Character);
 
 	/** Registers a Player Controller to the subsystem.
 	*	@Controller The PlayerController to register. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void RegisterPlayerController(APlayerCharacterController* Controller);
+	void RegisterPlayerController(ABHPlayerCharacterController* Controller);
 
 	/** Unregisters a Player Character from the subsystem. This will be ignored if the player character is not already registered.
 	*	@Character The PlayerCharacter to unregister. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void UnregisterPlayerCharacter(APlayerCharacter* Character);
+	void UnregisterPlayerCharacter(ABHPlayerCharacter* Character);
 	
 	/** Unregisters a Player Controller from the subsystem. This will be ignored if the player controller is not already registered.
 	*	@Controller The PlayerController to unregister. */
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void UnregisterPlayerController(APlayerCharacterController* Controller);
+	void UnregisterPlayerController(ABHPlayerCharacterController* Controller);
 	
 	/** Returns the Player Character. */
 	UFUNCTION(BlueprintPure, Category = "Player")
-	FORCEINLINE APlayerCharacter* GetPlayerCharacter() const { return PlayerCharacter; }
+	FORCEINLINE ABHPlayerCharacter* GetPlayerCharacter() const { return PlayerCharacter; }
 
 	/** Returns the Player Controller. */
 	UFUNCTION(BlueprintPure, Category = "Player")
-	FORCEINLINE APlayerCharacterController* GetPlayerController() const { return PlayerController; }
+	FORCEINLINE ABHPlayerCharacterController* GetPlayerController() const { return PlayerController; }
 };

@@ -15,16 +15,16 @@ class UMeshGrabComponent : public UMeshInteractionComponent, public IGrabbableOb
 	GENERATED_BODY()
 
 private:
-	bool OverrideInventoryAutoConfig {false};
+	bool OverrideInventoryAutoConfig = false;
 	
 	/** If true, the mesh can be added to the player's inventory. This will be set to false if the object is too heavy or too large. */
 	UPROPERTY(EditInstanceOnly, Category = "Inventory", Meta = (DisplayName = "Can Be Added To Inventory",
 		EditCondition = OverrideInventoryAutoConfig, InlineEditConditionToggle))
-	bool IsInventoryAddable {false};
+	bool IsInventoryAddable = false;
 
 	/** Determines whether this actor can be added to the inventory with a single press of the inventory action, or whether the action is press-and-hold. */
 	UPROPERTY(EditInstanceOnly, Category = "Inventory", Meta = (DisplayName = "Inventory Trigger Type"))
-	EInventoryTriggerType InventoryTriggerType {EInventoryTriggerType::PressAndHold};
+	EInventoryTriggerType InventoryTriggerType = EInventoryTriggerType::PressAndHold;
 
 public:
 	/** IGrabbableObject interface functions. */
@@ -33,7 +33,7 @@ public:
 	FORCEINLINE EGrabType GetGrabType_Implementation() const override { return EGrabType::OneHanded; }
 
 	/** IInventoryObject interface functions. */
-	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const override { return IsInventoryAddable; };
+	FORCEINLINE bool CanAddToInventory_Implementation(const AActor* Actor) const override =  return IsInventoryAddable; ;
 	bool AddToInventory_Implementation(const AActor* Actor) override;
 	bool TakeFromInventory_Implementation(const AActor* Actor) override;
 	FORCEINLINE EInventoryTriggerType GetTriggerType_Implementation() const override { return InventoryTriggerType; }

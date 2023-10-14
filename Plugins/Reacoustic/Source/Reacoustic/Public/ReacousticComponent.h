@@ -20,13 +20,13 @@ class REACOUSTIC_API UReacousticComponent : public UActorComponent
 
 protected:
 	UPROPERTY(Transient, BlueprintReadOnly)
-	UAudioComponent* AudioComponent {nullptr};
+	UAudioComponent* AudioComponent = nullptr;
 
 	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset"))
-	UReacousticSoundDataAsset* ReacousticSoundDataAsset {nullptr};
+	UReacousticSoundDataAsset* ReacousticSoundDataAsset = nullptr;
 
 	UPROPERTY(Transient, BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap {nullptr};
+	UReacousticSoundDataRef_Map* UReacousticSoundDataRefMap = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)
 	FReacousticSoundData MeshAudioData;
@@ -38,7 +38,7 @@ protected:
 private:
 	/** Pointer to the StaticMeshComponent of the owner of this component. */
 	UPROPERTY(Transient, BlueprintGetter = GetOwnerMeshComponent, Meta = (DisplayName = "Static Mesh Component"))
-	UStaticMeshComponent* MeshComponent {nullptr};
+	UStaticMeshComponent* MeshComponent = nullptr;
 	
 	/** These variables are used to calculate the difference in distance and time between hits.
 	 *  We use these to filter out unwanted hits */

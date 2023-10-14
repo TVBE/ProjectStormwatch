@@ -29,18 +29,18 @@ public:
 private:
 	/** The damage threshold for the component to broadcast it's OnDamageThresholdReached delegate. */
 	UPROPERTY(EditAnywhere, Meta = (Units = "Newtons"))
-	float Threshold {100000.0f};
+	float Threshold = 100000.0f;
 
 	/** The minimum impact force required to increment the damage. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Minimum Required Force", Units = "Newtons"))
-	float ImpulseForceThreshold {500.0f};
+	float ImpulseForceThreshold = 500.0f;
 
 	/** If enabled, we destroy the actor this component is part of when the damage threshold is reached. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Destroy Owner When Threshold Is Reached"))
-	bool DestroyOwnerOnThresholdReached {false};
+	bool DestroyOwnerOnThresholdReached = false;
 	
 	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
-	bool PlayParticleEffects {false};
+	bool PlayParticleEffects = false;
 
 	/** If enabled, we play a particle effect when the mesh gets destroyed. */
 	UPROPERTY(EditAnywhere, Category = "VFX", Meta = (DisplayName = "Destruction Particle Effect",
@@ -48,20 +48,20 @@ private:
 	UNiagaraSystem* DestructionNiagaraSystem;
 
 	UPROPERTY(EditAnywhere, Meta = (InlineEditConditionToggle))
-	bool PlayAudioEffects {false};
+	bool PlayAudioEffects = false;
 
 	/** If enabled, we play a sound effect when the mesh gets destroyed. */
 	UPROPERTY(EditAnywhere, Category = "Audio", Meta = (DisplayName = "Destruction Sound Effect",
 		EditCondition = "PlayAudioEffects"))
 	USoundBase* DestructionSound;
 	
-	float DamageLevel {0.0f};
+	float DamageLevel = 0.0f;
 	
-	float DamagePercentage {0.0f};
+	float DamagePercentage = 0.0f;
 
-	bool IsThresholdReached {false};
+	bool IsThresholdReached = false;
 
-	bool IsCooldownActive {false};
+	bool IsCooldownActive = false;
 	
 	UPROPERTY()
 	UStaticMeshComponent* MeshComponent;

@@ -60,27 +60,27 @@ protected:
 
 	/** The update interval of the sensor. */
 	UPROPERTY(BlueprintGetter = GetPollInterval)
-	float PollInterval {0.2f};
+	float PollInterval = 0.2f;
 
 	/** If true, the sensor's reset function needs to be called to have the sensor forfeit its triggered state. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Detection", Meta = (DisplayName = "Requires Manual Reset"))
-	bool IsManualResetRequired {true};
+	bool IsManualResetRequired = true;
 
 	/** How long the proximity sensor needs to detect an object before triggering. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Detection",
 		Meta = (Units = "Seconds", ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10"))
-	float DetectionThreshold {1.5f};
+	float DetectionThreshold = 1.5f;
 	
-	float DetectionLevel {0.0f};
+	float DetectionLevel = 0.0f;
 	
 	/** The cooldown time before the sensor is able to detect actors again. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sensor|Cooldown", Meta = (DisplayName = "Cooldown",
 		Units = "Seconds"))
-	float CooldownTime {3.0f};
+	float CooldownTime = 3.0f;
 
 	/** If true, the sensor is currently in cooldown and cannot detect actor. */
 	UPROPERTY(BlueprintReadOnly, Category = "Sensor|Cooldown")
-	bool IsCooldownActive {false};
+	bool IsCooldownActive = false;
 	
 	/** The ignore parameters for the sensor. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Ignore Parameters")
@@ -91,19 +91,19 @@ protected:
 	TArray<AActor*> OverlappingActors;
 
 	UPROPERTY(BlueprintGetter = GetIsSensorActive)
-	bool IsSensorActive {true};
+	bool IsSensorActive = true;
 
 	UPROPERTY(BlueprintGetter = GetIsBroken)
-	bool IsBroken {false};
+	bool IsBroken = false;
 	
 	UPROPERTY(BlueprintGetter = GetIsActorDetected)
-	bool IsActorDetected {false};
+	bool IsActorDetected = false;
 
 	UPROPERTY(BlueprintGetter = GetIsTriggered)
-	bool IsTriggered {false};
+	bool IsTriggered = false;
 
 	UPROPERTY(BlueprintGetter = GetIsAlerted)
-	bool IsAlerted {false};
+	bool IsAlerted = false;
 	
 	UPROPERTY()
 	FTimerHandle PollTimerHandle;
@@ -114,7 +114,7 @@ protected:
 private:
 	/** The state of the sensor. */
 	UPROPERTY()
-	ESensorState SensorState {ESensorState::Idle};
+	ESensorState SensorState = ESensorState::Idle;
 
 public:	
 	AProximitySensor();

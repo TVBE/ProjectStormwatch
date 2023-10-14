@@ -15,10 +15,10 @@ class STORMWATCH_API URoomAudioComponent : public URoomComponent
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Reverb", Meta = (DisplayName = "Reverb"))
-	USubmixEffectConvolutionReverbPreset* ReverbConvolutionReverbPreset {nullptr};
+	USubmixEffectConvolutionReverbPreset* ReverbConvolutionReverbPreset = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Reverb", Meta = (DisplayName = "Reverb"))
-	UDataTable* ReverbTypes {nullptr};
+	UDataTable* ReverbTypes = nullptr;
 
 public:	
 	URoomAudioComponent();
@@ -39,19 +39,19 @@ struct FRoomReverbSettings : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Reverb", Meta = (DisplayName = "Impulse Response A"))
-	USubmixEffectConvolutionReverbPreset* ImpulseResponseA {nullptr};
+	USubmixEffectConvolutionReverbPreset* ImpulseResponseA = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Reverb", Meta = (DisplayName = "Impulse Response B"))
-	USubmixEffectConvolutionReverbPreset* ImpulseResponseB {nullptr};
+	USubmixEffectConvolutionReverbPreset* ImpulseResponseB = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = "Room", Meta = (DisplayName = "Volume", ForceUnits = "m3", ClampMin = "0", ClampMax = "500", UIMin = "0", UIMax ="500"))
-	float RoomVolume {0.0f};
+	float RoomVolume = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Room", Meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax ="1"))
-	float ShapeRatio {0.0f};
+	float ShapeRatio = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Room", Meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax ="1"))
-	float Reflectivity {0.5f};
+	float Reflectivity = 0.5f;
 };
 
 UCLASS(BlueprintType)

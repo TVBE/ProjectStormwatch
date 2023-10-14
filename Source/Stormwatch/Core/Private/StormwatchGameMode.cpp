@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "StormwatchGameMode.h"
-#include "PlayerCharacter.h"
+#include "BHPlayerCharacter.h"
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ************************************************* Editor Utilities **************************************************
@@ -35,7 +35,7 @@ AStormwatchGameMode::AStormwatchGameMode()
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-void AStormwatchGameMode::NotifyPlayerCharacterBeginPlay(APlayerCharacter* Character)
+void AStormwatchGameMode::NotifyPlayerCharacterBeginPlay(ABHPlayerCharacter* Character)
 {
 	if (Character)
 	{
@@ -44,7 +44,7 @@ void AStormwatchGameMode::NotifyPlayerCharacterBeginPlay(APlayerCharacter* Chara
 	}
 }
 
-void AStormwatchGameMode::EventOnPlayerSpawn_Implementation(APlayerCharacter* Character)
+void AStormwatchGameMode::EventOnPlayerSpawn_Implementation(ABHPlayerCharacter* Character)
 {
 }
 

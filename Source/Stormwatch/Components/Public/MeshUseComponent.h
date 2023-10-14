@@ -28,7 +28,7 @@ public:
 private:
 	/** The use type for this component. */
 	UPROPERTY(EditAnywhere)
-	EUseType UseType {EUseType::SinglePress};
+	EUseType UseType = EUseType::SinglePress;
 
 public:	
 	UMeshUseComponent();

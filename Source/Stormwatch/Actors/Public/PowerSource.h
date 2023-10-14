@@ -25,7 +25,7 @@ public:
 protected:
 	/** If true, this power source is currently active and providing power to its registered power consumers. */
 	UPROPERTY(BlueprintReadOnly, Category = "Power Source", Meta = (DisplayName = "Is Energized"))
-	bool IsEnergized {true};
+	bool IsEnergized = true;
 
 private:
 	/** Array of power consumers that are registered to this power source. */

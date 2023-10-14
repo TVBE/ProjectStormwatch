@@ -22,7 +22,7 @@ class STORMWATCH_API UHeatPointManager : public UObject
 
 public:
 #if WITH_EDITORONLY_DATA
-	bool IsDebugVisualiationEnabled {true};
+	bool IsDebugVisualiationEnabled = true;
 #endif
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
@@ -31,7 +31,7 @@ public:
 private:
 	/** Pointer to the subsystem that owns this object. */
 	UPROPERTY()
-	UNightstalkerDirector* Director {nullptr};
+	UNightstalkerDirector* Director = nullptr;
 	
 	UPROPERTY()
 	TArray<AHeatPoint*> HeatPoints;
@@ -86,7 +86,7 @@ struct FHeatPointOverlapData
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	AHeatPoint* HeatPoint {nullptr};
+	AHeatPoint* HeatPoint = nullptr;
 
 	UPROPERTY()
 	FHeatEvent Event;

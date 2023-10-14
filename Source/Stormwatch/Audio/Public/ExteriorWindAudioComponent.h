@@ -25,37 +25,37 @@ class STORMWATCH_API UExteriorWindAudioComponent : public UActorComponent
 public:
 	/** The direction of the wind component, This will dictate in which direction the collision queries will be performed. Treat this value as the world rotation of this component. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (DisplayName = "Direction"))
-	FRotator WindDirection {FRotator(0, 0, 0)};
+	FRotator WindDirection = FRotator(0, 0, 0);
 
 	/** The trace length for the collision queries. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float CollisionTraceLength {3000};
+	float CollisionTraceLength = 3000;
 
 protected:
 	/** The number of frames to use for a single temporal collision query.
 	 *Currently we do not keep the framerate of the system in count, so keep this number below 10 to keep the query responsive. */
 	UPROPERTY(EditAnywhere, Category = "Temporal Geometry Query", Meta = (DisplayName = "Temporal Geomtry Query Length",
 		ClampMin = "0", ClampMax = "16", UIMin = "0", UIMax = "16"))
-	uint8 TemporalTraceLength {8};
+	uint8 TemporalTraceLength = 8;
 
 	/** Defines the angle increment per trace frame. */
 	UPROPERTY(EditAnywhere, Category = "Temporal Geometry Query",
 		Meta = (ClampMin = "0", ClampMax = "20", UIMin = "0", UIMax = "20"))
-	float TemporalTracePitchIncrement {10.0f};
+	float TemporalTracePitchIncrement = 10.0f;
 
 	/** Defines the pitch offset of the entire temporal geometry query. */
 	UPROPERTY(EditAnywhere, Category = "Temporal Geometry Query",
 		Meta = (ClampMin = "-45", ClampMax = "45", UIMin = "-45", UIMax = "45"))
-	float TemporalTracePitchOffset {-20.0f};
+	float TemporalTracePitchOffset = -20.0f;
 
 private:
 	/** When true, the component is currently performing a temporal terrain query. */
 	UPROPERTY()
-	bool IsQueryingGeometry {false};
+	bool IsQueryingGeometry = false;
 
 	/** When true, we assume another query is queued after the current temporal query. */
 	UPROPERTY()
-	bool IsGeometryQueryQueued {false};
+	bool IsGeometryQueryQueued = false;
 
 	/** Array of hit results from a temporal geometry query.  */
 	UPROPERTY()
@@ -63,7 +63,7 @@ private:
 
 	/** The current frame of the temporal geometry query. */
 	UPROPERTY()
-	uint8 CurrentTemporalTraceFrame {0};
+	uint8 CurrentTemporalTraceFrame = 0;
 
 	/** The location from a temporal query is performed. */
 	UPROPERTY()
@@ -94,7 +94,7 @@ private:
 #if WITH_EDITORONLY_DATA
 	/** If enabled, the component will visualize the traces. */
 	UPROPERTY(EditAnywhere, Category = "Editor", Meta = (DisplayName = "Enable Trace Visualisation"))
-	bool IsTraceVisEnabled {false};
+	bool IsTraceVisEnabled = false;
 #endif
 
 public:	

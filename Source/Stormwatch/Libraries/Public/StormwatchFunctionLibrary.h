@@ -7,7 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "StormwatchFunctionLibrary.generated.h"
 
-class APlayerCharacter;
+class ABHPlayerCharacter;
 UENUM(BlueprintType, Meta = (DisplayName = "Function Result"))
 enum class EFunctionResult : uint8
 {
@@ -53,14 +53,14 @@ public:
 	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Get Stormwatch Player Character",
 		CompactNodeTitle = "Player Character", Keywords = "Get, Stormwatch, Player, Character",
 		WorldContext = "WorldContextObject"))
-	static APlayerCharacter* GetStormwatchPlayerCharacter(const UObject* WorldContextObject);
+	static ABHPlayerCharacter* GetStormwatchPlayerCharacter(const UObject* WorldContextObject);
 
 	/** Returns the player character controller instance if it is already spawned in the world.
 	 *	This function performs no casts and can safely be called every frame without performance repercussions. */
 	UFUNCTION(BlueprintPure, Meta = (DisplayName = "Get Stormwatch Player Controller", CompactNodeTitle = "Player Controller",
 		Keywords = "Get, Stormwatch, Player, Character, Controller",
 		WorldContext = "WorldContextObject"))
-	static APlayerCharacterController* GetStormwatchPlayerCharacterController(const UObject* WorldContextObject);
+	static ABHPlayerCharacterController* GetStormwatchPlayerCharacterController(const UObject* WorldContextObject);
 
 	/** Returns the Nightstalker instance if it is already spawned in the world.
 	 *	This function performs no casts and can safely be called every frame without performance repercussions. */

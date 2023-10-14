@@ -8,7 +8,7 @@ void UMeshInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
 	
-	if (UStaticMeshComponent* MeshComponent {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
 		MeshComponent->SetMobility(EComponentMobility::Movable);
 		MeshComponent->SetSimulatePhysics(true);
@@ -25,11 +25,11 @@ void UMeshInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UStaticMeshComponent* MeshComponent {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
-		const float Mass {MeshComponent->GetMass()};
+		const float Mass = MeshComponent->GetMass();
 
-		constexpr float MinMass {12.0f};
+		constexpr float MinMass = 12.0f;
 		
 		if (Mass > MinMass)
 		{

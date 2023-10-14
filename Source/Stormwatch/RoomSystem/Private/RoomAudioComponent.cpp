@@ -25,14 +25,14 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 	if (!DataTable) { return nullptr; }
 
 	TArray<FName> RowNames {DataTable->GetRowNames()};
-	int Index {-1};
-	float MinDifference {FLT_MAX};
+	int Index = -1;
+	float MinDifference = FLT_MAX;
 	
-	for (int32 i {0}; i < RowNames.Num(); i++)
+	for (int32 i = 0; i < RowNames.Num(); i++)
 	{
-		const FName CurrentRowName {RowNames[i]};
+		const FName CurrentRowName = RowNames[i];
 
-		if (const FRoomReverbSettings* CurrentRow {DataTable->FindRow<FRoomReverbSettings>(CurrentRowName, FString(""))})
+		if (const FRoomReverbSettings* CurrentRow = DataTable->FindRow<FRoomReverbSettings>(CurrentRowName, FString(""));)
 		{
 			/** weights for each parameter. */
 			constexpr float VolumeWeight = 3.0f;
@@ -42,11 +42,11 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 			/** Value for volume normalization. */
 			constexpr float MaxVolume = 500.0f;
 			
-			const float VolumeDifference {FMath::Abs(FMath::Clamp(Volume, 0, MaxVolume) - CurrentRow->RoomVolume) / MaxVolume};
-			const float RatioDifference {FMath::Abs(ShapeRatio - CurrentRow->ShapeRatio)};
-			const float ReflectivityDifference {FMath::Abs(Reflectivity - CurrentRow->Reflectivity)};
+			const float VolumeDifference = FMath::Abs(FMath::Clamp(Volume, 0, MaxVolume) - CurrentRow->RoomVolume) / MaxVolume;
+			const float RatioDifference = FMath::Abs(ShapeRatio - CurrentRow->ShapeRatio);
+			const float ReflectivityDifference = FMath::Abs(Reflectivity - CurrentRow->Reflectivity);
 
-			const float TotalDifference {VolumeDifference * VolumeWeight + RatioDifference * RatioWeight + ReflectivityDifference * ReflectivityWeight};
+			const float TotalDifference = VolumeDifference * VolumeWeight + RatioDifference * RatioWeight + ReflectivityDifference * ReflectivityWeight;
 
 			if (TotalDifference < MinDifference)
 			{
@@ -58,8 +58,8 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 
 	if (Index >= 0 && Index < RowNames.Num())
 	{
-		const FName MatchedRowName {RowNames[Index]};
-		if (const FRoomReverbSettings* MatchedRow {DataTable->FindRow<FRoomReverbSettings>(MatchedRowName, FString(""))})
+		const FName MatchedRowName = RowNames[Index];
+		if (const FRoomReverbSettings* MatchedRow = DataTable->FindRow<FRoomReverbSettings>(MatchedRowName, FString(""));)
 		{
 			return MatchedRow->ImpulseResponseA;
 		}

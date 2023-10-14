@@ -13,7 +13,7 @@ void URoomComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ARoomVolume* RoomVolume {Cast<ARoomVolume>(GetOwner())})
+	if (ARoomVolume* RoomVolume = Cast<ARoomVolume>(GetOwner());)
 	{
 		RoomVolume->OnPawnEnter.AddDynamic(this, &URoomComponent::HandlePawnEnter);
 		RoomVolume->OnPawnLeave.AddDynamic(this, &URoomComponent::HandlePawnLeave);
@@ -34,7 +34,7 @@ void URoomComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (ARoomVolume* RoomVolume {Cast<ARoomVolume>(GetOwner())})
+	if (ARoomVolume* RoomVolume = Cast<ARoomVolume>(GetOwner());)
 	{
 		RoomVolume->OnPawnEnter.RemoveDynamic(this, &URoomComponent::HandlePawnEnter);
 		RoomVolume->OnPawnLeave.RemoveDynamic(this, &URoomComponent::HandlePawnLeave);

@@ -7,7 +7,7 @@
 #include "Nightstalker.h"
 #include "NightstalkerController.generated.h"
 
-class APlayerCharacter;
+class ABHPlayerCharacter;
 class ANightstalker;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPerceptionChangedDelegate, bool, IsPlayerDetected);
@@ -26,22 +26,22 @@ public:
 private:
 	/** Pointer to the ANightstalker instance that this controller is currently controlling. */
 	UPROPERTY()
-	ANightstalker* Nightstalker {nullptr};
+	ANightstalker* Nightstalker = nullptr;
 
 	/** Pointer to the player character. */
 	UPROPERTY(Transient)
-	APlayerCharacter* PlayerCharacter {nullptr};
+	ABHPlayerCharacter* PlayerCharacter = nullptr;
 
 	/** The tick rate for the behavior tick. */
 	UPROPERTY(EditAnywhere, Category = "Behavior")
-	float BehaviorTickRate {5.0f};
+	float BehaviorTickRate = 5.0f;
 
 	float BehaviorTickInterval;
 	
 	FTimerHandle BehaviorTickTimerHandle;
 
 	/** The current distance to the player. */
-	double DistanceToPlayerCharacter {0.0f};
+	double DistanceToPlayerCharacter = 0.0f;
 	
 	FVector LastRegisteredLocation;
 	
@@ -71,7 +71,7 @@ protected:
 	FORCEINLINE ANightstalker* GetNightstalker() { return Nightstalker; }
 	
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (CompactNodeTitle = "Player Character", Keywords = "Player Character Stormwatch"))
-	FORCEINLINE APlayerCharacter* GetPlayerCharacter() { return PlayerCharacter; }
+	FORCEINLINE ABHPlayerCharacter* GetPlayerCharacter() { return PlayerCharacter; }
 
 	UFUNCTION(BlueprintPure, Category = "Player Character", Meta = (DisplayName = "Absolute Distance To Player"))
 	FORCEINLINE double GetDistanceToPlayerCharacter() const { return DistanceToPlayerCharacter; }

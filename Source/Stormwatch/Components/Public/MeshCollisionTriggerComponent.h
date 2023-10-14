@@ -27,37 +27,37 @@ public:
 
 	/** The impulse force threshold for the collision event to be triggered. */
 	UPROPERTY(EditAnywhere, Meta = (Displayname = "Force Threshold", Units = "Newtons"))
-	float ImpulseForceThreshold {100.0f};
+	float ImpulseForceThreshold = 100.0f;
 
 	/** If true, We expect the collision to come from a certain direction. */
 	UPROPERTY(Meta = (InlineEditConditionToggle))
-	bool RestrictCollisionAngle {false};
+	bool RestrictCollisionAngle = false;
 	
 	/** The maximum allowed angle for the collision to be triggered. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Maximum Allowed Angle", Units = "Degrees",
 		EditCondition = "RestrictCollisionAngle"))
-	float MaxAllowedAngle {45.0f};
+	float MaxAllowedAngle = 45.0f;
 
 	/** If true, we enforce a max trigger count for this collision trigger component.
 	 *	If the limit is reached, OnCollisionTriggerLimitReached is broadcast.
 	 *	It is possible to reset the trigger limit afterwards. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Enable Trigger Limit"))
-	bool IsTriggerLimitEnabled {false};
+	bool IsTriggerLimitEnabled = false;
 
 private:
 	UPROPERTY()
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(EditAnywhere, Meta = (EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
-	int32 TriggerLimit {1};
+	int32 TriggerLimit = 1;
 
 	UPROPERTY()
-	int32 Triggers {0};
+	int32 Triggers = 0;
 
 	/** If true, the collision trigger component destroys itself after the trigger limit is reached. */
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Auto Destroy",
 		EditCondition = "IsTriggerLimitEnabled", EditConditionHides))
-	bool DestroyAfterTriggerLimitReached {true};
+	bool DestroyAfterTriggerLimitReached = true;
 
 public:	
 	UMeshCollisionTriggerComponent();

@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "StormwatchWorldSubystem.h"
-#include "PlayerCharacter.h"
-#include "PlayerCharacterController.h"
+#include "BHPlayerCharacter.h"
+#include "BHPlayerController.h"
 
 DEFINE_LOG_CATEGORY_CLASS(UStormwatchWorldSubsystem, LogStormwatchWorldSubsystem);
 
-void UStormwatchWorldSubsystem::RegisterPlayerCharacter(APlayerCharacter* Character)
+void UStormwatchWorldSubsystem::RegisterPlayerCharacter(ABHPlayerCharacter* Character)
 {
 	if (Character)
 	{
@@ -23,7 +23,7 @@ void UStormwatchWorldSubsystem::RegisterPlayerCharacter(APlayerCharacter* Charac
 	}
 }
 
-void UStormwatchWorldSubsystem::RegisterPlayerController(APlayerCharacterController* Controller)
+void UStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerCharacterController* Controller)
 {
 	if (Controller)
 	{
@@ -40,7 +40,7 @@ void UStormwatchWorldSubsystem::RegisterPlayerController(APlayerCharacterControl
 	}
 }
 
-void UStormwatchWorldSubsystem::UnregisterPlayerCharacter(APlayerCharacter* Character)
+void UStormwatchWorldSubsystem::UnregisterPlayerCharacter(ABHPlayerCharacter* Character)
 {
 	if (Character)
 	{
@@ -51,7 +51,7 @@ void UStormwatchWorldSubsystem::UnregisterPlayerCharacter(APlayerCharacter* Char
 	}
 }
 
-void UStormwatchWorldSubsystem::UnregisterPlayerController(APlayerCharacterController* Controller)
+void UStormwatchWorldSubsystem::UnregisterPlayerController(ABHPlayerCharacterController* Controller)
 {
 	if (Controller)
 	{

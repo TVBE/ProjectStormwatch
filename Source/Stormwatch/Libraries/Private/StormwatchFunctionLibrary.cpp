@@ -32,7 +32,7 @@ template <typename TInterface>
 UObject* FindInteractableObject(AActor* Actor)
 {
 	if (!Actor) { return nullptr; }
-	UObject* InteractableObject {nullptr};
+	UObject* InteractableObject = nullptr;
 	
 	/** Check if the actor implements the specified interface. */
 	if (Actor->GetClass()->ImplementsInterface(TInterface::StaticClass()))
@@ -41,7 +41,7 @@ UObject* FindInteractableObject(AActor* Actor)
 	}
 	
 	/** If the actor does not implement the specified interface, try to find a component that does.*/
-	else if (UActorComponent* InteractableComponent {FindInteractableComponent<TInterface>(Actor)})
+	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor);)
 	{
 		InteractableObject = InteractableComponent;
 	}
@@ -54,7 +54,7 @@ UObject* UStormwatchFunctionLibrary::SearchActorForObjectThatImplementsInterface
 {
 	if (!Actor) { return nullptr; }
 
-	UObject* InterfaceObject {nullptr};
+	UObject* InterfaceObject = nullptr;
 
 	switch(Interface)
 	{
@@ -90,12 +90,12 @@ void UStormwatchFunctionLibrary::CallFunctionOnActorUsingActorFunctionCaller(FAc
 	FunctionCaller.CallFunction();
 }
 
-APlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(const UObject* WorldContextObject)
+ABHPlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World {WorldContextObject->GetWorld()})
+	if (const UWorld* World = WorldContextObject->GetWorld();)
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem {World->GetSubsystem<UStormwatchWorldSubsystem>()})
+		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
 		{
 			return Subsystem->GetPlayerCharacter();
 		}
@@ -103,12 +103,12 @@ APlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(const
 	return nullptr;
 }
 
-APlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacterController(const UObject* WorldContextObject)
+ABHPlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacterController(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World {WorldContextObject->GetWorld()})
+	if (const UWorld* World = WorldContextObject->GetWorld();)
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem {World->GetSubsystem<UStormwatchWorldSubsystem>()})
+		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
 		{
 			return Subsystem->GetPlayerController();
 		}
@@ -119,9 +119,9 @@ APlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerChara
 ANightstalker* UStormwatchFunctionLibrary::GetStormwatchNightstalker(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World {WorldContextObject->GetWorld()})
+	if (const UWorld* World = WorldContextObject->GetWorld();)
 	{
-		if (const UNightstalkerDirector* Subsystem {World->GetSubsystem<UNightstalkerDirector>()})
+		if (const UNightstalkerDirector* Subsystem = World->GetSubsystem<UNightstalkerDirector>();)
 		{
 			return Subsystem->GetNightstalker();
 		}
@@ -137,19 +137,19 @@ void UStormwatchFunctionLibrary::PlayAuditoryEventAtLocation(const UObject* Worl
 		return;
 	}
 
-	const UWorld* World {WorldContextObject->GetWorld()};
+	const UWorld* World = WorldContextObject->GetWorld();
 	if (!World)
 	{
 		return;
 	}
 
-	const UNightstalkerDirector* NightstalkerDirector {World->GetSubsystem<UNightstalkerDirector>()};
+	const UNightstalkerDirector* NightstalkerDirector = World->GetSubsystem<UNightstalkerDirector>();
 	if (!NightstalkerDirector)
 	{
 		return;
 	}
 
-	USensoryEventManager* SensoryEventManager {NightstalkerDirector->GetSensoryEventManager()};
+	USensoryEventManager* SensoryEventManager = NightstalkerDirector->GetSensoryEventManager();
 	if (!SensoryEventManager)
 	{
 		return;

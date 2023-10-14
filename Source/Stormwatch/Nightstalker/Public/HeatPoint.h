@@ -25,14 +25,14 @@ private:
 
 	/** The lifetime of the heat point. This describes how long the heat point has been active. */
 	UPROPERTY(BlueprintGetter = GetLifetime)
-	int Lifetime {0};
+	int Lifetime = 0;
 
 	/** The expiration time of the heat point. This describes how long the heat point will remain active before expiring. */
 	UPROPERTY(BlueprintGetter = GetExpirationTime)
-	int ExpirationTime {60};
+	int ExpirationTime = 60;
 
 #if WITH_EDITORONLY_DATA
-	bool bDebugVisEnabled {false};
+	bool bDebugVisEnabled = false;
 	
 	UPROPERTY(Transient)
 	UStaticMeshComponent* DebugSphereMesh;

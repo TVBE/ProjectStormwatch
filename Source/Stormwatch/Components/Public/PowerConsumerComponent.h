@@ -28,7 +28,7 @@ public:
 private:
 	/** If true, this object is powered. */
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetIsPowered)
-	bool IsPowered {false};
+	bool IsPowered = false;
 
 public:	
 	UPowerConsumerComponent();

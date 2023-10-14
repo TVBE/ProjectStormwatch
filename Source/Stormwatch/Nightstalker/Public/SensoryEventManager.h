@@ -24,14 +24,14 @@ public:
 private:
 	/** Pointer to the subsystem that owns this object. */
 	UPROPERTY()
-	UNightstalkerDirector* Director {nullptr};
+	UNightstalkerDirector* Director = nullptr;
 	
 	/** Array of auditory events that are waiting to be processed. */
 	UPROPERTY()
 	TArray<FAuditoryEvent> AuditoryEventQueue;
 
 	/** The update interval for the auditory even processor. */
-	float AuditoryEventProcessorUpdateInterval {1.0f};
+	float AuditoryEventProcessorUpdateInterval = 1.0f;
 
 	/** Timer handle for the auditory event processor. */
 	FTimerHandle AuditoryEventProcessorTimerHandle;

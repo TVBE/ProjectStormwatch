@@ -85,27 +85,27 @@ TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector
 {
 	TArray<float> TraceLengths;
 	
-	APawn* PlayerPawn {GetWorld()->GetFirstPlayerController()->GetPawn()};
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
-	for (int i {0}; i < GeometryTraceVectors.Num(); i++)
+	for (int i = 0; i < GeometryTraceVectors.Num(); i++)
 	{
-		const FVector TraceStart {GetOwner()->GetActorLocation()};
-		const FVector TraceEnd {GetOwner()->GetActorLocation() + GeometryTraceVectors[i]}; 
+		const FVector TraceStart = GetOwner()->GetActorLocation();
+		const FVector TraceEnd = GetOwner()->GetActorLocation() + GeometryTraceVectors[i]; 
 
 		FHitResult HitResult;
-		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
+		FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
 		Params.bTraceComplex = false;
 		Params.bReturnPhysicalMaterial = false;
 		Params.AddIgnoredActor(PlayerPawn); 
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
 		{
-			const float TraceLength {static_cast<float>((HitResult.ImpactPoint - TraceStart).Size())};
+			const float TraceLength = static_cast<float>((HitResult.ImpactPoint - TraceStart).Size());
 			TraceLengths.Add(TraceLength);
 		}
 		else
 		{
-			const float TraceLength {static_cast<float>((TraceEnd - TraceStart).Size())};
+			const float TraceLength = static_cast<float>((TraceEnd - TraceStart).Size());
 			TraceLengths.Add(TraceLength);
 		}
 	}
@@ -116,27 +116,27 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 {
 	TArray<float> TraceLengths;
 
-	APawn* PlayerPawn {GetWorld()->GetFirstPlayerController()->GetPawn()};
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
-	for (int i {0}; i < OcclusionTraceStartVectors.Num(); i++)
+	for (int i = 0; i < OcclusionTraceStartVectors.Num(); i++)
 	{
-		const FVector TraceStart {GetOwner()->GetActorLocation() + OcclusionTraceStartVectors[i]};
-		const FVector TraceEnd {GetOwner()->GetActorLocation() + OcclusionTraceEndVectors[i]};
+		const FVector TraceStart = GetOwner()->GetActorLocation() + OcclusionTraceStartVectors[i];
+		const FVector TraceEnd = GetOwner()->GetActorLocation() + OcclusionTraceEndVectors[i];
 
 		FHitResult HitResult;
-		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
+		FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
 		Params.bTraceComplex = false;
 		Params.bReturnPhysicalMaterial = false;
 		Params.AddIgnoredActor(PlayerPawn); 
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params))
 		{
-			const float TraceLength {static_cast<float>((HitResult.ImpactPoint - TraceStart).Size())};
+			const float TraceLength = static_cast<float>((HitResult.ImpactPoint - TraceStart).Size());
 			TraceLengths.Add(TraceLength);
 		}
 		else
 		{
-			const float TraceLength {static_cast<float>((TraceEnd - TraceStart).Size())};
+			const float TraceLength = static_cast<float>((TraceEnd - TraceStart).Size());
 			TraceLengths.Add(TraceLength);
 		}
 #if WITH_EDITOR
@@ -152,7 +152,7 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 
 float UExteriorWindAudioComponent::GetAverageOfFloatArray(const TArray<float>& Array) const
 {
-	float Sum {0.0f};
+	float Sum = 0.0f;
 	for(const float Value : Array)
 	{
 		Sum += Value;
@@ -165,7 +165,7 @@ float UExteriorWindAudioComponent::GetAverageTraceLengthInCardinalDirection(cons
 {
 	TArray<float> TraceLengths;
 
-	int StartIndex {0};
+	int StartIndex = 0;
 	switch (Direction)
 	{
 	case ETraceCardinalDirection::North:
@@ -182,7 +182,7 @@ float UExteriorWindAudioComponent::GetAverageTraceLengthInCardinalDirection(cons
 		break;
 	}
 
-	for (int32 i {StartIndex}; i < StartIndex + 16; ++i)
+	for (int32 i = StartIndex; i < StartIndex + 16; ++i)
 	{
 		const FHitResult& HitResult {GeometryQueryResults[i]};
 		if (HitResult.bBlockingHit)
@@ -233,16 +233,16 @@ void UExteriorWindAudioComponent::UpdateGeometryQuery()
 		return;
 	}
 
-	const int StartIndex {CurrentTemporalTraceFrame * 8};
-	const int EndIndex {StartIndex + 8};
+	const int StartIndex = CurrentTemporalTraceFrame * 8;
+	const int EndIndex = StartIndex + 8;
 
-	for (int i {StartIndex}; i <= EndIndex; ++i)
+	for (int i = StartIndex; i <= EndIndex; ++i)
 	{
-		const FVector TraceStart {TemporalQueryOrigin};
-		const FVector TraceEnd {TemporalQueryOrigin + GeometryTraceVectors[i]}; 
+		const FVector TraceStart = TemporalQueryOrigin;
+		const FVector TraceEnd = TemporalQueryOrigin + GeometryTraceVectors[i]; 
 
 		FHitResult& HitResult {GeometryQueryResults[i]};
-		FCollisionQueryParams Params {FCollisionQueryParams::DefaultQueryParam};
+		FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
 		Params.bTraceComplex = false;
 		Params.bReturnPhysicalMaterial = false;
 		GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params);
@@ -264,39 +264,39 @@ void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& 
 {
 	TArray<TPair<FVector, double>> AzimuthVectors;
     
-	const float AngleIncrement {2.f * PI / NumPoints};
+	const float AngleIncrement = 2.f * PI / NumPoints;
 
 	TArray<FVector> SingleFrameTraceVectors;
     
-	for (int i {0}; i < NumPoints; i++)
+	for (int i = 0; i < NumPoints; i++)
 	{
-		const float Angle {i * AngleIncrement};
-		const float X {Radius * FMath::Cos(Angle)};
-		const float Y {Radius * FMath::Sin(Angle)};
+		const float Angle = i * AngleIncrement;
+		const float X = Radius * FMath::Cos(Angle);
+		const float Y = Radius * FMath::Sin(Angle);
 		SingleFrameTraceVectors.Add(FVector(X, Y, 0)) ;
 	}
     
-	float TargetPitchAngle {0.0f};
+	float TargetPitchAngle = 0.0f;
     
     
-	for (int i {0}; i < TemporalFrames; i++)
+	for (int i = 0; i < TemporalFrames; i++)
 	{
-		constexpr float YawIncrement {22.5f};
+		constexpr float YawIncrement = 22.5f;
 		FRotator YawRotation(0, i * YawIncrement, 0);
 		FQuat YawQuat(YawRotation);
         
 		for (const FVector& TraceVector : SingleFrameTraceVectors)
 		{
-			const FVector RotatedVector {YawQuat.RotateVector(TraceVector)};
+			const FVector RotatedVector = YawQuat.RotateVector(TraceVector);
             
-			const double Azimuth {FMath::Atan2(RotatedVector.Y, RotatedVector.X)};
-			double Elevation {FMath::Acos(RotatedVector.Z / Radius)};
+			const double Azimuth = FMath::Atan2(RotatedVector.Y, RotatedVector.X);
+			double Elevation = FMath::Acos(RotatedVector.Z / Radius);
 
 			Elevation += FMath::DegreesToRadians(-TargetPitchAngle + PitchOffset);
 
-			const double X {Radius * FMath::Sin(Elevation) * FMath::Cos(Azimuth)};
-			const double Y {Radius * FMath::Sin(Elevation) * FMath::Sin(Azimuth)};
-			const double Z {Radius * FMath::Cos(Elevation)};
+			const double X = Radius * FMath::Sin(Elevation) * FMath::Cos(Azimuth);
+			const double Y = Radius * FMath::Sin(Elevation) * FMath::Sin(Azimuth);
+			const double Z = Radius * FMath::Cos(Elevation);
 
 			AzimuthVectors.Add(TPair<FVector, double>{FVector(X, Y, Z), Azimuth});
 		}
@@ -319,7 +319,7 @@ void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<TPair<FVector, do
 
 	for (const TPair<FVector, double>& TraceVector : TraceVectors)
 	{
-		double Yaw {FMath::RadiansToDegrees(TraceVector.Value)};
+		double Yaw = FMath::RadiansToDegrees(TraceVector.Value);
 
 		if (Yaw < 0.0f)
 		{
@@ -374,14 +374,14 @@ void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>&
 	/** Populate Array A. */
 	for (const FVector2D Offset : Offsets)
 	{
-		const FVector Vector {Rotation.RotateVector(FVector(0, Offset.X * Spacing,Offset.Y * Spacing))};
+		const FVector Vector = Rotation.RotateVector(FVector(0, Offset.X * Spacing,Offset.Y * Spacing));
 		ArrayA.Add(Vector);
 	}
 
 	/** Populate Array B. */
 	for (const FVector TraceStart : ArrayA)
 	{
-		const FVector Vector {TraceStart - Rotation.RotateVector(FVector(TraceLength, 0, 0))};
+		const FVector Vector = TraceStart - Rotation.RotateVector(FVector(TraceLength, 0, 0));
 		ArrayB.Add(Vector);
 	}
 }

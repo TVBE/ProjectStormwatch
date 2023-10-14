@@ -2,7 +2,7 @@
 
 #include "NightstalkerController.h"
 #include "Nightstalker.h"
-#include "PlayerCharacter.h"
+#include "BHPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_CLASS(ANightstalkerController, LogNightstalkerController);
@@ -18,8 +18,8 @@ void ANightstalkerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ACharacter* ControlledCharacter {UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)};
-	PlayerCharacter = Cast<APlayerCharacter>(ControlledCharacter);
+	ACharacter* ControlledCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	PlayerCharacter = Cast<ABHPlayerCharacter>(ControlledCharacter);
 
 	if (PlayerCharacter)
 	{
@@ -61,7 +61,7 @@ void ANightstalkerController::Tick(float DeltaSeconds)
 	
 	DistanceToPlayerCharacter = FVector::Dist(Nightstalker->GetActorLocation(), PlayerCharacter->GetActorLocation());
 	
-	const FVector CurrentLocation {GetPawn()->GetActorLocation()};
+	const FVector CurrentLocation = GetPawn()->GetActorLocation();
 	
 	if (FVector::DistSquared(LastRegisteredLocation, CurrentLocation) > 2500.f)
 	{

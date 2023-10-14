@@ -79,7 +79,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
 		return;
 	}
 	
-    UActorComponent* NewComponent {nullptr};
+    UActorComponent* NewComponent = nullptr;
     if (!Actor)
     {
         UE_LOG(LogReacousticSubsystem, Warning, TEXT("AddComponentToActor was called without passing an actor pointer."))
@@ -87,7 +87,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
     }
     if (Actor->GetComponentByClass(ComponentClass))
     {
-        const FString ActorName{Actor->GetActorNameOrLabel()};
+        const FString ActorName = Actor->GetActorNameOrLabel();
         UE_LOG(LogReacousticSubsystem, Log, TEXT("Skipped adding a component to %s because this actor already has a component of the same class attached to it."), *ActorName);
     }
     else
@@ -96,7 +96,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
     }
     if(NewComponent)
     {
-        if(UReacousticComponent* ReacousticComponent {Cast<UReacousticComponent>(NewComponent)})
+        if(UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(NewComponent);)
         {
             ReacousticComponent->TransferData(ReacousticSoundDataAsset, ReacousticSoundDataRefMap, MeshSoundData);
             ReacousticComponent->RegisterComponent();
@@ -108,7 +108,7 @@ TArray<AActor*> UReacousticSubsystem::GetCompatibleActorsOfClass(UClass* ClassTy
 {
 
     TArray<AActor*> Array{};
-    const UWorld* World{GetWorld()};
+    const UWorld* World = GetWorld();
     if (!World || !ClassType)
     {
         UE_LOG(LogReacousticSubsystem, Log, TEXT("Error world or class is invalid"));
@@ -116,8 +116,8 @@ TArray<AActor*> UReacousticSubsystem::GetCompatibleActorsOfClass(UClass* ClassTy
     }
     TArray<AActor*> FoundActors{};
     UGameplayStatics::GetAllActorsOfClass(World, ClassType, FoundActors);
-    const int TotalCount{FoundActors.Num()};
-    int CompatibleCount{0};
+    const int TotalCount = FoundActors.Num();
+    int CompatibleCount = 0;
     for (AActor* Actor : FoundActors)
     {
         if(IsReacousticCompatible(Actor))
@@ -126,7 +126,7 @@ TArray<AActor*> UReacousticSubsystem::GetCompatibleActorsOfClass(UClass* ClassTy
             CompatibleCount++;
         }
     }
-    const FString Name{ClassType->GetName()};
+    const FString Name = ClassType->GetName();
     UE_LOG(LogReacousticSubsystem, Log, TEXT("Found %d actors of type %s out of which %d can be used by the Reacoustic system."), TotalCount, *Name, CompatibleCount);
     return Array;
 }
@@ -163,9 +163,9 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 				continue;
 			}
 
-			if (const UStaticMeshComponent* StaticMeshComponent {Cast<UStaticMeshComponent>(ActorComponent)})
+			if (const UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent);)
 			{
-				const FReacousticSoundData MeshSoundData {GetMeshSoundData(StaticMeshComponent)};
+				const FReacousticSoundData MeshSoundData = GetMeshSoundData(StaticMeshComponent);
 				AddBPReacousticComponentToActor(Actor, ComponentClass, MeshSoundData);
 			}
 		}
@@ -181,8 +181,8 @@ FReacousticSoundData UReacousticSubsystem::GetMeshSoundData(const UStaticMeshCom
 
 	for (const auto& [Mesh, SoundDataRef] : ReacousticSoundDataRefMap->MeshMapEntries)
 	{
-		UStaticMesh* MeshPtr {Mesh};
-		const int32 SoundDataRefValue {SoundDataRef};
+		UStaticMesh* MeshPtr = Mesh;
+		const int32 SoundDataRefValue = SoundDataRef;
 
 		if (StaticMeshComponent->GetStaticMesh() == MeshPtr)
 		{

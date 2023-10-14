@@ -16,16 +16,16 @@ UReacousticComponent::UReacousticComponent()
 void UReacousticComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if(const UWorld* World {GetWorld()})
+	if(const UWorld* World = GetWorld();)
 	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
 		{
 			Subsystem->RegisterComponent(this);
 		}
 	}
 	else
 	{
-		const FString ComponentName {this->GetName()};
+		const FString ComponentName = this->GetName();
 		UE_LOG(LogReacousticComponent, Warning, TEXT("%s was unable to register itself to the Reacoustic subsystem."), *ComponentName);
 	}
 
@@ -51,7 +51,7 @@ void UReacousticComponent::BeginPlay()
 			}
 			if(!MeshComponent)
 			{
-				const FString OwnerName {this->GetOwner()->GetName()};
+				const FString OwnerName = this->GetOwner()->GetName();
 				UE_LOG(LogReacousticComponent, Warning, TEXT("%s was unable to find a static mesh component with physics simulation enabled in its owner. "), *OwnerName);
 			}
 			Initialize();
@@ -72,9 +72,9 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-	if(const UWorld* World {GetWorld()})
+	if(const UWorld* World = GetWorld();)
 	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
 		{
 			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
 		}
@@ -103,10 +103,10 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 {
 	if (!HitComponent || !HitComponent->IsSimulatingPhysics() || !OtherActor) {return 0.0f; }
 
-	const FVector RelativeVelocity {HitComponent->GetComponentVelocity() - OtherActor->GetVelocity()};
+	const FVector RelativeVelocity = HitComponent->GetComponentVelocity() - OtherActor->GetVelocity();
 	//Rotation is currently not used since it results in unpredicable sound.
 	const float RotationalSpeed = FMath::Abs(HitComponent->GetMass()*HitComponent->GetPhysicsAngularVelocityInRadians().Length());
-	const FVector ScaledImpulse {(NormalImpulse + RelativeVelocity)};
+	const FVector ScaledImpulse = (NormalImpulse + RelativeVelocity);
 	const float D = FMath::Abs(FVector::DotProduct(RelativeVelocity.GetSafeNormal(), NormalImpulse.GetSafeNormal()));
 	return  RelativeVelocity.Length()*D;
 }
@@ -163,7 +163,7 @@ void UReacousticComponent::TransferData(UReacousticSoundDataAsset* SoundDataArra
 
 inline static float GetArraySum(const TArray<float>& Array)
 {
-	float Sum {0.0};
+	float Sum = 0.0;
 	for (const float Element : Array)
 	{
 		Sum += Element;
@@ -175,7 +175,7 @@ inline static float GetArraySum(const TArray<float>& Array)
 //TODO: i'm passing a lot of values that i might not need. So i'll delete them later.
 bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	bool HitIsValid{false};
+	bool HitIsValid = false;
 	ImpactForce = CalculateImpactValue(NormalImpulse,HitComp,OtherActor);
 	/** We perform a lot of filtering to prevent hitsounds from playing in unwanted situations.*/
 	if( ImpactForce > 30)
@@ -247,7 +247,7 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 	{
 		/** If this element is in LatestMatchingElements, skip to the next iteration */
 		/** Iterate throug the recorded sound timestamps.*/
-		bool next{false};
+		bool next = false;
 		for (int32 j = 0; j < LatestMatchingElements.Num(); j++)
 		{
 			float LatestMatchingElement = LatestMatchingElements[j];
@@ -288,9 +288,9 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if(const UWorld* World {GetWorld()})
+	if(const UWorld* World = GetWorld();)
 	{
-		if(UReacousticSubsystem* Subsystem {World->GetSubsystem<UReacousticSubsystem>()})
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
 		{
 			Subsystem->UnregisterComponent(this);
 		}

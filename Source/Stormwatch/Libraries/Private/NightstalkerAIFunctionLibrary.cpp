@@ -12,14 +12,14 @@ inline static const TArray<FVector2D> OcclusionTraceVectors = {
 bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, const FVector& Origin,
 	const FVector& PointB, const bool DrawDebugLines, const float DebugLineDuration)
 {
-	UWorld* World {WorldContextObject->GetWorld()};
+	UWorld* World = WorldContextObject->GetWorld();
 	if (!World)
 	{
 		return false;
 	}
 
-	FVector Direction { (PointB - Origin).GetSafeNormal() };
-	FRotator Rotation { Direction.Rotation() };
+	FVector Direction =  (PointB - Origin).GetSafeNormal() ;
+	FRotator Rotation =  Direction.Rotation() ;
 
 	FCollisionQueryParams TraceParams;
 
@@ -29,7 +29,7 @@ bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, con
 		FVector Start { Rotation.RotateVector(FVector{0, TraceVector.X * 0.25, TraceVector.Y * 0.25}) + Origin };
 		FVector End { Rotation.RotateVector(FVector{0, TraceVector.X, TraceVector.Y}) + PointB };
 		
-		bool IsHit { World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams) };
+		bool IsHit =  World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams) ;
 		if (!IsHit)
 		{
 			if (DrawDebugLines)
@@ -50,7 +50,7 @@ bool UNightstalkerAIFunctionLibrary::IsOccluded(UObject* WorldContextObject, con
 bool UNightstalkerAIFunctionLibrary::IsOccludedFast(UObject* WorldContextObject, const FVector& LocationA,
 	const FVector& LocationB, const bool DrawDebugLines, const float DebugLineDuration)
 {
-	UWorld* World {WorldContextObject->GetWorld()};
+	UWorld* World = WorldContextObject->GetWorld();
 	if (!World)
 	{
 		return false;
@@ -64,7 +64,7 @@ bool UNightstalkerAIFunctionLibrary::IsOccludedFast(UObject* WorldContextObject,
 	FHitResult HitResult;
 	for (int i = 0; i < 2; ++i)
 	{
-		bool IsHit {World->LineTraceSingleByChannel(HitResult, SourceTracePoints[i], TargetTracePoints[i], ECC_Visibility, TraceParams)};
+		bool IsHit = World->LineTraceSingleByChannel(HitResult, SourceTracePoints[i], TargetTracePoints[i], ECC_Visibility, TraceParams);
 		if (DrawDebugLines)
 		{
 			DrawDebugLine(World, SourceTracePoints[i], TargetTracePoints[i], IsHit ? FColor::Red : FColor::Green, false, DebugLineDuration);
@@ -79,9 +79,9 @@ bool UNightstalkerAIFunctionLibrary::IsOccludedFast(UObject* WorldContextObject,
 
 float UNightstalkerAIFunctionLibrary::GetViewAngle(const FRotator& Rotation, const FVector& Origin, const FVector& Target, bool IgnorePitch)
 {
-	FVector DirectionToTarget {(Target - Origin).GetSafeNormal()};
+	FVector DirectionToTarget = (Target - Origin).GetSafeNormal();
 
-	FVector ForwardVector {Rotation.Vector()};
+	FVector ForwardVector = Rotation.Vector();
 
 	if (IgnorePitch)
 	{
@@ -91,7 +91,7 @@ float UNightstalkerAIFunctionLibrary::GetViewAngle(const FRotator& Rotation, con
 		ForwardVector = ForwardVector.GetSafeNormal();
 	}
 	
-	float Angle {static_cast<float>(FMath::Acos(FVector::DotProduct(DirectionToTarget, ForwardVector)) * (180.0f / PI))};
+	float Angle = static_cast<float>(FMath::Acos(FVector::DotProduct(DirectionToTarget, ForwardVector)) * (180.0f / PI));
 
 	return Angle;
 }

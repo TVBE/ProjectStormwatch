@@ -13,7 +13,7 @@ void UMeshCollisionTriggerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UStaticMeshComponent* Component {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
 		Component->OnComponentHit.AddDynamic(this, &UMeshCollisionTriggerComponent::OnStaticMeshComponentHit);
 		Component->SetGenerateOverlapEvents(false);
@@ -30,11 +30,11 @@ void UMeshCollisionTriggerComponent::OnStaticMeshComponentHit(UPrimitiveComponen
 		return;
 	}
 
-	const FVector HitDirection {Hit.ImpactNormal.GetSafeNormal()};
-	const float Angle {static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(HitDirection, -GetComponentRotation().Vector()))))};
+	const FVector HitDirection = Hit.ImpactNormal.GetSafeNormal();
+	const float Angle = static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(HitDirection, -GetComponentRotation().Vector()))));
 
-	const FVector OtherVelocity {OtherComp->GetComponentVelocity()};
-	const FVector RelativeVelocity {OtherVelocity - MeshComponent->GetComponentVelocity()};
+	const FVector OtherVelocity = OtherComp->GetComponentVelocity();
+	const FVector RelativeVelocity = OtherVelocity - MeshComponent->GetComponentVelocity();
 
 	if (NormalImpulse.Size() >= ImpulseForceThreshold && (!RestrictCollisionAngle || Angle <= MaxAllowedAngle))
 	{
@@ -58,7 +58,7 @@ void UMeshCollisionTriggerComponent::EndPlay(const EEndPlayReason::Type EndPlayR
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (UStaticMeshComponent* Component {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
 		Component->OnComponentHit.RemoveDynamic(this, &UMeshCollisionTriggerComponent::OnStaticMeshComponentHit);
 		

@@ -1,20 +1,20 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "PlayerCharacterLibrary.h"
-#include "StepData.h"
+#include "BHPlayerCharacterLibrary.h"
+#include "BHStepData.h"
 
-FStepData UPlayerCharacterLibrary::GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
+FBHStepData UPlayerCharacterLibrary::GetStepData(const UObject* WorldContextObject, const AActor* Actor, const float TraceLength)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World)
 	{
-		return FStepData();
+		return FBHStepData();
 	}
 	
-	FStepData FootstepData {FStepData()};
+	FBHStepData FootstepData = FBHStepData();
 	if (Actor)
 	{
-		FVector Location {Actor->GetActorLocation()};
+		FVector Location = Actor->GetActorLocation();
 		FootstepData.Location = Location;
 		FootstepData.Velocity = Actor->GetVelocity().Length();
 		

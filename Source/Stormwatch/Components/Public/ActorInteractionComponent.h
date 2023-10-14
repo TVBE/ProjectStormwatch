@@ -15,7 +15,7 @@ class UActorInteractionComponent : public UActorComponent, public IUsableObject
 private:
 	/** The Offset of the interaction widget. */
 	UPROPERTY(EditInstanceOnly, Meta = (DisplayName = "Widget Offset"))
-	FVector InteractionWidgetOffset {FVector()};
+	FVector InteractionWidgetOffset = FVector();
 
 public:	
 	UActorInteractionComponent();

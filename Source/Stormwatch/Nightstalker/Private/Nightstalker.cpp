@@ -24,9 +24,9 @@ void ANightstalker::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
-		if (UNightstalkerDirector* Director {World->GetSubsystem<UNightstalkerDirector>()})
+		if (UNightstalkerDirector* Director = World->GetSubsystem<UNightstalkerDirector>();)
 		{
 			Director->RegisterNightstalker(this);
 		}
@@ -35,9 +35,9 @@ void ANightstalker::BeginPlay()
 
 void ANightstalker::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
-		if (UNightstalkerDirector* Director {World->GetSubsystem<UNightstalkerDirector>()})
+		if (UNightstalkerDirector* Director = World->GetSubsystem<UNightstalkerDirector>();)
 		{
 			Director->UnregisterNightstalker(this);
 		}

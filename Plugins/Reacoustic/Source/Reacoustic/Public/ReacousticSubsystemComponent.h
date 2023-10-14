@@ -14,7 +14,7 @@ class UReacousticSubsystemComponent : public UObject
 	GENERATED_BODY()
 
 private:
-	bool IsInitialized {false};
+	bool IsInitialized = false;
 	
 protected:
 	UPROPERTY()

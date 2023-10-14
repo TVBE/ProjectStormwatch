@@ -21,7 +21,7 @@ private:
 	UNightstalkerMovementComponent* NightstalkerMovementComponent;
 	
 	UPROPERTY(BlueprintGetter = GetIsPhantomModeEnabled)
-	bool IsPhantomModeEnabled {false};
+	bool IsPhantomModeEnabled = false;
 
 public:
 	ANightstalker();
@@ -58,13 +58,13 @@ struct FNightstalkerMovementAttributes
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float MaxWalkSpeed {200.0f};
+	float MaxWalkSpeed = 200.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float Acceleration {150.0f};
+	float Acceleration = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float RotationSpeed {180.0f};
+	float RotationSpeed = 180.0f;
 };
 
 

@@ -3,7 +3,7 @@
 #include "ProximitySensor.h"
 
 #include "Nightstalker.h"
-#include "PlayerCharacter.h"
+#include "BHPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
@@ -40,7 +40,7 @@ void AProximitySensor::BeginPlay()
 void AProximitySensor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA(APlayerCharacter::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
+	if (OtherActor->IsA(ABHPlayerCharacter::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
 	{
 		return;
 	}
@@ -105,7 +105,7 @@ void AProximitySensor::Poll()
 
 		SetState(ESensorState::Detecting);
 
-		if (const UWorld* World {GetWorld()})
+		if (const UWorld* World = GetWorld();)
 		{
 			if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 			{
@@ -125,7 +125,7 @@ void AProximitySensor::Poll()
 			
 			if (IsManualResetRequired)
 			{
-				if (const UWorld* World {GetWorld()})
+				if (const UWorld* World = GetWorld();)
 				{
 					if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 					{
@@ -143,7 +143,7 @@ void AProximitySensor::Poll()
 		{
 			SetState(ESensorState::Alerted);
 			
-			if (const UWorld* World {GetWorld()})
+			if (const UWorld* World = GetWorld();)
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 				{
@@ -159,7 +159,7 @@ void AProximitySensor::Poll()
 bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 {
 	FVector StartLocation = GetActorLocation() - FVector(0, 0, 10);
-	FVector ActorLocation {Actor->GetActorLocation()};
+	FVector ActorLocation = Actor->GetActorLocation();
 	TArray<FVector> EndLocations
 	{
 		ActorLocation,
@@ -171,7 +171,7 @@ bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(Actor);
 
-	uint8 BlockedTraces {0};
+	uint8 BlockedTraces = 0;
 
 	for (const FVector& EndLocation : EndLocations)
 	{
@@ -179,7 +179,7 @@ bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 
 		if (bool IsHit {GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams)})
 		{
-			AActor* HitActor {HitResult.GetActor()};
+			AActor* HitActor = HitResult.GetActor();
 
 			if (HitActor != Actor)
 			{
@@ -211,7 +211,7 @@ void AProximitySensor::StartCooldown()
 
 void AProximitySensor::StopCooldown()
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 		{
@@ -252,7 +252,7 @@ void AProximitySensor::ResetSensor()
 	IsTriggered = false;
 	DetectionLevel = 0.0f;
 
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 		{
@@ -302,7 +302,7 @@ void AProximitySensor::DeactivateSensor()
 			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
 		}
 
-		if (const UWorld* World {GetWorld()})
+		if (const UWorld* World = GetWorld();)
 		{
 			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 			{
@@ -334,7 +334,7 @@ void AProximitySensor::BreakSensor()
 			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
 		}
 
-		if (const UWorld* World {GetWorld()})
+		if (const UWorld* World = GetWorld();)
 		{
 			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 			{
@@ -361,7 +361,7 @@ void AProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 	{
 		TSet<EBProximitySensorIgnoreParameter> UniqueIgnoreParameters;
 
-		for (int Index {0}; Index < IgnoreParameters.Num(); ++Index)
+		for (int Index = 0; Index < IgnoreParameters.Num(); ++Index)
 		{
 			if (!UniqueIgnoreParameters.Contains(IgnoreParameters[Index]))
 			{

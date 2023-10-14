@@ -56,25 +56,25 @@ struct FLinkedButton
 
 	/** If true, an action should be triggered on the button when the button is pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Do Action When Pressed", InlineEditConditionToggle))
-	bool DoActionOnPress {false};
+	bool DoActionOnPress = false;
 
 	/** The action that should be performed on the linked actor when the button is pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Action When Pressed",
 		EditCondition = "DoActionOnPress"))
-	ELinkedButtonAction PressedAction {ELinkedButtonAction::Press};
+	ELinkedButtonAction PressedAction = ELinkedButtonAction::Press;
 
 	/** If true, an action should be triggered on the button when the button is released. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Do Action When Released", InlineEditConditionToggle))
-	bool DoActionOnRelease {false};
+	bool DoActionOnRelease = false;
 
 	/** The action that should be performed on the linked actor when the button is released. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Action When Released",
 		EditCondition = "DoActionOnRelease"))
-	ELinkedButtonAction ReleasedAction {ELinkedButtonAction::Release};
+	ELinkedButtonAction ReleasedAction = ELinkedButtonAction::Release;
 
 	/** When true, the linked actor will not perform its gameplay action when triggered by this button. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Safe Link"))
-	bool IsActionLinked {true};
+	bool IsActionLinked = true;
 
 	FLinkedButton()
 	{
@@ -117,27 +117,27 @@ protected:
 	// GENERAL
 	/** The trigger type of the button. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (DisplayName = "Type"))
-	EButtonTriggerType TriggerType {EButtonTriggerType::SinglePress};
+	EButtonTriggerType TriggerType = EButtonTriggerType::SinglePress;
 	
 	/** The cooldown time between presses. When the button is in cooldown, the button cannot be pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button", Meta = (Units = "Seconds"))
-	float CooldownTime {1.0f};
+	float CooldownTime = 1.0f;
 
 	/** When true, the button is currently pressed. This does not mean that the player is currently interacting with the button,
 	 *	just that the button is in it's 'pressed-down' state. */
 	UPROPERTY(BlueprintReadWrite)
-	bool IsPressed {false};
+	bool IsPressed = false;
 	
 	// PHYSICS
 	/** If true, the button can be triggered by colliding physics objects. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Collision Trigger",
 		Meta = (DisplayName = "Can Be Triggered By Collisions"))
-	bool CanTriggerByCollision {true};
+	bool CanTriggerByCollision = true;
 
 	/** The force threshold required to trigger the button. */ 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Collision Trigger",
 		Meta = (DisplayName = "Collision Trigger Threshold", Units = "Newtons", EditCondition = "CanTriggerByCollision"))
-	float CollisionTriggerThreshold {100.0f};
+	float CollisionTriggerThreshold = 100.0f;
 	
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
@@ -146,7 +146,7 @@ protected:
 	// POWER
 	/** If true, the button requires power to operate and can be connected to a power source. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power")
-	bool RequiresPower {false};
+	bool RequiresPower = false;
 
 	/** Soft object pointer to the power source that this button is connected to. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Button|Power", Meta = (EditCondition = "RequiresPower"))
@@ -156,19 +156,19 @@ protected:
 	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power",
 		Meta = (EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle"))
-	bool CanBeToggledWithoutPower {false};
+	bool CanBeToggledWithoutPower = false;
 	
 	/** Defines the action the button should perform when power is lost. This is only available for toggle buttons. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Button|Power", Meta = (DisplayName = "Action On Power Loss",
 		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Release"))
-	EButtonPowerChangeActionType PowerLossAction {EButtonPowerChangeActionType::Nothing};
+	EButtonPowerChangeActionType PowerLossAction = EButtonPowerChangeActionType::Nothing;
 
 	/** Defines the action the button should perform when power is regained. This is only available for toggle buttons.  */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
 		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Press"))
-	EButtonPowerChangeActionType PowerGainAction {EButtonPowerChangeActionType::Nothing};
+	EButtonPowerChangeActionType PowerGainAction = EButtonPowerChangeActionType::Nothing;
 	
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
@@ -177,7 +177,7 @@ protected:
 private:
 	/** If true, the button is currently in cooldown and cannot be pressed. */
 	UPROPERTY(BlueprintGetter = GetIsCooldownActive)
-	bool IsCooldownActive {false};
+	bool IsCooldownActive = false;
 	
 	/** Timer handle for the cooldown timer. */
 	UPROPERTY()

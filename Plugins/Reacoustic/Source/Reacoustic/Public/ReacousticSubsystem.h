@@ -19,11 +19,11 @@ class REACOUSTIC_API  UReacousticSubsystem : public UWorldSubsystem
 public:
 	/** The Reacoustic SoundData Data Asset. */
 	UPROPERTY(BlueprintReadWrite, Meta = (DisplayName = "Sound Data array Asset"))
-	UReacousticSoundDataAsset* ReacousticSoundDataAsset {NewObject<UReacousticSoundDataAsset>()};
+	UReacousticSoundDataAsset* ReacousticSoundDataAsset = NewObject<UReacousticSoundDataAsset>();
 
 	/** The Reacoustic Sound Data Reference Map.*/
 	UPROPERTY(BlueprintReadWrite, Meta = (DisplayName = "Sound Data Asset Reference Map"))	
-	UReacousticSoundDataRef_Map* ReacousticSoundDataRefMap {NewObject<UReacousticSoundDataRef_Map>()};
+	UReacousticSoundDataRef_Map* ReacousticSoundDataRefMap = NewObject<UReacousticSoundDataRef_Map>();
 
 	/** The internal reference of the global reacoustic settings.*/
 	UPROPERTY();

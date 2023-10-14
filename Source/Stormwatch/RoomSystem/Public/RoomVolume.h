@@ -6,7 +6,7 @@
 #include "Engine/TriggerBox.h"
 #include "RoomVolume.generated.h"
 
-class APlayerCharacter;
+class ABHPlayerCharacter;
 class ANightstalker;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnEnterDelegate, APawn*, Pawn);
@@ -28,10 +28,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Volume", Meta = (ForceUnits = "m3"))
-	float Volume {0.0f};
+	float Volume = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Volume")
-	float RoomRatio {0.0f};
+	float RoomRatio = 0.0f;
 
 private:
 	UPROPERTY(BlueprintGetter = GetOverlappingPawns)

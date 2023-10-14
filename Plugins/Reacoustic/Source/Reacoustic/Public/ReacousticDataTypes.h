@@ -15,13 +15,13 @@ struct FReacousticSoundData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReacousticSoundData", Meta = (ClampMin = "-50.0", ClampMax = "50.0", UIMin = "-50.0", UIMax = "50.0"))
-	float Gain{0.0};
+	float Gain = 0.0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	float MaxSpeedScalar{1.0};
+	float MaxSpeedScalar = 1.0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	float ImpulseLength{1.5};
+	float ImpulseLength = 1.5;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Analysis)
 	TArray<float> OnsetTimingData;
@@ -33,22 +33,22 @@ struct FReacousticSoundData
 	TArray<float> OnsetVolumeData;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Sounds)
-	USoundWave* ImpactWaveAsset {nullptr};
+	USoundWave* ImpactWaveAsset = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Sounds)
-	USoundWave* SlidingWaveAsset {nullptr};
+	USoundWave* SlidingWaveAsset = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Surface, Meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
-	float SurfaceDampeningPercentage{0.0};
+	float SurfaceDampeningPercentage = 0.0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	USoundAttenuation* Attenuation{nullptr};
+	USoundAttenuation* Attenuation = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	USoundConcurrency* Concurrency{nullptr};
+	USoundConcurrency* Concurrency = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = ReacousticSoundData)
-	float SoundSenseVolume{10.0f};
+	float SoundSenseVolume = 10.0f;
 
 	
 
@@ -74,10 +74,10 @@ struct FMeshToAudioMapEntry
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh To Audio Map")
-	UStaticMesh* Mesh{nullptr};
+	UStaticMesh* Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh To Audio Map")
-	int32 ReacousticSoundDataRef{0};
+	int32 ReacousticSoundDataRef = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -89,7 +89,7 @@ struct FPhysicalMaterialToAudioMapEntry
 	TEnumAsByte<EPhysicalSurface> SurfaceType{SurfaceType_Default};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EPhysicalSurface To Audio Map")
-	int32 ReacousticSoundDataRef{0};
+	int32 ReacousticSoundDataRef = 0;
 	
 };
 
@@ -114,7 +114,7 @@ struct FReacousticObjects
 public:
 	/** The gain in decibels of the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Gain_Db"))
-double Gain_Db {0.0};
+double Gain_Db = 0.0;
 
 /** The sound to play when the impact occurs */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="HitSound"))
@@ -130,7 +130,7 @@ TObjectPtr<USoundWave> SlidingRollingSound;
 
 	/** How fast the object is expected to hit things eg: a cup would be 1. A basketball 5 */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="1.000000"))
-double MaxSpeedScalar{1.0};
+double MaxSpeedScalar = 1.0;
 
 /** The attenuation settings for the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Sound_Attenuation", MakeStructureDefaultValue="/Script/Engine.SoundAttenuation'/Game/ThirdPartyContent/BallisticsVFX/SFX/Attentuations/ImpactsAttenuation.ImpactsAttenuation'"))
@@ -142,23 +142,23 @@ TObjectPtr<USoundConcurrency> Sound_Concurrency;
 
 /** The length of the impulse for the impact effect */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="ImpulseLength", MakeStructureDefaultValue="0.600000"))
-double ImpulseLength{0.6};
+double ImpulseLength = 0.6;
 
 /** The pitch shift in semitones for the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Semitone pitch shift", MakeStructureDefaultValue="0.0"))
-float PitchShift{0.0};
+float PitchShift = 0.0;
 
 /** Whether to use weight-dependent pitch for the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Use weight-dependent pitch", MakeStructureDefaultValue="false"))
-bool UseWeightDependentPitch{false};
+bool UseWeightDependentPitch = false;
 
 /** The default weight for weight-dependent pitch for the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Default weight", MakeStructureDefaultValue="0.0", EditCondition="UseWeightDependentPitch"))
-float DefaultWeight{10.0};
+float DefaultWeight = 10.0;
 
 /** The pitch factor for weight-dependent pitch for the impact sound */
 UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Weight pitch factor", MakeStructureDefaultValue="0.0", EditCondition="UseWeightDependentPitch"))
-float WeightPitchFactor{0.0};
+float WeightPitchFactor = 0.0;
 
 	FReacousticObjects(){};
 };
@@ -171,7 +171,7 @@ struct FReacousticSurfaces
 public:
 	/** The gain for the hitsound */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="Gain_Db", MakeStructureDefaultValue="0.000000"))
-	double Gain_Db{0.0};
+	double Gain_Db = 0.0;
 
 	/** The source sound to be used */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="HitSound", MakeStructureDefaultValue="None"))
@@ -183,7 +183,7 @@ public:
 
 	/** How much a surface sound would dampen the velocity of the object sound */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="SurfaceDampening%", MakeStructureDefaultValue="0.000000"))
-	double SurfaceDampeningPercentage{0.0};
+	double SurfaceDampeningPercentage = 0.0;
 
 	/** Looping sound to be used for when the object is sliding */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="SlidingRollingSound", MakeStructureDefaultValue="None"))
@@ -191,11 +191,11 @@ public:
 
 	/** How fast the object is expected to hit things eg: a cup would be 1. A basketball 5 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="MaxSpeedScalar", MakeStructureDefaultValue="1.000000"))
-	double MaxSpeedScalar{1.0};
+	double MaxSpeedScalar = 1.0;
 
 	/** How long the sound should be */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(DisplayName="ImpulseLength", MakeStructureDefaultValue="0.500000"))
-	double ImpulseLength{0.6};
+	double ImpulseLength = 0.6;
 
 	FReacousticSurfaces(){}
 };

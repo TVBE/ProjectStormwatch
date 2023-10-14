@@ -41,11 +41,11 @@ protected:
 
 	/** The amount of lines that can be displayed on the desktop screen. */
 	UPROPERTY(BlueprintReadOnly, Category = "Text", Meta = (DisplayName = "Maximum Lines On Screen"))
-	int32 MaxLines {18};
+	int32 MaxLines = 18;
 
 	/** The amount of characters allowed per line. */
 	UPROPERTY(BlueprintReadOnly, Category = "Text", Meta = (DisplayName = "Maximum Characters Per Line"))
-	int32 MaxLineLength {72};
+	int32 MaxLineLength = 72;
 
 	/** The full text to display on the desktop's screen. */
 	UPROPERTY(BlueprintReadOnly, Category = "Text")
@@ -53,15 +53,15 @@ protected:
 
 	/** The time the player requires to hold the use key down to turn on or shut off the computer. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction", Meta = (DisplayName = "Use Press And Hold Time"))
-	float UseTime {1.0f};
+	float UseTime = 1.0f;
 
 	/** If true, the desktop is currently turned on. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsTurnedOn {true};
+	bool IsTurnedOn = true;
 
 	/** If true, the desktop is currently destroyed. */
 	UPROPERTY(BlueprintReadWrite)
-	bool IsBroken {false};
+	bool IsBroken = false;
 	
 public:	
 	ADesktop();

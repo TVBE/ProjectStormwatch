@@ -11,11 +11,11 @@ void UReacousticAudioComponentManager::Initialize(UReacousticSubsystem* Subsyste
 {
 	Super::Initialize(Subsystem);
 	
-	constexpr int32 AudioComponentAmount {32};
+	constexpr int32 AudioComponentAmount = 32;
 	
-	for (int32 i {0}; i < AudioComponentAmount; ++i)
+	for (int32 i = 0; i < AudioComponentAmount; ++i)
 	{
-		if (UAudioComponent* NewAudioComponent {NewObject<UAudioComponent>(Owner)})
+		if (UAudioComponent* NewAudioComponent = NewObject<UAudioComponent>(Owner);)
 		{
 			AvailableAudioComponents.Add(NewAudioComponent);
 		}

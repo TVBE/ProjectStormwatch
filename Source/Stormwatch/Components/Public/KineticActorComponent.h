@@ -17,11 +17,11 @@ class UKineticActorComponent : public UActorComponent
 private:
 	/** The minimum time the rigid body should stay awake after being released by the physics handler. */
 	UPROPERTY(EditDefaultsOnly, Category = "Physics", Meta = (DisplayName = "Minimum Time To Stay Awake After Release"))
-	float TimeToStayAwakeAfterRelease {3.0f};
+	float TimeToStayAwakeAfterRelease = 3.0f;
 
 	/** When set to true, Continious Collision Detection (CCD) will be enabled for the grabbed rigidbody untill it is put to sleep after being released. */
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", Meta = (DisplayName = "Enable Continious Collision Detection"))
-	bool EnableCCD {true};
+	bool EnableCCD = true;
 
 	/** Pointer to the mesh component of the actor that is simulating physics. */
 	UPROPERTY()
@@ -37,15 +37,15 @@ private:
 
 	/** When true, the actor's bGenerateWakeEvents property should be set to false when this component wants to destroy itself. */
 	UPROPERTY()
-	bool DisableGenerateWakeEventsOnSleep {false};
+	bool DisableGenerateWakeEventsOnSleep = false;
 
 	/** The time the component should wait before re-enabling NotifyRigidBodyCollision on the physics simulating scene component. */
 	UPROPERTY()
-	float CollisionHitEventEnableDelay {0.3f};
+	float CollisionHitEventEnableDelay = 0.3f;
 
 	/** If true, the actor that owns this component is currently grabbed. */
 	UPROPERTY()
-	bool IsGrabbed {false};
+	bool IsGrabbed = false;
 
 	/** The timer handle for re-enabling rigid body sleep on the physics simulating scene component. */
 	UPROPERTY()

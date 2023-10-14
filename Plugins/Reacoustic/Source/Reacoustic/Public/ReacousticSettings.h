@@ -16,10 +16,10 @@ class REACOUSTIC_API UReacousticProjectSettings : public UDeveloperSettings
 private:
 
 	UPROPERTY()
-	bool CanGenerateNRTAssets{false};
+	bool CanGenerateNRTAssets = false;
 	
 	UPROPERTY()
-	bool CanGenerateRuntimeData{false};
+	bool CanGenerateRuntimeData = false;
 
 	
 public:
@@ -48,7 +48,7 @@ public:
 
 #if WITH_EDITOR
 	virtual FName GetCategoryName() const override { return FName(TEXT("Game")); }
-	virtual FText GetSectionText() const override { return NSLOCTEXT("ReacousticPlugin", "ReacousticSettingsSection", "Reacoustic"); };
+	virtual FText GetSectionText() const override =  return NSLOCTEXT("ReacousticPlugin", "ReacousticSettingsSection", "Reacoustic"); ;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif

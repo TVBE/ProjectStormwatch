@@ -13,7 +13,7 @@ void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 
 	Director = Subsystem;
 	
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		World->GetTimerManager().SetTimer(AuditoryEventProcessorTimerHandle, this, &USensoryEventManager::ProcessAuditoryEvents, AuditoryEventProcessorUpdateInterval, true);
 		UE_LOG(LogSensoryEventManager, Log, TEXT("Initialized sensory event manager."))
@@ -22,7 +22,7 @@ void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 
 void USensoryEventManager::Deinitialize()
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		if (World->GetTimerManager().IsTimerActive(AuditoryEventProcessorTimerHandle))
 		{
@@ -47,9 +47,9 @@ inline FAuditoryEvent CombineAuditoryEvents(const FAuditoryEvent& EventA, const 
 
 inline void AttenuateLoudness(float& Loudness, const FVector& Origin, const FVector& Target)
 {
-	const float Distance {static_cast<float>(FVector::Dist(Origin, Target))};
+	const float Distance = static_cast<float>(FVector::Dist(Origin, Target));
 
-	const float AttenuationFactor {20.0f * FMath::LogX(10.0f, 1.0f + Distance / 300.0f)};
+	const float AttenuationFactor = 20.0f * FMath::LogX(10.0f, 1.0f + Distance / 300.0f);
 
 	Loudness = FMath::Max(0.0f, Loudness - AttenuationFactor);
 }
@@ -63,13 +63,13 @@ inline float LoudnessToHeat(float Loudness)
 
 inline float GetHeatPointRadius(const FVector& VectorA, const FVector& VectorB)
 {
-	constexpr float MinDistance {1000.0f};
-	constexpr float MaxDistance {4000.0f};
-	constexpr float MinRadius {300.0f};
-	constexpr float MaxRadius {1000.0f};
+	constexpr float MinDistance = 1000.0f;
+	constexpr float MaxDistance = 4000.0f;
+	constexpr float MinRadius = 300.0f;
+	constexpr float MaxRadius = 1000.0f;
 	
-	const float Distance {static_cast<float>(FVector::Dist(VectorA, VectorB))};
-	const float Radius {static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(MinDistance, MaxDistance), FVector2D(MinRadius, MaxRadius), Distance))};
+	const float Distance = static_cast<float>(FVector::Dist(VectorA, VectorB));
+	const float Radius = static_cast<float>(FMath::GetMappedRangeValueClamped(FVector2D(MinDistance, MaxDistance), FVector2D(MinRadius, MaxRadius), Distance));
 	return Radius;
 }
 
@@ -79,15 +79,15 @@ inline AHeatPoint* CheckForOverlaps(const FHeatEvent& HeatAtLocation, const FVec
 	Params.bTraceComplex = false;
 	Params.TraceTag = "HeatOverlapCheck";
 
-	const float TraceRadius {GetHeatPointRadius(HeatAtLocation.Location, ListenerLocation)};
+	const float TraceRadius = GetHeatPointRadius(HeatAtLocation.Location, ListenerLocation);
 
 	TArray<FOverlapResult> Overlaps;
 	const bool IsOverlapping = World->OverlapMultiByChannel(Overlaps, HeatAtLocation.Location, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(0.1f), Params);
 
-	AHeatPoint* OverlappingHeatPoint {nullptr};
+	AHeatPoint* OverlappingHeatPoint = nullptr;
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		if (AHeatPoint* HeatPoint {Cast<AHeatPoint>(Overlap.GetActor())})
+		if (AHeatPoint* HeatPoint = Cast<AHeatPoint>(Overlap.GetActor());)
 		{
 			OverlappingHeatPoint = HeatPoint;
 			break;
@@ -118,7 +118,7 @@ inline TArray<FHeatEvent> ConsolidateHeatEvents(const TArray<FHeatEvent>& HeatEv
 	for (const FHeatEvent& HeatEvent : HeatEvents)
 	{
 		const float HeatPointRadiusSquared = FMath::Square(GetHeatPointRadius(HeatEvent.Location, ListenerLocation));
-		bool IsOverlapping {false};
+		bool IsOverlapping = false;
 
 		for (FHeatEvent& ExistingHeatEvent : NonOverlappingHeatEvents)
 		{
@@ -162,14 +162,14 @@ void USensoryEventManager::ProcessAuditoryEvents()
 	 * If the current event cannot be combined with any existing event, it's added as a new event in `ProcessedEvents`.
 	 * This process ensures that auditory events occurring close together are handled as a single combined event for the rest of the process. */
 	TArray<FAuditoryEvent> ProcessedEvents;
-	constexpr float CombineRadiusSquared {FMath::Square(400.0f)};
+	constexpr float CombineRadiusSquared = FMath::Square(400.0f);
 
 	for (const FAuditoryEvent& CurrentEvent : AuditoryEventQueue)
 	{
-		bool IsCombined {false};
+		bool IsCombined = false;
 		for (FAuditoryEvent& ExistingEvent : ProcessedEvents)
 		{
-			if (const float DistanceSquared {static_cast<float>(FVector::DistSquared(CurrentEvent.Location, ExistingEvent.Location))};
+			if (const float DistanceSquared = static_cast<float>(FVector::DistSquared(CurrentEvent.Location, ExistingEvent.Location));
 				DistanceSquared <= CombineRadiusSquared)
 			{
 				ExistingEvent = CombineAuditoryEvents(ExistingEvent, CurrentEvent);
@@ -208,9 +208,9 @@ void USensoryEventManager::ProcessAuditoryEvents()
 
 	for (const FHeatEvent& HeatEvent : HeatEvents)
 	{
-		if (AHeatPoint* OverlappingHeatPoint {CheckForOverlaps(HeatEvent, Nightstalker->GetActorLocation(), GetWorld())})
+		if (AHeatPoint* OverlappingHeatPoint = CheckForOverlaps(HeatEvent, Nightstalker->GetActorLocation(), GetWorld());)
 		{
-			FHeatPointOverlapData NewOverlapDataEntry {FHeatPointOverlapData(OverlappingHeatPoint, HeatEvent)};
+			FHeatPointOverlapData NewOverlapDataEntry = FHeatPointOverlapData(OverlappingHeatPoint, HeatEvent);
 			OverlapData.Add(NewOverlapDataEntry);
 		}
 		else
@@ -230,7 +230,7 @@ void USensoryEventManager::ProcessAuditoryEvents()
 	
 	for (const FHeatEvent& HeatEvent : ConsolidatedEvents)
 	{
-		if (AHeatPoint* NewHeatPoint {GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator)})
+		if (AHeatPoint* NewHeatPoint = GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator);)
 		{
 			NewHeatPoint->InitializeHeatPoint(HeatEvent.Radius, 60, HeatEvent.Heat);
 			

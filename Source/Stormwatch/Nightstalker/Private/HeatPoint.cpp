@@ -50,7 +50,7 @@ void AHeatPoint::BeginPlay()
 #if WITH_EDITORONLY_DATA
 	if (DebugSphereMesh)
 	{
-		if (UMaterialInterface* BaseMaterial {DebugSphereMesh->GetMaterial(0)})
+		if (UMaterialInterface* BaseMaterial = DebugSphereMesh->GetMaterial(0);)
 		{
 			DebugMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
 			DebugSphereMesh->SetMaterial(0, DebugMaterial);
@@ -114,13 +114,13 @@ void AHeatPoint::SetHeat(const float NewHeat)
 
 void AHeatPoint::AddHeat(const float AddedHeat)
 {
-	const float HeatTotal {Heat + AddedHeat};
+	const float HeatTotal = Heat + AddedHeat;
 	SetHeat(HeatTotal);
 }
 
 void AHeatPoint::DetractHeat(const float HeatToDeduct)
 {
-	const float HeatTotal {Heat - HeatToDeduct};
+	const float HeatTotal = Heat - HeatToDeduct;
 	SetHeat(HeatTotal);
 }
 

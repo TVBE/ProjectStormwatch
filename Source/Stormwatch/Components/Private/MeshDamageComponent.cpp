@@ -15,7 +15,7 @@ void UMeshDamageComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UStaticMeshComponent* Component {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
 		Component->OnComponentHit.AddDynamic(this, &UMeshDamageComponent::OnStaticMeshComponentHit);
 
@@ -40,7 +40,7 @@ void UMeshDamageComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (UStaticMeshComponent* Component {Cast<UStaticMeshComponent>(GetAttachParent())})
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
 	{
 		Component->OnComponentHit.RemoveDynamic(this, &UMeshDamageComponent::OnStaticMeshComponentHit);
 		
@@ -61,7 +61,7 @@ void UMeshDamageComponent::OnStaticMeshComponentHit(UPrimitiveComponent* HitComp
 		return;
 	}
 	
-	const float ImpulseForce {static_cast<float>(NormalImpulse.Size())};
+	const float ImpulseForce = static_cast<float>(NormalImpulse.Size());
 	
 	if (ImpulseForce >= ImpulseForceThreshold)
 	{
@@ -91,7 +91,7 @@ void UMeshDamageComponent::SetDamageLevel(const float Value)
 
 void UMeshDamageComponent::UpdateDamagePercentage()
 {
-	const float OldDamagePercentage {DamagePercentage};
+	const float OldDamagePercentage = DamagePercentage;
 	DamagePercentage = (DamageLevel / Threshold) * 100.0f;
 	
 	if (DamagePercentage != OldDamagePercentage)
@@ -112,7 +112,7 @@ void UMeshDamageComponent::UpdateDamagePercentage()
 
 void UMeshDamageComponent::HandleDamageThresholdReached()
 {
-	if (AActor* Owner {GetOwner()})
+	if (AActor* Owner = GetOwner();)
 	{
 		if (PlayAudioEffects)
 		{
@@ -143,7 +143,7 @@ void UMeshDamageComponent::StartCooldown()
 			
 		}
 
-		constexpr float CooldownTime {0.5};
+		constexpr float CooldownTime = 0.5;
 		
 		World->GetTimerManager().SetTimer(CooldownTimerHandle, this, &UMeshDamageComponent::HandleCooldownFinished, CooldownTime, false);
 	}

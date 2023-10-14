@@ -71,15 +71,15 @@ void ASlidingDoor::Tick(float DeltaSeconds)
 /** Pushes actors out of the safety box when the door is closing. */
 void ASlidingDoor::PushActorsOutOfSafetyBox(TArray<AActor*> Actors, const float DeltaTime)
 {
-	constexpr float PushStrength {400.0f};
+	constexpr float PushStrength = 400.0f;
 	
 	for (AActor* OverlappingActor : Actors)
 	{
 		if (APawn* OverlappingPawn = Cast<APawn>(OverlappingActor))
 		{
-			FVector PawnLocation {OverlappingPawn->GetActorLocation()};
-			FVector PushDirection {(PawnLocation - GetActorLocation()).GetSafeNormal()};
-			const FVector PushForce {PushDirection * PushStrength * DeltaTime};
+			FVector PawnLocation = OverlappingPawn->GetActorLocation();
+			FVector PushDirection = (PawnLocation - GetActorLocation()).GetSafeNormal();
+			const FVector PushForce = PushDirection * PushStrength * DeltaTime;
 
 			OverlappingPawn->AddActorWorldOffset(PushForce, true);
 		}
@@ -173,7 +173,7 @@ void ASlidingDoor::Close_Implementation()
 				
 				return;
 			}
-			if (const UWorld* World {GetWorld()})
+			if (const UWorld* World = GetWorld();)
 			{
 				FTimerManager& TimerManager = World->GetTimerManager();
 				TimerManager.SetTimer(CloseCheckTimerHandle, this, &ASlidingDoor::HandleCloseTimerUpdate, 0.5f, false);

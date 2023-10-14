@@ -29,7 +29,7 @@ void UHeatPointManager::Deinitialize()
 
 void UHeatPointManager::Activate()
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::UpdateHeatPointLifeTime, 1.0f, true);
 		UE_LOG(LogHeatPointManager, Verbose, TEXT("Activated heat point manager."))
@@ -38,7 +38,7 @@ void UHeatPointManager::Activate()
 
 void UHeatPointManager::Deactivate()
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
 		{
@@ -71,7 +71,7 @@ void UHeatPointManager::UnregisterHeatPoint(AHeatPoint* Instance)
 
 inline float CombineHeatValues(float HeatValueA, float HeatValueB)
 {
-	const float CombinedHeatValue {FMath::Loge(FMath::Exp(HeatValueA) + FMath::Exp(HeatValueB))};
+	const float CombinedHeatValue = FMath::Loge(FMath::Exp(HeatValueA) + FMath::Exp(HeatValueB));
 	return CombinedHeatValue;
 }
 
@@ -83,17 +83,17 @@ void UHeatPointManager::UpdateHeatPoints(TArray<FHeatPointOverlapData>& OverlapD
 	TSet<AHeatPoint*> HeatPointsIncreased;
 
 	/** Variable to track total added heat. */
-	float TotalAddedHeat {0}; 
+	float TotalAddedHeat = 0; 
 
 	for (const FHeatPointOverlapData& Overlap : OverlapData)
 	{
-		bool FoundExistingHeatPoint {false};
+		bool FoundExistingHeatPoint = false;
 		
 		for (FHeatPointOverlapData& CombinedOverlap : CombinedOverlapData)
 		{
 			if (CombinedOverlap.HeatPoint == Overlap.HeatPoint)
 			{
-				const float OldHeat {CombinedOverlap.Event.Heat};
+				const float OldHeat = CombinedOverlap.Event.Heat;
 				CombinedOverlap.Event.Heat = CombineHeatValues(CombinedOverlap.Event.Heat, Overlap.Event.Heat);
 				TotalAddedHeat += CombinedOverlap.Event.Heat - OldHeat; 
 				
@@ -158,9 +158,9 @@ void UHeatPointManager::SortHeatPointsByHeatValue()
 
 void UHeatPointManager::FlushHeatPoints()
 {
-	for (int32 i {HeatPoints.Num() - 1}; i >= 0; --i)
+	for (int32 i = HeatPoints.Num() - 1; i >= 0; --i)
 	{
-		if (AHeatPoint* HeatPoint {HeatPoints[i]})
+		if (AHeatPoint* HeatPoint = HeatPoints[i];)
 		{
 			HeatPoint->Destroy();
 		}
@@ -172,9 +172,9 @@ void UHeatPointManager::UpdateHeatPointLifeTime()
 	if (HeatPoints.IsEmpty()) { return; }
 
 	/** Reverse for loop to be able to safely remove elements at an index. */
-	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
+	for (int32 Index = HeatPoints.Num() - 1; Index >= 0; --Index)
 	{
-		if (AHeatPoint* HeatPoint {HeatPoints[Index]}; IsValid(HeatPoint))
+		if (AHeatPoint* HeatPoint = HeatPoints[Index]; IsValid(HeatPoint))
 		{
 			HeatPoint->UpdateLifeTime(1);
 			if (HeatPoint->GetExpirationTime() == 0)
@@ -190,9 +190,9 @@ void UHeatPointManager::RemoveZeroHeatPoints()
 {
 	if (HeatPoints.IsEmpty()) { return; }
 
-	for (int32 Index {HeatPoints.Num() - 1}; Index >= 0; --Index)
+	for (int32 Index = HeatPoints.Num() - 1; Index >= 0; --Index)
 	{
-		AHeatPoint* HeatPoint {HeatPoints[Index]};
+		AHeatPoint* HeatPoint = HeatPoints[Index];
 		if (HeatPoint && HeatPoint->GetHeat() <= 0)
 		{
 			HeatPoints.RemoveAt(Index);
@@ -203,7 +203,7 @@ void UHeatPointManager::RemoveZeroHeatPoints()
 
 bool UHeatPointManager::IsActive() const
 {
-	if (const UWorld* World {GetWorld()})
+	if (const UWorld* World = GetWorld();)
 	{
 		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
 		{

@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "StormwatchGameMode.generated.h"
 
-class APlayerCharacter;
+class ABHPlayerCharacter;
 
 /**
  * 
@@ -18,16 +18,16 @@ class AStormwatchGameMode : public AGameModeBase
 
 private:
 	UPROPERTY()
-	bool IsPlayerActive {false};
+	bool IsPlayerActive = false;
 
 public:
 	AStormwatchGameMode();
 	
 	/** Notifies the gamemode that a player character is fully initialized and is ready for use. */
-	void NotifyPlayerCharacterBeginPlay(APlayerCharacter* Character);
+	void NotifyPlayerCharacterBeginPlay(ABHPlayerCharacter* Character);
 
 protected:
 	/** Called when the player character is ready for use in the world. */
 	UFUNCTION(BlueprintNativeEvent, Category = "Events", Meta = (DisplayName = "On Player Spawn"))
-	void EventOnPlayerSpawn(APlayerCharacter* Character);
+	void EventOnPlayerSpawn(ABHPlayerCharacter* Character);
 };
