@@ -29,7 +29,7 @@ void UHeatPointManager::Deinitialize()
 
 void UHeatPointManager::Activate()
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(HeatPointProcessorTimerHandle, this, &UHeatPointManager::UpdateHeatPointLifeTime, 1.0f, true);
 		UE_LOG(LogHeatPointManager, Verbose, TEXT("Activated heat point manager."))
@@ -38,7 +38,7 @@ void UHeatPointManager::Activate()
 
 void UHeatPointManager::Deactivate()
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
 		{
@@ -203,7 +203,7 @@ void UHeatPointManager::RemoveZeroHeatPoints()
 
 bool UHeatPointManager::IsActive() const
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		if (World->GetTimerManager().IsTimerActive(HeatPointProcessorTimerHandle))
 		{

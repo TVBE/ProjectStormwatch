@@ -12,9 +12,9 @@ void FActorFunctionCaller::CallFunction()
 {
 	if (Target.IsValid())
 	{
-		if (AActor* ValidActor = Target.Get();)
+		if (AActor* ValidActor = Target.Get())
 		{
-			if (UFunction* Function = ValidActor->FindFunction(FunctionName);)
+			if (UFunction* Function = ValidActor->FindFunction(FunctionName))
 			{
 				ValidActor->ProcessEvent(Function, nullptr);
 			}

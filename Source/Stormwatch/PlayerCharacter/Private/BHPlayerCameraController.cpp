@@ -37,7 +37,7 @@ void UBHPlayerCameraController::OnControllerChanged(APawn* Pawn, AController* Ne
 	{
 		SetComponentTickEnabled(true);
 
-		if (APlayerController * PlayerController = Cast<APlayerController>(NewController);)
+		if (APlayerController * PlayerController = Cast<APlayerController>(NewController))
 		{
 			SetCameraPitchLimits(PlayerController->PlayerCameraManager);
 

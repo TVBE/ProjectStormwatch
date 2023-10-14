@@ -173,7 +173,7 @@ void ASlidingDoor::Close_Implementation()
 				
 				return;
 			}
-			if (const UWorld* World = GetWorld();)
+			if (const UWorld* World = GetWorld())
 			{
 				FTimerManager& TimerManager = World->GetTimerManager();
 				TimerManager.SetTimer(CloseCheckTimerHandle, this, &ASlidingDoor::HandleCloseTimerUpdate, 0.5f, false);

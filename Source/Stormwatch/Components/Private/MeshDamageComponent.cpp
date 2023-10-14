@@ -15,7 +15,7 @@ void UMeshDamageComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent()))
 	{
 		Component->OnComponentHit.AddDynamic(this, &UMeshDamageComponent::OnStaticMeshComponentHit);
 
@@ -40,7 +40,7 @@ void UMeshDamageComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent()))
 	{
 		Component->OnComponentHit.RemoveDynamic(this, &UMeshDamageComponent::OnStaticMeshComponentHit);
 		
@@ -112,7 +112,7 @@ void UMeshDamageComponent::UpdateDamagePercentage()
 
 void UMeshDamageComponent::HandleDamageThresholdReached()
 {
-	if (AActor* Owner = GetOwner();)
+	if (AActor* Owner = GetOwner())
 	{
 		if (PlayAudioEffects)
 		{

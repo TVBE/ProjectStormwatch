@@ -16,9 +16,9 @@ UReacousticComponent::UReacousticComponent()
 void UReacousticComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if(const UWorld* World = GetWorld();)
+	if(const UWorld* World = GetWorld())
 	{
-		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>())
 		{
 			Subsystem->RegisterComponent(this);
 		}
@@ -72,9 +72,9 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-	if(const UWorld* World = GetWorld();)
+	if(const UWorld* World = GetWorld())
 	{
-		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>())
 		{
 			TransferData(Subsystem->ReacousticSoundDataAsset,Subsystem->ReacousticSoundDataRefMap,Subsystem->GetMeshSoundData(MeshComponent));
 		}
@@ -288,9 +288,9 @@ int UReacousticComponent::FindTimeStampEntry(FReacousticSoundData SoundData, flo
 
 void UReacousticComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if(const UWorld* World = GetWorld();)
+	if(const UWorld* World = GetWorld())
 	{
-		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>();)
+		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>())
 		{
 			Subsystem->UnregisterComponent(this);
 		}

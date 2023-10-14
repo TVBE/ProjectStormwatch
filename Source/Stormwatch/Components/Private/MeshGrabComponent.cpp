@@ -7,9 +7,9 @@
 inline bool DetermineInventoryAddibility(const UActorComponent* Component)
 {
 	if (!Component) { return false; }
-	if (const AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(Component->GetOwner());)
+	if (const AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(Component->GetOwner()))
 	{
-		if (const UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();)
+		if (const UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent())
 		{
 			const float Mass = MeshComponent->GetMass();
 			if (Mass > 10.0f) { return false; }
@@ -28,9 +28,9 @@ inline bool DetermineInventoryAddibility(const UActorComponent* Component)
 bool UMeshGrabComponent::AddToInventory_Implementation(const AActor* Actor)
 {
 	if (!Actor) { return false;}
-	if (AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(GetOwner());)
+	if (AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(GetOwner()))
 	{
-		if (UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();)
+		if (UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent())
 		{
 			MeshComponent->SetSimulatePhysics(false);
 			MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -49,7 +49,7 @@ bool UMeshGrabComponent::TakeFromInventory_Implementation(const AActor* Actor)
 
 	UStaticMeshComponent* MeshComponent;
 	
-	if (const AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(GetOwner());)
+	if (const AStaticMeshActor* MeshActor = Cast<AStaticMeshActor>(GetOwner()))
 	{
 		MeshComponent = MeshActor->GetStaticMeshComponent();
 	}

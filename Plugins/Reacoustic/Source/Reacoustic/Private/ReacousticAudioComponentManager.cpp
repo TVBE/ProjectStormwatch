@@ -15,7 +15,7 @@ void UReacousticAudioComponentManager::Initialize(UReacousticSubsystem* Subsyste
 	
 	for (int32 i = 0; i < AudioComponentAmount; ++i)
 	{
-		if (UAudioComponent* NewAudioComponent = NewObject<UAudioComponent>(Owner);)
+		if (UAudioComponent* NewAudioComponent = NewObject<UAudioComponent>(Owner))
 		{
 			AvailableAudioComponents.Add(NewAudioComponent);
 		}

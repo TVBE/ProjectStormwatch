@@ -61,7 +61,7 @@ void UNightstalkerDirector::RegisterNightstalker(ANightstalker* Instance)
 		SensoryEventManager->Initialize(this);
 	}
 
-	if (ANightstalkerController* NightstalkerController = Cast<ANightstalkerController>(Instance->GetController());)
+	if (ANightstalkerController* NightstalkerController = Cast<ANightstalkerController>(Instance->GetController()))
 	{
 		NightstalkerController->OnPlayerPerceptionChanged.AddDynamic(this, &UNightstalkerDirector::HandlePlayerPerceptionChanged);
 	}

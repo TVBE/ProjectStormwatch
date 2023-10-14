@@ -14,7 +14,7 @@ void ARoomVolume::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	if (UShapeComponent* ShapeComponent = GetCollisionComponent();)
+	if (UShapeComponent* ShapeComponent = GetCollisionComponent())
 	{
 		ShapeComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 		ShapeComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -42,7 +42,7 @@ void ARoomVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
-	if (APawn* OverlappingPawn = Cast<APawn>(OtherActor);)
+	if (APawn* OverlappingPawn = Cast<APawn>(OtherActor))
 	{
 		OverlappingPawns.AddUnique(OverlappingPawn);
 		OnPawnEnter.Broadcast(OverlappingPawn);
@@ -54,7 +54,7 @@ void ARoomVolume::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
 	
-	if (APawn* OverlappingPawn = Cast<APawn>(OtherActor);)
+	if (APawn* OverlappingPawn = Cast<APawn>(OtherActor))
 	{
 		OverlappingPawns.Remove(OverlappingPawn);
 		OnPawnLeave.Broadcast(OverlappingPawn);

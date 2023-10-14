@@ -212,7 +212,7 @@ void UBHPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	
 	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
 	 *	If not, add the component to the grabbed actor. */
-	if (UKineticActorComponent* KineticComponent = Cast<UKineticActorComponent>(ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass()));)
+	if (UKineticActorComponent* KineticComponent = Cast<UKineticActorComponent>(ActorToGrab->GetComponentByClass(UKineticActorComponent::StaticClass())))
 	{
 		KineticComponent->HandleOnOwnerGrabbed();
 	}
@@ -234,7 +234,7 @@ void UBHPlayerGrabComponent::ReleaseActor()
 
 	SetComponentTickEnabled(false);
 
-	if (UKineticActorComponent* KineticComponent = Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass()));)
+	if (UKineticActorComponent* KineticComponent = Cast<UKineticActorComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UKineticActorComponent::StaticClass())))
 	{
 		KineticComponent->HandleOnOwnerReleased();
 	}

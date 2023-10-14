@@ -41,7 +41,7 @@ UObject* FindInteractableObject(AActor* Actor)
 	}
 	
 	/** If the actor does not implement the specified interface, try to find a component that does.*/
-	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor);)
+	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor))
 	{
 		InteractableObject = InteractableComponent;
 	}
@@ -93,9 +93,9 @@ void UStormwatchFunctionLibrary::CallFunctionOnActorUsingActorFunctionCaller(FAc
 ABHPlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World = WorldContextObject->GetWorld();)
+	if (const UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
+		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
 		{
 			return Subsystem->GetPlayerCharacter();
 		}
@@ -106,9 +106,9 @@ ABHPlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(con
 ABHPlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacterController(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World = WorldContextObject->GetWorld();)
+	if (const UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
+		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
 		{
 			return Subsystem->GetPlayerController();
 		}
@@ -119,9 +119,9 @@ ABHPlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerCha
 ANightstalker* UStormwatchFunctionLibrary::GetStormwatchNightstalker(const UObject* WorldContextObject)
 {
 	if (!WorldContextObject) { return nullptr; }
-	if (const UWorld* World = WorldContextObject->GetWorld();)
+	if (const UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (const UNightstalkerDirector* Subsystem = World->GetSubsystem<UNightstalkerDirector>();)
+		if (const UNightstalkerDirector* Subsystem = World->GetSubsystem<UNightstalkerDirector>())
 		{
 			return Subsystem->GetNightstalker();
 		}

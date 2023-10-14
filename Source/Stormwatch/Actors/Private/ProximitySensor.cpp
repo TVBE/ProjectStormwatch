@@ -105,7 +105,7 @@ void AProximitySensor::Poll()
 
 		SetState(ESensorState::Detecting);
 
-		if (const UWorld* World = GetWorld();)
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 			{
@@ -125,7 +125,7 @@ void AProximitySensor::Poll()
 			
 			if (IsManualResetRequired)
 			{
-				if (const UWorld* World = GetWorld();)
+				if (const UWorld* World = GetWorld())
 				{
 					if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 					{
@@ -143,7 +143,7 @@ void AProximitySensor::Poll()
 		{
 			SetState(ESensorState::Alerted);
 			
-			if (const UWorld* World = GetWorld();)
+			if (const UWorld* World = GetWorld())
 			{
 				if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 				{
@@ -211,7 +211,7 @@ void AProximitySensor::StartCooldown()
 
 void AProximitySensor::StopCooldown()
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 		{
@@ -252,7 +252,7 @@ void AProximitySensor::ResetSensor()
 	IsTriggered = false;
 	DetectionLevel = 0.0f;
 
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		if (World->GetTimerManager().IsTimerActive(CooldownTimerHandle))
 		{
@@ -302,7 +302,7 @@ void AProximitySensor::DeactivateSensor()
 			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
 		}
 
-		if (const UWorld* World = GetWorld();)
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 			{
@@ -334,7 +334,7 @@ void AProximitySensor::BreakSensor()
 			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
 		}
 
-		if (const UWorld* World = GetWorld();)
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(PollTimerHandle))
 			{

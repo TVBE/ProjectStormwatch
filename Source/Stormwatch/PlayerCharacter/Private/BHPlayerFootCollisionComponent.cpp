@@ -77,7 +77,7 @@ void UBHPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overla
 #if WITH_REACOUSTIC
 if (ImpulseStrength > 1)
 {
-	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass()));)
+	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass())))
 	{
 		float PlayerVelocity = static_cast<float>(OtherActor->GetVelocity().Size());
 		

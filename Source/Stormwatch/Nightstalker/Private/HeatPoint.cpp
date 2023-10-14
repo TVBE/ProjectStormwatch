@@ -50,7 +50,7 @@ void AHeatPoint::BeginPlay()
 #if WITH_EDITORONLY_DATA
 	if (DebugSphereMesh)
 	{
-		if (UMaterialInterface* BaseMaterial = DebugSphereMesh->GetMaterial(0);)
+		if (UMaterialInterface* BaseMaterial = DebugSphereMesh->GetMaterial(0))
 		{
 			DebugMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
 			DebugSphereMesh->SetMaterial(0, DebugMaterial);

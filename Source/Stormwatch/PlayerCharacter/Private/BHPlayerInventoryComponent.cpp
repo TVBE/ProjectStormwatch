@@ -37,7 +37,7 @@ UObject* UBHPlayerInventoryComponent::FindInventoryObject(AActor* Actor) const
 	}
 	
 	/** If the actor does not implement the IInventoryObject interface, try to find a component that does.*/
-	else if (UActorComponent* InventoryComponent = FindInventoryComponent(Actor);)
+	else if (UActorComponent* InventoryComponent = FindInventoryComponent(Actor))
 	{
 		InventoryObject = InventoryComponent;
 	}
@@ -51,7 +51,7 @@ bool UBHPlayerInventoryComponent::AddActorToInventory(AActor* Actor)
 	
 	/** Search for the first UObject that implements the IInventoryObject interface.
 	 *	This can be the actor itself, or a component registered to the actor. */
-	if (UObject* InventoryObject = FindInventoryObject(Actor);)
+	if (UObject* InventoryObject = FindInventoryObject(Actor))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("This Worked!"))
 		if (!IInventoryObject::Execute_CanAddToInventory(InventoryObject, GetOwner())) {return false; }
@@ -92,12 +92,12 @@ AActor* UBHPlayerInventoryComponent::TakeActorFromInventory()
 {
 	if(SelectedActor)
 	{
-		if (UObject* InventoryObject = FindInventoryObject(SelectedActor);)
+		if (UObject* InventoryObject = FindInventoryObject(SelectedActor))
 		{
 			AActor* TakenActor = SelectedActor;
 			Hotbar[SelectedSlot] = nullptr;
 
-			//if (const AActor* Owner = GetOwner();)
+			//if (const AActor* Owner = GetOwner())
 			//{
 			//	const FVector ForwardVector = Owner->GetActorForwardVector();
 			//	TakenActor->SetActorLocation(FVector(ForwardVector.X * 80, ForwardVector.Y * 80, 0));

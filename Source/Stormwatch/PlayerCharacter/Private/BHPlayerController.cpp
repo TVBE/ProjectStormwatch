@@ -35,15 +35,15 @@ void ABHPlayerCharacterController::OnPossess(APawn* InPawn)
 	if (!PlayerCharacter) { return;  }
 	
 	/** Registers the controller to the player character subsystem. */
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
-		if (UStormwatchWorldSubsystem* PlayerSubsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
+		if (UStormwatchWorldSubsystem* PlayerSubsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
 		{
 			PlayerSubsystem->RegisterPlayerController(this);
 		}
 	}
 
-	if (const UBHPlayerCameraController* CameraController = PlayerCharacter->GetCameraController();) 
+	if (const UBHPlayerCameraController* CameraController = PlayerCharacter->GetCameraController()) 
 	{
 		PlayerCameraManager->ViewPitchMax = CameraController.MaximumViewPitch;
 		PlayerCameraManager->ViewPitchMin = CameraController.MinimumViewPitch;
@@ -406,7 +406,7 @@ void ABHPlayerCharacterController::CalculateRotationMultiplier(const FVector2D I
     {
 	    float RotationMultiplier = 1.0f;
 
-    	if (const UPrimitiveComponent* PrimitiveComponent = GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent();)
+    	if (const UPrimitiveComponent* PrimitiveComponent = GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent())
     	{
     		const float Mass = PrimitiveComponent->GetMass();
     		const FBoxSphereBounds Bounds = PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform());
@@ -422,7 +422,7 @@ void ABHPlayerCharacterController::CalculateRotationMultiplier(const FVector2D I
 
     		if (GrabComponent->GetGrabbedComponent())
     		{
-    			if (const UCameraComponent* CameraComponent = PlayerCharacter->GetCamera();)
+    			if (const UCameraComponent* CameraComponent = PlayerCharacter->GetCamera())
     			{
     				const float Distance = static_cast<float>(FVector::Dist(PrimitiveComponent->GetComponentLocation(), CameraComponent->GetComponentLocation()));
     				
@@ -434,7 +434,7 @@ void ABHPlayerCharacterController::CalculateRotationMultiplier(const FVector2D I
     		}
     		else if (DragComponent->GetGrabbedComponent())
     		{
-    			if (const UCameraComponent* CameraComponent = PlayerCharacter->GetCamera();)
+    			if (const UCameraComponent* CameraComponent = PlayerCharacter->GetCamera())
     			{
     				const FVector CameraLocation = CameraComponent->GetComponentLocation();
     				const FVector CameraForwardVector = CameraComponent->GetForwardVector();
@@ -551,9 +551,9 @@ FHitResult ABHPlayerCharacterController::GetCameraLookAtQuery() const
 
 void ABHPlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
-		if (UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>();)
+		if (UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
 		{
 			Subsystem->UnregisterPlayerController(this);
 		}

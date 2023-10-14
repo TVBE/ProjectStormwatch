@@ -13,7 +13,7 @@ void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 
 	Director = Subsystem;
 	
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(AuditoryEventProcessorTimerHandle, this, &USensoryEventManager::ProcessAuditoryEvents, AuditoryEventProcessorUpdateInterval, true);
 		UE_LOG(LogSensoryEventManager, Log, TEXT("Initialized sensory event manager."))
@@ -22,7 +22,7 @@ void USensoryEventManager::Initialize(UNightstalkerDirector* Subsystem)
 
 void USensoryEventManager::Deinitialize()
 {
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		if (World->GetTimerManager().IsTimerActive(AuditoryEventProcessorTimerHandle))
 		{
@@ -87,7 +87,7 @@ inline AHeatPoint* CheckForOverlaps(const FHeatEvent& HeatAtLocation, const FVec
 	AHeatPoint* OverlappingHeatPoint = nullptr;
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		if (AHeatPoint* HeatPoint = Cast<AHeatPoint>(Overlap.GetActor());)
+		if (AHeatPoint* HeatPoint = Cast<AHeatPoint>(Overlap.GetActor()))
 		{
 			OverlappingHeatPoint = HeatPoint;
 			break;
@@ -208,7 +208,7 @@ void USensoryEventManager::ProcessAuditoryEvents()
 
 	for (const FHeatEvent& HeatEvent : HeatEvents)
 	{
-		if (AHeatPoint* OverlappingHeatPoint = CheckForOverlaps(HeatEvent, Nightstalker->GetActorLocation(), GetWorld());)
+		if (AHeatPoint* OverlappingHeatPoint = CheckForOverlaps(HeatEvent, Nightstalker->GetActorLocation(), GetWorld()))
 		{
 			FHeatPointOverlapData NewOverlapDataEntry = FHeatPointOverlapData(OverlappingHeatPoint, HeatEvent);
 			OverlapData.Add(NewOverlapDataEntry);
@@ -230,7 +230,7 @@ void USensoryEventManager::ProcessAuditoryEvents()
 	
 	for (const FHeatEvent& HeatEvent : ConsolidatedEvents)
 	{
-		if (AHeatPoint* NewHeatPoint = GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator);)
+		if (AHeatPoint* NewHeatPoint = GetWorld()->SpawnActor<AHeatPoint>(AHeatPoint::StaticClass(), HeatEvent.Location, FRotator::ZeroRotator))
 		{
 			NewHeatPoint->InitializeHeatPoint(HeatEvent.Radius, 60, HeatEvent.Heat);
 			

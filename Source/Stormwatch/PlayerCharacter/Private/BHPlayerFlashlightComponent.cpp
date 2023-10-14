@@ -188,7 +188,7 @@ FRotator UBHPlayerFlashlightComponent::GetFlashlightSwayRotation() const
 		break;
 	}
 		
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		const double GameTime = World->GetTimeSeconds();
 			

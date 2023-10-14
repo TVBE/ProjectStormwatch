@@ -96,7 +96,7 @@ void UReacousticSubsystem::AddBPReacousticComponentToActor(AActor* Actor, TSubcl
     }
     if(NewComponent)
     {
-        if(UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(NewComponent);)
+        if(UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(NewComponent))
         {
             ReacousticComponent->TransferData(ReacousticSoundDataAsset, ReacousticSoundDataRefMap, MeshSoundData);
             ReacousticComponent->RegisterComponent();
@@ -163,7 +163,7 @@ void UReacousticSubsystem::PopulateWorldWithBPReacousticComponents(TSubclassOf<c
 				continue;
 			}
 
-			if (const UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent);)
+			if (const UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent))
 			{
 				const FReacousticSoundData MeshSoundData = GetMeshSoundData(StaticMeshComponent);
 				AddBPReacousticComponentToActor(Actor, ComponentClass, MeshSoundData);

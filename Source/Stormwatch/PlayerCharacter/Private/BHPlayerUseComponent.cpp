@@ -15,12 +15,12 @@ void UBHPlayerUseComponent::BeginPlay()
 
 AActor* UBHPlayerUseComponent::GetActorFromObject(UObject* Object) const
 {
-	if (AActor* Actor = Cast<AActor>(Object);)
+	if (AActor* Actor = Cast<AActor>(Object))
 	{
 		return Actor;
 	}
 	
-	if (const UActorComponent* Component = Cast<UActorComponent>(Object);)
+	if (const UActorComponent* Component = Cast<UActorComponent>(Object))
 	{
 		return Component->GetOwner();
 	}

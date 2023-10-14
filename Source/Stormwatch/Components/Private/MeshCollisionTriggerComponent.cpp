@@ -13,7 +13,7 @@ void UMeshCollisionTriggerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent()))
 	{
 		Component->OnComponentHit.AddDynamic(this, &UMeshCollisionTriggerComponent::OnStaticMeshComponentHit);
 		Component->SetGenerateOverlapEvents(false);
@@ -58,7 +58,7 @@ void UMeshCollisionTriggerComponent::EndPlay(const EEndPlayReason::Type EndPlayR
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent());)
+	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent()))
 	{
 		Component->OnComponentHit.RemoveDynamic(this, &UMeshCollisionTriggerComponent::OnStaticMeshComponentHit);
 		

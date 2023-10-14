@@ -32,7 +32,7 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 	{
 		const FName CurrentRowName = RowNames[i];
 
-		if (const FRoomReverbSettings* CurrentRow = DataTable->FindRow<FRoomReverbSettings>(CurrentRowName, FString(""));)
+		if (const FRoomReverbSettings* CurrentRow = DataTable->FindRow<FRoomReverbSettings>(CurrentRowName, FString("")))
 		{
 			/** weights for each parameter. */
 			constexpr float VolumeWeight = 3.0f;
@@ -59,7 +59,7 @@ USubmixEffectConvolutionReverbPreset* URoomAudioComponent::FindMatchingImpulseRe
 	if (Index >= 0 && Index < RowNames.Num())
 	{
 		const FName MatchedRowName = RowNames[Index];
-		if (const FRoomReverbSettings* MatchedRow = DataTable->FindRow<FRoomReverbSettings>(MatchedRowName, FString(""));)
+		if (const FRoomReverbSettings* MatchedRow = DataTable->FindRow<FRoomReverbSettings>(MatchedRowName, FString("")))
 		{
 			return MatchedRow->ImpulseResponseA;
 		}

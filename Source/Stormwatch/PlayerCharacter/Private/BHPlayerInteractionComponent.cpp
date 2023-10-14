@@ -45,7 +45,7 @@ void UBHPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		return;
 	}
 	
-	if (AActor* InteractableActor = CheckForInteractableActor();)
+	if (AActor* InteractableActor = CheckForInteractableActor())
 	{
 		if (InteractableActor != CurrentInteractableActor)
 		{
@@ -241,7 +241,7 @@ UObject* UBHPlayerInteractionComponent::FindInteractableObject(AActor* Actor) co
 	}
 	
 	/** If the actor does not implement the specified interface, try to find a component that does.*/
-	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor);)
+	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor))
 	{
 		InteractableObject = InteractableComponent;
 	}
@@ -327,12 +327,12 @@ inline FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* 
 
 AActor* UBHPlayerInteractionComponent::GetActorFromObject(UObject* Object) const
 {
-	if (AActor* Actor = Cast<AActor>(Object);)
+	if (AActor* Actor = Cast<AActor>(Object))
 	{
 		return Actor;
 	}
 	
-	if (const UActorComponent* Component = Cast<UActorComponent>(Object);)
+	if (const UActorComponent* Component = Cast<UActorComponent>(Object))
 	{
 		return Component->GetOwner();
 	}
@@ -356,11 +356,11 @@ bool UBHPlayerInteractionComponent::GetClosestObjectToLocation(FBHInteractableOb
 		UObject* Object = ObjectData.Object;
 		FVector ObjectLocation;
 
-		if (const AActor* Actor = Cast<AActor>(Object);)
+		if (const AActor* Actor = Cast<AActor>(Object))
 		{
 			ObjectLocation = Actor->GetActorLocation();
 		}
-		else if (const USceneComponent* Component = Cast<USceneComponent>(Object);)
+		else if (const USceneComponent* Component = Cast<USceneComponent>(Object))
 		{
 			ObjectLocation = Component->GetComponentLocation();
 		}
@@ -392,7 +392,7 @@ void UBHPlayerInteractionComponent::BeginPrimaryInteraction()
 
 	if (CurrentInteractableActor)
 	{
-		if (UObject* InteractableObject = FindInteractableObject<UUsableObject>(CurrentInteractableActor);)
+		if (UObject* InteractableObject = FindInteractableObject<UUsableObject>(CurrentInteractableActor))
 		{
 			UseComponent->BeginUse(InteractableObject);
 		}
@@ -421,11 +421,11 @@ void UBHPlayerInteractionComponent::BeginSecondaryInteraction()
 
 	if (!CurrentInteractableActor) { return; }
 	
-	if (UObject* GrabbableObject = FindInteractableObject<UGrabbableObject>(CurrentInteractableActor);)
+	if (UObject* GrabbableObject = FindInteractableObject<UGrabbableObject>(CurrentInteractableActor))
 	{
 		GrabComponent->GrabActor(CurrentInteractableActor);
 	}
-	else if (UObject* DraggableObject = FindInteractableObject<UDraggableObject>(CurrentInteractableActor);)
+	else if (UObject* DraggableObject = FindInteractableObject<UDraggableObject>(CurrentInteractableActor))
 	{
 		FVector GrabLocation = FVector();
 		if (CameraTraceHitResult.GetActor() == CurrentInteractableActor)
@@ -484,7 +484,7 @@ void UBHPlayerInteractionComponent::BeginInventoryInteraction()
 
 	if (CurrentInteractableActor)
 	{
-		if (UObject* InteractableObject = FindInteractableObject<UInventoryObject>(CurrentInteractableActor);)
+		if (UObject* InteractableObject = FindInteractableObject<UInventoryObject>(CurrentInteractableActor))
 		{
 			InventoryComponent->AddActorToInventory(GetActorFromObject(CurrentInteractableActor));
 		}

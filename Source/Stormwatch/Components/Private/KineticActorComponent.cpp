@@ -17,9 +17,9 @@ void UKineticActorComponent::OnRegister()
 	
 	IsGrabbed = true;
 
-	if (const AActor* Actor = GetOwner();)
+	if (const AActor* Actor = GetOwner())
 	{
-		if (const UMeshInteractionComponent* MeshInteractionComponent = Actor->FindComponentByClass<UMeshInteractionComponent>();)
+		if (const UMeshInteractionComponent* MeshInteractionComponent = Actor->FindComponentByClass<UMeshInteractionComponent>())
 		{
 			Mesh = Cast<UStaticMeshComponent>(MeshInteractionComponent->GetAttachParent());
 			if (Mesh)
@@ -54,7 +54,7 @@ void UKineticActorComponent::BeginPlay()
 		Mesh->OnComponentSleep.AddDynamic(this, &UKineticActorComponent::HandleActorSleep);
 	}
 	
-	if (const UWorld* World = GetWorld();)
+	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
 			&UKineticActorComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
@@ -87,7 +87,7 @@ void UKineticActorComponent::HandleOnOwnerGrabbed()
 	{
 		Mesh->SetNotifyRigidBodyCollision(false);
 		
-		if (const UWorld* World = GetWorld();)
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(CollisionHitEventEnableTimerHandle))
 			{
@@ -109,7 +109,7 @@ void UKineticActorComponent::HandleOnOwnerReleased()
 			Mesh->WakeAllRigidBodies();
 		}
 
-		if (const UWorld* World = GetWorld();)
+		if (const UWorld* World = GetWorld())
 		{
 			if (World->GetTimerManager().IsTimerActive(RigidBodySleepEnableTimerHandle))
 			{

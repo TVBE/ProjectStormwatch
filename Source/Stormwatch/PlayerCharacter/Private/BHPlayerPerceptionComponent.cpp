@@ -19,7 +19,7 @@ void UBHPlayerPerceptionComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetOwner());)
+	if (const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetOwner()))
 	{
 		Camera = PlayerCharacter->GetCamera();
 	}
@@ -74,7 +74,7 @@ float UBHPlayerPerceptionComponent::GetViewAngleToTarget(const FVector& Target)
 
 void UBHPlayerPerceptionComponent::UpdatePerception_Implementation()
 {
-	if (const ANightstalker* Nightstalker = UStormwatchFunctionLibrary::GetStormwatchNightstalker(this);)
+	if (const ANightstalker* Nightstalker = UStormwatchFunctionLibrary::GetStormwatchNightstalker(this))
 	{
 		const FVector PlayerLocation = GetOwner()->GetActorLocation();
 		const FVector NightstalkerLocation = Nightstalker->GetActorLocation();

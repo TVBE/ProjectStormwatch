@@ -274,7 +274,7 @@ void ABHPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 //void UPlayerCharacterSettings::Apply(APlayerCharacter* Character)
 //{
 //	if (!Character) { return; }
-//	if (UCharacterMovementComponent * MovementComponent = Character->GetCharacterMovement();)
+//	if (UCharacterMovementComponent * MovementComponent = Character->GetCharacterMovement())
 //	{
 //		MovementComponent->MaxWalkSpeed = Settings.WalkSpeed;
 //		MovementComponent->JumpZVelocity = Settings.JumpVelocity;
