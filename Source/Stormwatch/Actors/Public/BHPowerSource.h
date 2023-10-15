@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TriggerableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHTriggerableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "BHPowerSource.generated.h"
 
@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerStateChangedDelegate, bool, 
 
 /** Base class for power source actors. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Power", Meta = (DisplayName = "Power Source"))
-class ABHPowerSource : public AActor, public ITriggerableObject
+class ABHPowerSource : public AActor, public IBHTriggerableObject
 {
 	GENERATED_BODY()
 

@@ -2,14 +2,14 @@
 
 #include "StormwatchFunctionLibrary.h"
 
-#include "DraggableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHDraggableObjectInterface.h"
 #include "StormwatchWorldSubystem.h"
-#include "GrabbableObjectInterface.h"
-#include "InteractableObjectInterface.h"
-#include "InventoryObjectInterface.h"
+#include "..\..\Interfaces\Public\BHGrabbableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHInteractableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHInventoryObjectInterface.h"
 #include "NightstalkerDirector.h"
-#include "PowerConsumerInterface.h"
-#include "UsableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHPowerConsumerInterface.h"
+#include "..\..\Interfaces\Public\BHUsableObjectInterface.h"
 #include "SensoryEventManager.h"
 
 template <typename TInterface>
@@ -58,17 +58,17 @@ UObject* UStormwatchFunctionLibrary::SearchActorForObjectThatImplementsInterface
 
 	switch(Interface)
 	{
-	case EStormwatchInterfaceType::InteractableObject: InterfaceObject = FindInteractableObject<UInteractableObject>(Actor);
+	case EStormwatchInterfaceType::InteractableObject: InterfaceObject = FindInteractableObject<UBHInteractableObject>(Actor);
 		break;
-	case EStormwatchInterfaceType::UsableObject: InterfaceObject = FindInteractableObject<UUsableObject>(Actor);
+	case EStormwatchInterfaceType::UsableObject: InterfaceObject = FindInteractableObject<UBHUsableObject>(Actor);
 		break;
-	case EStormwatchInterfaceType::GrabbableObject: InterfaceObject = FindInteractableObject<UGrabbableObject>(Actor);
+	case EStormwatchInterfaceType::GrabbableObject: InterfaceObject = FindInteractableObject<UBHGrabbableObject>(Actor);
 		break;
-	case EStormwatchInterfaceType::DraggableObject: InterfaceObject = FindInteractableObject<UDraggableObject>(Actor);
+	case EStormwatchInterfaceType::DraggableObject: InterfaceObject = FindInteractableObject<UBHDraggableObject>(Actor);
 		break;
-	case EStormwatchInterfaceType::InventoryObject: InterfaceObject = FindInteractableObject<UInventoryObject>(Actor);
+	case EStormwatchInterfaceType::InventoryObject: InterfaceObject = FindInteractableObject<UBHInventoryObject>(Actor);
 		break;
-	case EStormwatchInterfaceType::PowerConsumer: InterfaceObject = FindInteractableObject<UPowerConsumer>(Actor);
+	case EStormwatchInterfaceType::PowerConsumer: InterfaceObject = FindInteractableObject<UBHPowerConsumer>(Actor);
 		break;
 	default: break;
 	}

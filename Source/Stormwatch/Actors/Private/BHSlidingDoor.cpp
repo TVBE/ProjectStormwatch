@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHSlidingDoor.h"
-#include "PowerConsumerComponent.h"
+#include "BHPowerConsumptionComponent.h"
 #include "Components/BoxComponent.h"
 
 ABHSlidingDoor::ABHSlidingDoor()
@@ -29,8 +29,8 @@ void ABHSlidingDoor::BeginPlay()
 
 	if (RequiresPower)
 	{
-		PowerConsumerComponent = Cast<UPowerConsumerComponent>
-		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+		PowerConsumerComponent = Cast<UBHPowerConsumptionComponent>
+		(AddComponentByClass(UBHPowerConsumptionComponent::StaticClass(), false, FTransform(), true));
 		if (PowerConsumerComponent)
 		{
 			PowerConsumerComponent->PowerSource = PowerSource;

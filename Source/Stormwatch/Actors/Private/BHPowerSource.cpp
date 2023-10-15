@@ -2,7 +2,7 @@
 
 #include "BHPowerSource.h"
 
-#include "PowerConsumerInterface.h"
+#include "..\..\Interfaces\Public\BHPowerConsumerInterface.h"
 
 DEFINE_LOG_CATEGORY_CLASS(ABHPowerSource, LogPowerSource)
 
@@ -25,7 +25,7 @@ void ABHPowerSource::RegisterPowerConsumer(UObject* Consumer)
 		return;
 	}
 
-	if (!Consumer->GetClass()->ImplementsInterface(UPowerConsumer::StaticClass()))
+	if (!Consumer->GetClass()->ImplementsInterface(UBHPowerConsumer::StaticClass()))
 	{
 		UE_LOG(LogPowerSource, Warning, TEXT("RegisterPowerConsumer: Consumer does not implement IPowerConsumer interface"));
 		return;
@@ -39,7 +39,7 @@ void ABHPowerSource::RegisterPowerConsumer(UObject* Consumer)
 	
 	ConnectedConsumers.Add(Consumer);
 
-	IPowerConsumer::Execute_SetPowerState(Consumer, IsEnergized, this);
+	IBHPowerConsumer::Execute_SetPowerState(Consumer, IsEnergized, this);
 }
 
 bool ABHPowerSource::Trigger_Implementation(const AActor* Initiator)
@@ -78,7 +78,7 @@ void ABHPowerSource::SetPowerSourceState(const bool State)
 			{
 				if (Consumer)
 				{
-					IPowerConsumer::Execute_SetPowerState(Consumer, IsEnergized, this);
+					IBHPowerConsumer::Execute_SetPowerState(Consumer, IsEnergized, this);
 					SetPowerStateCount++;
 				}
 			}

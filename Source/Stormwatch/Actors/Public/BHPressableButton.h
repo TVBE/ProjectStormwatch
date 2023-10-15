@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "ActorFunctionCaller.h"
-#include "InteractableObjectInterface.h"
-#include "TriggerableObjectInterface.h"
-#include "UsableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHInteractableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHTriggerableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHUsableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "BHPressableButton.generated.h"
 
 class ABHPowerSource;
-class UPowerConsumerComponent;
-class UMeshCollisionTriggerComponent;
+class UBHPowerConsumptionComponent;
+class UBHCollisionTriggerComponent;
 struct FTimerHandle;
 
 /** Defines the trigger type of the button. */
@@ -86,7 +86,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonReleasedDelegate);
 
 /** Base class for button actors. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Button"))
-class ABHPressableButton : public AActor, public IInteractableObject, public IUsableObject
+class ABHPressableButton : public AActor, public IBHInteractableObject, public IBHUsableObject
 {
 	GENERATED_BODY()
 
@@ -141,7 +141,7 @@ protected:
 	
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
-	UMeshCollisionTriggerComponent* CollisionTriggerComponent;
+	UBHCollisionTriggerComponent* CollisionTriggerComponent;
 	
 	// POWER
 	/** If true, the button requires power to operate and can be connected to a power source. */
@@ -172,7 +172,7 @@ protected:
 	
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
-	UPowerConsumerComponent* PowerConsumerComponent;
+	UBHPowerConsumptionComponent* PowerConsumerComponent;
 
 private:
 	/** If true, the button is currently in cooldown and cannot be pressed. */

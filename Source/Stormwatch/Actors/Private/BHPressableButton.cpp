@@ -2,10 +2,10 @@
 
 #include "BHPressableButton.h"
 
-#include "MeshCollisionTriggerComponent.h"
+#include "BHCollisionTriggerComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "PowerConsumerComponent.h"
-#include "TriggerableObjectInterface.h"
+#include "BHPowerConsumptionComponent.h"
+#include "..\..\Interfaces\Public\BHTriggerableObjectInterface.h"
 
 DEFINE_LOG_CATEGORY_CLASS(ABHPressableButton, LogButton)
 
@@ -36,13 +36,13 @@ void ABHPressableButton::BeginPlay()
 	/** If the button is configured to be able to be triggered by collisions, add the collision trigger component here. */
 	if (CanTriggerByCollision)
 	{
-		CollisionTriggerComponent = Cast<UMeshCollisionTriggerComponent>
-		(AddComponentByClass(UMeshCollisionTriggerComponent::StaticClass(), true, FTransform(), true));
+		CollisionTriggerComponent = Cast<UBHCollisionTriggerComponent>
+		(AddComponentByClass(UBHCollisionTriggerComponent::StaticClass(), true, FTransform(), true));
 		
 		if (CollisionTriggerComponent && ButtonMesh)
 		{
 			CollisionTriggerComponent->SetImpulseForceThreshold(CollisionTriggerThreshold);
-			CollisionTriggerComponent->RestrictCollisionAngle = true;
+			CollisionTriggerComponent->bRestrictCollisionAngle = true;
 			CollisionTriggerComponent->MaxAllowedAngle = 60.0f;
 			
 			CollisionTriggerComponent->SetupAttachment(ButtonMesh);
@@ -58,8 +58,8 @@ void ABHPressableButton::BeginPlay()
 	/** If the button is configured to use power, add the power consumer component here.  */
 	if (RequiresPower)
 	{
-		PowerConsumerComponent = Cast<UPowerConsumerComponent>
-		(AddComponentByClass(UPowerConsumerComponent::StaticClass(), false, FTransform(), true));
+		PowerConsumerComponent = Cast<UBHPowerConsumptionComponent>
+		(AddComponentByClass(UBHPowerConsumptionComponent::StaticClass(), false, FTransform(), true));
 		if (PowerConsumerComponent)
 		{
 			PowerConsumerComponent->PowerSource = PowerSource;

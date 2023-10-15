@@ -24,11 +24,9 @@ public class Stormwatch : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"MetasoundEngine", 
+			"MetasoundEngine",
 			"AnimGraphRuntime"
 		});
-		
-		// PrivateDependencyModuleNames.AddRange(new string[] { "RiderLink" }); //Comment this out if you're not using Rider.
 		
 		if (Target.bBuildEditor)
 		{
@@ -41,6 +39,8 @@ public class Stormwatch : ModuleRules
 			new string[] 
 			{
 				"$(ProjectDir)/Source/Stormwatch/Actors/Public",
+				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerCharacter",
+				"$(ProjectDir)/Source/Stormwatch/Actors/HomeComputer",
 				"$(ProjectDir)/Source/Stormwatch/Audio/Public",
 				"$(ProjectDir)/Source/Stormwatch/Components/Public",
 				"$(ProjectDir)/Source/Stormwatch/Core/Public",

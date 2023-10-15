@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TriggerableObjectInterface.h"
+#include "..\..\Interfaces\Public\BHTriggerableObjectInterface.h"
 #include "GameFramework/Actor.h"
 #include "BHSlidingDoor.generated.h"
 
-class UPowerConsumerComponent;
+class UBHPowerConsumptionComponent;
 class ABHPowerSource;
 
 UENUM(BlueprintType)
@@ -116,7 +116,7 @@ protected:
 
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
-	UPowerConsumerComponent* PowerConsumerComponent;
+	UBHPowerConsumptionComponent* PowerConsumerComponent;
 
 private:
 	/** The root component for the actor. */
