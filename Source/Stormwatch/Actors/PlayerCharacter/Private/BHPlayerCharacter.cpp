@@ -3,12 +3,12 @@
 #include "BHPlayerCharacter.h"
 
 #include "BHPlayerBodyCollisionComponent.h"
+#include "BHPlayerCameraComponent.h"
 #include "BHPlayerCameraController.h"
+#include "BHPlayerSkeletalMeshComponent.h"
 #include "BHPlayerController.h"
 #include "BHPlayerDragComponent.h"
-#include "BHPlayerDragComponent.h"
 #include "BHPlayerFootCollisionComponent.h"
-#include "BHPlayerGrabComponent.h"
 #include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
 #include "BHPlayerInventoryComponent.h"
@@ -21,16 +21,22 @@
 #include "Components/CapsuleComponent.h"
 #include "Math/Vector.h"
 
-DEFINE_LOG_CATEGORY_CLASS(ABHPlayerCharacter, LogPlayerCharacter);
-
-ABHPlayerCharacter::ABHPlayerCharacter()
+ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+: Super(
+	ObjectInitializer
+	.SetDefaultSubobjectClass<UBHPlayerMovementComponent>(ACharacter::CharacterMovementComponentName)
+	.SetDefaultSubobjectClass<UBHPlayerSkeletalMeshComponent>(ACharacter::MeshComponentName)
+)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	PlayerMovementComponent = Cast<UBHPlayerMovementComponent>(GetCharacterMovement());
+	PlayerMesh = Cast<UBHPlayerSkeletalMeshComponent>(GetMesh());
+
+	Camera = CreateDefaultSubobject<UBHPlayerCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(this->RootComponent);
 	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
 	Camera->FieldOfView = 90.0;
@@ -82,7 +88,7 @@ void ABHPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerMovement->OnLanding.AddDynamic(this, &ABHPlayerCharacter::HandleLandingStart);
+	PlayerMovementComponent->OnLanding.AddDynamic(this, &ABHPlayerCharacter::HandleLandingStart);
 
 	AStormwatchGameMode* GameMode = Cast<AStormwatchGameMode>(GetWorld()->GetAuthGameMode());
 	check(GameMode);
@@ -176,20 +182,83 @@ void ABHPlayerCharacter::Jump()
 
 void ABHPlayerCharacter::StartSprinting()
 {
-	if (PlayerMovement && !PlayerMovement->GetIsSprinting())
+	if (PlayerMovementComponent && !PlayerMovementComponent->GetIsSprinting())
 	{
 		TargetSpeed = SprintSpeed;
-		PlayerMovement->SetIsSprinting(true);
+		PlayerMovementComponent->SetIsSprinting(true);
 	}
 }
 
 void ABHPlayerCharacter::StopSprinting()
 {
-	if (PlayerMovement && PlayerMovement->GetIsSprinting())
+	if (PlayerMovementComponent && PlayerMovementComponent->GetIsSprinting())
 	{
 		TargetSpeed = WalkSpeed;
-		PlayerMovement->SetIsSprinting(false);
+		PlayerMovementComponent->SetIsSprinting(false);
 	}
+}
+
+bool ABHPlayerCharacter::bIsSprinting() const
+{
+	if (PlayerMovementComponent)
+	{
+		return PlayerMovementComponent->GetIsSprinting();
+	}
+	return false;
+}
+
+UBHPlayerCameraComponent* ABHPlayerCharacter::GetCamera() const
+{
+	check(Camera);
+	return Camera;
+}
+
+UBHPlayerCameraController* ABHPlayerCharacter::GetCameraController() const
+{
+	check(CameraController);
+	return CameraController;
+}
+
+UBHPlayerSkeletalMeshComponent* ABHPlayerCharacter::GetPlayerMesh() const
+{
+	check(PlayerMesh)
+	return PlayerMesh;
+}
+
+UBHPlayerMovementComponent* ABHPlayerCharacter::GetPlayerMovementComponent() const
+{
+	check(PlayerMovementComponent);
+	return PlayerMovementComponent;
+}
+
+UBHPlayerInteractionComponent* ABHPlayerCharacter::GetInteractionComponent() const
+{
+	check(InteractionComponent);
+	return InteractionComponent;
+}
+
+UBHPlayerUseComponent* ABHPlayerCharacter::GetUseComponent() const
+{
+	check(UseComponent);
+	return UseComponent;
+}
+
+UBHPlayerGrabComponent* ABHPlayerCharacter::GetGrabComponent() const
+{
+	check(GrabComponent);
+	return GrabComponent;
+}
+
+UBHPlayerDragComponent* ABHPlayerCharacter::GetDragComponent() const
+{
+	check(DragComponent);
+	return DragComponent;
+}
+
+UBHPlayerInventoryComponent* ABHPlayerCharacter::GetInventoryComponent() const
+{
+	check(InventoryComponent);
+	return InventoryComponent;
 }
 
 void ABHPlayerCharacter::HandleLandingStart(EBHPlayerLandingType Value)

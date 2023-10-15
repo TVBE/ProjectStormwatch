@@ -1,23 +1,17 @@
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
+
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "UPlayerCameraComponent.generated.h"
+#include "Camera/CameraComponent.h"
+#include "BHPlayerCameraComponent.generated.h"
 
-UCLASS()
-class STORMWATCH_API AUPlayerCameraComponent : public AActor
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+class STORMWATCH_API UBHPlayerCameraComponent : public UCameraComponent
 {
 	GENERATED_BODY()
 	
 public:
-	// Sets default values for this actor's properties
-	AUPlayerCameraComponent();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UBHPlayerCameraComponent();
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "BHPlayerController.h"
-#include "BHPlayerMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "BHPlayerCharacter.generated.h"
 
@@ -14,7 +11,7 @@ class STORMWATCH_API ABHPlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	ABHPlayerCharacter();
+	ABHPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -33,70 +30,34 @@ public:
 	bool GetIsTurningInPlace() const { return IsTurningInPlace; }
 	float GetYawDelta() const { return YawDelta; }
 
-	bool bIsSprinting() const
-	{
-		if (PlayerMovement)
-		{
-			return PlayerMovement->GetIsSprinting();
-		}
-		return false;
-	}
+	bool bIsSprinting() const;
+	
+	UFUNCTION(BlueprintGetter)
+	class UBHPlayerCameraComponent* GetCamera() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UCameraComponent* GetCamera() const
-	{
-		check(Camera);
-		return Camera;
-	}
+	class UBHPlayerCameraController* GetCameraController() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerCameraController* GetCameraController() const
-	{
-		check(CameraController);
-		return CameraController;
-	}
+	class UBHPlayerSkeletalMeshComponent* GetPlayerMesh() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerMovementComponent* GetPlayerMovement() const
-	{
-		check(PlayerMovement);
-		return PlayerMovement;
-	}
+	class UBHPlayerMovementComponent* GetPlayerMovementComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	UBHPlayerInteractionComponent* GetInteractionComponent() const
-	{
-		check(InteractionComponent);
-		return InteractionComponent;
-	}
+	UBHPlayerInteractionComponent* GetInteractionComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerUseComponent* GetUseComponent() const
-	{
-		check(UseComponent);
-		return UseComponent;
-	}
+	class UBHPlayerUseComponent* GetUseComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerGrabComponent* GetGrabComponent() const
-	{
-		check(GrabComponent);
-		return GrabComponent;
-	}
+	class UBHPlayerGrabComponent* GetGrabComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerDragComponent* GetDragComponent() const
-	{
-		check(DragComponent);
-		return DragComponent;
-	}
+	class UBHPlayerDragComponent* GetDragComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerInventoryComponent* GetInventoryComponent() const
-	{
-		check(InventoryComponent);
-		return InventoryComponent;
-	}
+	class UBHPlayerInventoryComponent* GetInventoryComponent() const;
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -107,19 +68,18 @@ protected:
 
 	void UpdateRotation(const float& DeltaTime);
 	void UpdateMovementSpeed();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
-	FPlayerCharacterSettings Settings = FPlayerCharacterSettings();
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCamera, Category = "Components")
-	UCameraComponent* Camera;
+	class UBHPlayerCameraComponent* Camera;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraController, Category = "Components")
 	UBHPlayerCameraController* CameraController;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetPlayerMovement, Category = "Components",
-			  Meta = (DisplayName = "Player Movement Component"))
-	UBHPlayerMovementComponent* PlayerMovement;
+	UPROPERTY(BlueprintGetter = GetPlayerMesh, Category = "Components")
+	class UBHPlayerSkeletalMeshComponent* PlayerMesh;
+
+	UPROPERTY(BlueprintGetter = GetPlayerMovementComponent, Category = "Components")
+	UBHPlayerMovementComponent* PlayerMovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInteractionComponent, Category = "Components")
 	UBHPlayerInteractionComponent* InteractionComponent;

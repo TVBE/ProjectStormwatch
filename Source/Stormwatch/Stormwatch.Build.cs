@@ -38,9 +38,9 @@ public class Stormwatch : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] 
 			{
-				"$(ProjectDir)/Source/Stormwatch/Actors/Public",
-				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerCharacter",
-				"$(ProjectDir)/Source/Stormwatch/Actors/HomeComputer",
+				"$(ProjectDir)/Source/Stormwatch/Actors/Public/Public",
+				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerCharacter/Public",
+				"$(ProjectDir)/Source/Stormwatch/Actors/HomeComputer/Public",
 				"$(ProjectDir)/Source/Stormwatch/Audio/Public",
 				"$(ProjectDir)/Source/Stormwatch/Components/Public",
 				"$(ProjectDir)/Source/Stormwatch/Core/Public",
