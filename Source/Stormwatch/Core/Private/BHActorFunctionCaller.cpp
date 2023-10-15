@@ -7,7 +7,6 @@
 #include "Engine/Engine.h"
 #include "UObject/UObjectGlobals.h"
 
-/** Calls the specified function on a target actor if the soft object pointer is valid and the function exists on the actor. */
 void FActorFunctionCaller::CallFunction()
 {
 	if (Target.IsValid())

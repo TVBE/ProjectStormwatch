@@ -1,15 +1,15 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "PressableButton.h"
+#include "BHPressableButton.h"
 
 #include "MeshCollisionTriggerComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "PowerConsumerComponent.h"
 #include "TriggerableObjectInterface.h"
 
-DEFINE_LOG_CATEGORY_CLASS(APressableButton, LogButton)
+DEFINE_LOG_CATEGORY_CLASS(ABHPressableButton, LogButton)
 
-APressableButton::APressableButton()
+ABHPressableButton::ABHPressableButton()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
@@ -24,12 +24,12 @@ APressableButton::APressableButton()
 	ButtonMesh->SetupAttachment(BaseMesh);
 }
 
-void APressableButton::OnConstruction(const FTransform& Transform)
+void ABHPressableButton::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 }
 
-void APressableButton::BeginPlay()
+void ABHPressableButton::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -48,7 +48,7 @@ void APressableButton::BeginPlay()
 			CollisionTriggerComponent->SetupAttachment(ButtonMesh);
 			CollisionTriggerComponent->SetRelativeRotation(FRotator(90, 0, 0));
 			
-			CollisionTriggerComponent->OnCollisionTrigger.AddDynamic(this, &APressableButton::EventOnCollisionTrigger);
+			CollisionTriggerComponent->OnCollisionTrigger.AddDynamic(this, &ABHPressableButton::EventOnCollisionTrigger);
 
 			CollisionTriggerComponent->RegisterComponent();
 			CollisionTriggerComponent->InitializeComponent();
@@ -63,7 +63,7 @@ void APressableButton::BeginPlay()
 		if (PowerConsumerComponent)
 		{
 			PowerConsumerComponent->PowerSource = PowerSource;
-			PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &APressableButton::EventOnPowerStateChanged);
+			PowerConsumerComponent->OnPowerStateChanged.AddDynamic(this, &ABHPressableButton::EventOnPowerStateChanged);
 
 			PowerConsumerComponent->RegisterComponent();
 			PowerConsumerComponent->InitializeComponent();
@@ -71,32 +71,32 @@ void APressableButton::BeginPlay()
 	}
 }
 
-void APressableButton::StartCooldown()
+void ABHPressableButton::StartCooldown()
 {
 	IsCooldownActive = true;
 	if (const UWorld* World = GetWorld())
 	{
 		FTimerManager& TimerManager = World->GetTimerManager();
-		TimerManager.SetTimer(CooldownTimerHandle, this, &APressableButton::HandleCooldownFinished, CooldownTime, false);
+		TimerManager.SetTimer(CooldownTimerHandle, this, &ABHPressableButton::HandleCooldownFinished, CooldownTime, false);
 	}
 }
 
-void APressableButton::HandleCooldownFinished()
+void ABHPressableButton::HandleCooldownFinished()
 {
 	IsCooldownActive = false;
 }
 
-void APressableButton::EventOnPress_Implementation()
+void ABHPressableButton::EventOnPress_Implementation()
 {
 	OnButtonPressed.Broadcast();
 }
 
-void APressableButton::EventOnRelease_Implementation()
+void ABHPressableButton::EventOnRelease_Implementation()
 {
 	OnButtonReleased.Broadcast();
 }
 
-void APressableButton::EventOnCollisionTrigger_Implementation()
+void ABHPressableButton::EventOnCollisionTrigger_Implementation()
 {
 	if (!IsPressed && !IsCooldownActive)
 	{
@@ -104,7 +104,7 @@ void APressableButton::EventOnCollisionTrigger_Implementation()
 	}
 }
 
-void APressableButton::EventOnPowerStateChanged_Implementation(bool NewState)
+void ABHPressableButton::EventOnPowerStateChanged_Implementation(bool NewState)
 {
 }
 

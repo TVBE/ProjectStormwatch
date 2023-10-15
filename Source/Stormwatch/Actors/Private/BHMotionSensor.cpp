@@ -1,22 +1,22 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "MotionSensor.h"
+#include "BHMotionSensor.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Pawn.h"
 
-AMotionSensor::AMotionSensor()
+ABHMotionSensor::ABHMotionSensor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AMotionSensor::PostInitProperties()
+void ABHMotionSensor::PostInitProperties()
 {
 	Super::PostInitProperties();
 	DetectionArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
 }
 
-void AMotionSensor::Poll()
+void ABHMotionSensor::Poll()
 {
 	IsActorDetected = false;
 
@@ -42,7 +42,7 @@ void AMotionSensor::Poll()
 			return;
 		}
 
-		SetState(ESensorState::Detecting);
+		SetState(EBHSensorState::Detecting);
 
 		if (const UWorld* World = GetWorld())
 		{
@@ -73,14 +73,14 @@ void AMotionSensor::Poll()
 				}
 			}
 
-			SetState(ESensorState::Triggered);
+			SetState(EBHSensorState::Triggered);
 		}
 	}
 	else
 	{
 		if (IsAlerted)
 		{
-			SetState(ESensorState::Alerted);
+			SetState(EBHSensorState::Alerted);
 			
 			if (const UWorld* World = GetWorld())
 			{
@@ -94,7 +94,7 @@ void AMotionSensor::Poll()
 	}
 }
 
-bool AMotionSensor::IsActorMoving(const AActor* Actor) const
+bool ABHMotionSensor::IsActorMoving(const AActor* Actor) const
 {
 	if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Actor->GetRootComponent()))
 	{

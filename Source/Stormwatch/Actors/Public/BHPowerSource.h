@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "TriggerableObjectInterface.h"
 #include "GameFramework/Actor.h"
-#include "PowerSource.generated.h"
+#include "BHPowerSource.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerStateChangedDelegate, bool, NewState);
 
 /** Base class for power source actors. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "Power", Meta = (DisplayName = "Power Source"))
-class APowerSource : public AActor, public ITriggerableObject
+class ABHPowerSource : public AActor, public ITriggerableObject
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ private:
 	TArray<UObject*> ConnectedConsumers;
 
 public:	
-	APowerSource();
+	ABHPowerSource();
 
 	bool Trigger_Implementation(const AActor* Initiator) override;
 	bool Untrigger_Implementation(const AActor* Initiator) override;

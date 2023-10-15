@@ -8,20 +8,20 @@
 #include "GameFramework/PlayerController.h"
 
 /** Sets default values for this component's properties. */
-UExteriorWindAudioComponent::UExteriorWindAudioComponent()
+UBHExteriorWindAudioComponent::UBHExteriorWindAudioComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
 
 /** Called when the game starts. */
-void UExteriorWindAudioComponent::BeginPlay()
+void UBHExteriorWindAudioComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 /** Called when the component is initialized. */
-void UExteriorWindAudioComponent::InitializeComponent()
+void UBHExteriorWindAudioComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	
@@ -42,7 +42,7 @@ void UExteriorWindAudioComponent::InitializeComponent()
 	GeometryQueryResults.Init(FHitResult(), 8 * TemporalTraceLength);
 }
 
-void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
+void UBHExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 {
 	if (WindDirection == Rotation)
 	{
@@ -55,7 +55,7 @@ void UExteriorWindAudioComponent::SetWindDirection(const FRotator& Rotation)
 }
 
 /** Called every frame. */
-void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
@@ -81,7 +81,7 @@ void UExteriorWindAudioComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
-TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector& Location)
+TArray<float> UBHExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
 	
@@ -112,7 +112,7 @@ TArray<float> UExteriorWindAudioComponent::DoTerrainCollisionQuery(const FVector
 	return TraceLengths;
 }
 
-TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVector& Location)
+TArray<float> UBHExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVector& Location)
 {
 	TArray<float> TraceLengths;
 
@@ -150,7 +150,7 @@ TArray<float> UExteriorWindAudioComponent::DoOcclusionCollisionQuery(const FVect
 	return TraceLengths;
 }
 
-float UExteriorWindAudioComponent::GetAverageOfFloatArray(const TArray<float>& Array) const
+float UBHExteriorWindAudioComponent::GetAverageOfFloatArray(const TArray<float>& Array) const
 {
 	float Sum = 0.0f;
 	for(const float Value : Array)
@@ -161,23 +161,23 @@ float UExteriorWindAudioComponent::GetAverageOfFloatArray(const TArray<float>& A
 	return Sum;
 }
 
-float UExteriorWindAudioComponent::GetAverageTraceLengthInCardinalDirection(const ETraceCardinalDirection Direction)
+float UBHExteriorWindAudioComponent::GetAverageTraceLengthInCardinalDirection(const EBHTraceCardinalDirection Direction)
 {
 	TArray<float> TraceLengths;
 
 	int StartIndex = 0;
 	switch (Direction)
 	{
-	case ETraceCardinalDirection::North:
+	case EBHTraceCardinalDirection::North:
 		StartIndex = 0;
 		break;
-	case ETraceCardinalDirection::East:
+	case EBHTraceCardinalDirection::East:
 		StartIndex = 16;
 		break;
-	case ETraceCardinalDirection::South:
+	case EBHTraceCardinalDirection::South:
 		StartIndex = 32;
 		break;
-	case ETraceCardinalDirection::West:
+	case EBHTraceCardinalDirection::West:
 		StartIndex = 48;
 		break;
 	}
@@ -198,14 +198,14 @@ float UExteriorWindAudioComponent::GetAverageTraceLengthInCardinalDirection(cons
 	return GetAverageOfFloatArray(TraceLengths);
 }
 
-void UExteriorWindAudioComponent::BeginTemporalGeometryQuery()
+void UBHExteriorWindAudioComponent::BeginTemporalGeometryQuery()
 {
 	ResetGeometryQueryResults();
 	IsQueryingGeometry = true;
 	TemporalQueryOrigin = GetOwner()->GetActorLocation();
 }
 
-void UExteriorWindAudioComponent::ResetGeometryQueryResults()
+void UBHExteriorWindAudioComponent::ResetGeometryQueryResults()
 {
 	for (FHitResult& HitResult : GeometryQueryResults)
 	{
@@ -213,7 +213,7 @@ void UExteriorWindAudioComponent::ResetGeometryQueryResults()
 	}
 }
 
-void UExteriorWindAudioComponent::UpdateGeometryQuery()
+void UBHExteriorWindAudioComponent::UpdateGeometryQuery()
 {
 	if (!IsQueryingGeometry) { return; }
 
@@ -259,7 +259,7 @@ void UExteriorWindAudioComponent::UpdateGeometryQuery()
 }
 
 /** Populates the terrain trace array. */
-void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& Array, const FRotator& Rotation,
+void UBHExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& Array, const FRotator& Rotation,
 	const float Radius, const float NumPoints, const uint8 TemporalFrames, const float PitchIncrement, const float PitchOffset)
 {
 	TArray<TPair<FVector, double>> AzimuthVectors;
@@ -310,7 +310,7 @@ void UExteriorWindAudioComponent::PopulateGeometryTraceVectors(TArray<FVector>& 
 	}
 }
 
-void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<TPair<FVector, double>>& TraceVectors)
+void UBHExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<TPair<FVector, double>>& TraceVectors)
 {
 	TArray<TPair<FVector, double>> NorthVectors;
 	TArray<TPair<FVector, double>> EastVectors;
@@ -352,7 +352,7 @@ void UExteriorWindAudioComponent::SortTraceVectorsByYaw(TArray<TPair<FVector, do
 }
 
 /** Populates the occlusion trace arrays. */
-void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>& ArrayA, TArray<FVector>& ArrayB,
+void UBHExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>& ArrayA, TArray<FVector>& ArrayB,
 	const FRotator& Rotation, const float TraceLength, const float Spacing)
 {
 	/** Empty both arrays. */
@@ -387,7 +387,7 @@ void UExteriorWindAudioComponent::PopulateOcclusionTraceVectors(TArray<FVector>&
 }
 
 /** Called when before the object is destroyed. */
-void UExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UBHExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (AudioComponent)
 	{
@@ -400,7 +400,7 @@ void UExteriorWindAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReas
 	Super::EndPlay(EndPlayReason);
 }
 
-TArray<FHitResult> UExteriorWindAudioComponent::GetGeometryQueryResults() const
+TArray<FHitResult> UBHExteriorWindAudioComponent::GetGeometryQueryResults() const
 {
 	if (!IsQueryingGeometry)
 	{
@@ -410,16 +410,16 @@ TArray<FHitResult> UExteriorWindAudioComponent::GetGeometryQueryResults() const
 	return EmptyArray;
 }
 
-void UExteriorWindAudioComponent::EventOnOcclusionPoll_Implementation(const TArray<float>& OcclusionTraceResults)
+void UBHExteriorWindAudioComponent::EventOnOcclusionPoll_Implementation(const TArray<float>& OcclusionTraceResults)
 {
 }
 
-void UExteriorWindAudioComponent::EventOnGeometryQueryFinished_Implementation(
+void UBHExteriorWindAudioComponent::EventOnGeometryQueryFinished_Implementation(
 	const TArray<FHitResult>& GeometryTraceResults)
 {
 }
 
-void UExteriorWindAudioComponent::EventOnWindDirectionChanged_Implementation(const FRotator& Rotation)
+void UBHExteriorWindAudioComponent::EventOnWindDirectionChanged_Implementation(const FRotator& Rotation)
 {
 }
 

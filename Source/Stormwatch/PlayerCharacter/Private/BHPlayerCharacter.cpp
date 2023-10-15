@@ -1,20 +1,22 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerCharacter.h"
+
+#include "BHPlayerBodyCollisionComponent.h"
 #include "BHPlayerCameraController.h"
 #include "BHPlayerController.h"
+#include "BHPlayerDragComponent.h"
+#include "BHPlayerDragComponent.h"
+#include "BHPlayerFootCollisionComponent.h"
+#include "BHPlayerGrabComponent.h"
+#include "BHPlayerGrabComponent.h"
+#include "BHPlayerInteractionComponent.h"
+#include "BHPlayerInventoryComponent.h"
 #include "BHPlayerMovementComponent.h"
 #include "BHPlayerUseComponent.h"
-#include "BHPlayerGrabComponent.h"
-#include "BHPlayerDragComponent.h"
-#include "BHPlayerInventoryComponent.h"
-#include "StormwatchWorldSubystem.h"
 #include "StormwatchGameMode.h"
-#include "BHPlayerBodyCollisionComponent.h"
-#include "BHPlayerFootCollisionComponent.h"
-#include "BHPlayerInteractionComponent.h"
-#include "BHPlayerGrabComponent.h"
-#include "BHPlayerDragComponent.h"
+#include "StormwatchWorldSubystem.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Math/Vector.h"
@@ -71,7 +73,7 @@ void ABHPlayerCharacter::OnConstruction(const FTransform& Transform)
 
 	ensureMsgf(GetCharacterMovement()->IsA(UBHPlayerMovementComponent::StaticClass()), TEXT("GetCharacterMovement is not of class PlayerCharacterMovementComponent."));
 	check(GetWorld());
-	UStormwatchWorldSubsystem* StormwatchWorldSubsystem = GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>();
+	UBHStormwatchWorldSubsystem* StormwatchWorldSubsystem = GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>();
 	check(StormwatchWorldSubsystem);
 	StormwatchWorldSubsystem->RegisterPlayerCharacter(this);
 }
@@ -263,7 +265,7 @@ bool ABHPlayerCharacter::CanStandUp() const
 
 void ABHPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (UStormwatchWorldSubsystem * Subsystem = GetWorld()->GetSubsystem<UStormwatchWorldSubsystem>())
+	if (UBHStormwatchWorldSubsystem * Subsystem = GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>())
 	{
 		Subsystem->UnregisterPlayerCharacter(this);
 	}

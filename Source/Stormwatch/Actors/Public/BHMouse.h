@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Mouse.generated.h"
+#include "BHMouse.generated.h"
 
 class UMeshGrabComponent;
 class UStaticMeshComponent;
@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseMovementDelegate, FVector2D,
 /** Base class for desktop mouse actor.
  *	This class is expected to be extended and fully implemented in a blueprint derived class. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Mouse"))
-class AMouse : public AActor
+class ABHMouse : public AActor
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ protected:
 	UMeshGrabComponent* GrabComponent;
 
 public:	
-	AMouse();
+	ABHMouse();
 
 	virtual void Tick(float DeltaTime) override;
 

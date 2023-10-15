@@ -1,11 +1,11 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "Desktop.h"
+#include "BHDesktop.h"
 
 #include "MeshGrabComponent.h"
 #include "Components/BoxComponent.h"
 
-ADesktop::ADesktop()
+ABHDesktop::ABHDesktop()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -22,28 +22,28 @@ ADesktop::ADesktop()
 	GrabComponent->SetupAttachment(RootComponent);
 }
 
-bool ADesktop::BeginUse_Implementation(const AActor* Interactor)
+bool ABHDesktop::BeginUse_Implementation(const AActor* Interactor)
 {
 	return IUsableObject::BeginUse_Implementation(Interactor);
 }
 
-bool ADesktop::EndUse_Implementation(const AActor* Interactor)
+bool ABHDesktop::EndUse_Implementation(const AActor* Interactor)
 {
 	return IUsableObject::EndUse_Implementation(Interactor);
 }
 
-void ADesktop::PostInitProperties()
+void ABHDesktop::PostInitProperties()
 {
     Super::PostInitProperties();
     TextLineArray.Init(FString(), MaxLines);
 }
 
-void ADesktop::BeginPlay()
+void ABHDesktop::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ADesktop::MoveCursor(FVector2D InputVelocity)
+void ABHDesktop::MoveCursor(FVector2D InputVelocity)
 {
 	FVector NewCursorPosition = CursorMesh->GetComponentLocation() + FVector(InputVelocity.X, InputVelocity.Y , 0);
 	
@@ -56,7 +56,7 @@ void ADesktop::MoveCursor(FVector2D InputVelocity)
 	CursorMesh->SetWorldLocation(NewCursorPosition);
 }
 
-void ADesktop::FormatDisplayText()
+void ABHDesktop::FormatDisplayText()
 {
 	DisplayText.Reset();
 	for (int i = 0; i < TextLineArray.Num(); ++i)
@@ -70,7 +70,7 @@ void ADesktop::FormatDisplayText()
 	}
 }
 
-void ADesktop::AppendCharacterToArray(const FString& Character)
+void ABHDesktop::AppendCharacterToArray(const FString& Character)
 {
 	if (TextLineArray.Num() == 0 || TextLineArray.Last().Len() >= MaxLineLength)
 	{
@@ -87,7 +87,7 @@ void ADesktop::AppendCharacterToArray(const FString& Character)
 	}
 }
 
-FString& ADesktop::GetLastLineWithSpace()
+FString& ABHDesktop::GetLastLineWithSpace()
 {
 	if (TextLineArray.Num() == 0)
 	{

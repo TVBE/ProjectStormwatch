@@ -1,23 +1,23 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "PowerSource.h"
+#include "BHPowerSource.h"
 
 #include "PowerConsumerInterface.h"
 
-DEFINE_LOG_CATEGORY_CLASS(APowerSource, LogPowerSource)
+DEFINE_LOG_CATEGORY_CLASS(ABHPowerSource, LogPowerSource)
 
-APowerSource::APowerSource()
+ABHPowerSource::ABHPowerSource()
 {
  	
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void APowerSource::BeginPlay()
+void ABHPowerSource::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void APowerSource::RegisterPowerConsumer(UObject* Consumer)
+void ABHPowerSource::RegisterPowerConsumer(UObject* Consumer)
 {
 	if (!Consumer)
 	{
@@ -42,7 +42,7 @@ void APowerSource::RegisterPowerConsumer(UObject* Consumer)
 	IPowerConsumer::Execute_SetPowerState(Consumer, IsEnergized, this);
 }
 
-bool APowerSource::Trigger_Implementation(const AActor* Initiator)
+bool ABHPowerSource::Trigger_Implementation(const AActor* Initiator)
 {
 	if (!IsEnergized)
 	{
@@ -53,7 +53,7 @@ bool APowerSource::Trigger_Implementation(const AActor* Initiator)
 	return false;
 }
 
-bool APowerSource::Untrigger_Implementation(const AActor* Initiator)
+bool ABHPowerSource::Untrigger_Implementation(const AActor* Initiator)
 {
 	if (IsEnergized)
 	{
@@ -64,7 +64,7 @@ bool APowerSource::Untrigger_Implementation(const AActor* Initiator)
 	return false;
 }
 
-void APowerSource::SetPowerSourceState(const bool State)
+void ABHPowerSource::SetPowerSourceState(const bool State)
 {
 	if (State != IsEnergized)
 	{

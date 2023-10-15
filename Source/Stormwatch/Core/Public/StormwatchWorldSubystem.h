@@ -12,8 +12,8 @@ class ABHPlayerCharacterController;
 
 /** World Subsystem that provides access to the Player Character and its subobjects.
  *	Provides high level functions for changing the PlayerCharacter's behavior. */
-UCLASS(ClassGroup = "Core", Meta = (DisplayName = "Stormwatch World Subsystem"))
-class STORMWATCH_API UStormwatchWorldSubsystem : public UWorldSubsystem
+UCLASS(ClassGroup = "Core")
+class STORMWATCH_API UBHStormwatchWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 

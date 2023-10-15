@@ -1,19 +1,21 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerController.h"
-#include "BHPlayerCharacter.h"
-#include "BHPlayerFlashlightComponent.h"
+
 #include "BHPlayerCameraController.h"
+#include "BHPlayerCharacter.h"
+#include "BHPlayerDragComponent.h"
+#include "BHPlayerFlashlightComponent.h"
+#include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
 #include "StormwatchWorldSubystem.h"
-#include "BHPlayerGrabComponent.h"
-#include "BHPlayerDragComponent.h"
-#include "Camera/CameraComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
+
 #include "Math/Rotator.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/InputSettings.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/InputSettings.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Camera/CameraComponent.h"
 
 ABHPlayerCharacterController::ABHPlayerCharacterController()
 {
@@ -37,7 +39,7 @@ void ABHPlayerCharacterController::OnPossess(APawn* InPawn)
 	/** Registers the controller to the player character subsystem. */
 	if (const UWorld* World = GetWorld())
 	{
-		if (UStormwatchWorldSubsystem* PlayerSubsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
+		if (UBHStormwatchWorldSubsystem* PlayerSubsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
 			PlayerSubsystem->RegisterPlayerController(this);
 		}
@@ -553,7 +555,7 @@ void ABHPlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayRea
 {
 	if (const UWorld* World = GetWorld())
 	{
-		if (UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
+		if (UBHStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
 			Subsystem->UnregisterPlayerController(this);
 		}

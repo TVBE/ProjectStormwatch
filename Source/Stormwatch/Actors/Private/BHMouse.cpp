@@ -1,9 +1,9 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "Mouse.h"
+#include "BHMouse.h"
 #include "MeshGrabComponent.h"
 
-AMouse::AMouse()
+ABHMouse::ABHMouse()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
@@ -15,7 +15,7 @@ AMouse::AMouse()
 	GrabComponent->SetupAttachment(RootComponent);
 }
 
-void AMouse::PostInitProperties()
+void ABHMouse::PostInitProperties()
 {
 	Super::PostInitProperties();
 	if (MouseMesh)
@@ -24,14 +24,14 @@ void AMouse::PostInitProperties()
 	}
 }
 
-void AMouse::BeginPlay()
+void ABHMouse::BeginPlay()
 {
 	Super::BeginPlay();
-	MouseMesh->OnComponentWake.AddDynamic(this, &AMouse::HandleOnMeshWake);
-	MouseMesh->OnComponentSleep.AddDynamic(this, &AMouse::HandleOnMeshSleep);
+	MouseMesh->OnComponentWake.AddDynamic(this, &ABHMouse::HandleOnMeshWake);
+	MouseMesh->OnComponentSleep.AddDynamic(this, &ABHMouse::HandleOnMeshSleep);
 }
 
-void AMouse::Tick(float DeltaTime)
+void ABHMouse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
@@ -51,12 +51,12 @@ void AMouse::Tick(float DeltaTime)
 	}
 }
 
-void AMouse::HandleOnMeshWake(UPrimitiveComponent* WakingComponent, FName Name)
+void ABHMouse::HandleOnMeshWake(UPrimitiveComponent* WakingComponent, FName Name)
 {
 	this->SetActorTickEnabled(true);
 }
 
-void AMouse::HandleOnMeshSleep(UPrimitiveComponent* SleepingComponent, FName Name)
+void ABHMouse::HandleOnMeshSleep(UPrimitiveComponent* SleepingComponent, FName Name)
 {
 	this->SetActorTickEnabled(false);
 }

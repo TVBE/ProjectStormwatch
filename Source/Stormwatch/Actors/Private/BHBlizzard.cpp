@@ -1,9 +1,9 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "Blizzard.h"
+#include "BHBlizzard.h"
 
 // Sets default values
-ABlizzard::ABlizzard()
+ABHBlizzard::ABHBlizzard()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -11,14 +11,14 @@ ABlizzard::ABlizzard()
 }
 
 // Called when the game starts or when spawned
-void ABlizzard::BeginPlay()
+void ABHBlizzard::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ABlizzard::Tick(float DeltaTime)
+void ABHBlizzard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

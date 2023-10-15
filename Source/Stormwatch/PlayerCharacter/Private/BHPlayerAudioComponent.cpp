@@ -1,8 +1,10 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerAudioComponent.h"
+
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
+
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
 

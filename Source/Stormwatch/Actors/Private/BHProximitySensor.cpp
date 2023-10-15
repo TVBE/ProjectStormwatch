@@ -1,6 +1,6 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "ProximitySensor.h"
+#include "BHProximitySensor.h"
 
 #include "Nightstalker.h"
 #include "BHPlayerCharacter.h"
@@ -8,9 +8,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
 
-DEFINE_LOG_CATEGORY_CLASS(AProximitySensor, LogSensor)
+DEFINE_LOG_CATEGORY_CLASS(ABHProximitySensor, LogSensor)
 
-AProximitySensor::AProximitySensor()
+ABHProximitySensor::ABHProximitySensor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -26,35 +26,35 @@ AProximitySensor::AProximitySensor()
 	DetectionArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
-void AProximitySensor::BeginPlay()
+void ABHProximitySensor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (DetectionArea)
 	{
-		DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AProximitySensor::OnOverlapBegin);
-		DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AProximitySensor::OnOverlapEnd);
+		DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &ABHProximitySensor::OnOverlapBegin);
+		DetectionArea->OnComponentEndOverlap.AddDynamic(this, &ABHProximitySensor::OnOverlapEnd);
 	}
 }
 
-void AProximitySensor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void ABHProximitySensor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA(ABHPlayerCharacter::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Player))
+	if (OtherActor->IsA(ABHPlayerCharacter::StaticClass()) && IgnoreParameters.Contains(EBHProximitySensorIgnoreParameter::Player))
 	{
 		return;
 	}
-	if (OtherActor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBProximitySensorIgnoreParameter::Nightstalker))
+	if (OtherActor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBHProximitySensorIgnoreParameter::Nightstalker))
 	{
 		return;
 	}
 	OverlappingActors.AddUnique(OtherActor);
 
 	Poll();
-	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
+	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &ABHProximitySensor::Poll, PollInterval, true);
 }
 
-void AProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void ABHProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	OverlappingActors.Remove(OtherActor);
@@ -72,13 +72,13 @@ void AProximitySensor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 
 	if (IsAlerted && !IsTriggered)
 	{
-		SetState(ESensorState::Alerted);
+		SetState(EBHSensorState::Alerted);
 		StartCooldown();
 	}
 }
 
 /** Called at regular intervals to check for overlapping actors and determine the nearest pawn. */
-void AProximitySensor::Poll()
+void ABHProximitySensor::Poll()
 {
 	IsActorDetected = false;
 
@@ -103,7 +103,7 @@ void AProximitySensor::Poll()
 			return;
 		}
 
-		SetState(ESensorState::Detecting);
+		SetState(EBHSensorState::Detecting);
 
 		if (const UWorld* World = GetWorld())
 		{
@@ -134,14 +134,14 @@ void AProximitySensor::Poll()
 				}
 			}
 
-			SetState(ESensorState::Triggered);
+			SetState(EBHSensorState::Triggered);
 		}
 	}
 	else
 	{
 		if (IsAlerted)
 		{
-			SetState(ESensorState::Alerted);
+			SetState(EBHSensorState::Alerted);
 			
 			if (const UWorld* World = GetWorld())
 			{
@@ -156,7 +156,7 @@ void AProximitySensor::Poll()
 }
 
 /** Determines if the given actor is occluded by another object using a line trace. */
-bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
+bool ABHProximitySensor::IsActorOccluded(const AActor* Actor) const
 {
 	FVector StartLocation = GetActorLocation() - FVector(0, 0, 10);
 	FVector ActorLocation = Actor->GetActorLocation();
@@ -191,7 +191,7 @@ bool AProximitySensor::IsActorOccluded(const AActor* Actor) const
 	return BlockedTraces == EndLocations.Num();
 }
 
-void AProximitySensor::StartCooldown()
+void ABHProximitySensor::StartCooldown()
 {
 	if (IsBroken) { return; }
 	
@@ -205,11 +205,11 @@ void AProximitySensor::StartCooldown()
 			
 		}
 
-		World->GetTimerManager().SetTimer(CooldownTimerHandle, this, &AProximitySensor::HandleCooldownFinished, CooldownTime, false);
+		World->GetTimerManager().SetTimer(CooldownTimerHandle, this, &ABHProximitySensor::HandleCooldownFinished, CooldownTime, false);
 	}
 }
 
-void AProximitySensor::StopCooldown()
+void ABHProximitySensor::StopCooldown()
 {
 	if (const UWorld* World = GetWorld())
 	{
@@ -221,7 +221,7 @@ void AProximitySensor::StopCooldown()
 	}
 }
 
-void AProximitySensor::SetState(const ESensorState NewState)
+void ABHProximitySensor::SetState(const EBHSensorState NewState)
 {
 	if (SensorState != NewState)
 	{
@@ -231,7 +231,7 @@ void AProximitySensor::SetState(const ESensorState NewState)
 	}
 }
 
-void AProximitySensor::HandleCooldownFinished()
+void ABHProximitySensor::HandleCooldownFinished()
 {
 	DetectionLevel = 0.0f;
 	
@@ -243,10 +243,10 @@ void AProximitySensor::HandleCooldownFinished()
 
 	if (IsBroken) { return; }
 	
-	SetState(ESensorState::Idle);
+	SetState(EBHSensorState::Idle);
 }
 
-void AProximitySensor::ResetSensor()
+void ABHProximitySensor::ResetSensor()
 {
 	IsAlerted = false;
 	IsTriggered = false;
@@ -262,19 +262,19 @@ void AProximitySensor::ResetSensor()
 	}
 	else { return;}
 
-	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &AProximitySensor::Poll, PollInterval, true);
+	GetWorldTimerManager().SetTimer(PollTimerHandle, this, &ABHProximitySensor::Poll, PollInterval, true);
 	
-	SetState(ESensorState::Idle);
+	SetState(EBHSensorState::Idle);
 }
 
-void AProximitySensor::ActivateSensor()
+void ABHProximitySensor::ActivateSensor()
 {
 	if (!IsSensorActive)
 	{
 		if (DetectionArea)
 		{
-			DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &AProximitySensor::OnOverlapBegin);
-			DetectionArea->OnComponentEndOverlap.AddDynamic(this, &AProximitySensor::OnOverlapEnd);
+			DetectionArea->OnComponentBeginOverlap.AddDynamic(this, &ABHProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.AddDynamic(this, &ABHProximitySensor::OnOverlapEnd);
 		}
 
 		DetectionArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -282,13 +282,13 @@ void AProximitySensor::ActivateSensor()
 		IsSensorActive = true;
 
 		OnActivation.Broadcast();
-		SetState(ESensorState::Idle);
+		SetState(EBHSensorState::Idle);
 
 		Poll();
 	}
 }
 
-void AProximitySensor::DeactivateSensor()
+void ABHProximitySensor::DeactivateSensor()
 {
 	if (IsSensorActive)
 	{
@@ -298,8 +298,8 @@ void AProximitySensor::DeactivateSensor()
 		
 		if (DetectionArea)
 		{
-			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapBegin);
-			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
+			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &ABHProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &ABHProximitySensor::OnOverlapEnd);
 		}
 
 		if (const UWorld* World = GetWorld())
@@ -314,13 +314,13 @@ void AProximitySensor::DeactivateSensor()
 		IsTriggered = false;
 		IsActorDetected = false;
 		
-		SetState(ESensorState::Disabled);
+		SetState(EBHSensorState::Disabled);
 
 		DetectionArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
-void AProximitySensor::BreakSensor()
+void ABHProximitySensor::BreakSensor()
 {
 	if (!IsBroken)
 	{
@@ -330,8 +330,8 @@ void AProximitySensor::BreakSensor()
 		
 		if (DetectionArea)
 		{
-			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapBegin);
-			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &AProximitySensor::OnOverlapEnd);
+			DetectionArea->OnComponentBeginOverlap.RemoveDynamic(this, &ABHProximitySensor::OnOverlapBegin);
+			DetectionArea->OnComponentEndOverlap.RemoveDynamic(this, &ABHProximitySensor::OnOverlapEnd);
 		}
 
 		if (const UWorld* World = GetWorld())
@@ -346,20 +346,20 @@ void AProximitySensor::BreakSensor()
 		IsTriggered = false;
 		IsActorDetected = false;
 		
-		SetState(ESensorState::Broken);
+		SetState(EBHSensorState::Broken);
 
 		DetectionArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
 #if WITH_EDITOR
-void AProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void ABHProximitySensor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	
-	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AProximitySensor, IgnoreParameters))
+	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(ABHProximitySensor, IgnoreParameters))
 	{
-		TSet<EBProximitySensorIgnoreParameter> UniqueIgnoreParameters;
+		TSet<EBHProximitySensorIgnoreParameter> UniqueIgnoreParameters;
 
 		for (int Index = 0; Index < IgnoreParameters.Num(); ++Index)
 		{

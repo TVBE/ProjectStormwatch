@@ -5,16 +5,14 @@
 #include "CoreMinimal.h"
 #include "UsableObjectInterface.h"
 #include "GameFramework/Actor.h"
-#include "Desktop.generated.h"
+#include "BHDesktop.generated.h"
 
 class UMeshGrabComponent;
 class UBoxComponent;
 class UStaticMeshComponent;
 
-/** Base class for an all-in-one desktop that can receive keyboard and mouse input.
- *	This class is expected to be extended and fully implemented in a blueprint derived class. */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Desktop"))
-class STORMWATCH_API ADesktop : public AActor, public IUsableObject
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop")
+class STORMWATCH_API ABHDesktop : public AActor, public IUsableObject
 {
 	GENERATED_BODY()
 
@@ -64,7 +62,7 @@ protected:
 	bool IsBroken = false;
 	
 public:	
-	ADesktop();
+	ABHDesktop();
 
 	bool BeginUse_Implementation(const AActor* Interactor) override;
 	bool EndUse_Implementation(const AActor* Interactor) override;

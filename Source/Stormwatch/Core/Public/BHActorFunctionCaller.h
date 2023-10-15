@@ -10,11 +10,11 @@ struct FActorFunctionCaller
 {
 	GENERATED_BODY()
 
-	/** The target actor to call the function on. */
+	// The target actor to call the function on.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Function Caller", Meta = (DisplayName = "Target"))
 	TSoftObjectPtr<AActor> Target;
 
-	/** The function to call on the actor.*/
+	// The function to call on the actor.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Function Caller", Meta = (DisplayName = "Function"))
 	FName FunctionName;
 

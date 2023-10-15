@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProximitySensor.h"
-#include "MotionSensor.generated.h"
+#include "BHProximitySensor.h"
+#include "BHMotionSensor.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Sensors", Meta = (DisplayName = "Motion Sensor"))
-class AMotionSensor : public AProximitySensor
+class ABHMotionSensor : public ABHProximitySensor
 {
 	GENERATED_BODY()
 
@@ -17,7 +17,7 @@ protected:
 	float VelocityThreshold = 50.0f;
 	
 public:
-	AMotionSensor();
+	ABHMotionSensor();
 
 	virtual void PostInitProperties() override;
 

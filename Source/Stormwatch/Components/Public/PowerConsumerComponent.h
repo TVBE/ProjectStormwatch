@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PowerConsumerInterface.h"
-#include "PowerSource.h"
+#include "BHPowerSource.h"
 #include "Components/ActorComponent.h"
 #include "PowerConsumerComponent.generated.h"
 
@@ -23,7 +23,7 @@ public:
 
 	/** The target power source this power consumer is dependent on for power. */
 	UPROPERTY(BlueprintReadOnly, Meta = (DisplayName = "Target Power Source"))
-	TSoftObjectPtr<APowerSource> PowerSource;
+	TSoftObjectPtr<ABHPowerSource> PowerSource;
 
 private:
 	/** If true, this object is powered. */

@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "GrabbableObjectInterface.h"
 #include "GameFramework/Actor.h"
-#include "Keyboard.generated.h"
+#include "BHKeyboard.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop", Meta = (DisplayName = "Keyboard"))
-class STORMWATCH_API AKeyboard : public AActor, public IGrabbableObject
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Desktop")
+class STORMWATCH_API ABHKeyboard : public AActor, public IGrabbableObject
 {
 	GENERATED_BODY()
 
 public:	
-	AKeyboard();
+	ABHKeyboard();
 
 public:
 	/** IInteractableObject interface functions. */
@@ -24,7 +24,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	/** Returns a random character. */
 	UFUNCTION(BlueprintPure)
 	FString GetRandomCharacter();
 };

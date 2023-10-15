@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "TriggerableObjectInterface.h"
 #include "GameFramework/Actor.h"
-#include "SlidingDoor.generated.h"
+#include "BHSlidingDoor.generated.h"
 
 class UPowerConsumerComponent;
-class APowerSource;
+class ABHPowerSource;
 
 UENUM(BlueprintType)
-enum class EDoorState : uint8
+enum class EBHDoorState : uint8
 {
 	Open        UMETA(DisplayName = "Open"), 
 	Closed      UMETA(DisplayName = "Closed"),
@@ -20,19 +20,19 @@ enum class EDoorState : uint8
 };
 
 UENUM(BlueprintType)
-enum class EDoorAction : uint8
+enum class EBHDoorAction : uint8
 {
 	Open        UMETA(DisplayName = "Open"), 
 	Close		UMETA(DisplayName = "Close"),
 	Reset		UMETA(Displayname = "Reset")
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDoorStateChangedDelegate, EDoorState, State);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDoorStateChangedDelegate, EBHDoorState, State);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCooldownFinishedDelegate);
 
 /** Abstract base class for sliding door actors. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Sliding Door", PrioritizeCategories = "Door"))
-class ASlidingDoor : public AActor
+class ABHSlidingDoor : public AActor
 {
 	GENERATED_BODY()
 
@@ -53,11 +53,11 @@ protected:
 
 	/** The starting state of the door. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door", Meta = (ValidEnumValues = "Open, Closed"))
-	EDoorState StartingState = EDoorState::Closed;
+	EBHDoorState StartingState = EBHDoorState::Closed;
 
 	/** The current state of the door. */
 	UPROPERTY(BlueprintReadWrite)
-	EDoorState DoorState;
+	EBHDoorState DoorState;
 
 	/** If true, the door will start locked. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Lock")
@@ -73,9 +73,9 @@ protected:
 
 	/** The action to perform when the door is unlocked. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Lock", Meta = (EditCondition = "DoActionOnUnlock"))
-	EDoorAction ActionOnUnlock = EDoorAction::Reset;
+	EBHDoorAction ActionOnUnlock = EBHDoorAction::Reset;
 
-	EDoorState StateWhenLocked;
+	EBHDoorState StateWhenLocked;
 	
 	/** If true, the door will auto close after a given time when opened. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door|Auto Close", Meta = (DisplayName = "Auto Close (Not Available)")) // TODO: Implement this.
@@ -96,7 +96,7 @@ protected:
 	
 	/** Soft object pointer to the power source that this button is connected to. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "RequiresPower"))
-	TSoftObjectPtr<APowerSource> PowerSource;
+	TSoftObjectPtr<ABHPowerSource> PowerSource;
 	
 	/** If true, the door should perform an action when power is regained. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (InlineEditConditionToggle))
@@ -104,7 +104,7 @@ protected:
 
 	/** Action the door should perform when power is regained. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "DoActionOnPowerGain"))
-	EDoorAction ActionOnPowerGain = EDoorAction::Open;
+	EBHDoorAction ActionOnPowerGain = EBHDoorAction::Open;
 
 	/** If true, the door should perform an action when power is lost. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (InlineEditConditionToggle))
@@ -112,7 +112,7 @@ protected:
 
 	/** Action the door should perform when power is lost. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Door|Power", Meta = (EditCondition = "DoActionOnPowerLoss"))
-	EDoorAction ActionOnPowerLoss = EDoorAction::Open;
+	EBHDoorAction ActionOnPowerLoss = EBHDoorAction::Open;
 
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
@@ -159,7 +159,7 @@ private:
 	FTimerHandle CloseCheckTimerHandle;
 
 public:	
-	ASlidingDoor();
+	ABHSlidingDoor();
 	
 	/** Checks whether the door can currently close. If a pawn is inside the safety box, this is not allowed unless overridden. */
 	UFUNCTION(BlueprintPure)
@@ -235,7 +235,7 @@ public:
 
 	/** Returns the door's state. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE EDoorState GetDoorState() const { return DoorState; }
+	FORCEINLINE EBHDoorState GetDoorState() const { return DoorState; }
 };
 
 

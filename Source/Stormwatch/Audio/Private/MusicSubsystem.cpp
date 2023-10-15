@@ -5,9 +5,9 @@
 #include "MetasoundSource.h"
 #include "MusicScript.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UMusicSubsystem, LogMusic);
+DEFINE_LOG_CATEGORY_CLASS(UBHMusicSubsystem, LogMusic);
 
-void UMusicSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UBHMusicSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
@@ -35,7 +35,7 @@ void UMusicSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	UE_LOG(LogMusic, Log, TEXT("Successfully initialized music subsystem."));
 }
 
-void UMusicSubsystem::Deinitialize()
+void UBHMusicSubsystem::Deinitialize()
 {
 	if (AudioComponent)
 	{
@@ -49,7 +49,7 @@ void UMusicSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UMusicSubsystem::ActivateMusicSubystem(UMusicSettings* Settings)
+void UBHMusicSubsystem::ActivateMusicSubystem(UMusicSettings* Settings)
 {
 	if (!Settings)
 	{
@@ -80,7 +80,7 @@ void UMusicSubsystem::ActivateMusicSubystem(UMusicSettings* Settings)
 	
 	if (const UClass* MusicScriptClass = Settings->MusicScriptClass)
 	{
-		MusicScript = NewObject<UMusicScript>(this, MusicScriptClass);
+		MusicScript = NewObject<UBHMusicScript>(this, MusicScriptClass);
 		if (MusicScript)
 		{
 			MusicScript->AudioComponent = AudioComponent;

@@ -1,18 +1,18 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "Keyboard.h"
+#include "BHKeyboard.h"
 
-AKeyboard::AKeyboard()
+ABHKeyboard::ABHKeyboard()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AKeyboard::BeginPlay()
+void ABHKeyboard::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-FString AKeyboard::GetRandomCharacter()
+FString ABHKeyboard::GetRandomCharacter()
 {
 	const FRandomStream RandomStream(FMath::Rand());
 	const int32 RandomIndex = RandomStream.RandRange(0, 25);

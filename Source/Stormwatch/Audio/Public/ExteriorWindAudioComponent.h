@@ -9,7 +9,7 @@
 class UMetaSoundSource;
 
 UENUM()
-enum class ETraceCardinalDirection : uint8
+enum class EBHTraceCardinalDirection : uint8
 {
 	North				UMETA(DisplayName = "North"),
 	East				UMETA(DisplayName = "East"),
@@ -17,8 +17,8 @@ enum class ETraceCardinalDirection : uint8
 	West				UMETA(DisplayName = "West"),
 };
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Audio", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UExteriorWindAudioComponent : public UActorComponent
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Audio")
+class STORMWATCH_API UBHExteriorWindAudioComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -99,7 +99,7 @@ private:
 
 public:	
 	/** Sets default values for this component's properties. */
-	UExteriorWindAudioComponent();
+	UBHExteriorWindAudioComponent();
 	
 	/** Called every frame. */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -132,7 +132,7 @@ protected:
 
 	/** Returns the average trace length of the last geometry query in a relative cardinal direction. */
 	UFUNCTION(BlueprintPure)
-	float GetAverageTraceLengthInCardinalDirection(const ETraceCardinalDirection Direction);
+	float GetAverageTraceLengthInCardinalDirection(const EBHTraceCardinalDirection Direction);
 
 private:
 	/** Begins a temporal geometry query. */

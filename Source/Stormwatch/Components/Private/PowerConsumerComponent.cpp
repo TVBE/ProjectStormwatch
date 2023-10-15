@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "PowerConsumerComponent.h"
-#include "PowerSource.h"
+#include "BHPowerSource.h"
 
 UPowerConsumerComponent::UPowerConsumerComponent()
 {
@@ -12,7 +12,7 @@ void UPowerConsumerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (APowerSource* ResolvedPowerSource = PowerSource.Get())
+	if (ABHPowerSource* ResolvedPowerSource = PowerSource.Get())
 	{
 		ResolvedPowerSource->RegisterPowerConsumer(this);
 	}

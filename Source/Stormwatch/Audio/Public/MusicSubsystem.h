@@ -7,12 +7,12 @@
 #include "MusicSubsystem.generated.h"
 
 class UAudioComponent;
-class UMusicScript;
+class UBHMusicScript;
 class UMetaSoundSource;
 
 /** Subsystem for music. */
-UCLASS(ClassGroup = "Music", Meta = (DisplayName = "Music Subsystem"))
-class STORMWATCH_API UMusicSubsystem : public UGameInstanceSubsystem
+UCLASS(ClassGroup = "Music")
+class STORMWATCH_API UBHMusicSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ private:
 	UAudioComponent* AudioComponent;
 
 	UPROPERTY(BlueprintGetter = GetMusicScript)
-	UMusicScript* MusicScript;
+	UBHMusicScript* MusicScript;
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -36,7 +36,7 @@ public:
 	FORCEINLINE UAudioComponent* GetMusicAudioComponent() const { return AudioComponent; }
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE UMusicScript* GetMusicScript() const { return MusicScript; }
+	FORCEINLINE UBHMusicScript* GetMusicScript() const { return MusicScript; }
 };
 
 UCLASS(BlueprintType, ClassGroup = "Music", Meta = (DisplayName = "Music Settings"))
@@ -50,5 +50,5 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, BlueprintReadOnly, Category = "Music", Meta = (DisplayName = "Music Script",
 		DisplayThumbnail))
-	TSubclassOf<UMusicScript> MusicScriptClass;
+	TSubclassOf<UBHMusicScript> MusicScriptClass;
 };

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ActorFunctionCaller.h"
-#include "ProximitySensor.generated.h"
+#include "BHProximitySensor.generated.h"
 
 class USphereComponent;
 class UCapsuleComponent;
@@ -12,7 +12,7 @@ struct FTimerHandle;
 
 /** Defines certain ignore parameters for the sensor. */
 UENUM(BlueprintType)
-enum class EBProximitySensorIgnoreParameter : uint8
+enum class EBHProximitySensorIgnoreParameter : uint8
 {
 	Player						UMETA(DisplayName = "Player", ToolTip = "The player will be ignored by this sensor."),
 	Nightstalker				UMETA(DisplayName = "Nightstalker", ToolTip = "The Nightstalker will be ignored by this sensor. "),
@@ -20,7 +20,7 @@ enum class EBProximitySensorIgnoreParameter : uint8
 
 /** Defines the current state of the sensor. */
 UENUM(BlueprintType)
-enum class ESensorState : uint8
+enum class EBHSensorState : uint8
 {
 	Idle						UMETA(DisplayName = "Idle"),
 	Alerted						UMETA(DisplayName = "Alerted"),
@@ -30,11 +30,11 @@ enum class ESensorState : uint8
 	Broken						UMETA(DisplayName = "Broken"),
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSensorStateChangedDelegate, const ESensorState, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSensorStateChangedDelegate, const EBHSensorState, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSensorActivatedDelegate);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Sensors", Meta = (DisplayName = "Proximity Sensor"))
-class STORMWATCH_API AProximitySensor : public AActor
+class STORMWATCH_API ABHProximitySensor : public AActor
 {
 	GENERATED_BODY()
 
@@ -84,7 +84,7 @@ protected:
 	
 	/** The ignore parameters for the sensor. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Ignore Parameters")
-	TArray<EBProximitySensorIgnoreParameter> IgnoreParameters;
+	TArray<EBHProximitySensorIgnoreParameter> IgnoreParameters;
 
 	/** Array of actor pointers that are currently overlapping the sphere. */
 	UPROPERTY()
@@ -114,10 +114,10 @@ protected:
 private:
 	/** The state of the sensor. */
 	UPROPERTY()
-	ESensorState SensorState = ESensorState::Idle;
+	EBHSensorState SensorState = EBHSensorState::Idle;
 
 public:	
-	AProximitySensor();
+	ABHProximitySensor();
 	
 	virtual void BeginPlay() override;
 	
@@ -164,7 +164,7 @@ protected:
 	void StopCooldown();
 
 	/** Sets the state of the sensor. */
-	void SetState(const ESensorState NewState);
+	void SetState(const EBHSensorState NewState);
 
 private:
 	/** Called when the cooldown is finished. */
@@ -174,7 +174,7 @@ private:
 public:
 	/** Returns the current sensor state. */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE ESensorState GetSensorState() const { return SensorState; }
+	FORCEINLINE EBHSensorState GetSensorState() const { return SensorState; }
 	
 	/** Returns if there currently is a pawn inside the sensor's range. */
 	UFUNCTION(BlueprintGetter)

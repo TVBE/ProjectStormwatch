@@ -8,9 +8,8 @@
 
 class UAudioComponent;
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Music", Meta = (DisplayName = "Music Script",
-	ShortToolTip = "Base class for persistent music script."))
-class UMusicScript : public UObject
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Music")
+class UBHMusicScript : public UObject
 {
 	GENERATED_BODY()
 

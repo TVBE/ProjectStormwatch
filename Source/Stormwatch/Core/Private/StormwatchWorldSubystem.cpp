@@ -4,9 +4,9 @@
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UStormwatchWorldSubsystem, LogStormwatchWorldSubsystem);
+DEFINE_LOG_CATEGORY_CLASS(UBHStormwatchWorldSubsystem, LogStormwatchWorldSubsystem);
 
-void UStormwatchWorldSubsystem::RegisterPlayerCharacter(ABHPlayerCharacter* Character)
+void UBHStormwatchWorldSubsystem::RegisterPlayerCharacter(ABHPlayerCharacter* Character)
 {
 	if (Character)
 	{
@@ -23,7 +23,7 @@ void UStormwatchWorldSubsystem::RegisterPlayerCharacter(ABHPlayerCharacter* Char
 	}
 }
 
-void UStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerCharacterController* Controller)
+void UBHStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerCharacterController* Controller)
 {
 	if (Controller)
 	{
@@ -40,7 +40,7 @@ void UStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerCharacterContr
 	}
 }
 
-void UStormwatchWorldSubsystem::UnregisterPlayerCharacter(ABHPlayerCharacter* Character)
+void UBHStormwatchWorldSubsystem::UnregisterPlayerCharacter(ABHPlayerCharacter* Character)
 {
 	if (Character)
 	{
@@ -51,7 +51,7 @@ void UStormwatchWorldSubsystem::UnregisterPlayerCharacter(ABHPlayerCharacter* Ch
 	}
 }
 
-void UStormwatchWorldSubsystem::UnregisterPlayerController(ABHPlayerCharacterController* Controller)
+void UBHStormwatchWorldSubsystem::UnregisterPlayerController(ABHPlayerCharacterController* Controller)
 {
 	if (Controller)
 	{

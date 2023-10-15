@@ -1,6 +1,6 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "LogCategories.h"
+#include "BHLogCategories.h"
 
 DEFINE_LOG_CATEGORY(LogNightstalker)
 DEFINE_LOG_CATEGORY(LogNightstalkerController)
@@ -12,4 +12,3 @@ DEFINE_LOG_CATEGORY(LogGrabbableObject)
 DEFINE_LOG_CATEGORY(LogDraggableObject)
 DEFINE_LOG_CATEGORY(LogInventoryObject)
 
-DEFINE_LOG_CATEGORY(LogActorFunctionCaller)

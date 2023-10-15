@@ -3,11 +3,11 @@
 
 #include "MusicScript.h"
 
-void UMusicScript::EventOnMusicBeginplay_Implementation()
+void UBHMusicScript::EventOnMusicBeginplay_Implementation()
 {
 }
 
-void UMusicScript::Initialize()
+void UBHMusicScript::Initialize()
 {
 	EventOnMusicBeginplay();
 }

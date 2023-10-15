@@ -8,16 +8,16 @@
 #include "TriggerableObjectInterface.h"
 #include "UsableObjectInterface.h"
 #include "GameFramework/Actor.h"
-#include "PressableButton.generated.h"
+#include "BHPressableButton.generated.h"
 
-class APowerSource;
+class ABHPowerSource;
 class UPowerConsumerComponent;
 class UMeshCollisionTriggerComponent;
 struct FTimerHandle;
 
 /** Defines the trigger type of the button. */
 UENUM(BlueprintType)
-enum class EButtonTriggerType : uint8
+enum class EBHButtonTriggerType : uint8
 {
 	SinglePress				UMETA(DisplayName = "Single Press"),
 	PressAndHold			UMETA(DisplayName = "Press and Hold"),
@@ -26,7 +26,7 @@ enum class EButtonTriggerType : uint8
 
 /** Defines an action for the button to perform if the power is lost. */
 UENUM(BlueprintType)
-enum class EButtonPowerChangeActionType : uint8
+enum class EBHButtonPowerChangeActionType : uint8
 {
 	Nothing					UMETA(DisplayName = "Nothing"),
 	Release					UMETA(DisplayName = "Release If Pressed"),
@@ -35,7 +35,7 @@ enum class EButtonPowerChangeActionType : uint8
 
 /** Defines some actions to execute on linked buttons when the button is pressed or unpressed. */
 UENUM(BlueprintType)
-enum class ELinkedButtonAction : uint8
+enum class EBHLinkedButtonAction : uint8
 {
 	Press			UMETA(DisplayName = "Press", Tooltip = "Presses the linked button when the action is triggered."),
 	Release			UMETA(DisplayName = "Release", Tooltip = "Releases the linked button when the action is triggered."),
@@ -46,13 +46,13 @@ enum class ELinkedButtonAction : uint8
 /** Struct containing a soft object pointer to another PressableButton actor,
  *	and actions to execute when the button that links the other PressableButton actor is pressed or released. */
 USTRUCT(BlueprintType)
-struct FLinkedButton
+struct FBHLinkedButton
 {
 	GENERATED_BODY()
 
 	/** The button actor that is linked.*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Linked Button"))
-	TSoftObjectPtr<APressableButton> Actor;
+	TSoftObjectPtr<ABHPressableButton> Actor;
 
 	/** If true, an action should be triggered on the button when the button is pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Do Action When Pressed", InlineEditConditionToggle))
@@ -61,7 +61,7 @@ struct FLinkedButton
 	/** The action that should be performed on the linked actor when the button is pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Action When Pressed",
 		EditCondition = "DoActionOnPress"))
-	ELinkedButtonAction PressedAction = ELinkedButtonAction::Press;
+	EBHLinkedButtonAction PressedAction = EBHLinkedButtonAction::Press;
 
 	/** If true, an action should be triggered on the button when the button is released. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Do Action When Released", InlineEditConditionToggle))
@@ -70,13 +70,13 @@ struct FLinkedButton
 	/** The action that should be performed on the linked actor when the button is released. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Action When Released",
 		EditCondition = "DoActionOnRelease"))
-	ELinkedButtonAction ReleasedAction = ELinkedButtonAction::Release;
+	EBHLinkedButtonAction ReleasedAction = EBHLinkedButtonAction::Release;
 
 	/** When true, the linked actor will not perform its gameplay action when triggered by this button. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Linked Button", Meta = (DisplayName = "Safe Link"))
 	bool IsActionLinked = true;
 
-	FLinkedButton()
+	FBHLinkedButton()
 	{
 	}
 };
@@ -86,7 +86,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonReleasedDelegate);
 
 /** Base class for button actors. */
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (DisplayName = "Button"))
-class APressableButton : public AActor, public IInteractableObject, public IUsableObject
+class ABHPressableButton : public AActor, public IInteractableObject, public IUsableObject
 {
 	GENERATED_BODY()
 
@@ -117,7 +117,7 @@ protected:
 	// GENERAL
 	/** The trigger type of the button. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (DisplayName = "Type"))
-	EButtonTriggerType TriggerType = EButtonTriggerType::SinglePress;
+	EBHButtonTriggerType TriggerType = EBHButtonTriggerType::SinglePress;
 	
 	/** The cooldown time between presses. When the button is in cooldown, the button cannot be pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button", Meta = (Units = "Seconds"))
@@ -150,25 +150,25 @@ protected:
 
 	/** Soft object pointer to the power source that this button is connected to. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Button|Power", Meta = (EditCondition = "RequiresPower"))
-	TSoftObjectPtr<APowerSource> PowerSource;
+	TSoftObjectPtr<ABHPowerSource> PowerSource;
 
 	/** If true, the button can still be toggled when the button has no power.
 	 *	This will update the state, but will not trigger any gameplay actions or call the linked buttons. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power",
-		Meta = (EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle"))
+		Meta = (EditCondition = "RequiresPower && TriggerType == EBHButtonTriggerType::Toggle"))
 	bool CanBeToggledWithoutPower = false;
 	
 	/** Defines the action the button should perform when power is lost. This is only available for toggle buttons. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Button|Power", Meta = (DisplayName = "Action On Power Loss",
-		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
+		EditCondition = "RequiresPower && TriggerType == EBHButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Release"))
-	EButtonPowerChangeActionType PowerLossAction = EButtonPowerChangeActionType::Nothing;
+	EBHButtonPowerChangeActionType PowerLossAction = EBHButtonPowerChangeActionType::Nothing;
 
 	/** Defines the action the button should perform when power is regained. This is only available for toggle buttons.  */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Button|Power", Meta = (DisplayName = "Action On Power Gain",
-		EditCondition = "RequiresPower && TriggerType == EButtonTriggerType::Toggle",
+		EditCondition = "RequiresPower && TriggerType == EBHButtonTriggerType::Toggle",
 		ValidEnumValues = "Nothing, Press"))
-	EButtonPowerChangeActionType PowerGainAction = EButtonPowerChangeActionType::Nothing;
+	EBHButtonPowerChangeActionType PowerGainAction = EBHButtonPowerChangeActionType::Nothing;
 	
 	/** The power consumer component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
@@ -184,7 +184,7 @@ private:
 	FTimerHandle CooldownTimerHandle;
 
 public:	
-	APressableButton();
+	ABHPressableButton();
 
 	/** Presses the button. This function should not be called by the player: Implement the IInteractableObject interface instead.
 	*	This functions should only be called by linked objects.

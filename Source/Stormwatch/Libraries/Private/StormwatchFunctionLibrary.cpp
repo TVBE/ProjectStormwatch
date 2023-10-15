@@ -95,7 +95,7 @@ ABHPlayerCharacter* UStormwatchFunctionLibrary::GetStormwatchPlayerCharacter(con
 	if (!WorldContextObject) { return nullptr; }
 	if (const UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
+		if (const UBHStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
 			return Subsystem->GetPlayerCharacter();
 		}
@@ -108,7 +108,7 @@ ABHPlayerCharacterController* UStormwatchFunctionLibrary::GetStormwatchPlayerCha
 	if (!WorldContextObject) { return nullptr; }
 	if (const UWorld* World = WorldContextObject->GetWorld())
 	{
-		if (const UStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UStormwatchWorldSubsystem>())
+		if (const UBHStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
 			return Subsystem->GetPlayerController();
 		}
