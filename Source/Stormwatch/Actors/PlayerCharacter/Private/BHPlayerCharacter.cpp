@@ -14,8 +14,8 @@
 #include "BHPlayerInventoryComponent.h"
 #include "BHPlayerMovementComponent.h"
 #include "BHPlayerUseComponent.h"
-#include "StormwatchGameMode.h"
-#include "StormwatchWorldSubystem.h"
+#include "BHStormwatchGameMode.h"
+#include "..\..\..\Core\Public\BHStormwatchWorldSubystem.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -90,7 +90,7 @@ void ABHPlayerCharacter::BeginPlay()
 
 	PlayerMovementComponent->OnLanding.AddDynamic(this, &ABHPlayerCharacter::HandleLandingStart);
 
-	AStormwatchGameMode* GameMode = Cast<AStormwatchGameMode>(GetWorld()->GetAuthGameMode());
+	ABHStormwatchGameMode* GameMode = Cast<ABHStormwatchGameMode>(GetWorld()->GetAuthGameMode());
 	check(GameMode);
 	GameMode->NotifyPlayerCharacterBeginPlay(this);
 

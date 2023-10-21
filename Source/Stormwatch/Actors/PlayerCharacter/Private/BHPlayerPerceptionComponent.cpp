@@ -1,9 +1,9 @@
 // Copyright Notice
 
 #include "BHPlayerPerceptionComponent.h"
-#include "StormwatchFunctionLibrary.h"
-#include "Nightstalker.h"
-#include "NightstalkerAIFunctionLibrary.h"
+#include "BHStormwatchGameplayLibrary.h"
+#include "BHNightstalker.h"
+#include "BHNightstalkerAIFunctionLibrary.h"
 #include "BHPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 
@@ -74,7 +74,7 @@ float UBHPlayerPerceptionComponent::GetViewAngleToTarget(const FVector& Target)
 
 void UBHPlayerPerceptionComponent::UpdatePerception_Implementation()
 {
-	if (const ANightstalker* Nightstalker = UStormwatchFunctionLibrary::GetStormwatchNightstalker(this))
+	if (const ANightstalker* Nightstalker = UBHStormwatchGameplayLibrary::GetStormwatchNightstalker(this))
 	{
 		const FVector PlayerLocation = GetOwner()->GetActorLocation();
 		const FVector NightstalkerLocation = Nightstalker->GetActorLocation();
@@ -83,7 +83,7 @@ void UBHPlayerPerceptionComponent::UpdatePerception_Implementation()
 		{
 			UE_LOG(LogPlayerPerception, VeryVerbose, TEXT("UpdatePerception: View angle to Nightstalker: %f"), ViewAngleToNightstalker);
 			
-			if (!UNightstalkerAIFunctionLibrary::IsOccluded(this, PlayerLocation, NightstalkerLocation))
+			if (!UBHNightstalkerAIFunctionLibrary::IsOccluded(this, PlayerLocation, NightstalkerLocation))
 			{
 				UE_LOG(LogPlayerPerception, VeryVerbose, TEXT("UpdatePerception: Nightstalker is not occluded."));
 				

@@ -2,7 +2,7 @@
 
 #include "BHProximitySensor.h"
 
-#include "Nightstalker.h"
+#include "BHNightstalker.h"
 #include "BHPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"

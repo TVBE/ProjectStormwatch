@@ -8,7 +8,7 @@
 #include "BHPlayerFlashlightComponent.h"
 #include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
-#include "StormwatchWorldSubystem.h"
+#include "..\..\..\Core\Public\BHStormwatchWorldSubystem.h"
 
 #include "Math/Rotator.h"
 #include "Kismet/KismetSystemLibrary.h"
