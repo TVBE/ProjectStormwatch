@@ -19,7 +19,7 @@ void UBHPlayerAudioComponent::OnRegister()
 	Super::OnRegister();
 	
 	ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetOwner());
-	if (!PlayerCharacter) {return; }
+	if (!PlayerCharacter) { return; }
 
 	BodyAudioComponent = Cast<UAudioComponent>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), false));
 	BodyAudioComponent->bAutoActivate = false;

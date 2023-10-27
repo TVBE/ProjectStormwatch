@@ -15,4 +15,9 @@ public:
 	//~ Begin BHInteractableObject interface.
 	FVector GetInteractionWidgetLocation_Implementation() const override { return GetComponentLocation(); }
 	//~ End BHInteractableObject interface.
+
+protected:
+	void OnRegister() override;
+	
+	bool bAllowOnlyOneInstancePerActor = false;
 };

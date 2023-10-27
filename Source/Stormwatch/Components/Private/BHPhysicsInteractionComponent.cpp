@@ -1,18 +1,19 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHPrimitiveComponentPhysicsDecorator.h"
+#include "BHPhysicsInteractionComponent.h"
 
 #include "BHInteractionComponent.h"
 
 #include "PhysicsEngine/BodyInstance.h"
 
-UBHPrimitiveComponentPhysicsDecorator::UBHPrimitiveComponentPhysicsDecorator()
+UBHPhysicsInteractionComponent::UBHPhysicsInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+	bAllowOnlyOneInstancePerActor = true;
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::OnRegister()
+void UBHPhysicsInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
 	
@@ -46,19 +47,19 @@ void UBHPrimitiveComponentPhysicsDecorator::OnRegister()
 	}
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::BeginPlay()
+void UBHPhysicsInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (Mesh)
 	{
-		Mesh->OnComponentSleep.AddDynamic(this, &UBHPrimitiveComponentPhysicsDecorator::HandleActorSleep);
+		Mesh->OnComponentSleep.AddDynamic(this, &UBHPhysicsInteractionComponent::HandleActorSleep);
 	}
 	
 	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
-			&UBHPrimitiveComponentPhysicsDecorator::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
+			&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
 	}
 
 	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
@@ -67,7 +68,7 @@ void UBHPrimitiveComponentPhysicsDecorator::BeginPlay()
 	}
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHPhysicsInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -78,7 +79,7 @@ void UBHPrimitiveComponentPhysicsDecorator::TickComponent(float DeltaTime, ELeve
 	// }
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::HandleOnOwnerGrabbed()
+void UBHPhysicsInteractionComponent::HandleOnOwnerGrabbed()
 {
 	if (!Mesh) { return; }
 	
@@ -96,12 +97,12 @@ void UBHPrimitiveComponentPhysicsDecorator::HandleOnOwnerGrabbed()
 			}
 
 			World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
-				&UBHPrimitiveComponentPhysicsDecorator::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
+				&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
 		}
 	}
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::HandleOnOwnerReleased()
+void UBHPhysicsInteractionComponent::HandleOnOwnerReleased()
 {
 	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
 	{
@@ -118,7 +119,7 @@ void UBHPrimitiveComponentPhysicsDecorator::HandleOnOwnerReleased()
 			}
 
 			World->GetTimerManager().SetTimer(RigidBodySleepEnableTimerHandle, this,
-				&UBHPrimitiveComponentPhysicsDecorator::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
+				&UBHPhysicsInteractionComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
 		}
 		
 	}
@@ -126,7 +127,7 @@ void UBHPrimitiveComponentPhysicsDecorator::HandleOnOwnerReleased()
 	bIsGrabbed = false;
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::EnableNotifyRigidBodyCollisionOnOwner()
+void UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner()
 {
 	if (!Mesh) { return; }
 	
@@ -136,7 +137,7 @@ void UBHPrimitiveComponentPhysicsDecorator::EnableNotifyRigidBodyCollisionOnOwne
 	}
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::EnableRigidBodySleep()
+void UBHPhysicsInteractionComponent::EnableRigidBodySleep()
 {
 	if (Mesh)
 	{
@@ -145,10 +146,10 @@ void UBHPrimitiveComponentPhysicsDecorator::EnableRigidBodySleep()
 	}
 }
 
-void UBHPrimitiveComponentPhysicsDecorator::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
+void UBHPhysicsInteractionComponent::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
 {
 	if (!Mesh || bIsGrabbed) { return; }
-	Mesh->OnComponentSleep.RemoveDynamic(this, &UBHPrimitiveComponentPhysicsDecorator::HandleActorSleep);
+	Mesh->OnComponentSleep.RemoveDynamic(this, &UBHPhysicsInteractionComponent::HandleActorSleep);
 
 	if (bDisableGenerateWakeEventsOnSleep)
 	{

@@ -3,11 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "BHPlayerCharacterComponent.generated.h"
-
-class ABHPlayerCharacter;
-class ABHPlayerCharacterController;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
 class STORMWATCH_API UBHPlayerCharacterComponent : public UActorComponent

@@ -5,7 +5,7 @@
 #include "BHPlayerCharacterComponent.h"
 #include "BHPlayerAudioComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent)
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerAudioComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

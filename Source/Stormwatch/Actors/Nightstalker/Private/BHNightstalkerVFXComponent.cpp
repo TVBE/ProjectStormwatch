@@ -1,9 +1,9 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHNightstalkerAudioController.h"
+#include "BHNightstalkerVFXComponent.h"
 
 // Sets default values for this component's properties
-UBHNightstalkerAudioController::UBHNightstalkerAudioController()
+UBHNightstalkerVFXComponent::UBHNightstalkerVFXComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -14,7 +14,7 @@ UBHNightstalkerAudioController::UBHNightstalkerAudioController()
 
 
 // Called when the game starts
-void UBHNightstalkerAudioController::BeginPlay()
+void UBHNightstalkerVFXComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -24,7 +24,7 @@ void UBHNightstalkerAudioController::BeginPlay()
 
 
 // Called every frame
-void UBHNightstalkerAudioController::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHNightstalkerVFXComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

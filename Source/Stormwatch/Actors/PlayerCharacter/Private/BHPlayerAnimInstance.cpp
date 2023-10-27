@@ -11,10 +11,10 @@
 void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetSkelMeshComponent()->GetOwner());
-	if (!PlayerCharacter) { return; }
+	check(PlayerCharacter);
 	
 	const ABHPlayerCharacterController* Controller = Cast<ABHPlayerCharacterController>(PlayerCharacter->GetController());
-	const UBHPlayerMovementComponent* CharacterMovement = PlayerCharacter->GetPlayerMovement();
+	const UBHPlayerMovementComponent* CharacterMovement = PlayerCharacter->GetPlayerMovementComponent();
 	if (Controller && CharacterMovement)
 	{
 		CheckMovementState(*PlayerCharacter, *Controller, *CharacterMovement);

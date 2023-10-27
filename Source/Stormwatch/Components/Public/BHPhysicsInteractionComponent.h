@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "Components/ActorComponent.h"
-#include "BHPrimitiveComponentPhysicsDecorator.generated.h"
+#include "BHInteractionComponent.h"
+#include "BHPhysicsInteractionComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Physics")
-class UBHPrimitiveComponentPhysicsDecorator : public UActorComponent
+class UBHPhysicsInteractionComponent : public UBHInteractionComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UBHPrimitiveComponentPhysicsDecorator();
+	UBHPhysicsInteractionComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
