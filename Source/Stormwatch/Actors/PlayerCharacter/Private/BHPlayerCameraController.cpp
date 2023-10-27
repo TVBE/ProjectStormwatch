@@ -2,6 +2,7 @@
 
 #include "BHPlayerCameraController.h"
 
+#include "BHPlayerCameraComponent.h"
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
 #include "BHPlayerMovementComponent.h"
@@ -94,23 +95,20 @@ FVector UBHPlayerCameraController::CalculateTargetLocation() const
 	const float Alpha = GetViewPitchAlpha();
 	const FVector SocketZOffset = GetHeadSocketZOffset();
 	const FVector MinAlphaLocation = ComponentLocationOrigin + (SocketZOffset * !Character->GetIsTurningInPlace());
-
-	FVector Result;
+	
 	if (Alpha == 0.0f)
 	{
 		return MinAlphaLocation;
 	}
-	else
-	{
-		const FVector ForwardVector = Character->GetActorForwardVector();
-		const float ForwardVelocity = FVector::DotProduct(Character->GetVelocity(), ForwardVector);
+	
+	const FVector ForwardVector = Character->GetActorForwardVector();
+	const float ForwardVelocity = FVector::DotProduct(Character->GetVelocity(), ForwardVector);
 
-		const FVector HeadSocketLocation = Character->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation();
-		const FVector DownwardAdjustment = FVector(ComponentLocationOrigin.X * 0.625, 0, 0) - FVector(0, 0, (ForwardVelocity * 0.02));
-		const FVector MaxAlphaLocation = HeadSocketLocation + DownwardAdjustment;
+	const FVector HeadSocketLocation = Character->GetMesh()->GetSocketTransform("head", RTS_Actor).GetLocation();
+	const FVector DownwardAdjustment = FVector(ComponentLocationOrigin.X * 0.625, 0, 0) - FVector(0, 0, (ForwardVelocity * 0.02));
+	const FVector MaxAlphaLocation = HeadSocketLocation + DownwardAdjustment;
 
-		return FMath::Lerp(MinAlphaLocation, MaxAlphaLocation, Alpha);
-	}
+	return FMath::Lerp(MinAlphaLocation, MaxAlphaLocation, Alpha);
 }
 
 void UBHPlayerCameraController::UpdateRotation(const float DeltaTime)
@@ -151,9 +149,8 @@ void UBHPlayerCameraController::AddCameraSwayRotation(FRotator& Rotator, const f
 float UBHPlayerCameraController::GetCameraSwayIntensity() const
 {
 	float Multiplier = 0.0f;
-	const EBHPlayerGroundMovementType MovementType = GetPlayerCharacter()->GetPlayerMovement()->GetGroundMovementType();
 
-	switch (MovementType)
+	switch (GetPlayerCharacter()->GetPlayerMovementComponent()->GetGroundMovementType())
 	{
 	case EBHPlayerGroundMovementType::Idle:
 	Multiplier = 0.1;
@@ -172,7 +169,7 @@ float UBHPlayerCameraController::GetCameraSwayIntensity() const
 
 void UBHPlayerCameraController::AddCameraCentripetalRotation(FRotator& Rotator, const float DeltaTime)
 {
-	const UBHPlayerMovementComponent* CharacterMovement = GetPlayerCharacter()->GetPlayerMovement();
+	const UBHPlayerMovementComponent* CharacterMovement = GetPlayerCharacter()->GetPlayerMovementComponent();
 	if (!CharacterMovement) { return; }
 	if (bCentripetalRotationSprintOnly && !CharacterMovement->GetIsSprinting()) { return; }
 	
@@ -198,10 +195,10 @@ void UBHPlayerCameraController::AddCameraCentripetalRotation(FRotator& Rotator, 
 
 void UBHPlayerCameraController::AddScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime)
 {	
-	const EBHPlayerGroundMovementType MovementType = GetPlayerCharacter()->GetPlayerMovement()->GetGroundMovementType();
+	const EBHPlayerGroundMovementType MovementType = GetPlayerCharacter()->GetPlayerMovementComponent()->GetGroundMovementType();
 	
 	float IntensityMultiplier = 0.0;
-	if (!GetPlayerCharacter()->GetMovementComponent()->bIsFalling())
+	if (!GetPlayerCharacter()->GetMovementComponent()->IsFalling())
 	{
 		switch(MovementType)
 		{
@@ -232,16 +229,17 @@ void UBHPlayerCameraController::AddScaledHeadSocketDeltaRotation(FRotator& Rotat
 void UBHPlayerCameraController::UpdateFOV(const float DeltaTime)
 {
 	ABHPlayerCharacter* Character = GetPlayerCharacter();
-	UCameraComponent* Camera = Character->GetCamera();
+	UBHPlayerCameraComponent* Camera = Character->GetCamera();
 
 	float TargetFOV = DefaultFOV;
 	const FVector WorldVelocity = Character->GetMovementComponent()->Velocity;
 	const FVector LocalVelocity = Character->GetActorTransform().InverseTransformVector(WorldVelocity);
 
-	if (LocalVelocity.X > Character->GetWalkSpeed() * 1.1)
+	if (LocalVelocity.X > Character->GetPlayerMovementComponent()->GetSettings().WalkSpeed * 1.1)
 	{
-		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Character->GetWalkSpeed() * 1.1, Character->GetSprintSpeed()),
-													  FVector2D(DefaultFOV, SprintFOV), LocalVelocity.X);
+		const FBHPlayerCharacterMovementSettings& Settings = Character->GetPlayerMovementComponent()->GetSettings();
+		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Settings.WalkSpeed * 1.1, Settings.SprintSpeed),
+			FVector2D(DefaultFOV, SprintFOV), LocalVelocity.X);
 	}
 
 	Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, 2.f);
@@ -249,9 +247,9 @@ void UBHPlayerCameraController::UpdateFOV(const float DeltaTime)
 
 void UBHPlayerCameraController::UpdateVignette(const float DeltaTime)
 {
-	if (GetPlayerCharacter()->GetPlayerMovement())
+	if (GetPlayerCharacter()->GetPlayerMovementComponent())
 	{
-		const float TargetVignetteIntensity {GetPlayerCharacter()->GetPlayerMovement()->GetIsSprinting()
+		const float TargetVignetteIntensity {GetPlayerCharacter()->GetPlayerMovementComponent()->GetIsSprinting()
 			? SprintVignetteIntensity : DefaultVignetteIntensity};
 		
 		if (Camera->PostProcessSettings.VignetteIntensity != TargetVignetteIntensity)
@@ -265,7 +263,7 @@ void UBHPlayerCameraController::UpdateVignette(const float DeltaTime)
 
 void UBHPlayerCameraController::UpdateDOF(const float DeltaTime)
 {
-	UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
+	UBHPlayerCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
 
 	float FocalDistance = GetFocalDistance();
 	FocalDistance = FMath::Clamp(FocalDistance, MinimumFocalDistance, MaximumFocalDistance);
@@ -290,7 +288,7 @@ void UBHPlayerCameraController::UpdateDOF(const float DeltaTime)
 
 float UBHPlayerCameraController::GetFocalDistance() const
 {
-	UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
+	UBHPlayerCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
 	
 	FVector CameraLocation = Camera->GetComponentLocation();
 	FVector ForwardVector = Camera->GetForwardVector();
@@ -321,7 +319,7 @@ FVector UBHPlayerCameraController::GetHeadSocketZOffset() const
 	return FVector(0, 0, ZOffset);
 }
 
-UCameraComponent* UBHPlayerCameraController::GetCamera() const
+UBHPlayerCameraComponent* UBHPlayerCameraController::GetCamera() const
 {
 	return GetPlayerCharacter()->GetCamera();
 }

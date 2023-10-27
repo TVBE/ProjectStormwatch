@@ -8,6 +8,10 @@
 
 #include "KismetAnimationLibrary.h"
 
+UBHPlayerAnimInstance::UBHPlayerAnimInstance()
+{
+}
+
 void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetSkelMeshComponent()->GetOwner());
@@ -17,19 +21,19 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const UBHPlayerMovementComponent* CharacterMovement = PlayerCharacter->GetPlayerMovementComponent();
 	if (Controller && CharacterMovement)
 	{
-		CheckMovementState(*PlayerCharacter, *Controller, *CharacterMovement);
+		CheckMovementState(*Controller, *CharacterMovement);
 	}
 
 	Direction = GetDirection(*PlayerCharacter);
 	Speed = GetSpeed(*PlayerCharacter, *CharacterMovement);
 
-	if (bIsFalling ^ CharacterMovement->bIsFalling() && !bIsFalling)
+	if (bIsFalling ^ CharacterMovement->IsFalling() && !bIsFalling)
 	{
 		FallTime = 0.0f;
 	}
 
-	bIsFalling = CharacterMovement->bIsFalling();
-	bIsAirborne = CharacterMovement->bIsFalling() || CharacterMovement->GetIsJumping();
+	bIsFalling = CharacterMovement->IsFalling();
+	bIsAirborne = CharacterMovement->IsFalling() || CharacterMovement->GetIsJumping();
 
 	if (bIsFalling)
 	{
@@ -41,18 +45,35 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }
 
-void UBHPlayerAnimInstance::GetStepData(FBHStepData& StepData, const FVector Location)
+void UBHPlayerAnimInstance::GetExtremityData(FBHStepData& StepData, const EBHBodyExtremity BodyPart)
 {
-	StepData.Location = Location;
+	FName Socket;
+
+	switch(BodyPart)
+	{
+	case EBHBodyExtremity::LeftFoot:
+		Socket = "foot_l_socket";
+		break;
+	case EBHBodyExtremity::RightFoot:
+		Socket = "foot_r_socket";
+		break;
+	case EBHBodyExtremity::LeftHand:
+		Socket = "hand_l_socket";
+		break;
+	case EBHBodyExtremity::RightHand:
+		Socket = "hand_r_socket";
+		break;
+	}
 
 	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
 	{
+		StepData.Location = GetSkelMeshComponent()->GetSocketLocation(Socket);
 		StepData.Velocity = GetSkelMeshComponent()->GetOwner()->GetVelocity().Length();
 	}
-		
+    
 	FHitResult HitResult;
-	FVector TraceStart = Location;
-	FVector TraceEnd = Location - FVector(0, 0, 50);
+	FVector TraceStart = StepData.Location;
+	FVector TraceEnd = StepData.Location - FVector(0, 0, 50);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwningActor());
 	Params.bTraceComplex = false;
@@ -65,36 +86,12 @@ void UBHPlayerAnimInstance::GetStepData(FBHStepData& StepData, const FVector Loc
 	}
 }
 
-FBHStepData UBHPlayerAnimInstance::GetFootstepData(const EBHLeftRight Foot)
-{
-	FBHStepData StepData = FBHStepData();
-	const FName Socket = Foot == EBHLeftRight::Left ? "foot_l_socket" : "foot_r_socket";
-	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
-	{
-		FVector Location = GetSkelMeshComponent()->GetSocketLocation(Socket);
-		GetStepData(StepData, Location);
-	}
-	return StepData;
-}
-
-FBHStepData UBHPlayerAnimInstance::GetHandstepData(const EBHLeftRight Hand)
-{
-	FBHStepData StepData = FBHStepData();
-	const FName Socket = Hand == EBHLeftRight::Left ? "hand_l_socket" : "hand_r_socket";
-	if (GetSkelMeshComponent() && GetSkelMeshComponent()->GetOwner())
-	{
-		FVector Location = GetSkelMeshComponent()->GetSocketLocation(Socket);
-		GetStepData(StepData, Location);
-	}
-	return StepData;
-}
-
-void UBHPlayerAnimInstance::CheckMovementState(const ABHPlayerCharacter& Character,
-	const ABHPlayerCharacterController& Controller,const UBHPlayerMovementComponent& CharacterMovement)
+void UBHPlayerAnimInstance::CheckMovementState(const ABHPlayerCharacterController& Controller,
+	const UBHPlayerMovementComponent& CharacterMovement)
 {
 	bIsMovementPending = Controller.GetHasMovementInput();
-	bIsMoving = bIsMovementPending && (CharacterMovement.IsMovingOnGround() || CharacterMovement.bIsFalling());
-	bIsCrouching = CharacterMovement.bIsCrouching();
+	bIsMoving = bIsMovementPending && (CharacterMovement.IsMovingOnGround() || CharacterMovement.IsFalling());
+	bIsCrouching = CharacterMovement.IsFalling();
 
 	bDoSprintSop = !bIsMovementPending && Speed > 275 && (Direction >= -20 && Direction <= 20);
 }

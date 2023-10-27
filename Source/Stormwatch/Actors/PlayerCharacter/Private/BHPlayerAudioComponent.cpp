@@ -18,13 +18,10 @@ void UBHPlayerAudioComponent::OnRegister()
 {
 	Super::OnRegister();
 	
-	ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetOwner());
-	if (!PlayerCharacter) { return; }
-
 	BodyAudioComponent = Cast<UAudioComponent>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), false));
 	BodyAudioComponent->bAutoActivate = false;
 	BodyAudioComponent->bEditableWhenInherited = false;
-	BodyAudioComponent->SetSound(BodyAudioComponentSoundAsset.LoadSynchronous());
+	BodyAudioComponent->SetSound(BodyAudioComponentSoundAsset);
 }
 
 void UBHPlayerAudioComponent::BeginPlay()
@@ -37,7 +34,7 @@ void UBHPlayerAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBHPlayerAudioComponent::CleanupComponent()
+void UBHPlayerAudioComponent::OnUnregister()
 {
 	if (BodyAudioComponent)
 	{
@@ -47,21 +44,11 @@ void UBHPlayerAudioComponent::CleanupComponent()
 		}
 		BodyAudioComponent->Deactivate();
 		BodyAudioComponent->DestroyComponent();
-		BodyAudioComponent = nullptr;
 	}
-}
-
-void UBHPlayerAudioComponent::OnUnregister()
-{
-	CleanupComponent();
+	
 	Super::OnUnregister();
 }
 
-void UBHPlayerAudioComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	CleanupComponent();
-	Super::EndPlay(EndPlayReason);
-}
 
 
 

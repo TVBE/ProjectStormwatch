@@ -7,8 +7,16 @@
 #include "BHStepData.h"
 #include "BHPlayerAnimInstance.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFootstepDelegate, FBHStepData, FootstepData);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHandstepDelegate, FBHStepData, HandstepData);
+UENUM(BlueprintType)
+enum class EBHBodyExtremity : uint8
+{
+	LeftFoot,
+	RightFoot,
+	LeftHand,
+	RightHand
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FExtremityHitDelegate, FBHStepData, FootstepData);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, Classgroup = "PlayerCharacter")
 class STORMWATCH_API UBHPlayerAnimInstance : public UAnimInstance
@@ -20,19 +28,11 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintPure)
-	FBHStepData GetFootstepData(const EBHLeftRight Foot);
+	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
+	void GetExtremityData(FBHStepData& StepData, const EBHBodyExtremity BodyPart);
 
-	UFUNCTION(BlueprintPure)
-	FBHStepData GetHandstepData(const EBHLeftRight Hand);
-
-	void GetStepData(FBHStepData& StepData, const FVector Location);
-
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FFootstepDelegate OnFootstep;
-
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FFootstepDelegate OnHandstep;
+	UPROPERTY(BlueprintAssignable)
+	FExtremityHitDelegate OnExtremityHit;
 
 protected:
 	// Properties to be evaluated through Fast-Path in the animation state machine. 
@@ -86,28 +86,26 @@ protected:
 	bool bIsCrouching = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	float Speed;
+	float Speed = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-	float TurnSpeed;
+	float TurnSpeed = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-	float Direction;
+	float Direction = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-	float FallTime;
+	float FallTime = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-	float VerticalAlpha;
+	float VerticalAlpha = 0.0f;
 
 private:
 	void UpdateFallTime(const float DeltaTime);
 
-	void CheckMovementState(const class ABHPlayerCharacter& Character, const class ABHPlayerCharacterController& Controller, const class UBHPlayerMovementComponent& CharacterMovement);
+	void CheckMovementState(const class ABHPlayerCharacterController& Controller, const class UBHPlayerMovementComponent& CharacterMovement);
 	void CheckTurnInplaceConditions(const ABHPlayerCharacter& Character);
 
 	static float GetSpeed(const ABHPlayerCharacter& Character, const UBHPlayerMovementComponent& CharacterMovement);
 	static float GetDirection(const ABHPlayerCharacter& Character);
-
-	ABHPlayerCharacter* PlayerCharacter;
 };
