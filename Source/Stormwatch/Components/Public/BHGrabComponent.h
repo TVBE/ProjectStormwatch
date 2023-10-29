@@ -2,20 +2,19 @@
 
 #pragma once
 
-#include "BHInteractionComponent.h"
+#include "BHPhysicsInteractionComponent.h"
 #include "BHGrabbableObjectInterface.h"
-#include "BHInventoryObjectInterface.h"
 #include "BHGrabComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (BlueprintSpawnableComponent))
-class UBHGrabComponent : public UBHInteractionComponent, public IBHGrabbableObject
+class UBHGrabComponent : public UBHPhysicsInteractionComponent, public IBHGrabbableObject
 {
 	GENERATED_BODY()
 
 public:
 	//~ Begin BHGrabbableObject Interface.
-	bool BeginGrab_Implementation(const AActor* Interactor) override { return false; }
-	bool EndGrab_Implementation(const AActor* Interactor) override { return false; }
-	EBHGrabType GetGrabType_Implementation() const override { return EBHGrabType::OneHanded; }
+	bool BeginGrab_Implementation(const AActor* Interactor) override;
+	bool EndGrab_Implementation(const AActor* Interactor) override;
+	EBHGrabType GetGrabType_Implementation() const override;
 	//~ End BHGrabbableObject Interface.
 };

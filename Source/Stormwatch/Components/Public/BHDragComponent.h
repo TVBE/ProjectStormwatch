@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "BHInteractionComponent.h"
+#include "BHPhysicsInteractionComponent.h"
 #include "BHDraggableObjectInterface.h"
 #include "BHDragComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Interaction", Meta = (BlueprintSpawnableComponent))
-class UBHDragComponent : public UBHInteractionComponent, public IBHDraggableObject 
+class UBHDragComponent : public UBHPhysicsInteractionComponent, public IBHDraggableObject 
 {
 	GENERATED_BODY()
 

@@ -4,10 +4,12 @@
 
 bool UBHDragComponent::BeginDrag_Implementation(const AActor* Interactor)
 {
-	return IBHDraggableObject::BeginDrag_Implementation(Interactor);
+	HandleOnInteractionStart();
+	return true;
 }
 
 bool UBHDragComponent::EndDrag_Implementation(const AActor* Interactor)
 {
-	return IBHDraggableObject::EndDrag_Implementation(Interactor);
+	HandleOnInteractionEnd();
+	return true;
 }

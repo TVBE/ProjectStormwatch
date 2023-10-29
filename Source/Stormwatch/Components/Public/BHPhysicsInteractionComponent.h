@@ -63,13 +63,12 @@ public:
 	UBHPhysicsInteractionComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-	void HandleOnInteractionStart();
-	void HandleOnInteractionEnd();
 
 protected:
 	virtual void OnRegister() override;
-	
+
+	void HandleOnInteractionStart();
+	void HandleOnInteractionEnd();
 #if WITH_EDITOR
 	virtual void CheckForErrors() override;
 #endif
