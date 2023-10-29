@@ -6,109 +6,77 @@
 
 #include "PhysicsEngine/BodyInstance.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogPhysicsInteractionComponent, Log, All);
+
 UBHPhysicsInteractionComponent::UBHPhysicsInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+#if WITH_EDITOR
 	bAllowOnlyOneInstancePerActor = true;
+#endif
 }
 
 void UBHPhysicsInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
-	
-	bIsGrabbed = true;
-
-	if (const AActor* Actor = GetOwner())
-	{
-		if (const UBHInteractionComponent* MeshInteractionComponent = Actor->FindComponentByClass<UBHInteractionComponent>())
-		{
-			Mesh = Cast<UStaticMeshComponent>(MeshInteractionComponent->GetAttachParent());
-			if (Mesh)
-			if (Mesh->IsSimulatingPhysics())
-			{
-					Mesh->BodyInstance.bUseCCD = true;
-				
-					Mesh->SetNotifyRigidBodyCollision(false);
-				
-					if (!Mesh->BodyInstance.bGenerateWakeEvents)
-					{
-						Mesh->BodyInstance.bGenerateWakeEvents = true;
-						bDisableGenerateWakeEventsOnSleep = true;
-					}
-				
-					OriginalSleepFamily = Mesh->BodyInstance.SleepFamily;
-					OriginalSleepThreshold = Mesh->BodyInstance.CustomSleepThresholdMultiplier;
-				
-					Mesh->BodyInstance.SleepFamily = ESleepFamily::Custom;
-					Mesh->BodyInstance.CustomSleepThresholdMultiplier = 1000.0f;
-			}
-		}
-	}
-}
-
-void UBHPhysicsInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Mesh)
-	{
-		Mesh->OnComponentSleep.AddDynamic(this, &UBHPhysicsInteractionComponent::HandleActorSleep);
-	}
-	
-	if (const UWorld* World = GetWorld())
-	{
-		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
-			&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
-	}
-
-	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
-	{
-		Mesh->WakeAllRigidBodies();
-	}
+#if WITH_EDITOR
+	ensureAlwaysMsgf(Cast<UPrimitiveComponent>(GetAttachParent()),
+		TEXT("UBHPhysicsInteractionComponent is not attached to a UPrimitiveComponent."));
+#endif
 }
 
 void UBHPhysicsInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	/** Temporary implementation to prevent the object from sleeping on release. */
-	// if (Mesh && !Mesh->IsAnyRigidBodyAwake())
-	// {
-	// 	Mesh->WakeAllRigidBodies();
-	// }
 }
 
-void UBHPhysicsInteractionComponent::HandleOnOwnerGrabbed()
+void UBHPhysicsInteractionComponent::HandleOnInteractionStart()
 {
-	if (!Mesh) { return; }
+	bInteracting = true;
 	
-	bIsGrabbed = true;
-
-	if (Mesh->IsSimulatingPhysics())
+	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
+	ensure(PrimitiveComponent->IsSimulatingPhysics());
+	
+	Snapshot.Emplace(FBHCollisionSettingsSnapshot(PrimitiveComponent));
+	PrimitiveComponent->BodyInstance.bUseCCD = true;
+	PrimitiveComponent->SetNotifyRigidBodyCollision(false);
+	PrimitiveComponent->BodyInstance.bGenerateWakeEvents = true;
+	PrimitiveComponent->BodyInstance.SleepFamily = ESleepFamily::Custom;
+	PrimitiveComponent->BodyInstance.CustomSleepThresholdMultiplier = 1000.0f;
+	
+	PrimitiveComponent->OnComponentSleep.AddDynamic(this, &UBHPhysicsInteractionComponent::HandleRigidBodySleep);
+	
+	if (const UWorld* World = GetWorld(); ensure(World))
 	{
-		Mesh->SetNotifyRigidBodyCollision(false);
+		PrimitiveComponent->SetNotifyRigidBodyCollision(false);
 		
-		if (const UWorld* World = GetWorld())
+		if (World->GetTimerManager().IsTimerActive(CollisionHitEventEnableTimerHandle))
 		{
-			if (World->GetTimerManager().IsTimerActive(CollisionHitEventEnableTimerHandle))
-			{
-				World->GetTimerManager().ClearTimer(CollisionHitEventEnableTimerHandle);
-			}
-
-			World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
-				&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner, CollisionHitEventEnableDelay, false);
+			World->GetTimerManager().ClearTimer(CollisionHitEventEnableTimerHandle);
 		}
+		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
+			&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnAttachParent,
+			TimeToDisableCollisionNotifiesOnInteraction, false);
+	}
+
+	if (!PrimitiveComponent->IsAnyRigidBodyAwake())
+	{
+		PrimitiveComponent->WakeAllRigidBodies();
 	}
 }
 
-void UBHPhysicsInteractionComponent::HandleOnOwnerReleased()
+void UBHPhysicsInteractionComponent::HandleOnInteractionEnd()
 {
-	if (Mesh && !Mesh->IsAnyRigidBodyAwake())
+	bInteracting = false;
+	
+	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
+	ensure(PrimitiveComponent->IsSimulatingPhysics());
+	if (PrimitiveComponent && !PrimitiveComponent->IsAnyRigidBodyAwake())
 	{
-		if (!Mesh->IsAnyRigidBodyAwake())
+		if (!PrimitiveComponent->IsAnyRigidBodyAwake())
 		{
-			Mesh->WakeAllRigidBodies();
+			PrimitiveComponent->WakeAllRigidBodies();
 		}
 
 		if (const UWorld* World = GetWorld())
@@ -121,45 +89,80 @@ void UBHPhysicsInteractionComponent::HandleOnOwnerReleased()
 			World->GetTimerManager().SetTimer(RigidBodySleepEnableTimerHandle, this,
 				&UBHPhysicsInteractionComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
 		}
-		
 	}
 	
-	bIsGrabbed = false;
+	bInteracting = false;
 }
 
-void UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnOwner()
+void UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnAttachParent()
 {
-	if (!Mesh) { return; }
-	
-	if (Mesh->IsSimulatingPhysics())
+	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
+	if (PrimitiveComponent->IsSimulatingPhysics())
 	{
-		Mesh->SetNotifyRigidBodyCollision(true);
+		PrimitiveComponent->SetNotifyRigidBodyCollision(true);
 	}
 }
 
 void UBHPhysicsInteractionComponent::EnableRigidBodySleep()
 {
-	if (Mesh)
+	if (ensure(Snapshot.IsSet()))
 	{
-		Mesh->BodyInstance.SleepFamily = OriginalSleepFamily;
-		Mesh->BodyInstance.CustomSleepThresholdMultiplier = OriginalSleepThreshold;
+		UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
+		PrimitiveComponent->BodyInstance.SleepFamily = Snapshot.GetValue().SleepFamily;
+		PrimitiveComponent->BodyInstance.CustomSleepThresholdMultiplier = Snapshot.GetValue().SleepThresholdMultiplier;
 	}
 }
 
-void UBHPhysicsInteractionComponent::HandleActorSleep(UPrimitiveComponent* Component, FName BoneName)
+UPrimitiveComponent* UBHPhysicsInteractionComponent::GetPrimitiveComponent() const
 {
-	if (!Mesh || bIsGrabbed) { return; }
-	Mesh->OnComponentSleep.RemoveDynamic(this, &UBHPhysicsInteractionComponent::HandleActorSleep);
+	UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent());
+	checkf(PrimitiveComponent, TEXT(""));
+	return PrimitiveComponent;
+}
 
-	if (bDisableGenerateWakeEventsOnSleep)
+void UBHPhysicsInteractionComponent::HandleRigidBodySleep(UPrimitiveComponent* Component, FName BoneName)
+{
+	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
+	
+	if (bInteracting)
 	{
-		Mesh->BodyInstance.bGenerateWakeEvents = false;
+		PrimitiveComponent->WakeAllRigidBodies();
+		return;
 	}
 	
-	Mesh->BodyInstance.bUseCCD = false;
-	
-	DestroyComponent();
+	PrimitiveComponent->OnComponentSleep.RemoveDynamic(this, &UBHPhysicsInteractionComponent::HandleRigidBodySleep);
+
+	if (ensure(Snapshot.IsSet()))
+	{
+		PrimitiveComponent->BodyInstance.bGenerateWakeEvents = Snapshot.GetValue().bGenerateWakeEvents;
+		if (bEnableCDOOnInteraction)
+		{
+			PrimitiveComponent->BodyInstance.bUseCCD = Snapshot.GetValue().bEnableCDO;
+		}
+	}
 }
+
+#if WITH_EDITOR
+void UBHPhysicsInteractionComponent::CheckForErrors()
+{
+	Super::CheckForErrors();
+
+	if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent()))
+	{
+		if (!PrimitiveComponent->IsSimulatingPhysics())
+		{
+			UE_LOG(LogPhysicsInteractionComponent, Warning,
+				TEXT("%s is attached to a UPrimitiveComponent that is not simulating physics in actor: %s"),
+				*GetName(), *GetOwner()->GetName())
+		}
+	}
+	else
+	{
+		UE_LOG(LogPhysicsInteractionComponent, Error, TEXT("%s is not attached to a UPrimitiveComponent in actor: %s."),
+			*GetName(), *GetOwner()->GetName())
+	}
+}
+#endif
 
 
 

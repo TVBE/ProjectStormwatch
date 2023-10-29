@@ -16,8 +16,13 @@ public:
 	FVector GetInteractionWidgetLocation_Implementation() const override { return GetComponentLocation(); }
 	//~ End BHInteractableObject interface.
 
+	bool IsInteracting() const { return bInteracting; }
+
 protected:
 	void OnRegister() override;
-	
+
+	bool bInteracting = false;
+#if WITH_EDITOR
 	bool bAllowOnlyOneInstancePerActor = false;
+#endif
 };

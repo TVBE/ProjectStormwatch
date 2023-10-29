@@ -214,7 +214,7 @@ void UBHPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	 *	If not, add the component to the grabbed actor. */
 	if (UBHPhysicsInteractionComponent* KineticComponent = Cast<UBHPhysicsInteractionComponent>(ActorToGrab->GetComponentByClass(UBHPhysicsInteractionComponent::StaticClass())))
 	{
-		KineticComponent->HandleOnOwnerGrabbed();
+		KineticComponent->HandleOnInteractionStart();
 	}
 	else
 	{
@@ -236,7 +236,7 @@ void UBHPlayerGrabComponent::ReleaseActor()
 
 	if (UBHPhysicsInteractionComponent* KineticComponent = Cast<UBHPhysicsInteractionComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UBHPhysicsInteractionComponent::StaticClass())))
 	{
-		KineticComponent->HandleOnOwnerReleased();
+		KineticComponent->HandleOnInteractionEnd();
 	}
 		
 	if(!bThrowOnRelease)

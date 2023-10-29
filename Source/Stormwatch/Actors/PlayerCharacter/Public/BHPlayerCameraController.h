@@ -29,8 +29,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) override;
-
 	void UpdateLocation(const float DeltaTime);
 	void UpdateRotation(const float DeltaTime);
 	void UpdateVignette(const float DeltaTime);
@@ -46,8 +44,7 @@ private:
 	float GetCameraSwayIntensity() const;
 	void AddCameraCentripetalRotation(FRotator& Rotator, const float DeltaTime);
 	void AddScaledHeadSocketDeltaRotation(FRotator& Rotator, const float DeltaTime);
-
-	UCameraComponent* GetCamera() const;
+	
 	FRotator GetControlRotation() const;
 
 	/** Defines the maximum allowed camera angle. */

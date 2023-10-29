@@ -19,7 +19,7 @@
 UBHPlayerCameraController::UBHPlayerCameraController()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = false;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
 }
 
 void UBHPlayerCameraController::OnRegister()
@@ -35,32 +35,11 @@ void UBHPlayerCameraController::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UBHPlayerCameraController::OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController)
-{
-	if (NewController)
-	{
-		SetComponentTickEnabled(true);
-
-		if (APlayerController * PlayerController = Cast<APlayerController>(NewController))
-		{
-			SetCameraPitchLimits(PlayerController->PlayerCameraManager);
-
-			if (!PreviousController)
-			{
-				const FLinearColor Color(0.0f, 0.0f, 0.0f, 1.0f);
-				PlayerController->PlayerCameraManager->SetManualCameraFade(1.0f, Color, false);
-			}
-		}
-	}
-	else
-	{
-		SetComponentTickEnabled(false);
-	}
-}
-
 void UBHPlayerCameraController::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!GetPlayerCharacter()->GetController()) { return; }
 	
 	UpdateRotation(DeltaTime);
 	UpdateLocation(DeltaTime);
@@ -113,7 +92,9 @@ FVector UBHPlayerCameraController::CalculateTargetLocation() const
 
 void UBHPlayerCameraController::UpdateRotation(const float DeltaTime)
 {
-	FRotator TargetRotation = GetPlayerCharacterController()->GetPlayerControlRotation();
+	FRotator TargetRotation = FMath::Clamp(MinimumViewPitch, MaximumViewPitch,
+		GetPlayerCharacterController()->GetPlayerControlRotation());
+	
 	if (!GetPlayerCharacter()->GetIsTurningInPlace())
 	{
 		AddScaledHeadSocketDeltaRotation(TargetRotation, DeltaTime);
@@ -197,14 +178,14 @@ void UBHPlayerCameraController::AddScaledHeadSocketDeltaRotation(FRotator& Rotat
 {	
 	const EBHPlayerGroundMovementType MovementType = GetPlayerCharacter()->GetPlayerMovementComponent()->GetGroundMovementType();
 	
-	float IntensityMultiplier = 0.0;
+	float IntensityMultiplier = 0.0f;
 	if (!GetPlayerCharacter()->GetMovementComponent()->IsFalling())
 	{
 		switch(MovementType)
 		{
-		case EBHPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.25;
+		case EBHPlayerGroundMovementType::Sprinting: IntensityMultiplier = 1.25f;
 			break;
-		default: IntensityMultiplier = 0.5;
+		default: IntensityMultiplier = 0.5f;
 			break;
 		}
 	}
@@ -217,18 +198,15 @@ void UBHPlayerCameraController::AddScaledHeadSocketDeltaRotation(FRotator& Rotat
 		TargetHeadSocketRotation.Yaw * GetPlayerCharacter()->bIsCrouched ? CrouchedSocketRotationIntensity.Z : SocketRotationIntensity.Z,
 		TargetHeadSocketRotation.Roll * GetPlayerCharacter()->bIsCrouched ? CrouchedSocketRotationIntensity.Y : SocketRotationIntensity.Y
 	);
-
-	if (const UWorld* World = GetWorld())
-	{
-		InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
-	}
+	
+	InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation, DeltaTime, 4);
 	
 	Rotator = InterpolatedHeadSocketRotation;
 }
 
 void UBHPlayerCameraController::UpdateFOV(const float DeltaTime)
 {
-	ABHPlayerCharacter* Character = GetPlayerCharacter();
+	const ABHPlayerCharacter* Character = GetPlayerCharacter();
 	UBHPlayerCameraComponent* Camera = Character->GetCamera();
 
 	float TargetFOV = DefaultFOV;
@@ -247,6 +225,8 @@ void UBHPlayerCameraController::UpdateFOV(const float DeltaTime)
 
 void UBHPlayerCameraController::UpdateVignette(const float DeltaTime)
 {
+	UBHPlayerCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
+	
 	if (GetPlayerCharacter()->GetPlayerMovementComponent())
 	{
 		const float TargetVignetteIntensity {GetPlayerCharacter()->GetPlayerMovementComponent()->GetIsSprinting()
@@ -319,11 +299,6 @@ FVector UBHPlayerCameraController::GetHeadSocketZOffset() const
 	return FVector(0, 0, ZOffset);
 }
 
-UBHPlayerCameraComponent* UBHPlayerCameraController::GetCamera() const
-{
-	return GetPlayerCharacter()->GetCamera();
-}
-
 FRotator UBHPlayerCameraController::GetControlRotation() const
 {
 	return FRotator(0, GetPlayerCharacterController()->GetPlayerControlRotation().Yaw, 0);
@@ -339,7 +314,7 @@ void UBHPlayerCameraController::FadeFromBlack(const float Duration)
 
 void UBHPlayerCameraController::SetCameraPitchLimits(TObjectPtr<APlayerCameraManager> CameraManager)
 {
-	if (CameraManager.IsNull()) { return; }
+	if (!CameraManager) { return; }
 
 	CameraManager->ViewPitchMax = MaximumViewPitch;
 	CameraManager->ViewPitchMin = MinimumViewPitch;

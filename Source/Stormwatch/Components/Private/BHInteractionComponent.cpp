@@ -5,7 +5,7 @@
 void UBHInteractionComponent::OnRegister()
 {
 	Super::OnRegister();
-	
+#if WITH_EDITOR
 	if (bAllowOnlyOneInstancePerActor)
 	{
 		if (AActor* Owner = GetOwner())
@@ -21,4 +21,5 @@ void UBHInteractionComponent::OnRegister()
 				*this->GetClass()->GetName());
 		}
 	}
+#endif
 }

@@ -45,7 +45,7 @@ public:
 	class UBHPlayerMovementComponent* GetPlayerMovementComponent() const;
 
 	UFUNCTION(BlueprintGetter)
-	UBHPlayerInteractionComponent* GetInteractionComponent() const;
+	class UBHPlayerInteractionComponent* GetInteractionComponent() const;
 
 	UFUNCTION(BlueprintGetter)
 	class UBHPlayerUseComponent* GetUseComponent() const;

@@ -5,7 +5,56 @@
 #include "BHInteractionComponent.h"
 #include "BHPhysicsInteractionComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Physics")
+USTRUCT()
+struct FBHCollisionSettingsSnapshot
+{
+	GENERATED_BODY()
+	
+	bool bEnableCDO;
+	ESleepFamily SleepFamily;
+	float SleepThresholdMultiplier;
+	bool bGenerateWakeEvents;
+	
+	FBHCollisionSettingsSnapshot()
+	: bEnableCDO(false),
+	  SleepFamily(ESleepFamily::Normal),
+	  SleepThresholdMultiplier(0.0f),
+	  bGenerateWakeEvents(false)
+	{}
+	
+	FBHCollisionSettingsSnapshot(
+		bool InEnableCDO,
+		ESleepFamily InOriginalSleepFamily,
+		float InOriginalSleepThreshold,
+		bool InDisableGenerateWakeEventsOnSleep
+	)
+		: bEnableCDO(InEnableCDO),
+		  SleepFamily(InOriginalSleepFamily),
+		  SleepThresholdMultiplier(InOriginalSleepThreshold),
+		  bGenerateWakeEvents(InDisableGenerateWakeEventsOnSleep)
+	{}
+
+	FBHCollisionSettingsSnapshot(const UPrimitiveComponent* InPrimitiveComponent)
+	{
+		if(InPrimitiveComponent)
+		{
+			bEnableCDO = InPrimitiveComponent->BodyInstance.bUseCCD;
+			SleepFamily = InPrimitiveComponent->BodyInstance.SleepFamily;
+			SleepThresholdMultiplier = InPrimitiveComponent->BodyInstance.CustomSleepThresholdMultiplier;
+			bGenerateWakeEvents = InPrimitiveComponent->BodyInstance.bGenerateWakeEvents;
+		}
+		else
+		{
+			// Default values if the provided pointer is null
+			bEnableCDO = false;
+			SleepFamily = ESleepFamily::Normal;
+			SleepThresholdMultiplier = 0.0f;
+			bGenerateWakeEvents = false;
+		}
+	}
+};
+
+UCLASS(Abstract, NotBlueprintable, BlueprintType, ClassGroup = "Physics")
 class UBHPhysicsInteractionComponent : public UBHInteractionComponent
 {
 	GENERATED_BODY()
@@ -15,43 +64,41 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION()
-	void HandleOnOwnerGrabbed();
-	
-	UFUNCTION()
-	void HandleOnOwnerReleased();
+	void HandleOnInteractionStart();
+	void HandleOnInteractionEnd();
 
-private:
-	virtual void BeginPlay() override;
+protected:
 	virtual void OnRegister() override;
-
+	
+#if WITH_EDITOR
+	virtual void CheckForErrors() override;
+#endif
+	
+private:
 	UFUNCTION()
-	void HandleActorSleep(UPrimitiveComponent* Component, FName BoneName);
+	void HandleRigidBodySleep(UPrimitiveComponent* Component, FName BoneName);
 	
 	UFUNCTION()
-	void EnableNotifyRigidBodyCollisionOnOwner();
+	void EnableNotifyRigidBodyCollisionOnAttachParent();
 	
 	UFUNCTION()
 	void EnableRigidBodySleep();
 	
-	float TimeToStayAwakeAfterRelease = 3.0f;
-	
-	bool bEnableCCD = true;
-	
-	UPROPERTY()
-	UStaticMeshComponent* Mesh = nullptr;
-	
-	ESleepFamily OriginalSleepFamily = ESleepFamily::Normal;
-	
-	float OriginalSleepThreshold = 0.0f;
-	
-	bool bDisableGenerateWakeEventsOnSleep = false;
+	UPrimitiveComponent* GetPrimitiveComponent() const;
 
-	// The time the component should wait before re-enabling bNotifyRigidBodyCollision on
-	// the physics simulating scene component.
-	float CollisionHitEventEnableDelay = 0.3f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Interaction",
+	Meta = (AllowPrivateAccess = "true"))
+	bool bEnableCDOOnInteraction = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Interaction",
+	Meta = (Units = "Seconds", ClampMin = "0", UIMin = "0", AllowPrivateAccess = "true"))
+	float TimeToStayAwakeAfterRelease = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Physics Interaction",
+	Meta = (Units = "Seconds", ClampMin = "0", UIMin = "0", AllowPrivateAccess = "true"))
+	float TimeToDisableCollisionNotifiesOnInteraction = 0.3f;
 	
-	bool bIsGrabbed = false;
+	TOptional<FBHCollisionSettingsSnapshot> Snapshot;
 	
 	UPROPERTY()
 	FTimerHandle RigidBodySleepEnableTimerHandle;
