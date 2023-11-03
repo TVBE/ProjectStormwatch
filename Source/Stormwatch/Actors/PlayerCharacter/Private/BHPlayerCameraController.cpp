@@ -107,7 +107,7 @@ void UBHPlayerCameraController::UpdateRotation(const float DeltaTime)
 	{
 		AddCameraCentripetalRotation(TargetRotation, DeltaTime);
 	}
-	GetCamera()->SetWorldRotation(TargetRotation);
+	SetWorldRotation(TargetRotation);
 }
 
 void UBHPlayerCameraController::AddCameraSwayRotation(FRotator& Rotator, const float DeltaTime)

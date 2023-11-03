@@ -36,7 +36,7 @@ struct FBHCollisionSettingsSnapshot
 
 	FBHCollisionSettingsSnapshot(const UPrimitiveComponent* InPrimitiveComponent)
 	{
-		if(InPrimitiveComponent)
+		if(ensure(InPrimitiveComponent))
 		{
 			bEnableCDO = InPrimitiveComponent->BodyInstance.bUseCCD;
 			SleepFamily = InPrimitiveComponent->BodyInstance.SleepFamily;
@@ -45,10 +45,10 @@ struct FBHCollisionSettingsSnapshot
 		}
 		else
 		{
-			// Default values if the provided pointer is null
+			// Default values if the provided pointer is null.
 			bEnableCDO = false;
 			SleepFamily = ESleepFamily::Normal;
-			SleepThresholdMultiplier = 0.0f;
+			SleepThresholdMultiplier = 1.0f;
 			bGenerateWakeEvents = false;
 		}
 	}

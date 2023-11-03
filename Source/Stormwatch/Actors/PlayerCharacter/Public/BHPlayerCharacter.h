@@ -70,13 +70,13 @@ protected:
 	void UpdateMovementSpeed();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCamera, Category = "Components")
-	class UBHPlayerCameraComponent* Camera;
+	UBHPlayerCameraComponent* Camera;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraController, Category = "Components")
 	UBHPlayerCameraController* CameraController;
 
 	UPROPERTY(BlueprintGetter = GetPlayerMesh, Category = "Components")
-	class UBHPlayerSkeletalMeshComponent* PlayerMesh;
+	UBHPlayerSkeletalMeshComponent* PlayerMesh;
 
 	UPROPERTY(BlueprintGetter = GetPlayerMovementComponent, Category = "Components")
 	UBHPlayerMovementComponent* PlayerMovementComponent;

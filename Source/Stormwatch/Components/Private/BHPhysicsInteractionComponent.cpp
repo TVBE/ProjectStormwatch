@@ -116,7 +116,11 @@ void UBHPhysicsInteractionComponent::EnableRigidBodySleep()
 UPrimitiveComponent* UBHPhysicsInteractionComponent::GetPrimitiveComponent() const
 {
 	UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent());
-	checkf(PrimitiveComponent, TEXT(""));
+	checkf(PrimitiveComponent, TEXT("%s is attached to %s, but expects to be attached to a UPrimitiveComponent in actor: %s."),
+	*GetNameSafe(this),
+	*GetNameSafe(GetAttachParent()),
+	*GetNameSafe(GetOwner()));
+
 	return PrimitiveComponent;
 }
 

@@ -24,8 +24,8 @@
 ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 : Super(
 	ObjectInitializer
-	.SetDefaultSubobjectClass<UBHPlayerMovementComponent>(ACharacter::CharacterMovementComponentName)
-	.SetDefaultSubobjectClass<UBHPlayerSkeletalMeshComponent>(ACharacter::MeshComponentName)
+	.SetDefaultSubobjectClass<UBHPlayerMovementComponent>(CharacterMovementComponentName)
+	.SetDefaultSubobjectClass<UBHPlayerSkeletalMeshComponent>(MeshComponentName)
 )
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,15 +35,15 @@ ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	PlayerMovementComponent = Cast<UBHPlayerMovementComponent>(GetCharacterMovement());
 	PlayerMesh = Cast<UBHPlayerSkeletalMeshComponent>(GetMesh());
+	
+	CameraController = CreateDefaultSubobject<UBHPlayerCameraController>(TEXT("Camera Controller"));
+	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
+	CameraController->bEditableWhenInherited = true;
 
 	Camera = CreateDefaultSubobject<UBHPlayerCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(this->RootComponent);
-	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
+	Camera->SetupAttachment(this->CameraController);
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
-
-	CameraController = CreateDefaultSubobject<UBHPlayerCameraController>(TEXT("Camera Controller"));
-	CameraController->bEditableWhenInherited = true;
 
 	InteractionComponent = CreateDefaultSubobject<UBHPlayerInteractionComponent>(TEXT("Interaction Component"));
 	InteractionComponent->bEditableWhenInherited = true;
@@ -341,16 +341,3 @@ void ABHPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	Super::EndPlay(EndPlayReason);
 }
-
-//void UPlayerCharacterSettings::Apply(APlayerCharacter* Character)
-//{
-//	if (!Character) { return; }
-//	if (UCharacterMovementComponent * MovementComponent = Character->GetCharacterMovement())
-//	{
-//		MovementComponent->MaxWalkSpeed = Settings.WalkSpeed;
-//		MovementComponent->JumpZVelocity = Settings.JumpVelocity;
-//		MovementComponent->MaxWalkSpeedCrouched = Settings.CrouchSpeed;
-//		MovementComponent->SetWalkableFloorAngle(Settings.MaxWalkableFloorAngle);
-//		MovementComponent->MaxStepHeight = Settings.MaxStepHeight;
-//	}
-//}
