@@ -18,7 +18,7 @@ enum class EBHBodyExtremity : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FExtremityHitDelegate, FBHStepData, FootstepData);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, Classgroup = "PlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()

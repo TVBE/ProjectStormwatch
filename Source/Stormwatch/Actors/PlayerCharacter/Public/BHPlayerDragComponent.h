@@ -9,7 +9,7 @@ class UBHPlayerInteractionComponent;
 class UCameraComponent;
 class ABHPlayerCharacter;
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 	class STORMWATCH_API UBHPlayerDragComponent : public UBHPlayerCharacterPhysicsHandleComponent
 {
 	GENERATED_BODY()

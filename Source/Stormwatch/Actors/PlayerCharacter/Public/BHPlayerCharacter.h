@@ -5,7 +5,7 @@
 #include "GameFramework/Character.h"
 #include "BHPlayerCharacter.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, NotPlaceable, ClassGroup = "PlayerCharacter")
+UCLASS(Abstract, NotPlaceable, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API ABHPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()

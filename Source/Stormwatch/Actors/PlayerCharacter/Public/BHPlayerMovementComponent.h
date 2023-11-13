@@ -188,7 +188,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEventDelegate, EBHPlayerL
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EBHPlayerLandingType, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
 
-UCLASS(Notblueprintable, Blueprinttype, ClassGroup = "PlayerCharacter")
+UCLASS(Notblueprintable, Blueprinttype, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()

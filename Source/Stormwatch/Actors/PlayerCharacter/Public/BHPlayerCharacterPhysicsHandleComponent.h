@@ -7,7 +7,7 @@
 class ABHPlayerCharacter;
 class ABHPlayerCharacterController;
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerCharacterPhysicsHandleComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()

@@ -11,7 +11,7 @@ class ABHPlayerCharacter;
 class UPlayerFlashlightConfiguration;
 enum class EBHPlayerGroundMovementType : uint8;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerFlashlightComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

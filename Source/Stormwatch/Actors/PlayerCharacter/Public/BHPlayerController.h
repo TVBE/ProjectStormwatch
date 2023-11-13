@@ -1,15 +1,16 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "BHPlayerCharacterController.generated.h"
+#include "BHPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, bValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, bValue);
 
 /** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API ABHPlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()

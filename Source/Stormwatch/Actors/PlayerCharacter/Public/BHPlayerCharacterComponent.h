@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "BHPlayerCharacterComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerCharacterComponent : public UActorComponent
 {
 	GENERATED_BODY()

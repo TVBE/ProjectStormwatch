@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "BHPlayerCharacterComponent.h"
 #include "BHPlayerVocalComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerCharacterVocalComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

@@ -53,7 +53,7 @@ struct FBHInteractableObjectData
 	}
 };
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerInteractionComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

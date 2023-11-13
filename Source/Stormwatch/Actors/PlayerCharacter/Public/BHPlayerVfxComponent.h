@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "BHPlayerCharacterComponent.h"
 #include "BHPlayerVfxComponent.generated.h"
 
 class UNiagaraComponent;
 class ABHPlayerCharacter;
 
-UCLASS(Blueprintable, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerVfxComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

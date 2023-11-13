@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "BHPlayerCharacterComponent.h"
 #include "BHPlayerUseComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter"))
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class UBHPlayerUseComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

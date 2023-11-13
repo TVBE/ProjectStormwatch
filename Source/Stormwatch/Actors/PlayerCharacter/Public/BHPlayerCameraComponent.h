@@ -5,7 +5,21 @@
 #include "Camera/CameraComponent.h"
 #include "BHPlayerCameraComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+USTRUCT(BlueprintType)
+struct FBHCameraTraceData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FHitResult HitResult;
+
+	UPROPERTY(BlueprintReadOnly)
+	float TraceDistance = 0.0f;
+
+	void Reset();
+};
+
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerCameraComponent : public UCameraComponent
 {
 	GENERATED_BODY()
@@ -16,5 +30,5 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	
+	void DoCameraTrace();
 };

@@ -44,10 +44,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExertionChangedDelegate, const fl
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFearChangedDelegate, const float, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVigilanceChangedDelegate, const float, Value);
 
-/**	This component is created to manage the state of the player character in the game.
- *	While Unreal Engine provides a default APlayerState class, we've opted to create an actor component instead.
- */
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerStateComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

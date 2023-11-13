@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "BHPlayerBodyCollisionComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerBodyCollisionComponent : public UCapsuleComponent
 {
 	GENERATED_BODY()

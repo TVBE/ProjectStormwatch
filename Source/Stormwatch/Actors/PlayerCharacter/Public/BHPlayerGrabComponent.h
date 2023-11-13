@@ -20,7 +20,7 @@ struct FPlayerGrabSettings
 
 	/** The location where the holding hand should be relative to the physics grab component.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Grab")
-	FVector RelativeHoldingHandLocation = 70.0f, 60.0f, -30.0f;
+	FVector RelativeHoldingHandLocation = {70.0f, 60.0f, -30.0f};
 
 	/** The distance on which the player will let the prop go*/
 	UPROPERTY(EditDefaultsOnly, Category = "Grab",
@@ -83,7 +83,7 @@ struct FPlayerGrabSettings
 
 	/**The distance the object will back up when you charge the throw.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Throw")
-	FVector ThrowingBackupVector = -10.0, 0.0, 0.0;
+	FVector ThrowingBackupVector = {-10.0, 0.0, 0.0};
 
 	/**The strength of the shaking when charging a throw.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Throw",
@@ -143,7 +143,7 @@ struct FPlayerGrabSettings
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, const AActor*, GrabbedActor);
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class UBHPlayerGrabComponent : public UBHPlayerCharacterPhysicsHandleComponent
 {
 	GENERATED_BODY()
@@ -233,7 +233,7 @@ private:
 
 	float WillThrowOnReleaseMultiplier;
 
-	FQuat MouseInputRotation = 0.0,0.0,0.0,1.0;
+	FQuat MouseInputRotation = {0.0,0.0,0.0,1.0};
 
 	float GrabbedComponentSize;
 	FVector ThrowVelocity;

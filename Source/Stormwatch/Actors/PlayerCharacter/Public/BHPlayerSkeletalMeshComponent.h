@@ -5,7 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "BHPlayerSkeletalMeshComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerSkeletalMeshComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()

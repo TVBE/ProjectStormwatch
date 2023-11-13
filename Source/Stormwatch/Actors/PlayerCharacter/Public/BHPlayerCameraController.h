@@ -10,7 +10,7 @@ class UCameraComponent;
 class ABHPlayerCharacter;
 class ABHPlayerCharacterController;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 	class STORMWATCH_API UBHPlayerCameraController : public UBHPlayerCharacterSceneComponent
 {
 	GENERATED_BODY()

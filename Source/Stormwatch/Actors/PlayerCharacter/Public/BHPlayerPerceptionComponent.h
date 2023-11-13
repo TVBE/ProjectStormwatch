@@ -2,15 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "BHPlayerCharacterComponent.h"
 #include "BHPlayerPerceptionComponent.generated.h"
-
-class UCameraComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNightstalkerPerceptionChangedDelegate, bool, bNightstalkerDetected);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerPerceptionComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
@@ -30,7 +27,7 @@ private:
 
 protected:
 	UPROPERTY()
-	UCameraComponent* Camera = nullptr;
+	class UCameraComponent* Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float NightstalkerDetectionThreshold = 0.3f;

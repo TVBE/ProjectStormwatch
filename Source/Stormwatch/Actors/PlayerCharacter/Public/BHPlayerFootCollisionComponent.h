@@ -6,7 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "BHPlayerFootCollisionComponent.generated.h"
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "PlayerCharacter", Within = "PlayerCharacter")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerFootCollisionComponent : public USceneComponent
 {
 	GENERATED_BODY()
