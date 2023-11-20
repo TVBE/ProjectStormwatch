@@ -16,6 +16,9 @@ struct FBHCameraTraceData
 	UPROPERTY(BlueprintReadOnly)
 	float TraceDistance = 0.0f;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bValid = false;
+	
 	void Reset();
 };
 
@@ -29,6 +32,13 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintGetter)
+	const FBHCameraTraceData& GetCameraTraceData();
+	const FBHCameraTraceData& GetCameraTraceData() const { return TraceData; }
+
 private:
 	void DoCameraTrace();
+
+	UPROPERTY(BlueprintGetter = GetCameraTraceData, Category = "Camera")
+	FBHCameraTraceData TraceData {};
 };

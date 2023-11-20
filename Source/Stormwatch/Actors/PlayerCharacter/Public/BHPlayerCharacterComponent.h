@@ -20,5 +20,5 @@ protected:
 	virtual void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) {};
 
 	class ABHPlayerCharacter* GetPlayerCharacter() const;
-	class ABHPlayerCharacterController* GetPlayerCharacterController() const;
+	class ABHPlayerController* GetPlayerCharacterController() const;
 };

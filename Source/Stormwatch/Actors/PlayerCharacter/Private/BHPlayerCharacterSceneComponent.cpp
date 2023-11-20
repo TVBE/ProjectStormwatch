@@ -34,12 +34,12 @@ ABHPlayerCharacter* UBHPlayerCharacterSceneComponent::GetPlayerCharacter() const
 	return static_cast<ABHPlayerCharacter*>(GetOwner());
 }
 
-ABHPlayerCharacterController* UBHPlayerCharacterSceneComponent::GetPlayerCharacterController() const
+ABHPlayerController* UBHPlayerCharacterSceneComponent::GetPlayerCharacterController() const
 {
 	ABHPlayerCharacter* Character {GetPlayerCharacter()};
 	AController* Controller {Character->GetController()};
 
 	if (!Controller) { return nullptr; }
 
-	return static_cast<ABHPlayerCharacterController*>(Controller);
+	return static_cast<ABHPlayerController*>(Controller);
 }

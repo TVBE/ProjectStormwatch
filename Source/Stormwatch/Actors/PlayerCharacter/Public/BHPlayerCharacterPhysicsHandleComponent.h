@@ -4,9 +4,6 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "BHPlayerCharacterPhysicsHandleComponent.generated.h"
 
-class ABHPlayerCharacter;
-class ABHPlayerCharacterController;
-
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerCharacterPhysicsHandleComponent : public UPhysicsHandleComponent
 {
@@ -22,5 +19,5 @@ protected:
 	virtual void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) {};
 
 	class ABHPlayerCharacter* GetPlayerCharacter() const;
-	class ABHPlayerCharacterController* GetPlayerCharacterController() const;
+	class ABHPlayerController* GetPlayerCharacterController() const;
 };

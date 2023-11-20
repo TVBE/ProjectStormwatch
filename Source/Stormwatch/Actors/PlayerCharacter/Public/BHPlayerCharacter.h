@@ -67,7 +67,6 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 
 	void UpdateRotation(const float& DeltaTime);
-	void UpdateMovementSpeed();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCamera, Category = "Components")
 	UBHPlayerCameraComponent* Camera;

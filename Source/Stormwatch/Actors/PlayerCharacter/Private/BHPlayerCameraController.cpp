@@ -215,7 +215,7 @@ void UBHPlayerCameraController::UpdateFOV(const float DeltaTime)
 
 	if (LocalVelocity.X > Character->GetPlayerMovementComponent()->GetSettings().WalkSpeed * 1.1)
 	{
-		const FBHPlayerCharacterMovementSettings& Settings = Character->GetPlayerMovementComponent()->GetSettings();
+		const FBHPlayerCharacterMovementSetup& Settings = Character->GetPlayerMovementComponent()->GetSettings();
 		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Settings.WalkSpeed * 1.1, Settings.SprintSpeed),
 			FVector2D(DefaultFOV, SprintFOV), LocalVelocity.X);
 	}

@@ -9,20 +9,14 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, bValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, bValue);
 
-/** The PlayerController for the PlayerCharacter. This class is responsible for handling all user input to the player Pawn. */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API ABHPlayerCharacterController : public APlayerController
+class STORMWATCH_API ABHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	ABHPlayerCharacterController();
-
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	virtual void OnPossess(APawn* InPawn) override;
-
+	ABHPlayerController();
+	
 	virtual void ProcessPlayerInput(float DeltaTime, bool bGamePaused) override;
 	virtual void SetupInputComponent() override;
 
@@ -41,30 +35,13 @@ public:
 
 	/** Sets CanProcessRotationInput. This function can only be called by a PlayerSubsystem. */
 	void SetCanProcessRotationInput(bool bValue);
-
-	/**
-	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 *
-	 *	@param Value		Whether a lock should be added or removed.
-	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
-	 */
+	
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerMovementInputLock(bool bValue);
-
-	/**
-	 *  Adds or removes a movement input lock for the player controller. The player controller can only process movement input if there are no locks present.
-	 *
-	 *  @param Value		Whether a lock should be added or removed.
-	 *	@return				If the player can now process movement input or not. This will only be the case if there are zero locks present.
-	 */
+	
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	bool SetPlayerRotationInputLock(bool bValue);
-
-	/**
-	 *  Fades in the screen for the player from black by a specified amount.
-	 *
-	 *	@param Duration		The fade-in duration.
-	 */
+	
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Fade From Black"))
 	void FadePlayerCameraFromBlack(float Duration);
 
@@ -89,14 +66,11 @@ public:
 	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
 
 protected:
-	/** Performs a collision query in front of the camera and returns the hit result. */
-	UFUNCTION(BlueprintPure, Category = "Controller", Meta = (DisplayName = "Get Camera Look At Query"))
-	FHitResult GetCameraLookAtQuery() const;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	/** Pointer to the controlled pawn as a PlayerCharacter instance.*/
-	UPROPERTY(BlueprintReadOnly)
-	class ABHPlayerCharacter* PlayerCharacter = nullptr;
-
+	virtual void OnPossess(APawn* InPawn) override;
+	
 	/** If true, the player is currently pressing the sprint button. */
 	UPROPERTY(BlueprintReadOnly, Category = "Input")
 	bool bSprintPending = false;

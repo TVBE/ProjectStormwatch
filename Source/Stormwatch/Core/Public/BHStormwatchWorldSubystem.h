@@ -15,17 +15,17 @@ class STORMWATCH_API UBHStormwatchWorldSubsystem : public UWorldSubsystem
 
 public:
 	void RegisterPlayerCharacter(class ABHPlayerCharacter* Character);
-	void RegisterPlayerController(class ABHPlayerCharacterController* Controller);
+	void RegisterPlayerController(class ABHPlayerController* Controller);
 	
 	void UnregisterPlayerCharacter(ABHPlayerCharacter* Character);
-	void UnregisterPlayerController(ABHPlayerCharacterController* Controller);
+	void UnregisterPlayerController(ABHPlayerController* Controller);
 	
 	FORCEINLINE ABHPlayerCharacter* GetPlayerCharacter() const { return PlayerCharacter.Get(); }
-	FORCEINLINE ABHPlayerCharacterController* GetPlayerController() const { return PlayerController.Get(); }
+	FORCEINLINE ABHPlayerController* GetPlayerController() const { return PlayerController.Get(); }
 
 private:
 	TWeakObjectPtr<ABHPlayerCharacter> PlayerCharacter = nullptr;
-	TWeakObjectPtr<ABHPlayerCharacterController> PlayerController = nullptr;
+	TWeakObjectPtr<ABHPlayerController> PlayerController = nullptr;
 	
 	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
 	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/

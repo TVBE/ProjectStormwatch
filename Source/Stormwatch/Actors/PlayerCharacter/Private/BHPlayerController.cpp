@@ -17,16 +17,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 
-ABHPlayerCharacterController::ABHPlayerCharacterController()
+ABHPlayerController::ABHPlayerController()
 {
 }
 
-void ABHPlayerCharacterController::BeginPlay()
+void ABHPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ABHPlayerCharacterController::OnPossess(APawn* InPawn)
+void ABHPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
@@ -52,40 +52,40 @@ void ABHPlayerCharacterController::OnPossess(APawn* InPawn)
 	}
 }
 
-void ABHPlayerCharacterController::SetupInputComponent()
+void ABHPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent ();
 
-	InputComponent->BindAxis(TEXT("Horizontal Rotation"), this, &ABHPlayerCharacterController::HandleHorizontalRotation);
-	InputComponent->BindAxis(TEXT("Vertical Rotation"), this,  &ABHPlayerCharacterController::HandleVerticalRotation);
-	InputComponent->BindAxis(TEXT("Move Longitudinal"), this, &ABHPlayerCharacterController::HandleLongitudinalMovementInput);
-	InputComponent->BindAxis(TEXT("Move Lateral"),this, &ABHPlayerCharacterController::HandleLateralMovementInput);
-	InputComponent->BindAxis(TEXT("ZoomAxis"), this, &ABHPlayerCharacterController::HandleZoomDirectionInput);
+	InputComponent->BindAxis(TEXT("Horizontal Rotation"), this, &ABHPlayerController::HandleHorizontalRotation);
+	InputComponent->BindAxis(TEXT("Vertical Rotation"), this,  &ABHPlayerController::HandleVerticalRotation);
+	InputComponent->BindAxis(TEXT("Move Longitudinal"), this, &ABHPlayerController::HandleLongitudinalMovementInput);
+	InputComponent->BindAxis(TEXT("Move Lateral"),this, &ABHPlayerController::HandleLateralMovementInput);
+	InputComponent->BindAxis(TEXT("ZoomAxis"), this, &ABHPlayerController::HandleZoomDirectionInput);
 
-	InputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ABHPlayerCharacterController::HandleJumpActionPressed);
+	InputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ABHPlayerController::HandleJumpActionPressed);
 	
-	InputComponent->BindAction(TEXT("Sprint"),IE_Pressed, this, &ABHPlayerCharacterController::HandleSprintActionPressed);
-	InputComponent->BindAction(TEXT("Sprint"),IE_Released, this, &ABHPlayerCharacterController::HandleSprintActionReleased);
+	InputComponent->BindAction(TEXT("Sprint"),IE_Pressed, this, &ABHPlayerController::HandleSprintActionPressed);
+	InputComponent->BindAction(TEXT("Sprint"),IE_Released, this, &ABHPlayerController::HandleSprintActionReleased);
 	
-	InputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &ABHPlayerCharacterController::HandleCrouchActionPressed);
-	InputComponent->BindAction(TEXT("Crouch"), IE_Released, this, &ABHPlayerCharacterController::HandleCrouchActionReleased);
+	InputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &ABHPlayerController::HandleCrouchActionPressed);
+	InputComponent->BindAction(TEXT("Crouch"), IE_Released, this, &ABHPlayerController::HandleCrouchActionReleased);
 	
-	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &ABHPlayerCharacterController::HandleFlashlightActionPressed);
+	InputComponent->BindAction(TEXT("ToggleFlashlight"),IE_Pressed, this, &ABHPlayerController::HandleFlashlightActionPressed);
 	
-	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &ABHPlayerCharacterController::HandlePrimaryActionPressed);
-	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &ABHPlayerCharacterController::HandlePrimaryActionReleased);
+	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Pressed, this, &ABHPlayerController::HandlePrimaryActionPressed);
+	InputComponent->BindAction(TEXT("PrimaryAction"), IE_Released, this, &ABHPlayerController::HandlePrimaryActionReleased);
 
-	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Pressed, this, &ABHPlayerCharacterController::HandleSecondaryActionPressed);
-	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Released, this, &ABHPlayerCharacterController::HandleSecondaryActionReleased);
+	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Pressed, this, &ABHPlayerController::HandleSecondaryActionPressed);
+	InputComponent->BindAction(TEXT("SecondaryAction"), IE_Released, this, &ABHPlayerController::HandleSecondaryActionReleased);
 
-	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Pressed, this, &ABHPlayerCharacterController::HandleTertiaryActionPressed);
-	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Released, this, &ABHPlayerCharacterController::HandleTertiaryActionReleased);
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Pressed, this, &ABHPlayerController::HandleTertiaryActionPressed);
+	InputComponent->BindAction(TEXT("TertiaryAction"), IE_Released, this, &ABHPlayerController::HandleTertiaryActionReleased);
 
-	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &ABHPlayerCharacterController::HandleInventoryActionPressed);
-	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &ABHPlayerCharacterController::HandleInventoryActionReleased);
+	InputComponent->BindAction(TEXT("InventoryAction"), IE_Pressed, this, &ABHPlayerController::HandleInventoryActionPressed);
+	InputComponent->BindAction(TEXT("InventoryAction"), IE_Released, this, &ABHPlayerController::HandleInventoryActionReleased);
 }
 
-void ABHPlayerCharacterController::HandleHorizontalRotation(float Value)
+void ABHPlayerController::HandleHorizontalRotation(float Value)
 {
 	if (!bProcessRotationInput) { return; }
 	
@@ -101,7 +101,7 @@ void ABHPlayerCharacterController::HandleHorizontalRotation(float Value)
 	InputRotation.X = Value * CharacterConfiguration->RotationRate * 0.015;
 }
 
-void ABHPlayerCharacterController::HandleVerticalRotation(float Value)
+void ABHPlayerController::HandleVerticalRotation(float Value)
 {
 	if (!bProcessRotationInput) { return; }
 	
@@ -117,20 +117,20 @@ void ABHPlayerCharacterController::HandleVerticalRotation(float Value)
 	InputRotation.Y = Value * CharacterConfiguration->RotationRate * 0.015;
 }
 
-void ABHPlayerCharacterController::HandleLongitudinalMovementInput(float Value)
+void ABHPlayerController::HandleLongitudinalMovementInput(float Value)
 {
 	if (!bProcessMovementInput) { return; }
 		const FRotator Rotation = FRotator(0, GetControlRotation().Yaw, 0);
 		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
 
-void ABHPlayerCharacterController::HandleLateralMovementInput(float Value)
+void ABHPlayerController::HandleLateralMovementInput(float Value)
 {
 	if (!bProcessMovementInput) { return; }
 		const FRotator Rotation = FRotator(0, GetControlRotation().Yaw+90, 0);
 		GetPlayerCharacter()->AddMovementInput((Rotation.Vector()), Value);
 }
-void ABHPlayerCharacterController::HandleZoomDirectionInput(float Value)
+void ABHPlayerController::HandleZoomDirectionInput(float Value)
 {
 	if (InteractionComponent)
 	{
@@ -138,7 +138,7 @@ void ABHPlayerCharacterController::HandleZoomDirectionInput(float Value)
 	}
 }
 
-void ABHPlayerCharacterController::HandleJumpActionPressed()
+void ABHPlayerController::HandleJumpActionPressed()
 {
 	if (!bProcessMovementInput) { return; }
 	if (PlayerCharacter && PlayerCharacter->CanJump())
@@ -157,7 +157,7 @@ void ABHPlayerCharacterController::HandleJumpActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleSprintActionPressed()
+void ABHPlayerController::HandleSprintActionPressed()
 {
 	if (!bProcessMovementInput) { return; }
 	bSprintPending = true;
@@ -167,14 +167,14 @@ void ABHPlayerCharacterController::HandleSprintActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleSprintActionReleased()
+void ABHPlayerController::HandleSprintActionReleased()
 {
 	if (!bProcessMovementInput) { return; }
 	bSprintPending = false;
 	PlayerCharacter->StopSprinting();
 }
 
-void ABHPlayerCharacterController::HandleCrouchActionPressed()
+void ABHPlayerController::HandleCrouchActionPressed()
 {
 	if (!bProcessMovementInput) { return; }
 	
@@ -199,7 +199,7 @@ void ABHPlayerCharacterController::HandleCrouchActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleCrouchActionReleased()
+void ABHPlayerController::HandleCrouchActionReleased()
 {
 	if (!bProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
 	bCrouchPending = false;
@@ -210,7 +210,7 @@ void ABHPlayerCharacterController::HandleCrouchActionReleased()
 	}
 }
 
-void ABHPlayerCharacterController::HandleFlashlightActionPressed()
+void ABHPlayerController::HandleFlashlightActionPressed()
 {
 	if (!PlayerCharacter || !bProcessMovementInput) { return; }
 	if (UBHPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UBHPlayerFlashlightComponent>())
@@ -219,7 +219,7 @@ void ABHPlayerCharacterController::HandleFlashlightActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleTertiaryActionPressed()
+void ABHPlayerController::HandleTertiaryActionPressed()
 {
 	if (InteractionComponent)
 	{
@@ -227,7 +227,7 @@ void ABHPlayerCharacterController::HandleTertiaryActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleTertiaryActionReleased()
+void ABHPlayerController::HandleTertiaryActionReleased()
 {
 	if (InteractionComponent)
 	{
@@ -235,7 +235,7 @@ void ABHPlayerCharacterController::HandleTertiaryActionReleased()
 	}
 }
 
-void ABHPlayerCharacterController::HandlePrimaryActionPressed()
+void ABHPlayerController::HandlePrimaryActionPressed()
 {
 	if (InteractionComponent)
 	{
@@ -243,7 +243,7 @@ void ABHPlayerCharacterController::HandlePrimaryActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandlePrimaryActionReleased()
+void ABHPlayerController::HandlePrimaryActionReleased()
 {
 	if (InteractionComponent)
 	{
@@ -251,7 +251,7 @@ void ABHPlayerCharacterController::HandlePrimaryActionReleased()
 	}
 }
 
-void ABHPlayerCharacterController::HandleSecondaryActionPressed()
+void ABHPlayerController::HandleSecondaryActionPressed()
 {
 	if (InteractionComponent)
 	{
@@ -259,7 +259,7 @@ void ABHPlayerCharacterController::HandleSecondaryActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleSecondaryActionReleased()
+void ABHPlayerController::HandleSecondaryActionReleased()
 {
 	if (InteractionComponent)
 	{
@@ -267,7 +267,7 @@ void ABHPlayerCharacterController::HandleSecondaryActionReleased()
 	}
 }
 
-void ABHPlayerCharacterController::HandleInventoryActionPressed()
+void ABHPlayerController::HandleInventoryActionPressed()
 {
 	if (InteractionComponent)
 	{
@@ -275,11 +275,11 @@ void ABHPlayerCharacterController::HandleInventoryActionPressed()
 	}
 }
 
-void ABHPlayerCharacterController::HandleInventoryActionReleased()
+void ABHPlayerController::HandleInventoryActionReleased()
 {
 }
 
-void ABHPlayerCharacterController::ProcessPlayerInput(float DeltaTime, bool bGamePaused)
+void ABHPlayerController::ProcessPlayerInput(float DeltaTime, bool bGamePaused)
 {
 	CalculateRotationMultiplier(InputRotation);
 	
@@ -291,7 +291,7 @@ void ABHPlayerCharacterController::ProcessPlayerInput(float DeltaTime, bool bGam
 	Super::ProcessPlayerInput(DeltaTime, bGamePaused);
 }
 
-void ABHPlayerCharacterController::Tick(float DeltaSeconds)
+void ABHPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
@@ -303,7 +303,7 @@ void ABHPlayerCharacterController::Tick(float DeltaSeconds)
 	}
 }
 
-void ABHPlayerCharacterController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
+void ABHPlayerController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
 {
 
 	if (InteractionComponent && PlayerCharacter)
@@ -353,7 +353,7 @@ void ABHPlayerCharacterController::UpdatePlayerControlRotation(const FRotator& R
 	}
 }
 
-void ABHPlayerCharacterController::UpdateCurrentActions()
+void ABHPlayerController::UpdateCurrentActions()
 {
 	if (!bProcessMovementInput) {return;}
 	
@@ -364,7 +364,7 @@ void ABHPlayerCharacterController::UpdateCurrentActions()
 	}
 }
 
-void ABHPlayerCharacterController::UpdatePendingActions()
+void ABHPlayerController::UpdatePendingActions()
 {
 	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
 	if (bSprintPending && !PlayerCharacter->bIsSprinting() && CanCharacterSprint())
@@ -393,7 +393,7 @@ void ABHPlayerCharacterController::UpdatePendingActions()
 	}
 }
 
-void ABHPlayerCharacterController::CalculateRotationMultiplier(const FVector2D InputDirection)
+void ABHPlayerController::CalculateRotationMultiplier(const FVector2D InputDirection)
 {
 	if (!InteractionComponent || !CharacterConfiguration)
     {
@@ -471,7 +471,7 @@ void ABHPlayerCharacterController::CalculateRotationMultiplier(const FVector2D I
 	InteractionRotationMultiplier = 1.0f;
 }
 
-bool ABHPlayerCharacterController::GetHasMovementInput() const
+bool ABHPlayerController::GetHasMovementInput() const
 {
 	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
@@ -480,7 +480,7 @@ bool ABHPlayerCharacterController::GetHasMovementInput() const
 	return 0.0;
 }
 
-float ABHPlayerCharacterController::GetHorizontalRotationInput() const
+float ABHPlayerController::GetHorizontalRotationInput() const
 {
 	if (InputComponent != nullptr && InteractionComponent && !InteractionComponent->GetIsTertiaryInteractionActive())
 	{
@@ -489,17 +489,17 @@ float ABHPlayerCharacterController::GetHorizontalRotationInput() const
 	return 0.0;
 }
 
-void ABHPlayerCharacterController::SetCanProcessMovementInput(bool bValue)
+void ABHPlayerController::SetCanProcessMovementInput(bool bValue)
 {
 		bProcessMovementInput = bValue;
 }
 
-void ABHPlayerCharacterController::SetCanProcessRotationInput(bool bValue)
+void ABHPlayerController::SetCanProcessRotationInput(bool bValue)
 {
 		bProcessRotationInput = bValue;
 }
 
-bool ABHPlayerCharacterController::SetPlayerMovementInputLock(bool bValue)
+bool ABHPlayerController::SetPlayerMovementInputLock(bool bValue)
 {
 	MovementInputLockCount += bValue ? 1 : -1;
 	const bool bCanProcessInput = !MovementInputLockCount;
@@ -511,7 +511,7 @@ bool ABHPlayerCharacterController::SetPlayerMovementInputLock(bool bValue)
 	return bCanProcessInput;
 }
 
-bool ABHPlayerCharacterController::SetPlayerRotationInputLock(bool bValue)
+bool ABHPlayerController::SetPlayerRotationInputLock(bool bValue)
 {
 	RotationInputLockCount += bValue ? 1 : -1;
 	const bool bCanProcessInput = !RotationInputLockCount;
@@ -523,7 +523,7 @@ bool ABHPlayerCharacterController::SetPlayerRotationInputLock(bool bValue)
 	return bCanProcessInput;
 }
 
-void ABHPlayerCharacterController::FadePlayerCameraFromBlack(float Duration)
+void ABHPlayerController::FadePlayerCameraFromBlack(float Duration)
 {
 	if (PlayerCharacter && PlayerCharacter->GetCameraController())
 	{
@@ -531,13 +531,13 @@ void ABHPlayerCharacterController::FadePlayerCameraFromBlack(float Duration)
 	}
 }
 
-bool ABHPlayerCharacterController::CanCharacterSprint() const
+bool ABHPlayerController::CanCharacterSprint() const
 {
 	return CharacterConfiguration->IsSprintingEnabled && GetPlayerCharacter()->GetMovementComponent()->IsMovingOnGround() && !GetPlayerCharacter()->bIsCrouched
 			&& GetInputAxisValue("Move Longitudinal") > 0.5 && FMath::Abs(GetInputAxisValue("Move Lateral")) <= GetInputAxisValue("Move Longitudinal");
 }
 
-FHitResult ABHPlayerCharacterController::GetCameraLookAtQuery() const
+FHitResult ABHPlayerController::GetCameraLookAtQuery() const
 {
 	constexpr float TraceLength = 250.f;
 	const FVector Start = this->PlayerCameraManager->GetCameraLocation();
@@ -551,7 +551,7 @@ FHitResult ABHPlayerCharacterController::GetCameraLookAtQuery() const
 	return FHitResult();
 }
 
-void ABHPlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ABHPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (const UWorld* World = GetWorld())
 	{
@@ -563,7 +563,7 @@ void ABHPlayerCharacterController::EndPlay(const EEndPlayReason::Type EndPlayRea
 	Super::EndPlay(EndPlayReason);
 }
 
-UBHPlayerInteractionComponent* ABHPlayerCharacterController::SearchForPlayerInteractionComponent()
+UBHPlayerInteractionComponent* ABHPlayerController::SearchForPlayerInteractionComponent()
 {
 	if (!InteractionComponent)
 	{

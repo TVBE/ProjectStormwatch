@@ -101,7 +101,7 @@ void ABHPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	if (!NewController) { return; }
-	ensureMsgf(NewController->IsA(ABHPlayerCharacterController::StaticClass()), TEXT("ABHPlayerCharacter was possessed by an invalid PlayerController."));
+	ensureMsgf(NewController->IsA(ABHPlayerController::StaticClass()), TEXT("ABHPlayerCharacter was possessed by an invalid PlayerController."));
 }
 
 void ABHPlayerCharacter::Tick(float DeltaTime)
@@ -278,7 +278,7 @@ void ABHPlayerCharacter::HandleLandingStart(EBHPlayerLandingType Value)
 		break;
 	}
 
-	if (ABHPlayerCharacterController * PlayerController = Cast<ABHPlayerCharacterController>(GetWorld()->GetFirstPlayerController()))
+	if (ABHPlayerController * PlayerController = Cast<ABHPlayerController>(GetWorld()->GetFirstPlayerController()))
 	{
 		PlayerController->SetPlayerMovementInputLock(true);
 		PlayerController->SetPlayerRotationInputLock(true);
@@ -290,7 +290,7 @@ void ABHPlayerCharacter::HandleLandingStart(EBHPlayerLandingType Value)
 
 void ABHPlayerCharacter::HandleLandingEnd()
 {
-	if (ABHPlayerCharacterController* PlayerController = Cast<ABHPlayerCharacterController>(GetController()))
+	if (ABHPlayerController* PlayerController = Cast<ABHPlayerController>(GetController()))
 	{
 		PlayerController->SetPlayerMovementInputLock(false);
 		PlayerController->SetPlayerRotationInputLock(false);

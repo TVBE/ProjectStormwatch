@@ -9,11 +9,14 @@ UBHPlayerMovementComponent::UBHPlayerMovementComponent()
 }
 
 void UBHPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                      FActorComponentTickFunction* ThisTickFunction)
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-
+	if (GetOwner())
+	{
+		CurrentSpeed = GetOwner()->GetVelocity().Length();
+	}
 }
 
 void UBHPlayerMovementComponent::UpdateMovementSpeed()
@@ -89,6 +92,24 @@ EBHPlayerGroundMovementType UBHPlayerMovementComponent::GetGroundMovementType() 
 	return EBHPlayerGroundMovementType::Idle;
 }
 
+void UBHPlayerMovementComponent::StartSprinting()
+{
+}
+
+void UBHPlayerMovementComponent::StopSprinting()
+{
+}
+
+bool UBHPlayerMovementComponent::IsSprinting() const
+{
+	return bSprinting && IsMovingOnGround();
+}
+
+bool UBHPlayerMovementComponent::CanSprint() const
+{
+	return false;
+}
+
 void UBHPlayerMovementComponent::SetIsSprinting(bool bValue)
 {
 	if (!PawnOwner || bIsSprinting == bValue)
@@ -97,15 +118,6 @@ void UBHPlayerMovementComponent::SetIsSprinting(bool bValue)
 	}
 	
 	bIsSprinting = bValue;
-	
-	if (bValue)
-	{
-		OnLocomotionEvent.Broadcast(EBHPlayerLocomotionEvent::SprintStart);
-	}
-	else
-	{
-		OnLocomotionEvent.Broadcast(EBHPlayerLocomotionEvent::SprintEnd);
-	}
 }
 
 

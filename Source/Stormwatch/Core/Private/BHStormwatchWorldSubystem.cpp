@@ -23,7 +23,7 @@ void UBHStormwatchWorldSubsystem::RegisterPlayerCharacter(ABHPlayerCharacter* Ch
 	}
 }
 
-void UBHStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerCharacterController* Controller)
+void UBHStormwatchWorldSubsystem::RegisterPlayerController(ABHPlayerController* Controller)
 {
 	if (Controller)
 	{
@@ -51,7 +51,7 @@ void UBHStormwatchWorldSubsystem::UnregisterPlayerCharacter(ABHPlayerCharacter* 
 	}
 }
 
-void UBHStormwatchWorldSubsystem::UnregisterPlayerController(ABHPlayerCharacterController* Controller)
+void UBHStormwatchWorldSubsystem::UnregisterPlayerController(ABHPlayerController* Controller)
 {
 	if (Controller)
 	{

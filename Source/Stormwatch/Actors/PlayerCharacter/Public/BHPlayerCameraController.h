@@ -8,7 +8,7 @@
 
 class UCameraComponent;
 class ABHPlayerCharacter;
-class ABHPlayerCharacterController;
+class ABHPlayerController;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 	class STORMWATCH_API UBHPlayerCameraController : public UBHPlayerCharacterSceneComponent

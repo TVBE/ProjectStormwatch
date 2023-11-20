@@ -17,7 +17,7 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetSkelMeshComponent()->GetOwner());
 	check(PlayerCharacter);
 	
-	const ABHPlayerCharacterController* Controller = Cast<ABHPlayerCharacterController>(PlayerCharacter->GetController());
+	const ABHPlayerController* Controller = Cast<ABHPlayerController>(PlayerCharacter->GetController());
 	const UBHPlayerMovementComponent* CharacterMovement = PlayerCharacter->GetPlayerMovementComponent();
 	if (Controller && CharacterMovement)
 	{
@@ -86,7 +86,7 @@ void UBHPlayerAnimInstance::GetExtremityData(FBHStepData& StepData, const EBHBod
 	}
 }
 
-void UBHPlayerAnimInstance::CheckMovementState(const ABHPlayerCharacterController& Controller,
+void UBHPlayerAnimInstance::CheckMovementState(const ABHPlayerController& Controller,
 	const UBHPlayerMovementComponent& CharacterMovement)
 {
 	bIsMovementPending = Controller.GetHasMovementInput();
