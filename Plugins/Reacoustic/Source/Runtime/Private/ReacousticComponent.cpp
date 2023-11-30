@@ -57,7 +57,7 @@ void UReacousticComponent::BeginPlay()
 
 inline void UReacousticComponent::Initialize_Implementation(USoundBase* SoundBase /* = nullptr */)
 {
-	if (!GetReacousticSubsystem()) {return;}
+
 	
 	UReacousticSoundAsset* AssetToTransfer = ReacousticSoundAsset ? ReacousticSoundAsset : GetReacousticSubsystem()->GetMeshSoundAsset(MeshComponent);
 
@@ -110,24 +110,15 @@ float UReacousticComponent::CalculateImpactValue(const FVector& NormalImpulse, c
 
 UReacousticSubsystem* UReacousticComponent::GetReacousticSubsystem()
 {
-	if(CachedSubsystem)
+	if(!CachedSubsystem)
 	{
-		return CachedSubsystem;
-	}
-		
-	if (const UWorld* World = GetWorld())
-	{
-	
-		if(UReacousticSubsystem* Subsystem = World->GetSubsystem<UReacousticSubsystem>())
+		if (const UWorld* World = GetWorld())
 		{
-			Subsystem->RegisterComponent(this);
-			CachedSubsystem = Subsystem;
+			CachedSubsystem = World->GetSubsystem<UReacousticSubsystem>();
 		}
-		
-		return CachedSubsystem;
 	}
-		
-	return nullptr;
+	check(CachedSubsystem);
+	return CachedSubsystem;
 }
 
 
@@ -135,8 +126,6 @@ void UReacousticComponent::HandleOnComponentHit(UPrimitiveComponent* HitComp, AA
 {
 	if(FilterImpact(HitComp,OtherActor,OtherComp,NormalImpulse,Hit))
 	{
-
-		if(!GetReacousticSubsystem()){return;}
 		/** Get the surface sound for this impact.*/
 		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 		SurfaceSoundAsset = GetReacousticSubsystem()->GetSurfaceSoundAsset(SurfaceType);
@@ -294,8 +283,6 @@ bool UReacousticComponent::FilterImpact(UPrimitiveComponent* HitComp, AActor* Ot
 
 FImpactValueToTimestampResult UReacousticComponent::ReturnTimeStampWithStrenght(UReacousticSoundAsset* SoundAsset, float ImpactValue)
 {
-	if(!GetReacousticSubsystem()){FImpactValueToTimestampResult{};}
-	
 	return GetReacousticSubsystem()->GetTimeStampWithStrenght(SoundAsset, ImpactValue);
 
 }
