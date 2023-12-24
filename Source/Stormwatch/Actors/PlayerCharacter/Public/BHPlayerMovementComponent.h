@@ -3,17 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BHStormwatchCoreMacros.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BHPlayerMovementComponent.generated.h"
-
-UENUM(BlueprintType)
-enum class EBHPlayerGroundMovementType : uint8
-{
-	Idle				UMETA(DisplayName = "Idle"),
-	Walking				UMETA(DisplayName = "Walking"),
-	Sprinting			UMETA(DisplayName = "Sprinting"),
-};
 
 UENUM(BlueprintType)
 enum class EBHPlayerLandingType : uint8
@@ -114,15 +105,23 @@ struct FBHPlayerCharacterMovementSetup
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "General",
 	Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
-	float MaxStepHeight = 30.0f; // TODO: What is this used for?
+	float MaxStepHeight = 30.0f; // NOTE(TV): What is this used for?
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
-	Meta = (DisplayName = "Enable Jumping"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping", Meta = (DisplayName = "Enable Jumping"))
 	bool bJumpingEnabled = true;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
-	Meta = (ClampMin = "0", ClampMax = "1000", UIMin = "0", UIMax = "1000", EditCondition = "bJumpingEnabled"))
+	Meta = (EditCondition = "bJumpingEnabled", ClampMin = "0", UIMin = "0"))
 	float JumpVelocity = 440.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
+	Meta = (EditCondition = "bJumpingEnabled", InlineEditConditionToggle))
+	bool bRequireJumpClearance = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
+	Meta = (EditCondition = "bJumpingEnabled && bRequireJumpClearance", Units = "Centimeters",
+			ClampMin = "0", UIMin = "0"))
+	float JumpClearance = 80.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sprinting",
 	Meta = (DisplayName = "Enable Sprinting"))
@@ -137,7 +136,7 @@ struct FBHPlayerCharacterMovementSetup
 	bool bCrouchingEnabled = true;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
-	Meta = (ForceUnits = "cm/s", EditCondition = "bCrouchingEnabled", ClampMin = "0", ClampMax = "300",
+	Meta = (EditCondition = "bCrouchingEnabled", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "300",
 			UIMin = "0", UIMax = "300"))
 	float CrouchSpeed = 200.f;
 	
@@ -145,9 +144,18 @@ struct FBHPlayerCharacterMovementSetup
 	Meta = (EditCondition = "bCrouchingEnabled", AdvancedDisplay = "true"))
 	EBHCrouchToggleMode CrouchToggleMode = EBHCrouchToggleMode::PressAndHold;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
+	Meta = (EditCondition = "bCrouchingEnabled", Displayname = "Enable Crouch Sprinting"))
+	bool bCrouchSprintingEnabled = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
+	Meta = (EditCondition = "bCrouchSprintingEnabled", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "300",
+		UIMin = "0", UIMax = "300"))
+	float CrouchSprintSpeed = 250.f;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera",
 	Meta = (Displayname = "Gamepad Rotation Rate"))
-	float RotationRate = 150.f; // TODO: Deprecate this. It is causing more troubles than it's worth.
+	float RotationRate = 150.f; // TODO (TV): Deprecate this. It is causing more troubles than it's worth.
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rotation Smoothing",
 	Meta = (DisplayName = "Enable Rotation Smoothing"))
@@ -161,12 +169,23 @@ struct FBHPlayerCharacterMovementSetup
 	FBHPlayerInteractionMovementModifierSetup InteractionModifiers {};
 };
 
-STORMWATCH_DEPRECATED()
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocomotionEventDelegate, EBHPlayerLocomotionEvent, Value);
+USTRUCT(BlueprintType)
+struct FBHGroundSpeedData
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Ground Speed")
+	float BaseSpeed = 0.0f;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Ground Speed")
+	float ScaledSpeed = 0.0f;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EBHPlayerLandingType, Value);
+	UPROPERTY(BlueprintReadOnly, Category = "Ground Speed")
+	float Multiplier = 1.0f;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLandingDelegate, EBHPlayerLandingType, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSprintStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSprintStop);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCrouchStart);
@@ -181,17 +200,16 @@ public:
 	UBHPlayerMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void UpdateMovementSpeed();
-
-	virtual bool DoJump(bool bReplayingMoves) override;
-
-	EBHPlayerGroundMovementType GetGroundMovementType() const;
-
-	const FBHPlayerCharacterMovementSetup& GetSettings() const { return Settings;  }
+	void UpdateWalkSpeed(float DeltaTime);
+	
+	UFUNCTION(BlueprintPure, Category = "Settings")
+	const FBHPlayerCharacterMovementSetup& GetMovementSetup() const { return MovementSetup;  }
+	
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void Jump();
 
 	UFUNCTION(BlueprintPure, Category = "Movement")
-	float GetCurrentSpeed() const { return CurrentSpeed; }
+	bool CanJump() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void StartSprinting();
@@ -205,6 +223,23 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	bool CanSprint() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void StartCrouching();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void StopCrouching();
+
+	virtual bool IsCrouching() const override;
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	bool CanCrouch() const;
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	bool CanUncrouch() const;
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	float GetSpeed() const;
+	
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnSprintStart OnSprintStart;
 
@@ -218,36 +253,29 @@ public:
 	FOnCrouchStop OnCrouchStop;
 	
 private:
-	float CurrentSpeed = 0.0f;
-	float TargetSpeed = 0.0f;
-	float ScaledSpeed = 0.0f; //TODO: Is this necessary?
+	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
 	
-	bool bSprinting = false;
+	float GetWalkSpeedMultiplier() const;
 
 	UFUNCTION(BlueprintPure)
-	bool GetIsJumping() const { return bIsJumping; }
-
-	float GetTargetSpeed() const { return TargetSpeed; }
-	float GetScaledSpeed() const { return ScaledSpeed; }
-
-	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Locomotion Event"))
-	FLocomotionEventDelegate OnLocomotionEvent;
-
+	bool IsJumping() const { return bIsJumping; }
+	
+	FBHGroundSpeedData WalkSpeedData {};
+	
+	bool bSprinting = false;
+	bool bCrouching = false;
+	
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Jump Event"))
 	FJumpDelegate OnJump;
 	
 	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "Landing Event"))
 	FLandingDelegate OnLanding;
+	
+	class ABHPlayerCharacter* GetPlayerCharacter() const;
 
-protected:
-	virtual void BeginPlay() override;
-
-	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
-	FBHPlayerCharacterMovementSetup Settings {};
-
-private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings", Meta = (AllowPrivateAccess = "true"))
+	FBHPlayerCharacterMovementSetup MovementSetup {};
+	
 	bool bIsSprinting = false;
 	bool bIsJumping = false;
 };

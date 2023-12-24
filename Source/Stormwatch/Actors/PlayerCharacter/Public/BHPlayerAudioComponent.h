@@ -19,11 +19,12 @@ public:
 	class UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
 
 protected:
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
 	virtual void BeginPlay() override;
 
 private:
+	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
+	
 	UPROPERTY(BlueprintGetter = GetBodyAudioComponent)
 	UAudioComponent* BodyAudioComponent;
 	

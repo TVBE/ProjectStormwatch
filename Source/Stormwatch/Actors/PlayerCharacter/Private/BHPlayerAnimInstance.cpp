@@ -33,7 +33,7 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	bIsFalling = CharacterMovement->IsFalling();
-	bIsAirborne = CharacterMovement->IsFalling() || CharacterMovement->GetIsJumping();
+	bIsAirborne = CharacterMovement->IsFalling() || CharacterMovement->IsJumping();
 
 	if (bIsFalling)
 	{

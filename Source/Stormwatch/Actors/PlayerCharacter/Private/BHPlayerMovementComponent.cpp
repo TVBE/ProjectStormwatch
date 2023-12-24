@@ -1,6 +1,10 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerMovementComponent.h"
+
+#include "BHPlayerCharacter.h"
+#include "BHPlayerDragComponent.h"
+#include "BHPlayerGrabComponent.h"
 #include "GameFramework/PlayerController.h"
 
 UBHPlayerMovementComponent::UBHPlayerMovementComponent()
@@ -13,46 +17,41 @@ void UBHPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (GetOwner())
+	if (!GetOwner())
 	{
-		CurrentSpeed = GetOwner()->GetVelocity().Length();
+		return;
 	}
+	UpdateWalkSpeed(DeltaTime);
 }
 
-void UBHPlayerMovementComponent::UpdateMovementSpeed()
+void UBHPlayerMovementComponent::UpdateWalkSpeed(float DeltaTime)
 {
-	float InteractionMultiplier = 1.0f;
+	WalkSpeedData.Multiplier = GetWalkSpeedMultiplier();
+	WalkSpeedData.ScaledSpeed = WalkSpeedData.BaseSpeed * WalkSpeedData.Multiplier;
+	MaxWalkSpeed = WalkSpeedData.ScaledSpeed;
+	MaxWalkSpeedCrouched = WalkSpeedData.ScaledSpeed;
+}
 
+float UBHPlayerMovementComponent::GetWalkSpeedMultiplier() const
+{
+	const UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
+	const UBHPlayerDragComponent* DragComponent = GetPlayerCharacter()->GetDragComponent();
+	
 	if (!GrabComponent->GetGrabbedComponent() || !DragComponent->GetGrabbedComponent()) { return; }
 
 	const UPrimitiveComponent* PrimitiveComponent = GrabComponent->GetGrabbedComponent() ? GrabComponent->GetGrabbedComponent() : DragComponent->GetGrabbedComponent();
 
 	const float Mass = PrimitiveComponent->GetMass();
 	const FBoxSphereBounds Bounds = PrimitiveComponent->CalcBounds(PrimitiveComponent->GetComponentTransform());
-	const float BoundingBoxSize = static_cast<float>(Bounds.GetBox().GetVolume());
+	const float BoundingBoxSize = Bounds.GetBox().GetVolume();
 
-	const float MassRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(Settings.InteractionSpeedWeightRange, Settings.InteractionSpeedWeightScalars, Mass))};
-	const float BoundsRotationMultiplier {static_cast<float>(FMath::GetMappedRangeValueClamped
-		(Settings.InteractionSpeedSizeRange, Settings.InteractionSpeedSizeScalars, BoundingBoxSize))};
+	const float MassRotationMultiplier = FMath::GetMappedRangeValueClamped
+		(MovementSetup.InteractionSpeedWeightRange, MovementSetup.InteractionSpeedWeightScalars, Mass);
+	const float BoundsRotationMultiplier = (FMath::GetMappedRangeValueClamped
+		(MovementSetup.InteractionSpeedSizeRange, MovementSetup.InteractionSpeedSizeScalars, BoundingBoxSize);
 
-	InteractionMultiplier *= FMath::Clamp(Settings.MassRotationMultiplier * Settings.BoundsRotationMultiplier,
+	InteractionMultiplier *= FMath::Clamp(MovementSetup.MassRotationMultiplier * MovementSetup.BoundsRotationMultiplier,
 										  InteractionSpeedFloor, 1.0);
-
-	PlayerMovement->MaxWalkSpeed = ScaledSpeed;
-	PlayerMovement->MaxWalkSpeedCrouched = CrouchSpeed * InteractionMultiplier; // TODO: Needs different implementation in future.
-}
-
-void UBHPlayerMovementComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-bool UBHPlayerMovementComponent::DoJump(bool bReplayingMoves)
-{
-	OnLocomotionEvent.Broadcast(EBHPlayerLocomotionEvent::Jump);
-	OnJump.Broadcast();
-	return Super::DoJump(bReplayingMoves);
 }
 
 void UBHPlayerMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
@@ -78,31 +77,52 @@ void UBHPlayerMovementComponent::ProcessLanded(const FHitResult& Hit, float rema
 	Super::ProcessLanded(Hit, remainingTime, Iterations);
 }
 
-/** Checks the current movement state and returns a corresponding enumeration value. */
-EBHPlayerGroundMovementType UBHPlayerMovementComponent::GetGroundMovementType() const
+ABHPlayerCharacter* UBHPlayerMovementComponent::GetPlayerCharacter() const
 {
-	if (bIsSprinting)
+	return Cast<ABHPlayerCharacter>(GetCharacterOwner());
+}
+
+void UBHPlayerMovementComponent::Jump()
+{
+	if (CanJump)
 	{
-		return EBHPlayerGroundMovementType::Sprinting;
+		if (DoJump(false))
+		{
+			OnJump.Broadcast();
+		}
 	}
-	if (IsMovingOnGround() && Velocity.SquaredLength() >= 25)
+}
+
+bool UBHPlayerMovementComponent::CanJump() const
+{
+	bool bCanJump = MovementSetup.bJumpingEnabled && GetPlayerCharacter()->CanJump();
+	if (MovementSetup.bJumpingEnabled)
 	{
-		return EBHPlayerGroundMovementType::Walking;
+		if (MovementSetup.bRequireJumpClearance)
+		{
+			
+		}
 	}
-	return EBHPlayerGroundMovementType::Idle;
+	return false;
+	
+	constexpr float RequiredClearance = 60;
+	const float Clearance = GetClearanceAbovePawn();
+	return ((Clearance > RequiredClearance || Clearance == -1.f) && bJumpingEnabled && !GetMovementComponent()->bIsFalling());
 }
 
 void UBHPlayerMovementComponent::StartSprinting()
 {
+	WalksSpeedData.TargetBaseSpeed = MovementSetup.SprintSpeed;
 }
 
 void UBHPlayerMovementComponent::StopSprinting()
 {
+	WalksSpeedData.TargetBaseSpeed = MovementSetup.WalkSpeed;
 }
 
 bool UBHPlayerMovementComponent::IsSprinting() const
 {
-	return bSprinting && IsMovingOnGround();
+	return bSprinting && IsMovingOnWalks();
 }
 
 bool UBHPlayerMovementComponent::CanSprint() const
@@ -110,14 +130,39 @@ bool UBHPlayerMovementComponent::CanSprint() const
 	return false;
 }
 
-void UBHPlayerMovementComponent::SetIsSprinting(bool bValue)
+void UBHPlayerMovementComponent::StartCrouching()
 {
-	if (!PawnOwner || bIsSprinting == bValue)
-	{
-		return;
-	}
+	WalksSpeedData.TargetBaseSpeed = MovementSetup.CrouchSpeed;
+	GetPlayerCharacter()->Crouch(false);
+	bCrouching = true;
 	
-	bIsSprinting = bValue;
+}
+
+void UBHPlayerMovementComponent::StopCrouching()
+{
+	WalksSpeedData.TargetBaseSpeed = MovementSetup.WalkSpeed;
+	GetPlayerCharacter()->UnCrouch(false);
+	bCrouching = false;
+}
+
+bool UBHPlayerMovementComponent::IsCrouching() const
+{
+	return bCrouching;
+}
+
+bool UBHPlayerMovementComponent::CanCrouch() const
+{
+	return !IsCrouching() && !IsFalling() && !IsJumping();
+}
+
+bool UBHPlayerMovementComponent::CanUncrouch() const
+{
+	if (IsCrouching())
+	{
+		const float Clearance = GetPlayerCharacter()->GetClearanceAbovePawn();
+		return Clearance > MovementSetup.UncrouchClearance;
+	}
+	return false;
 }
 
 

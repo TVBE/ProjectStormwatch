@@ -525,6 +525,14 @@ void UBHPlayerInteractionComponent::AddYawInput(const float Input)
 	}
 }
 
+UBHPlayerInteractionComponent* UBHPlayerInteractionComponent::GetCurrentlyInteractingComponent() const
+{
+	if (GetPlayerCharacter()->GetUseComponent()->GetObjectInUse())
+	{
+		
+	}
+}
+
 void UBHPlayerInteractionComponent::OnUnregister()
 {
 	Super::OnUnregister();

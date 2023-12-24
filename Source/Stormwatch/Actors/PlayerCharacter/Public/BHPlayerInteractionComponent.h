@@ -5,16 +5,6 @@
 #include "BHPlayerCharacterComponent.h"
 #include "BHPlayerInteractionComponent.generated.h"
 
-class UPlayerGrabConfiguration;
-class FPlayerDragSettings;
-class UBHPlayerDragComponent;
-class FPlayerDragSettings;
-class UBHPlayerUseComponent;
-class UBHPlayerInventoryComponent;
-class UBHPlayerGrabComponent;
-class UCameraComponent;
-struct FCollisionQueryParams;
-
 UENUM(BlueprintType)
 enum class EBHInteractionType : uint8
 {
@@ -53,77 +43,52 @@ struct FBHInteractableObjectData
 	}
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeginInteraction, EBHInteractionType, Type, USceneComponent*, Component);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEndInteraction, EBHInteractionType, Type, USceneComponent*, Component);
+
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerInteractionComponent : public UBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
 public:
-	/** The length of the initial line trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
-			  Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
-	uint16 CameraTraceLength = 300;
-
-	/** The radius of the interactable object multi sphere trace. */
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
-			  Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
-	uint16 ObjectTraceRadius = 50;
-
-private:
-	/** If true, the interaction component is currently performing a tertiary interaction. */
-	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
-	bool bTertiaryInteractionActive = false;
-
-	/** The hit result for the initial visibility line trace collision query performed from the camera. */
-	UPROPERTY()
-	FHitResult CameraTraceHitResult = FHitResult();
-
-	/** The hit result for the occlusion line trace collision query performed from the camera. */
-	UPROPERTY()
-	FHitResult OcclusionTraceHitResult = FHitResult();
-
-	/** The offset used for the occlusion trace. Prevents the occlusion trace hitting the actor underneath
-	 *	the interactable object that the occlusion trace is performed for. */
-	UPROPERTY()
-	FVector OcclusionOffset = FVector(0, 0, 5);
-
-	/** The array of hit results for the interactable object multi sphere trace. */
-	UPROPERTY()
-	TArray<FHitResult> ObjectTraceHitResults;
-
-	/** The actor that currently can be interacted with. Will be a nullptr if no object can be interacted with at the moment. */
-	UPROPERTY(BlueprintGetter = GetCurrentInteractableActor)
-	AActor* CurrentInteractableActor;
-
-	/** The interactable objects for the current interactable actor. */
-	UPROPERTY(BlueprintGetter = GetCurrentInteractableObjects)
-	TArray<FBHInteractableObjectData> CurrentInteractableObjects;
-
-	/** The closest interactable object to the camera. */
-	UPROPERTY()
-	FBHInteractableObjectData ClosestInteractableObject;
-
-	/** The actor that is currently being interacted with. */
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
-	AActor* CurrentInteractingActor;
-
-	/** The collision query data for the camera trace. */
-	FCollisionQueryParams CameraTraceQueryParams;
-
-	/** The timer for the update function. */
-	UPROPERTY()
-	FTimerHandle UpdateTimerHandle;
-
-#if WITH_EDITORONLY_DATA
-	/** When true, we will draw debug visualisation to the screen for every collision query. */
-	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
-	bool bDebugVisEnabled = false;
-#endif
-
-public:
-	UBHPlayerInteractionComponent();
+		UBHPlayerInteractionComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/** Returns the object the interaction component is currently interacting with. */
+	UFUNCTION(BlueprintPure)
+	AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
+
+	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
+	UFUNCTION(BlueprintGetter)
+	bool GetIsTertiaryInteractionActive() const { return bTertiaryInteractionActive; }
+
+	/** Returns whether there is an object in front of the player that can be interacted with. */
+	UFUNCTION(BlueprintPure)
+	bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
+
+	/** Returns a pointer to an object that is currently available for interaction. Returns a nullptr if no interactable object is in front of the player. */
+	UFUNCTION(BlueprintPure)
+	AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
+
+	/** Returns data about all interactable objects in an actor. This could be the actor itself as well. */
+	UFUNCTION(BlueprintGetter)
+	TArray<FBHInteractableObjectData> GetCurrentInteractableObjects() const { return CurrentInteractableObjects; }
+
+	/** Returns data about the the closest interactable object */
+	UFUNCTION(BlueprintCallable)
+	bool GetClosestInteractableObject(FBHInteractableObjectData& InteractableObjectData)
+	{
+		if (!CurrentInteractableActor) { return false; }
+
+		InteractableObjectData = ClosestInteractableObject;
+		return true;
+	}
+
+	/** Returns the most recent camera trace result. */
+	UFUNCTION(BlueprintPure)
+	FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
 
 	/** Begins the primary interaction action. */
 	UFUNCTION(BlueprintCallable, Category = "Actions", 
@@ -178,24 +143,34 @@ public:
 	UFUNCTION()
 	void AddYawInput(const float Input);
 
-protected:
+	UFUNCTION(BlueprintPure, Category = "Interaction")
+	class UBHPlayerInteractionComponent* GetCurrentlyInteractingComponent() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnBeginInteraction OnBeginInteraction;
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnEndInteraction OnEndInteraction;
+	
+	/** The length of the initial line trace. */
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
+			  Meta = (DisplayName = "Camera Trace Length", ClampMax = "500", UIMax = "500"))
+	uint16 CameraTraceLength = 300;
+
+	/** The radius of the interactable object multi sphere trace. */
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerInteraction", 
+			  Meta = (DisplayName = "Object Trace Radius", ClampMax = "500", UIMax = "500"))
+	uint16 ObjectTraceRadius = 50;
+
+private:
 	virtual void OnRegister() override;
-
 	virtual void OnUnregister() override;
-
 	virtual void BeginPlay() override;
 
 	/** Checks if any interactable objects are in front of the player. */
 	UFUNCTION(BlueprintCallable, Category = "PlayerInteractionComponent", Meta = (DisplayName = "Check For Interactable Objects", BlueprintProtected))
 	AActor* CheckForInteractableActor();
-
-	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "Begin Interaction"))
-	void EventBeginInteraction(const EBHInteractionActionType Type, const UObject* Object);
-
-	UFUNCTION(BlueprintNativeEvent, Category = "PlayerInteraction", Meta = (DisplayName = "End Interaction"))
-	void EventEndInteraction(const EBHInteractionActionType Type, const UObject* Object);
-
-private:
+	
 	/** Performs a line trace from the camera. */
 	UFUNCTION()
 	void PerformTraceFromCamera(FHitResult& HitResult);
@@ -241,39 +216,54 @@ private:
 
 	/** Returns the closest USceneComponent to the player's look-at location. */
 	bool GetClosestObjectToLocation(FBHInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FBHInteractableObjectData> Objects);
+	
+	/** If true, the interaction component is currently performing a tertiary interaction. */
+	UPROPERTY(BlueprintGetter = GetIsTertiaryInteractionActive)
+	bool bTertiaryInteractionActive = false;
 
-public:
-	/** Returns the object the interaction component is currently interacting with. */
-	UFUNCTION(BlueprintPure)
-	AActor* GetCurrentInteractingActor() const { return CurrentInteractingActor; }
+	/** The hit result for the initial visibility line trace collision query performed from the camera. */
+	UPROPERTY()
+	FHitResult CameraTraceHitResult = FHitResult();
 
-	/** Returns whether the interaction component is currently performing a tertiary interaction or not. */
-	UFUNCTION(BlueprintGetter)
-	bool GetIsTertiaryInteractionActive() const { return bTertiaryInteractionActive; }
+	/** The hit result for the occlusion line trace collision query performed from the camera. */
+	UPROPERTY()
+	FHitResult OcclusionTraceHitResult = FHitResult();
 
-	/** Returns whether there is an object in front of the player that can be interacted with. */
-	UFUNCTION(BlueprintPure)
-	bool CanInteract() const { return static_cast<bool>(CurrentInteractableActor); }
+	/** The offset used for the occlusion trace. Prevents the occlusion trace hitting the actor underneath
+	 *	the interactable object that the occlusion trace is performed for. */
+	UPROPERTY()
+	FVector OcclusionOffset = FVector(0, 0, 5);
 
-	/** Returns a pointer to an object that is currently available for interaction. Returns a nullptr if no interactable object is in front of the player. */
-	UFUNCTION(BlueprintPure)
-	AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
+	/** The array of hit results for the interactable object multi sphere trace. */
+	UPROPERTY()
+	TArray<FHitResult> ObjectTraceHitResults;
 
-	/** Returns data about all interactable objects in an actor. This could be the actor itself as well. */
-	UFUNCTION(BlueprintGetter)
-	TArray<FBHInteractableObjectData> GetCurrentInteractableObjects() const { return CurrentInteractableObjects; }
+	/** The actor that currently can be interacted with. Will be a nullptr if no object can be interacted with at the moment. */
+	UPROPERTY(BlueprintGetter = GetCurrentInteractableActor)
+	AActor* CurrentInteractableActor;
 
-	/** Returns data about the the closest interactable object */
-	UFUNCTION(BlueprintCallable)
-	bool GetClosestInteractableObject(FBHInteractableObjectData& InteractableObjectData)
-	{
-		if (!CurrentInteractableActor) { return false; }
+	/** The interactable objects for the current interactable actor. */
+	UPROPERTY(BlueprintGetter = GetCurrentInteractableObjects)
+	TArray<FBHInteractableObjectData> CurrentInteractableObjects;
 
-		InteractableObjectData = ClosestInteractableObject;
-		return true;
-	}
+	/** The closest interactable object to the camera. */
+	UPROPERTY()
+	FBHInteractableObjectData ClosestInteractableObject;
 
-	/** Returns the most recent camera trace result. */
-	UFUNCTION(BlueprintPure)
-	FHitResult GetCameraTraceHitResult() const { return CameraTraceHitResult; }
+	/** The actor that is currently being interacted with. */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerInteraction", Meta = (DisplayName = "Current Interacting Actor", AllowPrivateAccess = "true"))
+	AActor* CurrentInteractingActor;
+
+	/** The collision query data for the camera trace. */
+	struct FCollisionQueryParams CameraTraceQueryParams;
+
+	/** The timer for the update function. */
+	UPROPERTY()
+	FTimerHandle UpdateTimerHandle;
+
+#if WITH_EDITORONLY_DATA
+	/** When true, we will draw debug visualisation to the screen for every collision query. */
+	UPROPERTY(EditAnywhere, Category = "PlayerInteractionComponent|Debugging", Meta = (DisplayName = "Enable Debug Visualisation"))
+	bool bDebugVisEnabled = false;
+#endif
 };
