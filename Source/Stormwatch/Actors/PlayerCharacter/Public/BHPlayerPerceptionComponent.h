@@ -8,7 +8,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNightstalkerPerceptionChangedDelegate, bool, bNightstalkerDetected);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerPerceptionComponent : public UBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerPerceptionComponent : public UBHPlayerCharacterComponent_Deprecated
 {
 	GENERATED_BODY()
 

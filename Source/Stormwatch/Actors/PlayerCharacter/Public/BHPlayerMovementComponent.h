@@ -202,63 +202,60 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void UpdateWalkSpeed(float DeltaTime);
 	
-	UFUNCTION(BlueprintPure, Category = "Settings")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovement")
 	const FBHPlayerCharacterMovementSetup& GetMovementSetup() const { return MovementSetup;  }
 	
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerMovement")
 	void Jump();
 
-	UFUNCTION(BlueprintPure, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
 	bool CanJump() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
+	bool IsJumping() const { return bIsJumping; }
+
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerMovementComponent")
 	void StartSprinting();
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerMovementComponent")
 	void StopSprinting();
 
-	UFUNCTION(BlueprintPure, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
 	bool IsSprinting() const;
 
-	UFUNCTION(BlueprintPure, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
 	bool CanSprint() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerMovementComponent")
 	void StartCrouching();
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerMovementComponent")
 	void StopCrouching();
 
 	virtual bool IsCrouching() const override;
 
-	UFUNCTION(BlueprintPure, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
 	bool CanCrouch() const;
 
-	UFUNCTION(BlueprintPure, Category = "Movement")
+	UFUNCTION(BlueprintPure, Category = "BHPlayerMovementComponent")
 	bool CanUncrouch() const;
-
-	UFUNCTION(BlueprintPure, Category = "Movement")
-	float GetSpeed() const;
 	
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	UPROPERTY(BlueprintAssignable, Category = "BHPlayerMovementComponent|Delegates")
 	FOnSprintStart OnSprintStart;
 
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	UPROPERTY(BlueprintAssignable, Category = "BHPlayerMovementComponent|Delegates")
 	FOnSprintStop OnSprintStop;
 	
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	UPROPERTY(BlueprintAssignable, Category = "BHPlayerMovementComponent|Delegates")
 	FOnCrouchStart OnCrouchStart;
 	
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	UPROPERTY(BlueprintAssignable, Category = "BHPlayerMovementComponent|Delegates")
 	FOnCrouchStop OnCrouchStop;
 	
 private:
 	virtual void ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations) override;
 	
 	float GetWalkSpeedMultiplier() const;
-
-	UFUNCTION(BlueprintPure)
-	bool IsJumping() const { return bIsJumping; }
 	
 	FBHGroundSpeedData WalkSpeedData {};
 	

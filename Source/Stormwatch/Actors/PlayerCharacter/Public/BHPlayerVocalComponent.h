@@ -6,7 +6,7 @@
 #include "BHPlayerVocalComponent.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerCharacterVocalComponent : public UBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerCharacterVocalComponent : public UBHPlayerCharacterComponent_Deprecated
 {
 	GENERATED_BODY()
 

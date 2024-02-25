@@ -1,14 +1,14 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHPhysicsInteractionComponent.h"
+#include "BHPhysicsInteractableComponent.h"
 
-#include "BHInteractionComponent.h"
+#include "BHInteractableComponent.h"
 
 #include "PhysicsEngine/BodyInstance.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPhysicsInteractionComponent, Log, All);
 
-UBHPhysicsInteractionComponent::UBHPhysicsInteractionComponent()
+UBHPhysicsInteractableComponent::UBHPhysicsInteractableComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
@@ -17,23 +17,23 @@ UBHPhysicsInteractionComponent::UBHPhysicsInteractionComponent()
 #endif
 }
 
-void UBHPhysicsInteractionComponent::OnRegister()
+void UBHPhysicsInteractableComponent::OnRegister()
 {
 	Super::OnRegister();
 #if WITH_EDITOR
 	ensureAlwaysMsgf(Cast<UPrimitiveComponent>(GetAttachParent()),
-		TEXT("UBHPhysicsInteractionComponent is not attached to a UPrimitiveComponent."));
+		TEXT("UBHPhysicsInteractableComponent is not attached to a UPrimitiveComponent."));
 #endif
 }
 
-void UBHPhysicsInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHPhysicsInteractableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBHPhysicsInteractionComponent::HandleOnInteractionStart()
+void UBHPhysicsInteractableComponent::HandleOnInteractionStart()
 {
-	bInteracting = true;
+	bBeingInteractedWith = true;
 	
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	ensure(PrimitiveComponent->IsSimulatingPhysics());
@@ -45,7 +45,7 @@ void UBHPhysicsInteractionComponent::HandleOnInteractionStart()
 	PrimitiveComponent->BodyInstance.SleepFamily = ESleepFamily::Custom;
 	PrimitiveComponent->BodyInstance.CustomSleepThresholdMultiplier = 1000.0f;
 	
-	PrimitiveComponent->OnComponentSleep.AddDynamic(this, &UBHPhysicsInteractionComponent::HandleRigidBodySleep);
+	PrimitiveComponent->OnComponentSleep.AddDynamic(this, &UBHPhysicsInteractableComponent::HandleRigidBodySleep);
 	
 	if (const UWorld* World = GetWorld(); ensure(World))
 	{
@@ -56,7 +56,7 @@ void UBHPhysicsInteractionComponent::HandleOnInteractionStart()
 			World->GetTimerManager().ClearTimer(CollisionHitEventEnableTimerHandle);
 		}
 		World->GetTimerManager().SetTimer(CollisionHitEventEnableTimerHandle, this,
-			&UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnAttachParent,
+			&UBHPhysicsInteractableComponent::EnableNotifyRigidBodyCollisionOnAttachParent,
 			TimeToDisableCollisionNotifiesOnInteraction, false);
 	}
 
@@ -66,9 +66,9 @@ void UBHPhysicsInteractionComponent::HandleOnInteractionStart()
 	}
 }
 
-void UBHPhysicsInteractionComponent::HandleOnInteractionEnd()
+void UBHPhysicsInteractableComponent::HandleOnInteractionEnd()
 {
-	bInteracting = false;
+	bBeingInteractedWith = false;
 	
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	ensure(PrimitiveComponent->IsSimulatingPhysics());
@@ -87,14 +87,14 @@ void UBHPhysicsInteractionComponent::HandleOnInteractionEnd()
 			}
 
 			World->GetTimerManager().SetTimer(RigidBodySleepEnableTimerHandle, this,
-				&UBHPhysicsInteractionComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
+				&UBHPhysicsInteractableComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
 		}
 	}
 	
-	bInteracting = false;
+	bBeingInteractedWith = false;
 }
 
-void UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnAttachParent()
+void UBHPhysicsInteractableComponent::EnableNotifyRigidBodyCollisionOnAttachParent()
 {
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	if (PrimitiveComponent->IsSimulatingPhysics())
@@ -103,7 +103,7 @@ void UBHPhysicsInteractionComponent::EnableNotifyRigidBodyCollisionOnAttachParen
 	}
 }
 
-void UBHPhysicsInteractionComponent::EnableRigidBodySleep()
+void UBHPhysicsInteractableComponent::EnableRigidBodySleep()
 {
 	if (ensure(Snapshot.IsSet()))
 	{
@@ -113,7 +113,7 @@ void UBHPhysicsInteractionComponent::EnableRigidBodySleep()
 	}
 }
 
-UPrimitiveComponent* UBHPhysicsInteractionComponent::GetPrimitiveComponent() const
+UPrimitiveComponent* UBHPhysicsInteractableComponent::GetPrimitiveComponent() const
 {
 	UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent());
 	checkf(PrimitiveComponent, TEXT("%s is attached to %s, but expects to be attached to a UPrimitiveComponent in actor: %s."),
@@ -124,17 +124,17 @@ UPrimitiveComponent* UBHPhysicsInteractionComponent::GetPrimitiveComponent() con
 	return PrimitiveComponent;
 }
 
-void UBHPhysicsInteractionComponent::HandleRigidBodySleep(UPrimitiveComponent* Component, FName BoneName)
+void UBHPhysicsInteractableComponent::HandleRigidBodySleep(UPrimitiveComponent* Component, FName BoneName)
 {
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	
-	if (bInteracting)
+	if (bBeingInteractedWith)
 	{
 		PrimitiveComponent->WakeAllRigidBodies();
 		return;
 	}
 	
-	PrimitiveComponent->OnComponentSleep.RemoveDynamic(this, &UBHPhysicsInteractionComponent::HandleRigidBodySleep);
+	PrimitiveComponent->OnComponentSleep.RemoveDynamic(this, &UBHPhysicsInteractableComponent::HandleRigidBodySleep);
 
 	if (ensure(Snapshot.IsSet()))
 	{
@@ -147,7 +147,7 @@ void UBHPhysicsInteractionComponent::HandleRigidBodySleep(UPrimitiveComponent* C
 }
 
 #if WITH_EDITOR
-void UBHPhysicsInteractionComponent::CheckForErrors()
+void UBHPhysicsInteractableComponent::CheckForErrors()
 {
 	Super::CheckForErrors();
 

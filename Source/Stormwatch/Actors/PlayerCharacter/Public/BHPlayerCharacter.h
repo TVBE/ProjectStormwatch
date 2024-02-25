@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "GameFramework/Character.h"
+#include "Stormwatch/Actors/Public/BHCharacter.h"
 #include "BHPlayerCharacter.generated.h"
 
 UCLASS(Abstract, NotPlaceable, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API ABHPlayerCharacter : public ACharacter
+class STORMWATCH_API ABHPlayerCharacter : public ABHCharacter
 {
 	GENERATED_BODY()
 
@@ -14,29 +14,15 @@ public:
 	ABHPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void Jump() override;
-	bool CanPerformJump() const;
-
-	virtual void Crouch(bool bClientSimulation) override;
-	virtual void UnCrouch(bool bClientSimulation) override;
-	bool CanCrouch() const override;
-	bool CanStandUp() const;
-	float GetClearanceAbovePawn() const;
-
-	void StartSprinting();
-	void StopSprinting();
-
-	bool GetIsTurningInPlace() const { return IsTurningInPlace; }
+	
+	bool GetIsTurningInPlace() const { return bTurningInPlace; }
 	float GetYawDelta() const { return YawDelta; }
-
-	bool bIsSprinting() const;
 	
 	UFUNCTION(BlueprintGetter)
 	class UBHPlayerCameraComponent* GetCamera() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerCameraController* GetCameraController() const;
+	class UBHPlayerCameraSocketComponent* GetCameraSocketComponent() const;
 
 	UFUNCTION(BlueprintGetter)
 	class UBHPlayerSkeletalMeshComponent* GetPlayerMesh() const;
@@ -60,7 +46,9 @@ public:
 	class UBHPlayerInventoryComponent* GetInventoryComponent() const;
 
 protected:
+	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
+	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -72,7 +60,7 @@ protected:
 	UBHPlayerCameraComponent* Camera;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraController, Category = "Components")
-	UBHPlayerCameraController* CameraController;
+	UBHPlayerCameraSocketComponent* CameraSocketComponent;
 
 	UPROPERTY(BlueprintGetter = GetPlayerMesh, Category = "Components")
 	UBHPlayerSkeletalMeshComponent* PlayerMesh;
@@ -106,7 +94,7 @@ protected:
 
 private:
 	float YawDelta = 0.f;
-	bool IsTurningInPlace = false;
+	bool bTurningInPlace = false;
 
 	UPROPERTY()
 	FTimerHandle FallStunTimer;
@@ -119,6 +107,7 @@ private:
 
 	UFUNCTION()
 	void HandleLandingStart(EBHPlayerLandingType Value);
+	
 	UFUNCTION()
 	void HandleLandingEnd();
 };

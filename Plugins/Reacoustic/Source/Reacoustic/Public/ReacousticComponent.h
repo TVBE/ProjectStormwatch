@@ -11,7 +11,7 @@
 
 class ReacousticSoundDataRef_Map;
 
-UCLASS(Abstract, Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = "Reacoustic", Meta = (BlueprintSpawnableComponent))
 class REACOUSTIC_API UReacousticComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -36,8 +36,7 @@ protected:
 	float ImpactForce;
 
 private:
-	/** Pointer to the StaticMeshComponent of the owner of this component. */
-	UPROPERTY(Transient, BlueprintGetter = GetOwnerMeshComponent, Meta = (DisplayName = "Static Mesh Component"))
+	UPROPERTY(Transient, BlueprintGetter = GetOwnerMeshComponent)
 	UStaticMeshComponent* MeshComponent = nullptr;
 	
 	/** These variables are used to calculate the difference in distance and time between hits.

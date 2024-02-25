@@ -45,7 +45,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFearChangedDelegate, const float,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVigilanceChangedDelegate, const float, Value);
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerStateComponent : public UBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerStateComponent : public UBHPlayerCharacterComponent_Deprecated
 {
 	GENERATED_BODY()
 

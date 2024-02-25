@@ -4,7 +4,7 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "BHPlayerCharacterPhysicsHandleComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API UBHPlayerCharacterPhysicsHandleComponent : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()

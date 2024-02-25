@@ -4,7 +4,7 @@
 
 #include "BHPlayerBodyCollisionComponent.h"
 #include "BHPlayerCameraComponent.h"
-#include "BHPlayerCameraController.h"
+#include "BHPlayerCameraSocketComponent.h"
 #include "BHPlayerSkeletalMeshComponent.h"
 #include "BHPlayerController.h"
 #include "BHPlayerDragComponent.h"
@@ -32,56 +32,73 @@ ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
-	PlayerMovementComponent = Cast<UBHPlayerMovementComponent>(GetCharacterMovement());
-	PlayerMesh = Cast<UBHPlayerSkeletalMeshComponent>(GetMesh());
 	
-	CameraController = CreateDefaultSubobject<UBHPlayerCameraController>(TEXT("Camera Controller"));
-	Camera->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
-	CameraController->bEditableWhenInherited = true;
+	CameraSocketComponent = CreateDefaultSubobject<UBHPlayerCameraSocketComponent>(TEXT("CameraSocketComponent"));
+	CameraSocketComponent->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
+	CameraSocketComponent->bEditableWhenInherited = true;
 
 	Camera = CreateDefaultSubobject<UBHPlayerCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(this->CameraController);
+	Camera->SetupAttachment(this->CameraSocketComponent);
 	Camera->FieldOfView = 90.0;
 	Camera->bUsePawnControlRotation = false;
 
-	InteractionComponent = CreateDefaultSubobject<UBHPlayerInteractionComponent>(TEXT("Interaction Component"));
+	InteractionComponent = CreateDefaultSubobject<UBHPlayerInteractionComponent>(TEXT("InteractionComponent"));
 	InteractionComponent->bEditableWhenInherited = true;
 
-	UseComponent = CreateDefaultSubobject<UBHPlayerUseComponent>(TEXT("Use Component"));
+	UseComponent = CreateDefaultSubobject<UBHPlayerUseComponent>(TEXT("UseComponent"));
 	UseComponent->bEditableWhenInherited = true;
 
-	GrabComponent = CreateDefaultSubobject<UBHPlayerGrabComponent>(TEXT("Grab Component"));
+	GrabComponent = CreateDefaultSubobject<UBHPlayerGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->bEditableWhenInherited = true;
 
-	DragComponent = CreateDefaultSubobject<UBHPlayerDragComponent>(TEXT("Drag Component"));
+	DragComponent = CreateDefaultSubobject<UBHPlayerDragComponent>(TEXT("DragComponent"));
 	DragComponent->bEditableWhenInherited = true;
 
-	InventoryComponent = CreateDefaultSubobject<UBHPlayerInventoryComponent>(TEXT("Inventory Component"));
+	InventoryComponent = CreateDefaultSubobject<UBHPlayerInventoryComponent>(TEXT("InventoryComponent"));
 	InventoryComponent->bEditableWhenInherited = true;
 
-	BodyCollision = CreateDefaultSubobject<UBHPlayerBodyCollisionComponent>(TEXT("Body Collision"));
+	BodyCollision = CreateDefaultSubobject<UBHPlayerBodyCollisionComponent>(TEXT("BodyCollision"));
 	BodyCollision->SetupAttachment(GetMesh());
 	BodyCollision->SetRelativeLocation(FVector(0, 0, 100));
 	BodyCollision->SetCapsuleHalfHeight(72);
 	BodyCollision->SetCapsuleRadius(34);
 
-	LeftFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("Left Foot Collision"));
+	LeftFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("LeftFootCollision"));
 	LeftFootCollision->SetupAttachment(GetMesh(), FName("foot_l_socket"));
+	LeftFootCollision->bEditableWhenInherited = true;
 
-	RightFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("Right Foot Collision"));
+	RightFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("RightFootCollision"));
 	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
+	RightFootCollision->bEditableWhenInherited = true;
+}
+
+void ABHPlayerCharacter::PostLoad()
+{
+	Super::PostLoad();
+	
+	if (ensureAlwaysMsgf(GetCharacterMovement()->IsA(UBHPlayerMovementComponent::StaticClass()),
+		TEXT("BHPlayerCharacter::PostLoad: CharacterMovement is not of class PlayerCharacterMovementComponent.")))
+	{
+		PlayerMovementComponent = Cast<UBHPlayerMovementComponent>(GetCharacterMovement());
+	}
+	if (ensureAlwaysMsgf(GetMesh()->IsA(UBHPlayerSkeletalMeshComponent::StaticClass()),
+		TEXT("BHPlayerCharacter::PostLoad: Mesh is not of class PlayerCharacterMovementComponent.")))
+	{
+		PlayerMesh = Cast<UBHPlayerSkeletalMeshComponent>(GetMesh());
+	}
 }
 
 void ABHPlayerCharacter::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	ensureMsgf(GetCharacterMovement()->IsA(UBHPlayerMovementComponent::StaticClass()), TEXT("GetCharacterMovement is not of class PlayerCharacterMovementComponent."));
-	check(GetWorld());
-	UBHStormwatchWorldSubsystem* StormwatchWorldSubsystem = GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>();
-	check(StormwatchWorldSubsystem);
-	StormwatchWorldSubsystem->RegisterPlayerCharacter(this);
+	if (!IsTemplate())
+	{
+		UBHStormwatchWorldSubsystem* StormwatchWorldSubsystem =
+			GetWorld() ? GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>() : nullptr;
+		check(StormwatchWorldSubsystem);
+		StormwatchWorldSubsystem->Register(this);
+	}
 }
 
 void ABHPlayerCharacter::BeginPlay()
@@ -110,7 +127,6 @@ void ABHPlayerCharacter::Tick(float DeltaTime)
 
 	UpdateYawDelta();
 	UpdateRotation(DeltaTime);
-	UpdateMovementSpeed();
 }
 
 void ABHPlayerCharacter::UpdateYawDelta()
@@ -129,23 +145,23 @@ void ABHPlayerCharacter::UpdateRotation(const float& DeltaTime)
 		{
 			SetActorRotation(FRotator(0, PlayerCharacterController->GetPlayerControlRotation().Yaw, 0));
 		}
-		IsTurningInPlace = false;
+		bTurningInPlace = false;
 	}
 	else
 	{
 		constexpr float YawDeltaThreshold = 30.0f;
 
-		if (IsTurningInPlace)
+		if (bTurningInPlace)
 		{
 			AddActorWorldRotation(FRotator(0, CalculateTurnInPlaceRotation(YawDelta, DeltaTime, 4.f, 45.0f), 0));
 		}
 		if (FMath::IsNearlyEqual(YawDelta, 0, 0.5f))
 		{
-			IsTurningInPlace = false;
+			bTurningInPlace = false;
 		}
 		else if (abs(YawDelta) > YawDeltaThreshold)
 		{
-			IsTurningInPlace = true;
+			bTurningInPlace = true;
 		}
 	}
 }
@@ -213,10 +229,10 @@ UBHPlayerCameraComponent* ABHPlayerCharacter::GetCamera() const
 	return Camera;
 }
 
-UBHPlayerCameraController* ABHPlayerCharacter::GetCameraController() const
+UBHPlayerCameraSocketComponent* ABHPlayerCharacter::GetCameraSocketComponent() const
 {
-	check(CameraController);
-	return CameraController;
+	check(CameraSocketComponent);
+	return CameraSocketComponent;
 }
 
 UBHPlayerSkeletalMeshComponent* ABHPlayerCharacter::GetPlayerMesh() const
@@ -297,22 +313,6 @@ void ABHPlayerCharacter::HandleLandingEnd()
 	}
 }
 
-float ABHPlayerCharacter::GetClearanceAbovePawn() const
-{
-	const FVector Start = GetActorLocation();
-	const FVector End = Start + FVector(0.f, 0.f, 500.f);
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
-	{
-		/** We subtract the capsule collision half height as this is the distance between the center of the SkeletalMesh and the top of the head. */
-		return HitResult.Distance - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	}
-
-	/** We return -1 if no hit result is produced by the collision query. This means that there is more than 500 units of clearance above the character. */
-	return -1.f;
-}
-
 bool ABHPlayerCharacter::CanPerformJump() const
 {
 	constexpr float RequiredClearance = 60;
@@ -336,7 +336,7 @@ void ABHPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (UBHStormwatchWorldSubsystem * Subsystem = GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>())
 	{
-		Subsystem->UnregisterPlayerCharacter(this);
+		Subsystem->Unregister(this);
 	}
 
 	Super::EndPlay(EndPlayReason);

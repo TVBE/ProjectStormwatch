@@ -12,21 +12,20 @@ UBHPlayerAudioComponent::UBHPlayerAudioComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+
+	MainAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MainAudioComponent"));
+	MainAudioComponent->bAutoActivate = false;
+	MainAudioComponent->bEditableWhenInherited = true;
 }
 
-void UBHPlayerAudioComponent::OnRegister()
+void UBHPlayerAudioComponent::PostInitProperties()
 {
-	Super::OnRegister();
-	
-	BodyAudioComponent = Cast<UAudioComponent>(GetOwner()->AddComponentByClass(UAudioComponent::StaticClass(), false, FTransform(), false));
-	BodyAudioComponent->bAutoActivate = false;
-	BodyAudioComponent->bEditableWhenInherited = false;
-	BodyAudioComponent->SetSound(BodyAudioComponentSoundAsset);
-}
+	Super::PostInitProperties();
 
-void UBHPlayerAudioComponent::BeginPlay()
-{
-	Super::BeginPlay();
+	if (ensure(MainAudioComponent))
+	{
+		MainAudioComponent->SetSound(BodyAudioComponentSoundAsset);
+	}
 }
 
 void UBHPlayerAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -36,21 +35,13 @@ void UBHPlayerAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UBHPlayerAudioComponent::OnUnregister()
 {
-	if (BodyAudioComponent)
-	{
-		if (BodyAudioComponent->IsPlaying())
-		{
-			BodyAudioComponent->Stop();
-		}
-		BodyAudioComponent->Deactivate();
-		BodyAudioComponent->DestroyComponent();
-	}
-	
 	Super::OnUnregister();
+
+	if (ensure(MainAudioComponent))
+	{
+		if (MainAudioComponent->IsPlaying())
+		{
+			MainAudioComponent->Stop();
+		}
+	}
 }
-
-
-
-
-
-

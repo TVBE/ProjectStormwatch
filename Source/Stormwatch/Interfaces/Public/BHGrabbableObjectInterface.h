@@ -23,21 +23,12 @@ class STORMWATCH_API IBHGrabbableObject
 	GENERATED_BODY()
 
 public:
-	/** Starts grabbing the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements a special action on grab.
-	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
-	bool BeginGrab(const AActor* Interactor);
-
-	/** Stop grabbing the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements a special action on release.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
-	bool EndGrab(const AActor* Interactor);
+	bool Grab(const AActor* Interactor);
 	
-	/** Returns the interaction hand type of the object. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
+	bool Release(const AActor* Interactor);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
 	EBHGrabType GetGrabType() const;
 };

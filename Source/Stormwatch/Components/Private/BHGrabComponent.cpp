@@ -2,6 +2,13 @@
 
 #include "BHGrabComponent.h"
 
+UBHGrabComponent::UBHGrabComponent()
+{
+#if WITH_EDITOR
+	bAllowOnlyOneInstancePerActor = true;
+#endif
+}
+
 bool UBHGrabComponent::BeginGrab_Implementation(const AActor* Interactor)
 {
 	HandleOnInteractionStart();

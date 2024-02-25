@@ -5,20 +5,9 @@
 #include "CoreMinimal.h"
 #include "BHPlayerCharacterComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API UBHPlayerCharacterComponent : public UActorComponent
+class FBHPlayerCharacterComponent
 {
-	GENERATED_BODY()
-
-public:
-	UBHPlayerCharacterComponent();
-
 protected:
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
-
-	virtual void OnControllerChanged(APawn* Pawn, AController* NewController, AController* PreviousController) {};
-
-	class ABHPlayerCharacter* GetPlayerCharacter() const;
-	class ABHPlayerController* GetPlayerCharacterController() const;
+	STORMWATCH_API class ABHPlayerCharacter* GetPlayerCharacter() const;
+	STORMWATCH_API class ABHPlayerController* GetPlayerCharacterController() const;
 };

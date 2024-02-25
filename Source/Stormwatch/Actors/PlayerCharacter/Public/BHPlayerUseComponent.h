@@ -6,7 +6,7 @@
 #include "BHPlayerUseComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class UBHPlayerUseComponent : public UBHPlayerCharacterComponent
+class UBHPlayerUseComponent : public UBHPlayerCharacterComponent_Deprecated
 {
 	GENERATED_BODY()
 

@@ -2,7 +2,7 @@
 
 #include "BHPlayerController.h"
 
-#include "BHPlayerCameraController.h"
+#include "BHPlayerCameraSocketComponent.h"
 #include "BHPlayerCharacter.h"
 #include "BHPlayerDragComponent.h"
 #include "BHPlayerFlashlightComponent.h"
@@ -41,11 +41,11 @@ void ABHPlayerController::OnPossess(APawn* InPawn)
 	{
 		if (UBHStormwatchWorldSubsystem* PlayerSubsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
-			PlayerSubsystem->RegisterPlayerController(this);
+			PlayerSubsystem->Register(this);
 		}
 	}
 
-	if (const UBHPlayerCameraController* CameraController = PlayerCharacter->GetCameraController()) 
+	if (const UBHPlayerCameraSocketComponent* CameraController = PlayerCharacter->GetCameraController()) 
 	{
 		PlayerCameraManager->ViewPitchMax = CameraController.MaximumViewPitch;
 		PlayerCameraManager->ViewPitchMin = CameraController.MinimumViewPitch;
@@ -557,7 +557,7 @@ void ABHPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (UBHStormwatchWorldSubsystem* Subsystem = World->GetSubsystem<UBHStormwatchWorldSubsystem>())
 		{
-			Subsystem->UnregisterPlayerController(this);
+			Subsystem->Unregister(this);
 		}
 	}
 	Super::EndPlay(EndPlayReason);

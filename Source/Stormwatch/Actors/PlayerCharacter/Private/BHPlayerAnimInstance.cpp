@@ -14,18 +14,18 @@ UBHPlayerAnimInstance::UBHPlayerAnimInstance()
 
 void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	const ABHPlayerCharacter* PlayerCharacter = Cast<ABHPlayerCharacter>(GetSkelMeshComponent()->GetOwner());
-	check(PlayerCharacter);
+	const ABHPlayerCharacter* Character = Cast<ABHPlayerCharacter>(GetSkelMeshComponent()->GetOwner());
+	check(Character);
 	
-	const ABHPlayerController* Controller = Cast<ABHPlayerController>(PlayerCharacter->GetController());
-	const UBHPlayerMovementComponent* CharacterMovement = PlayerCharacter->GetPlayerMovementComponent();
+	const ABHPlayerController* Controller = Cast<ABHPlayerController>(Character->GetController());
+	const UBHPlayerMovementComponent* CharacterMovement = Character->GetPlayerMovementComponent();
 	if (Controller && CharacterMovement)
 	{
 		CheckMovementState(*Controller, *CharacterMovement);
 	}
 
-	Direction = GetDirection(*PlayerCharacter);
-	Speed = GetSpeed(*PlayerCharacter, *CharacterMovement);
+	Direction = GetDirection(*Character);
+	Speed = Character->GetSpeed();
 
 	if (bIsFalling ^ CharacterMovement->IsFalling() && !bIsFalling)
 	{
@@ -40,7 +40,7 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		UpdateFallTime(DeltaSeconds);
 	}
 		
-	CheckTurnInplaceConditions(*PlayerCharacter);
+	CheckTurnInplaceConditions(*Character);
 	
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }

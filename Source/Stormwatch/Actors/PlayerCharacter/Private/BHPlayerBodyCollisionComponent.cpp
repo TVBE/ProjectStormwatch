@@ -8,6 +8,11 @@ UBHPlayerBodyCollisionComponent::UBHPlayerBodyCollisionComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
+void UBHPlayerBodyCollisionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void UBHPlayerBodyCollisionComponent::OnRegister()
 {
 	Super::OnRegister();
@@ -17,9 +22,12 @@ void UBHPlayerBodyCollisionComponent::OnRegister()
 	SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Block);
 }
 
-void UBHPlayerBodyCollisionComponent::BeginPlay()
+void UBHPlayerBodyCollisionComponent::OnUnregister()
 {
-	Super::BeginPlay();
+	Super::OnRegister();
+
+	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
 void UBHPlayerBodyCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

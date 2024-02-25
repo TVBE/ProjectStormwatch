@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerGrabComponent.h"
-#include "BHPhysicsInteractionComponent.h"
+#include "BHPhysicsInteractableComponent.h"
 #include "BHPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
@@ -212,13 +212,13 @@ void UBHPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	
 	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
 	 *	If not, add the component to the grabbed actor. */
-	if (UBHPhysicsInteractionComponent* KineticComponent = Cast<UBHPhysicsInteractionComponent>(ActorToGrab->GetComponentByClass(UBHPhysicsInteractionComponent::StaticClass())))
+	if (UBHPhysicsInteractableComponent* KineticComponent = Cast<UBHPhysicsInteractableComponent>(ActorToGrab->GetComponentByClass(UBHPhysicsInteractableComponent::StaticClass())))
 	{
 		KineticComponent->HandleOnInteractionStart();
 	}
 	else
 	{
-		ActorToGrab->AddComponentByClass(UBHPhysicsInteractionComponent::StaticClass(), false, FTransform(), false);
+		ActorToGrab->AddComponentByClass(UBHPhysicsInteractableComponent::StaticClass(), false, FTransform(), false);
 	}
 	
 	FBox BoundingBox = GrabbedComponent->Bounds.GetBox();
@@ -234,7 +234,7 @@ void UBHPlayerGrabComponent::ReleaseActor()
 
 	SetComponentTickEnabled(false);
 
-	if (UBHPhysicsInteractionComponent* KineticComponent = Cast<UBHPhysicsInteractionComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UBHPhysicsInteractionComponent::StaticClass())))
+	if (UBHPhysicsInteractableComponent* KineticComponent = Cast<UBHPhysicsInteractableComponent>(GrabbedComponent->GetOwner()->GetComponentByClass(UBHPhysicsInteractableComponent::StaticClass())))
 	{
 		KineticComponent->HandleOnInteractionEnd();
 	}

@@ -6,7 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "BHPlayerCharacterSceneComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API UBHPlayerCharacterSceneComponent : public USceneComponent
 {
 	GENERATED_BODY()

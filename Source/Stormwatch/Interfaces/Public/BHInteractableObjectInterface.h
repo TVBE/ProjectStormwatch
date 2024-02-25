@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "BHInteractableObjectInterface.generated.h"
 
-UINTERFACE(Blueprintable, Meta = (DisplayName = "Interactable Object Interface", ShortToolTip = "Interface for interactable objects."))
+UINTERFACE(Meta = (DisplayName = "Interactable Object Interface", ShortToolTip = "Interface for interactable objects."))
 class STORMWATCH_API UBHInteractableObject : public UInterface
 {
 	GENERATED_BODY()
@@ -16,6 +16,9 @@ class STORMWATCH_API IBHInteractableObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable Object")
-	FVector GetInteractionWidgetLocation() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInteractableObject")
+	bool CanBeInteractedWith() const;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInteractableObject")
+	FVector GetInteractionLocation() const;
 };

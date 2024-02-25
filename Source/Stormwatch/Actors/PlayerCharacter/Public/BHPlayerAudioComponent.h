@@ -5,8 +5,10 @@
 #include "BHPlayerCharacterComponent.h"
 #include "BHPlayerAudioComponent.generated.h"
 
+// Manages all player character audio. Owns the PlayerCharacters main audio components.
+// Any audio specific logic for the player character should be implemented in a class derived from this.
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerAudioComponent : public UBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerAudioComponent : public UActorComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
@@ -16,18 +18,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintGetter)
-	class UAudioComponent* GetBodyAudioComponent() const { return BodyAudioComponent; }
+	class UAudioComponent* GetBodyAudioComponent() const { return MainAudioComponent; }
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void PostInitProperties() override;
+	virtual void OnUnregister() override;
 
 private:
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
-	
 	UPROPERTY(BlueprintGetter = GetBodyAudioComponent)
-	UAudioComponent* BodyAudioComponent;
+	UAudioComponent* MainAudioComponent = nullptr;
 	
 	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Body Audio Component Metasound Source"))
-	class UMetaSoundSource* BodyAudioComponentSoundAsset;
+	class UMetaSoundSource* BodyAudioComponentSoundAsset = nullptr;
 };

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "BHInteractionComponent.h"
-#include "BHPhysicsInteractionComponent.generated.h"
+#include "BHInteractableComponent.h"
+#include "BHPhysicsInteractableComponent.generated.h"
 
 USTRUCT()
 struct FBHCollisionSettingsSnapshot
@@ -54,13 +54,13 @@ struct FBHCollisionSettingsSnapshot
 	}
 };
 
-UCLASS(Abstract, NotBlueprintable, BlueprintType, ClassGroup = "Physics")
-class UBHPhysicsInteractionComponent : public UBHInteractionComponent
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
+class UBHPhysicsInteractableComponent : public UBHInteractableComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UBHPhysicsInteractionComponent();
+	UBHPhysicsInteractableComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

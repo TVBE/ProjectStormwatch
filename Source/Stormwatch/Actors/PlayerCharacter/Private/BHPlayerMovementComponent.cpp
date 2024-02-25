@@ -95,18 +95,16 @@ void UBHPlayerMovementComponent::Jump()
 
 bool UBHPlayerMovementComponent::CanJump() const
 {
-	bool bCanJump = MovementSetup.bJumpingEnabled && GetPlayerCharacter()->CanJump();
 	if (MovementSetup.bJumpingEnabled)
 	{
-		if (MovementSetup.bRequireJumpClearance)
+		if (MovementSetup.bRequireJumpClearance && !GetPlayerCharacter()->GetClearanceAbovePawn() > MovementSetup.JumpClearance)
 		{
-			
+			return false;
 		}
 	}
 	return false;
 	
-	constexpr float RequiredClearance = 60;
-	const float Clearance = GetClearanceAbovePawn();
+
 	return ((Clearance > RequiredClearance || Clearance == -1.f) && bJumpingEnabled && !GetMovementComponent()->bIsFalling());
 }
 

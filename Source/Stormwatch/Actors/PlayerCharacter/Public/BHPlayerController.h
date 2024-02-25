@@ -9,7 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerMovementInputLockDelegate, bool, bValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRotationInputLockDelegate, bool, bValue);
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API ABHPlayerController : public APlayerController
 {
 	GENERATED_BODY()

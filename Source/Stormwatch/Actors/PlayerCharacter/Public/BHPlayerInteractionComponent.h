@@ -47,7 +47,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeginInteraction, EBHInteraction
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEndInteraction, EBHInteractionType, Type, USceneComponent*, Component);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API UBHPlayerInteractionComponent : public UBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerInteractionComponent : public UBHPlayerCharacterComponent_Deprecated
 {
 	GENERATED_BODY()
 

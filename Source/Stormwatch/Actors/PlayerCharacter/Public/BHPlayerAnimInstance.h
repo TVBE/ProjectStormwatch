@@ -18,7 +18,7 @@ enum class EBHBodyExtremity : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FExtremityHitDelegate, FBHStepData, FootstepData);
 
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
+UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API UBHPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
@@ -105,7 +105,6 @@ private:
 
 	void CheckMovementState(const class ABHPlayerController& Controller, const class UBHPlayerMovementComponent& CharacterMovement);
 	void CheckTurnInplaceConditions(const ABHPlayerCharacter& Character);
-
-	static float GetSpeed(const ABHPlayerCharacter& Character, const UBHPlayerMovementComponent& CharacterMovement);
+	
 	static float GetDirection(const ABHPlayerCharacter& Character);
 };
