@@ -40,6 +40,7 @@ public class Stormwatch : ModuleRules
 			{
 				"$(ProjectDir)/Source/Stormwatch/Actors/Public/Public",
 				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerCharacter/Public",
+				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerController/Public",
 				"$(ProjectDir)/Source/Stormwatch/Actors/HomeComputer/Public",
 				"$(ProjectDir)/Source/Stormwatch/Actors/Nightstalker/Public",
 				"$(ProjectDir)/Source/Stormwatch/Audio/Public",

@@ -5,7 +5,7 @@
 #include "BHPlayerCharacterComponent.h"
 #include "BHPlayerInventoryComponent.generated.h"
 
-class UBHPlayerInteractionComponent;
+class UBHPlayerControllerInteractionComponent;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
 class STORMWATCH_API UBHPlayerInventoryComponent : public UBHPlayerCharacterComponent_Deprecated

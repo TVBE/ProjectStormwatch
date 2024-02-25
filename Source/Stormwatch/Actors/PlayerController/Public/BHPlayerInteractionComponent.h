@@ -5,6 +5,7 @@
 #include "BHPlayerCharacterComponent.h"
 #include "BHPlayerInteractionComponent.generated.h"
 
+// START DEPRECATED -------------------------------------------------------------
 UENUM(BlueprintType)
 enum class EBHInteractionType : uint8
 {
@@ -42,12 +43,13 @@ struct FBHInteractableObjectData
 	{
 	}
 };
+// END DEPRECATED -------------------------------------------------------------
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeginInteraction, EBHInteractionType, Type, USceneComponent*, Component);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEndInteraction, EBHInteractionType, Type, USceneComponent*, Component);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API UBHPlayerInteractionComponent : public UBHPlayerCharacterComponent_Deprecated
+class STORMWATCH_API UBHPlayerInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
