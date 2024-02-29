@@ -12,7 +12,7 @@
 
 class ABHPowerSource;
 class UBHPowerConsumptionComponent;
-class UBHCollisionTriggerComponent;
+class UBHCollisionTriggerableComponent;
 struct FTimerHandle;
 
 /** Defines the trigger type of the button. */
@@ -141,7 +141,7 @@ protected:
 	
 	/** The mesh collision trigger component. */
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
-	UBHCollisionTriggerComponent* CollisionTriggerComponent;
+	UBHCollisionTriggerableComponent* CollisionTriggerComponent;
 	
 	// POWER
 	/** If true, the button requires power to operate and can be connected to a power source. */

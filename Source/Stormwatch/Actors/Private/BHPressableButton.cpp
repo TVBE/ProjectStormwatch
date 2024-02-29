@@ -2,7 +2,7 @@
 
 #include "BHPressableButton.h"
 
-#include "BHCollisionTriggerComponent.h"
+#include "BHCollisionTriggerableComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "BHPowerConsumptionComponent.h"
 #include "..\..\Interfaces\Public\BHTriggerableObjectInterface.h"
@@ -36,8 +36,8 @@ void ABHPressableButton::BeginPlay()
 	/** If the button is configured to be able to be triggered by collisions, add the collision trigger component here. */
 	if (CanTriggerByCollision)
 	{
-		CollisionTriggerComponent = Cast<UBHCollisionTriggerComponent>
-		(AddComponentByClass(UBHCollisionTriggerComponent::StaticClass(), true, FTransform(), true));
+		CollisionTriggerComponent = Cast<UBHCollisionTriggerableComponent>
+		(AddComponentByClass(UBHCollisionTriggerableComponent::StaticClass(), true, FTransform(), true));
 		
 		if (CollisionTriggerComponent && ButtonMesh)
 		{
