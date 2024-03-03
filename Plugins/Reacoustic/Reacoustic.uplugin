@@ -18,8 +18,14 @@
 		{
 			"Name": "Reacoustic",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
+			"LoadingPhase": "PreLoadingScreen"
+		},
+		{
+			"Name": "ReacousticEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PreLoadingScreen"
+		},
+
 	],
 	"Plugins": [
 		{
