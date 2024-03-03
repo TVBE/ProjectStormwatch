@@ -1,4 +1,5 @@
-// Copyright 2023 Nino Saglia & Tim Verberne
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #pragma once
 
@@ -8,9 +9,6 @@
 #include "UObject/SoftObjectPath.h"
 #include "ReacousticSettings.generated.h"
 
-/**
- * 
- */
 UCLASS(config = Reacoustic, defaultconfig, Meta = (DisplayName = "Reacoustic"))
 class REACOUSTIC_API UReacousticProjectSettings : public UDeveloperSettings
 {
@@ -25,34 +23,34 @@ private:
 
 	
 public:
-	/*UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
-	FSoftObjectPath ReacousticObjectSounds;
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
+	FSoftObjectPath ReacousticObjects;
 
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = DataTable))
-	FSoftObjectPath ReacousticSurfaceSounds;
+	FSoftObjectPath ReacousticSurfaces;
 
 	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticComponent))
 	FSoftObjectPath ReacousticComponent;
 
-	/** The GENERATED data used by the reacoustic subsystem.#1#
-	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataAsset))
-	FSoftObjectPath SoundDataAsset;
-	
-	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = UReacousticSoundDataRefMap))
-	FSoftObjectPath SoundDataRefMap;*/
+protected:
+	/** The GENERATED data used by the reacoustic subsystem.#1#*/
+	UReacousticSoundDataAsset* ReacousticSoundDataAsset;
+	UReacousticSoundDataRef_Map* ReacousticSoundDataRefMap;
 
+
+public:
 	/** Calls the GenerateRuntimeData function in the subsystem.*/
 	void GenerateRuntimeData();
 
 
-	// Beginning of UDeveloperSettings Interface
-	virtual FName GetCategoryName() const override { return FName(TEXT("Game")); }
+
+
+
 #if WITH_EDITOR
+	virtual FName GetCategoryName() const override { return FName(TEXT("Game")); }
 	virtual FText GetSectionText() const override { return NSLOCTEXT("ReacousticPlugin", "ReacousticSettingsSection", "Reacoustic"); };
-#endif
-	// End of UDeveloperSettings Interface
-	
-	#if WITH_EDITOR
+
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+	
 };

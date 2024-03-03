@@ -1,4 +1,5 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 using UnrealBuildTool;
 
@@ -27,7 +28,7 @@ public class Reacoustic : ModuleRules
 			new string[]
 			{
 				"Core",
-				"DeveloperSettings"
+				"DeveloperSettings",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,6 +43,7 @@ public class Reacoustic : ModuleRules
 				"SlateCore",
 				"InputCore", 
 				"PhysicsCore",
+				"AudioSynesthesia",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

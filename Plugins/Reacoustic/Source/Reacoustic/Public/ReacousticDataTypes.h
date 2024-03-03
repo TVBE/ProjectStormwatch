@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2022-present Nino Saglia. All Rights Reserved.
+// Written by Nino Saglia.
 
 #pragma once
 
@@ -8,9 +9,6 @@
 #include "Sound/SoundAttenuation.h"
 #include "ReacousticDataTypes.generated.h"
 
-/**
- * 
- */
 USTRUCT(BlueprintType)
 struct FReacousticSoundData
 {
@@ -164,6 +162,7 @@ float WeightPitchFactor{0.0};
 
 	FReacousticObjects(){};
 };
+
 
 USTRUCT(BlueprintType)
 struct FReacousticSurfaces
