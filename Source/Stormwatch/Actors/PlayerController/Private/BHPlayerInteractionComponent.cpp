@@ -1,11 +1,15 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerInteractionComponent.h"
+
+#include "BHInteractableObjectInterface.h"
+#include "BHPlayerCameraComponent.h"
 #include "..\..\..\Interfaces\Public\BHDraggableObjectInterface.h"
 #include "..\..\..\Interfaces\Public\BHGrabbableObjectInterface.h"
 #include "..\..\..\Interfaces\Public\BHInventoryObjectInterface.h"
 #include "..\..\..\Interfaces\Public\BHUsableObjectInterface.h"
 #include "BHPlayerCharacter.h"
+#include "BHPlayerController.h"
 #include "BHPlayerDragComponent.h"
 #include "BHPlayerInventoryComponent.h"
 #include "BHPlayerGrabComponent.h"
@@ -13,66 +17,163 @@
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Camera/CameraComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogBHInteractionComponent, Log, All);
+
 UBHPlayerInteractionComponent::UBHPlayerInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 }
 
-void UBHPlayerInteractionComponent::OnRegister()
-{
-	Super::OnRegister();
-	
-	CameraTraceQueryParams = FCollisionQueryParams(FName(TEXT("VisibilityTrace")), false, GetOwner());
-	CameraTraceQueryParams.bReturnPhysicalMaterial = false;
-}
-
-void UBHPlayerInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void UBHPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-	UBHPlayerUseComponent* UseComponent = GetPlayerCharacter()->GetUseComponent();
-
-	if (GrabComponent && GrabComponent->GetGrabbedActor())
+	ABHPlayerCharacter* Character = nullptr;
+	if (const ABHPlayerController* PlayerController = Cast<ABHPlayerController>(GetOwner()))
 	{
-		CurrentInteractableActor = nullptr;
+		Character = Cast<ABHPlayerCharacter>(PlayerController->GetPawn());
+	}
+	if (!IsValid(Character))
+	{
 		return;
 	}
 	
-	if (AActor* InteractableActor = CheckForInteractableActor())
+	const FBHCameraQuery& CameraQuery = Character->GetCamera()->GetCameraQuery();
+	// Exit early if trace length exceeds maximum possible interaction distance,
+	// as we will never be able to interact with something at this point.
+	if (CameraQuery.TraceLength > MaxInteractionDistance + InteractionTraceRadius)
 	{
-		if (InteractableActor != CurrentInteractableActor)
-		{
-			CurrentInteractableActor = InteractableActor;
-			UpdateInteractableObjectData(InteractableActor);
-		}
-	}
-	else 
-	{
-		if (!CurrentInteractableObjects.IsEmpty())
-		{
-			CurrentInteractableObjects.Empty();
-		}
-		CurrentInteractableActor = nullptr;
+		return;
 	}
 
-	GetClosestObjectToLocation(ClosestInteractableObject, CameraTraceHitResult.Location, CurrentInteractableObjects);
-	
-	if (UseComponent && UseComponent->GetActorInUse() != CurrentInteractableActor)
+	const FVector& TraceLocation = CameraQuery.HitResult.ImpactPoint;
+	TArray<TPair<UObject*, FVector>> InteractableObjects = TraceForInteractableObjects(TraceLocation, {Character});
+	if (InteractableObjects.IsEmpty())
 	{
-		UseComponent->EndUse();
+		return;
 	}
+
+	UObject* PreferredInteractableObject = nullptr;
+	for (TPair<UObject*, FVector> InteractableObject : InteractableObjects)
+	{
+		UObject* Object = InteractableObject.Key;
+		const FVector& ObjectLocation = InteractableObject.Value;
+
+		if (!IsOccluded(Object, TraceLocation, ObjectLocation))
+		{
+			PreferredInteractableObject = Object;
+			break;
+		}
+	}
+
 	
+}
+
+TArray<TPair<UObject*, FVector>> UBHPlayerInteractionComponent::TraceForInteractableObjects(const FVector& Location,
+	const TArray<AActor*>& IgnoredActors)
+{
+	TArray<TPair<UObject*, FVector>> FoundObjects;
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = false;
+	QueryParams.bReturnPhysicalMaterial = false;
+	QueryParams.AddIgnoredActors(IgnoredActors);
+	const UWorld* World = GetWorld();
+	if (const bool bHit = World ? World->SweepMultiByChannel(
+		HitResults,
+		Location,
+		Location,
+		FQuat::Identity,
+		ECC_WorldDynamic,
+		FCollisionShape::MakeSphere(InteractionTraceRadius),
+		QueryParams) : false)
+	{
+		TArray<TTuple<UObject*, FVector, float, int32>> OverlappingObjects;
+		for (const FHitResult& Hit : HitResults)
+		{
+			if (AActor* Actor = Hit.GetActor())
+			{
+				const float RadiusSquared = pow(InteractionTraceRadius, 2);
+				if (float DistanceSquared = FVector::DistSquared(Actor->GetActorLocation(), Location);
+					DistanceSquared <= RadiusSquared && Actor->Implements<UBHInteractableObject>())
+				{
+					int32 Priority = 0;
+					if (bUsePriority)
+					{
+						Priority = IBHInteractableObject::Execute_GetInteractionPriority(Actor);
+					}
+					OverlappingObjects.Add(MakeTuple(Actor, Actor->GetActorLocation(), DistanceSquared, Priority));
+				}
+				TInlineComponentArray<UActorComponent*> Components(Actor);
+				for (UActorComponent* Component : Components)
+				{
+					if (!IsValid(Component))
+					{
+						continue;
+					}
+					
+					const USceneComponent* SceneComponent = Cast<USceneComponent>(Component);
+					FVector ComponentLocation = SceneComponent ? SceneComponent->GetComponentLocation() : Actor->GetActorLocation();
+
+					if (float DistanceSquared = FVector::DistSquared(ComponentLocation, Location);
+						DistanceSquared <= RadiusSquared && Actor->Implements<UBHInteractableObject>())
+					{
+						int32 Priority = 0;
+						if (bUsePriority)
+						{
+							Priority = IBHInteractableObject::Execute_GetInteractionPriority(Actor);
+						}
+						OverlappingObjects.Add(MakeTuple(Component, ComponentLocation, DistanceSquared, Priority));
+					}
+				}
+			}
+		}
+		
+		if (!OverlappingObjects.IsEmpty())
+		{
+			// Sort by priority first. If priorities are equal, sort by distance.
+			Algo::Sort(OverlappingObjects,
+				[](const TTuple<UObject*, float, int32>& A, const TTuple<UObject*, float, int32>& B) {
+					if (A.Get<3>() != B.Get<3>()) {
+						
+						return A.Get<3>() < B.Get<3>();
+					}
+					return A.Get<2>() < B.Get<2>();
+				}
+			);
+		}
+
+		FoundObjects.Reserve(OverlappingObjects.Num());
+		for (const auto& OverlappingObject : OverlappingObjects) {
+			FoundObjects.Add(MakeTuple(OverlappingObject.Get<0>(), OverlappingObject.Get<1>()));
+		}
+	}
+	return FoundObjects;
+}
+
+bool UBHPlayerInteractionComponent::IsOccluded(UObject* Object, const FVector& Start, const FVector& End)
+{
+	check(Object);
+	
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	if (AActor* Actor = Cast<AActor>(Object))
+	{
+		CollisionParams.AddIgnoredActor(Actor);
+	}
+	else if (UActorComponent* Component = Cast<UActorComponent>(Object))
+	{
+		CollisionParams.AddIgnoredActor(Component->GetOwner());
+	}
+	const UWorld* World = Object->GetWorld();
+	return World ? World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams) : false;
 }
 
 AActor* UBHPlayerInteractionComponent::CheckForInteractableActor()
 {
+
 	const UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
@@ -119,7 +220,7 @@ void UBHPlayerInteractionComponent::PerformTraceFromCamera(FHitResult& HitResult
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
 
-	const FVector EndLocation = CameraLocation + Camera->GetForwardVector() * CameraTraceLength;
+	const FVector EndLocation = CameraLocation + Camera->GetForwardVector() * MaxInteractionDistance;
 	
 	GetWorld()->LineTraceSingleByChannel(
 		HitResult,
@@ -207,7 +308,11 @@ void UBHPlayerInteractionComponent::UpdateInteractableObjectData(AActor* NewInte
 
 bool UBHPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 {
-	if (!Actor) { return false; }
+	if (!Actor)
+	{
+		
+		return false;
+	}
 
 	const UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
 
@@ -228,69 +333,6 @@ bool UBHPlayerInteractionComponent::IsActorOccluded(const AActor* Actor)
 	return bHit && OcclusionTraceHitResult.GetActor() && (OcclusionTraceHitResult.GetActor() != Actor);
 }
 
-template <typename TInterface>
-UObject* UBHPlayerInteractionComponent::FindInteractableObject(AActor* Actor) const
-{
-	if (!Actor) { return nullptr; }
-	UObject* InteractableObject = nullptr;
-	
-	/** Check if the actor implements the specified interface. */
-	if (Actor->GetClass()->ImplementsInterface(TInterface::StaticClass()))
-	{
-		InteractableObject = Actor;
-	}
-	
-	/** If the actor does not implement the specified interface, try to find a component that does.*/
-	else if (UActorComponent* InteractableComponent = FindInteractableComponent<TInterface>(Actor))
-	{
-		InteractableObject = InteractableComponent;
-	}
-	
-	return InteractableObject;
-}
-
-template <typename TInterface>
-TArray<UObject*> UBHPlayerInteractionComponent::FindInteractableObjects(AActor* Actor) const
-{
-	TArray<UObject*> InteractableObjects;
-
-	if (!Actor) { return InteractableObjects; }
-
-	/** Check if the actor implements the specified interface. */
-	if (Actor->GetClass()->ImplementsInterface(TInterface::StaticClass()))
-	{
-		InteractableObjects.Add(Actor);
-	}
-
-	/** Iterate through the actor's components, checking if any of them implement the specified interface. */
-	TArray<UActorComponent*> Components;
-	Actor->GetComponents(Components);
-	for (UActorComponent* Component : Components)
-	{
-		if (Component->GetClass()->ImplementsInterface(TInterface::StaticClass()))
-		{
-			InteractableObjects.Add(Component);
-		}
-	}
-
-	return InteractableObjects;
-}
-
-template <typename TInterface>
-UActorComponent* UBHPlayerInteractionComponent::FindInteractableComponent(const AActor* Actor) const
-{
-	if (!Actor) { return nullptr; }
-	TSet<UActorComponent*> Components {Actor->GetComponents()};
-	if (Components.IsEmpty()) { return nullptr; }
-	for (UActorComponent* Component : Components)
-	{
-		if (Component->GetClass()->ImplementsInterface(TInterface::StaticClass()))
-		{
-			return Component;
-		}
-	}
-	return nullptr;
-}
 
 inline FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* Actor)
 {
@@ -323,226 +365,5 @@ inline FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* 
 		}
 	}
 	return TargetLocation;
-}
-
-AActor* UBHPlayerInteractionComponent::GetActorFromObject(UObject* Object) const
-{
-	if (AActor* Actor = Cast<AActor>(Object))
-	{
-		return Actor;
-	}
-	
-	if (const UActorComponent* Component = Cast<UActorComponent>(Object))
-	{
-		return Component->GetOwner();
-	}
-	return nullptr;
-}
-
-bool UBHPlayerInteractionComponent::GetClosestObjectToLocation(FBHInteractableObjectData& OutInteractableObjectData, const FVector& Location, TArray<FBHInteractableObjectData> Objects)
-{
-	if (Objects.IsEmpty())
-	{
-		OutInteractableObjectData.Object = nullptr;
-		return false;
-	}
-
-	const UObject* ClosestObject = nullptr;
-	float MinDistance = FLT_MAX;
-	FBHInteractableObjectData ClosestObjectData;
-
-	for (const FBHInteractableObjectData& ObjectData : Objects)
-	{
-		UObject* Object = ObjectData.Object;
-		FVector ObjectLocation;
-
-		if (const AActor* Actor = Cast<AActor>(Object))
-		{
-			ObjectLocation = Actor->GetActorLocation();
-		}
-		else if (const USceneComponent* Component = Cast<USceneComponent>(Object))
-		{
-			ObjectLocation = Component->GetComponentLocation();
-		}
-		else
-		{
-			continue;
-		}
-
-		if (const float Distance = static_cast<float>(FVector::DistSquared(Location, ObjectLocation)); Distance < MinDistance)
-		{
-			MinDistance = Distance;
-			ClosestObject = Object;
-			ClosestObjectData = ObjectData;
-		}
-	}
-
-	if (ClosestObject)
-	{
-		OutInteractableObjectData = ClosestObjectData;
-		return true;
-	}
-
-	return false;
-}
-
-void UBHPlayerInteractionComponent::BeginPrimaryInteraction()
-{
-	UBHPlayerUseComponent* UseComponent = GetPlayerCharacter()->GetUseComponent();
-
-	if (CurrentInteractableActor)
-	{
-		if (UObject* InteractableObject = FindInteractableObject<UBHUsableObject>(CurrentInteractableActor))
-		{
-			UseComponent->BeginUse(InteractableObject);
-		}
-	}
-}
-
-void UBHPlayerInteractionComponent::EndPrimaryInteraction()
-{
-	UBHPlayerUseComponent* UseComponent = GetPlayerCharacter()->GetUseComponent();
-
-	if (!UseComponent->GetObjectInUse()) { return; }
-
-	UseComponent->EndUse();
-}
-
-void UBHPlayerInteractionComponent::BeginSecondaryInteraction()
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-	UBHPlayerDragComponent* DragComponent = GetPlayerCharacter()->GetDragComponent();
-
-	if (GrabComponent->GetGrabbedActor())
-	{
-		GrabComponent->PrimeThrow();
-		return;
-	}
-
-	if (!CurrentInteractableActor) { return; }
-	
-	if (UObject* GrabbableObject = FindInteractableObject<UBHGrabbableObject>(CurrentInteractableActor))
-	{
-		GrabComponent->GrabActor(CurrentInteractableActor);
-	}
-	else if (UObject* DraggableObject = FindInteractableObject<UBHDraggableObject>(CurrentInteractableActor))
-	{
-		FVector GrabLocation = FVector();
-		if (CameraTraceHitResult.GetActor() == CurrentInteractableActor)
-		{
-			GrabLocation = CameraTraceHitResult.ImpactPoint;
-		}
-		else if (CameraTraceHitResult.GetActor() != CurrentInteractableActor)
-		{
-			GrabLocation = GetNearestPointOnMesh(CameraTraceHitResult, CurrentInteractableActor);
-		}
-		DragComponent->DragActorAtLocation(CurrentInteractableActor, GrabLocation);
-	}
-}
-
-void UBHPlayerInteractionComponent::EndSecondaryInteraction()
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-	UBHPlayerDragComponent* DragComponent = GetPlayerCharacter()->GetDragComponent();
-
-	if (GrabComponent->GetWillThrowOnRelease())
-	{
-		GrabComponent->PerformThrow(false);
-	}
-	else
-	{
-		if(GrabComponent->GetIsPrimingThrow())
-		{
-			GrabComponent->ReleaseActor();
-		}
-	}
-
-	DragComponent->ReleaseActor();
-}
-
-void UBHPlayerInteractionComponent::BeginTertiaryInteraction()
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-
-	bTertiaryInteractionActive = true;
-
-	GrabComponent->BeginTetriaryInteraction();
-}
-
-void UBHPlayerInteractionComponent::EndTertiaryInteraction()
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-
-	bTertiaryInteractionActive = false;
-
-	GrabComponent->EndTetriaryInteraction();
-}
-
-void UBHPlayerInteractionComponent::BeginInventoryInteraction()
-{
-	UBHPlayerInventoryComponent* InventoryComponent = GetPlayerCharacter()->GetInventoryComponent();
-
-	if (CurrentInteractableActor)
-	{
-		if (UObject* InteractableObject = FindInteractableObject<UBHInventoryObject>(CurrentInteractableActor))
-		{
-			InventoryComponent->AddActorToInventory(GetActorFromObject(CurrentInteractableActor));
-		}
-	}
-}
-
-void UBHPlayerInteractionComponent::EndInventoryInteraction()
-{
-}
-
-void UBHPlayerInteractionComponent::AddScrollInput(const float Input)
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-
-	if (GrabComponent->GetGrabbedActor())
-	{
-		GrabComponent->UpdateZoomAxisValue(Input);
-	}
-}
-
-void UBHPlayerInteractionComponent::AddPitchInput(const float Input)
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-
-	if (bTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
-	{
-		GrabComponent->UpdateMouseInputRotation(FVector2D(0, Input));
-	}
-}
-
-void UBHPlayerInteractionComponent::AddYawInput(const float Input)
-{
-	UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
-
-	if (bTertiaryInteractionActive && GrabComponent->GetGrabbedActor())
-	{
-		GrabComponent->UpdateMouseInputRotation(FVector2D(Input, 0));
-	}
-}
-
-UBHPlayerInteractionComponent* UBHPlayerInteractionComponent::GetCurrentlyInteractingComponent() const
-{
-	if (GetPlayerCharacter()->GetUseComponent()->GetObjectInUse())
-	{
-		
-	}
-}
-
-void UBHPlayerInteractionComponent::OnUnregister()
-{
-	Super::OnUnregister();
-}
-
-void UBHPlayerInteractionComponent::EventEndInteraction_Implementation(const EBHInteractionActionType Type, const UObject* Object)
-{
-}
-
-void UBHPlayerInteractionComponent::EventBeginInteraction_Implementation(const EBHInteractionActionType Type, const UObject* Object)
-{
 }
 

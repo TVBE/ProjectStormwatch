@@ -32,7 +32,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintPure, Category = "BHCameraComponent")
-	const FBHCameraQuery& GetCameraTrace() const;
+	const FBHCameraQuery& GetCameraQuery() const;
 
 protected:
 	virtual void PostLoad() override;

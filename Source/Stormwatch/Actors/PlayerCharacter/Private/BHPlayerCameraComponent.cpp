@@ -81,7 +81,7 @@ void UBHPlayerCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	}
 }
 
-const FBHCameraQuery& UBHPlayerCameraComponent::GetCameraTrace() const
+const FBHCameraQuery& UBHPlayerCameraComponent::GetCameraQuery() const
 {
 	return CameraQuery;
 }

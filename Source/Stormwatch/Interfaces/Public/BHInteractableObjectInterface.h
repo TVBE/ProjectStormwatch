@@ -21,4 +21,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInteractableObject")
 	FVector GetInteractionLocation() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInteractableObject")
+	int32 GetInteractionPriority() const;
 };
