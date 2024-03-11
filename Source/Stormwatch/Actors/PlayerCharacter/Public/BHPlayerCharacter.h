@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintGetter)
 	class UBHPlayerInventoryComponent* GetInventoryComponent() const;
 
+	UFUNCTION(BlueprintPure, Category = "ABHPlayerCharacter")
+	bool IsInteracting() const;
+
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;

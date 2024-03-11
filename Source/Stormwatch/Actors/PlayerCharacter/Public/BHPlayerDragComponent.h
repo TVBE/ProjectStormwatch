@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "BHPlayerCharacterPhysicsHandleComponent.h"
+#include "BHPlayerCharacterComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "BHPlayerDragComponent.generated.h"
 
 class UBHPlayerInteractionComponent;
@@ -10,7 +11,7 @@ class UCameraComponent;
 class ABHPlayerCharacter;
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-	class STORMWATCH_API UBHPlayerDragComponent : public UBHPlayerCharacterPhysicsHandleComponent
+	class STORMWATCH_API UBHPlayerDragComponent : public UPhysicsHandleComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Drag")
 	void ReleaseActor();
+
+	UFUNCTION(BlueprintPure, Category = "BHPlayerDragComponent")
+	bool IsHoldingObject() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
 	AActor* GetDraggedActor() const

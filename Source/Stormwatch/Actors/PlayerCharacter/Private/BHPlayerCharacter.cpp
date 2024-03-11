@@ -277,6 +277,15 @@ UBHPlayerInventoryComponent* ABHPlayerCharacter::GetInventoryComponent() const
 	return InventoryComponent;
 }
 
+bool ABHPlayerCharacter::IsInteracting() const
+{
+	if(!ensureAlways(GrabComponent && DragComponent && UseComponent))
+	{
+		return false;
+	}
+	return GrabComponent->IsHoldingObject() || DragComponent->IsHoldingObject() || UseComponent->IsUsingObject();
+}
+
 void ABHPlayerCharacter::HandleLandingStart(EBHPlayerLandingType Value)
 {
 	float StunDuration = 0.0f;

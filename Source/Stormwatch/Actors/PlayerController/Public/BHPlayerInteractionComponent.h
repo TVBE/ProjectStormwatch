@@ -44,12 +44,14 @@ enum class EBHInteractionType : uint8
 	Usable,
 	Grabbable,
 	Draggable,
+	None
 };
 
 // END DEPRECATED -------------------------------------------------------------
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBeginInteraction, EBHInteractionType, Type, USceneComponent*, Component);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEndInteraction, EBHInteractionType, Type, USceneComponent*, Component);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNewInteractableObjectFoundSignature, UObject*, Object, EBHInteractionType, InteractionType);
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API UBHPlayerInteractionComponent : public UActorComponent
@@ -60,13 +62,20 @@ public:
 	UBHPlayerInteractionComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	bool IsCharacterInteracting(const class ABHPlayerCharacter* Character) const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnNewInteractableObjectFoundSignature OnNewInteractableObjectFound;
 
 private:
 	// Collects all interactable objects in a radius. Result is sorted by priority and distance.
 	TArray<TPair<UObject*, FVector>> TraceForInteractableObjects(const FVector& Location,
 		const TArray<AActor*>& IgnoredActors);
 
-	static bool IsOccluded(UObject* Object, const FVector& Start, const FVector& End);
+	bool IsOccluded(UObject* Object, const FVector& Start, const FVector& End);
+	static EBHInteractionType DetermineInteractionType(const UObject* Object);
+	static FVector GetNearestPointOnMesh(const FHitResult& HitResult, const AActor* Actor)
 	
 	// Maximum distance to check for interactable objects. Has no effect while interacting.
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction",
@@ -80,8 +89,23 @@ private:
 
 	// Toggle interaction priority checking.
 	// Disable to reduce overhead from 'slow' UInterface calls via Unreal's reflection system.
-	UPROPERTY(EditDefaultsOnly, Category = "Interaction", AdvancedDisplay)
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	bool bUsePriority = true;
 	
-	TOptional<TPair<TWeakPtr<UObject>, EBHInteractionType>> CurrentInteractableObject;
+	UPROPERTY(EditsDefaultOnly, Category = "Interaction", Meta = (EditCondition = "bUsePriority", InlineEditConditionToggle))
+	bool bUsePriorityDistanceThreshold = true;
+
+	// Minimum distance for interaction priority consideration.
+	// Prevents higher priority objects from overtaking lower priority objects when looked at directly.
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction",
+	Meta = (EditCondition = "bUsePriority && bUsePriorityDistanceThreshold", Units = "Centimeters",
+			ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"))
+	float PriorityDistanceThreshold = 10.0f;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditDefaultsOnly, Category = "Debugging")
+	bool bEnableDebugVisualisation = false;
+#endif
+	
+	TOptional<TPair<TWeakObjectPtr<UObject>, EBHInteractionType>> CurrentInteractableObject;
 };

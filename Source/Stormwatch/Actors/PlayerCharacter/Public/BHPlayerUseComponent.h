@@ -6,7 +6,7 @@
 #include "BHPlayerUseComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class UBHPlayerUseComponent : public UBHPlayerCharacterComponent_Deprecated
+class UBHPlayerUseComponent : public UActorComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
@@ -48,6 +48,9 @@ private:
 	AActor* GetActorFromObject(UObject* Object) const;
 
 public:
+	UFUNCTION(BlueprintPure, Category = "BHPlayerUseComponent")
+	bool IsUsingObject() const;
+	
 	/** Returns the actor that is currently in use. */
 	AActor* GetActorInUse() const { return ActorInUse; }
 

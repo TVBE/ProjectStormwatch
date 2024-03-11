@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "BHPlayerCharacterPhysicsHandleComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "BHPlayerCharacterComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "BHPlayerGrabComponent.generated.h"
 
 UENUM()
@@ -143,8 +143,8 @@ struct FPlayerGrabSettings
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabbedObjectReleasedDelegate, const AActor*, GrabbedActor);
 
-UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class UBHPlayerGrabComponent : public UBHPlayerCharacterPhysicsHandleComponent
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse")
+class UBHPlayerGrabComponent : public UPhysicsHandleComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
@@ -166,6 +166,9 @@ public:
 
 	void UpdateZoomAxisValue(float ZoomAxis);
 	void UpdateMouseInputRotation(FVector2d MouseDelta);
+
+	UFUNCTION(BlueprintPure, Category = "BHPlayerGrabComponent")
+	bool IsHoldingObject() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
 	AActor* GetGrabbedActor() const
