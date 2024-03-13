@@ -5,20 +5,22 @@
 #include "BHPlayerCameraSocketComponent.h"
 #include "BHPlayerCharacter.h"
 #include "BHPlayerDragComponent.h"
-#include "BHPlayerFlashlightComponent.h"
 #include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
 #include "..\..\..\Core\Public\BHStormwatchWorldSubystem.h"
 
 #include "Math/Rotator.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "GameFramework/PawnMovementComponent.h"
-#include "GameFramework/InputSettings.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 
 ABHPlayerController::ABHPlayerController()
 {
+	InteractionComponent = CreateDefaultSubobject<UBHPlayerInteractionComponent>(TEXT("InteractionComponent"));
+	if (InteractionComponent)
+	{
+		InteractionComponent->PrimaryComponentTick.bCanEverTick = true;
+		InteractionComponent->PrimaryComponentTick.bStartWithTickEnabled = false;
+		InteractionComponent->PrimaryComponentTick.TickGroup = TG_PostPhysics;
+	}
 }
 
 void ABHPlayerController::BeginPlay()
@@ -138,169 +140,36 @@ void ABHPlayerController::HandleZoomDirectionInput(float Value)
 	}
 }
 
-void ABHPlayerController::HandleJumpActionPressed()
-{
-	if (!bProcessMovementInput) { return; }
-	if (PlayerCharacter && PlayerCharacter->CanJump())
-	{
-		const float Clearance = PlayerCharacter->GetClearanceAbovePawn();
-		if (Clearance <= 175 && Clearance != -1.f)
-		{
-			// We limit the JumpZVelocity of the player under a certain clearance to prevent the character from bumping its head into the object above.
-			GetPlayerCharacter()->GetCharacterMovement()->JumpZVelocity = Clearance * 4.25;
-		}
-		else
-		{
-			GetPlayerCharacter()->GetCharacterMovement()->JumpZVelocity = CharacterConfiguration->JumpVelocity;
-		}
-		GetPlayerCharacter()->Jump();
-	}
-}
-
-void ABHPlayerController::HandleSprintActionPressed()
-{
-	if (!bProcessMovementInput) { return; }
-	bSprintPending = true;
-	if (CanCharacterSprint())
-	{
-		PlayerCharacter->StartSprinting();
-	}
-}
-
-void ABHPlayerController::HandleSprintActionReleased()
-{
-	if (!bProcessMovementInput) { return; }
-	bSprintPending = false;
-	PlayerCharacter->StopSprinting();
-}
-
-void ABHPlayerController::HandleCrouchActionPressed()
-{
-	if (!bProcessMovementInput) { return; }
-	
-	if (CharacterConfiguration->EnableCrouchToggle)
-	{
-		if (!PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
-		{
-			PlayerCharacter->Crouch(false);
-			bCrouchPending = true;
-			return;
-		}
-		if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
-		{
-			PlayerCharacter->UnCrouch(false);
-			bCrouchPending = false;
-		}
-	}
-	else if (PlayerCharacter->CanCrouch())
-	{
-		PlayerCharacter->Crouch(false);
-		bCrouchPending = true;
-	}
-}
-
-void ABHPlayerController::HandleCrouchActionReleased()
-{
-	if (!bProcessMovementInput || CharacterConfiguration->EnableCrouchToggle) { return; }
-	bCrouchPending = false;
-	
-	if (PlayerCharacter->bIsCrouched)
-	{
-		PlayerCharacter->UnCrouch(false);
-	}
-}
-
-void ABHPlayerController::HandleFlashlightActionPressed()
-{
-	if (!PlayerCharacter || !bProcessMovementInput) { return; }
-	if (UBHPlayerFlashlightComponent* Flashlight = PlayerCharacter->FindComponentByClass<UBHPlayerFlashlightComponent>())
-	{
-		Flashlight->SetFlashlightEnabled(!Flashlight->IsFlashlightEnabled());
-	}
-}
-
-void ABHPlayerController::HandleTertiaryActionPressed()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->BeginTertiaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandleTertiaryActionReleased()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->EndTertiaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandlePrimaryActionPressed()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->BeginPrimaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandlePrimaryActionReleased()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->EndPrimaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandleSecondaryActionPressed()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->BeginSecondaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandleSecondaryActionReleased()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->EndSecondaryInteraction();
-	}
-}
-
-void ABHPlayerController::HandleInventoryActionPressed()
-{
-	if (InteractionComponent)
-	{
-		InteractionComponent->BeginInventoryInteraction();
-	}
-}
-
-void ABHPlayerController::HandleInventoryActionReleased()
-{
-}
-
 void ABHPlayerController::ProcessPlayerInput(float DeltaTime, bool bGamePaused)
 {
+	Super::ProcessPlayerInput(DeltaTime, bGamePaused);
+
 	CalculateRotationMultiplier(InputRotation);
 	
 	AddYawInput(InputRotation.X * InteractionRotationMultiplier);
 	AddPitchInput(InputRotation.Y * InteractionRotationMultiplier);
 
 	InputRotation.Zero();
-	
-	Super::ProcessPlayerInput(DeltaTime, bGamePaused);
 }
 
 void ABHPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	if (PlayerCharacter)
+	if (GetControlledCharacter())
 	{
-		UpdateCurrentActions();
-		UpdatePendingActions();
 		UpdatePlayerControlRotation(ControlRotation, DeltaSeconds);
 	}
+}
+
+UBHPlayerInteractionComponent* ABHPlayerController::GetInteractionComponent() const
+{
+	return InteractionComponent;
+}
+
+ABHPlayerCharacter* ABHPlayerController::GetControlledCharacter() const
+{
+	return Cast<ABHPlayerCharacter>(GetPawn());
 }
 
 void ABHPlayerController::UpdatePlayerControlRotation(const FRotator& Rotation, const float DeltaSeconds)
@@ -350,46 +219,6 @@ void ABHPlayerController::UpdatePlayerControlRotation(const FRotator& Rotation, 
 	else
 	{
 		PlayerControlRotation = Rotation;
-	}
-}
-
-void ABHPlayerController::UpdateCurrentActions()
-{
-	if (!bProcessMovementInput) {return;}
-	
-	/** If the character is sprinting and should no longer be sprinting, stop sprinting. */
-	if (!CanCharacterSprint() || !bSprintPending)
-	{
-		PlayerCharacter->StopSprinting();
-	}
-}
-
-void ABHPlayerController::UpdatePendingActions()
-{
-	/** If there is a sprint pending and the character is no longer sprinting, start sprinting. */
-	if (bSprintPending && !PlayerCharacter->bIsSprinting() && CanCharacterSprint())
-	{
-		if (!PlayerCharacter->bIsCrouched)
-		{
-			PlayerCharacter->StartSprinting();
-		}
-		/** If the character is crouching, stand up before sprinting. */
-		else if (PlayerCharacter->bIsCrouched && PlayerCharacter->CanStandUp())
-		{
-			bCrouchPending = false;
-			PlayerCharacter->UnCrouch(false);
-			PlayerCharacter->StartSprinting();
-		}
-	}
-	/** If crouch is pending and the character is not crouching, start crouching. */
-	if (bCrouchPending && !PlayerCharacter->bIsCrouched && PlayerCharacter->CanCrouch())
-	{
-		if (PlayerCharacter->bIsSprinting())
-		{
-			PlayerCharacter->StopSprinting();
-			bSprintPending = false;
-		}
-		PlayerCharacter->Crouch(false);
 	}
 }
 
@@ -499,11 +328,11 @@ void ABHPlayerController::SetCanProcessRotationInput(bool bValue)
 		bProcessRotationInput = bValue;
 }
 
-bool ABHPlayerController::SetPlayerMovementInputLock(bool bValue)
+bool ABHPlayerController::SetMovementInputLock(bool bValue)
 {
 	MovementInputLockCount += bValue ? 1 : -1;
 	const bool bCanProcessInput = !MovementInputLockCount;
-	if (GetCanProcessMovementInput() != bCanProcessInput)
+	if (CanProcessMovementInput() != bCanProcessInput)
 	{
 		SetCanProcessMovementInput(bCanProcessInput);
 		OnMovementInputLockChanged.Broadcast(bCanProcessInput);
@@ -511,11 +340,11 @@ bool ABHPlayerController::SetPlayerMovementInputLock(bool bValue)
 	return bCanProcessInput;
 }
 
-bool ABHPlayerController::SetPlayerRotationInputLock(bool bValue)
+bool ABHPlayerController::SetRotationInputLock(bool bValue)
 {
 	RotationInputLockCount += bValue ? 1 : -1;
 	const bool bCanProcessInput = !RotationInputLockCount;
-	if (GetCanProcessRotationInput() != bCanProcessInput)
+	if (CanProcessRotationInput() != bCanProcessInput)
 	{
 		SetCanProcessRotationInput(bCanProcessInput);
 		OnRotationInputLockChanged.Broadcast(bCanProcessInput);
@@ -529,6 +358,21 @@ void ABHPlayerController::FadePlayerCameraFromBlack(float Duration)
 	{
 		PlayerCharacter->GetCameraController()->FadeFromBlack(Duration);
 	}
+}
+
+bool ABHPlayerController::CanProcessMovementInput() const
+{
+	return bProcessMovementInput;
+}
+
+bool ABHPlayerController::CanProcessRotationInput() const
+{
+	return bProcessRotationInput;
+}
+
+FRotator ABHPlayerController::GetPlayerControlRotation() const
+{
+	return PlayerControlRotation;
 }
 
 bool ABHPlayerController::CanCharacterSprint() const

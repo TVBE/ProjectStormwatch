@@ -305,8 +305,8 @@ void ABHPlayerCharacter::HandleLandingStart(EBHPlayerLandingType Value)
 
 	if (ABHPlayerController * PlayerController = Cast<ABHPlayerController>(GetWorld()->GetFirstPlayerController()))
 	{
-		PlayerController->SetPlayerMovementInputLock(true);
-		PlayerController->SetPlayerRotationInputLock(true);
+		PlayerController->SetMovementInputLock(true);
+		PlayerController->SetRotationInputLock(true);
 	}
 	GetWorld()->GetTimerManager().SetTimer(FallStunTimer, this, &ABHPlayerCharacter::HandleLandingEnd, StunDuration, false);
 	
@@ -317,8 +317,8 @@ void ABHPlayerCharacter::HandleLandingEnd()
 {
 	if (ABHPlayerController* PlayerController = Cast<ABHPlayerController>(GetController()))
 	{
-		PlayerController->SetPlayerMovementInputLock(false);
-		PlayerController->SetPlayerRotationInputLock(false);
+		PlayerController->SetMovementInputLock(false);
+		PlayerController->SetRotationInputLock(false);
 	}
 }
 
