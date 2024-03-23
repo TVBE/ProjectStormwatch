@@ -52,6 +52,8 @@ public class Stormwatch : ModuleRules
 				
 				"$(ProjectDir)/Source/Stormwatch/Libraries/Public",
 				
+				"$(ProjectDir)/Source/Stormwatch/Types/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/PlayerCharacter/Public",
 				
 				"$(ProjectDir)/Source/Stormwatch/RoomSystem/Public"
