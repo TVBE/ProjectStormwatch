@@ -33,8 +33,6 @@ public class Stormwatch : ModuleRules
 			PrivateDependencyModuleNames.Add("UnrealEd");
 		}
 		
-		PublicDefinitions.Add("WITH_REACOUSTIC=1");
-
 		PublicIncludePaths.AddRange(
 			new string[] 
 			{
@@ -43,12 +41,19 @@ public class Stormwatch : ModuleRules
 				"$(ProjectDir)/Source/Stormwatch/Actors/PlayerController/Public",
 				"$(ProjectDir)/Source/Stormwatch/Actors/HomeComputer/Public",
 				"$(ProjectDir)/Source/Stormwatch/Actors/Nightstalker/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/Audio/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/Components/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/Core/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/Interfaces/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/Libraries/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/PlayerCharacter/Public",
+				
 				"$(ProjectDir)/Source/Stormwatch/RoomSystem/Public"
 			}
 		);

@@ -5,10 +5,6 @@
 #include "BHPlayerCharacter.h"
 #include "GameFramework/Character.h"
 
-#if WITH_REACOUSTIC
-#include "Reacoustic/Public/ReacousticComponent.h"
-#endif
-
 UBHPlayerFootCollisionComponent::UBHPlayerFootCollisionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -73,8 +69,7 @@ void UBHPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* Overla
 	}
 
 	OtherComp->AddImpulse(ImpulseDirection * ImpulseStrength);
-
-#if WITH_REACOUSTIC
+	
 if (ImpulseStrength > 1)
 {
 	if (UReacousticComponent* ReacousticComponent = Cast<UReacousticComponent>(OtherActor->GetComponentByClass(UReacousticComponent::StaticClass())))
@@ -95,7 +90,5 @@ if (ImpulseStrength > 1)
 
 		ReacousticComponent->TriggerManualHit(ImpactValue);
 	}
-}
-#endif
 }
 ;
