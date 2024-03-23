@@ -9,7 +9,7 @@ public class StormwatchTarget : TargetRules
 	public StormwatchTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 
 		ExtraModuleNames.AddRange( new string[] { "Stormwatch" } );
 	}
