@@ -1,4 +1,4 @@
-// Copyright 2021 Dmitry Karpukhin. All Rights Reserved.
+// Copyright 2024 Dmitry Karpukhin. All Rights Reserved.
 
 #pragma once
 

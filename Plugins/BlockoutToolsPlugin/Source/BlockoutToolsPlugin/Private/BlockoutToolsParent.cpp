@@ -1,4 +1,4 @@
-// Copyright 2021 Dmitry Karpukhin. All Rights Reserved.
+// Copyright 2024 Dmitry Karpukhin. All Rights Reserved.
 
 #include "BlockoutToolsParent.h"
 #include "BlockoutToolsSettings.h"
@@ -87,7 +87,9 @@ void ABlockoutToolsParent::Tick(float DeltaTime)
 
 void ABlockoutToolsParent::RerunConstructionScript()
 {
-//	RerunConstructionScripts();
+#if WITH_EDITOR
+	RerunConstructionScripts();
+#endif
 }
 
 void ABlockoutToolsParent::BlockoutSetMaterial()

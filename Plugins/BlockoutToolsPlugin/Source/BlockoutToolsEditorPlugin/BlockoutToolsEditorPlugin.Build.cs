@@ -1,4 +1,4 @@
-// Copyright 2021 Dmitry Karpukhin. All Rights Reserved.
+// Copyright 2024 Dmitry Karpukhin. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -41,6 +41,7 @@ public class BlockoutToolsEditorPlugin : ModuleRules
 				"SlateCore",
                 "UnrealEd",
                 "Projects",
+                "PlacementMode",
                 "BlockoutToolsPlugin",
 				// ... add private dependencies that you statically link with here ...	
 			}

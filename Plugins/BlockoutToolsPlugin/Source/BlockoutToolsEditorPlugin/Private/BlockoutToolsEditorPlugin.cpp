@@ -1,7 +1,7 @@
-// Copyright 2021 Dmitry Karpukhin. All Rights Reserved.
+// Copyright 2024 Dmitry Karpukhin. All Rights Reserved.
 
 #include "BlockoutToolsEditorPlugin.h"
-#include "PlacementMode/Public/IPlacementModeModule.h"
+#include "IPlacementModeModule.h"
 #include "ActorFactories/ActorFactoryBlueprint.h"
 #include "Interfaces/IPluginManager.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -15,8 +15,8 @@ void FBlockoutToolsEditorPluginModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
 	// Register editor category
-	int Priority = 41;
-	FPlacementCategoryInfo BlockoutTools( LOCTEXT("BlockoutTools", "Blockout Tools"), "BlockoutTools", TEXT("PMBlockoutTools"), Priority);
+	const int Priority = 41;
+	FPlacementCategoryInfo BlockoutTools(LOCTEXT("BlockoutTools", "Blockout Tools"), FSlateIcon("BlockoutToolsStyle", "Blockout.CategoryIcon"), "BlockoutTools", TEXT("PMBlockoutTools"), Priority);
 	IPlacementModeModule::Get().RegisterPlacementCategory(BlockoutTools);
 
 	// Find and register actors to category
@@ -245,11 +245,12 @@ void FBlockoutToolsEditorPluginModule::StartupModule()
 		)));
 	}
 
-	// Set Brush Image and register style
+	// Set Brush Images and register the style
 	StyleSet = MakeShareable(new FSlateStyleSet("BlockoutToolsStyle"));
 
 	FString BlockoutIconPath = IPluginManager::Get().FindPlugin(TEXT("BlockoutToolsPlugin"))->GetBaseDir() + TEXT("/Resources/");
-	
+
+	StyleSet->Set("Blockout.CategoryIcon", new FSlateImageBrush(BlockoutIconPath + TEXT("BlockoutToolsEditorIcon16.png"), FVector2D(16.f, 16.f)));
 	StyleSet->Set("Blockout_Box.Thumbnail", new FSlateImageBrush(BlockoutIconPath + TEXT("Blockout_Box_64.png"), FVector2D(64.f, 64.f)));
 	StyleSet->Set("Blockout_Cone.Thumbnail", new FSlateImageBrush(BlockoutIconPath + TEXT("Blockout_Cone_64.png"), FVector2D(64.f, 64.f)));
 	StyleSet->Set("Blockout_Corner_Curved.Thumbnail", new FSlateImageBrush(BlockoutIconPath + TEXT("Blockout_Corner_Curved_64.png"), FVector2D(64.f, 64.f)));
