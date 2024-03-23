@@ -19,7 +19,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "BHCharacter")
 	float GetClearanceAbovePawn(float TraceLength = 500.0f) const;
 
-	UPROPERTY(BlueprintPure, Category = "BHCharacter")
+	UFUNCTION(BlueprintPure, Category = "BHCharacter")
 	float GetSpeed() const;
 	
 private:

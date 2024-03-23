@@ -5,39 +5,20 @@
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
 
-ABHPlayerCharacter* UBHPlayerCharacterComponent_Deprecated::GetPlayerCharacter() const
-{
-	return static_cast<ABHPlayerCharacter*>(GetOwner());
-}
-
-ABHPlayerController* UBHPlayerCharacterComponent_Deprecated::GetPlayerCharacterController() const
-{
-	ABHPlayerCharacter* Character = GetPlayerCharacter();
-	AController* Controller = Character->GetController();
-
-	if (!Controller) { return nullptr; }
-
-	return static_cast<ABHPlayerController*>(Controller);
-}
-
 ABHPlayerCharacter* FBHPlayerCharacterComponent::GetPlayerCharacter() const
 {
-	const UActorComponent* This = reinterpret_cast<const UActorComponent*>(this);
+	const UActorComponent* ActorComponent = reinterpret_cast<const UActorComponent*>(this);
     
-	if (!This->GetOwner())
+	if (!ActorComponent->GetOwner())
 	{
 		return nullptr;
 	}
 		
-	return static_cast<ABHPlayerCharacter*>(This->GetOwner());
+	return static_cast<ABHPlayerCharacter*>(ActorComponent->GetOwner());
 }
 
 ABHPlayerController* FBHPlayerCharacterComponent::GetPlayerCharacterController() const
 {
-	ABHPlayerCharacter* Character = GetPlayerCharacter();
-	AController* Controller = Character ? Character->GetController() : nullptr;
-
-	if (!Controller) { return nullptr; }
-
-	return static_cast<ABHPlayerController*>(Controller);
+	const ABHPlayerCharacter* Character = GetPlayerCharacter();
+	return Cast<ABHPlayerController>(Character ? Character->GetController() : nullptr);
 }

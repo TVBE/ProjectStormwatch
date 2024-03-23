@@ -2,13 +2,17 @@
 
 #include "BHPlayerInteractionComponent.h"
 
+#include "BHDraggableObjectInterface.h"
+#include "BHGrabbableObjectInterface.h"
 #include "BHInteractableObjectInterface.h"
 #include "BHPlayerCameraComponent.h"
-#include "..\..\..\Interfaces\Public\BHDraggableObjectInterface.h"
-#include "..\..\..\Interfaces\Public\BHGrabbableObjectInterface.h"
-#include "..\..\..\Interfaces\Public\BHUsableObjectInterface.h"
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
+#include "BHPlayerDragComponent.h"
+#include "BHPlayerGrabComponent.h"
+#include "BHPlayerUseComponent.h"
+#include "BHUsableObjectInterface.h"
+
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBHInteractionComponent, Log, All);
@@ -78,12 +82,14 @@ void UBHPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Ti
 			return;
 		}
 		if (CurrentInteractableObject.IsSet() &&
-			CurrentInteractableObject.GetValue().Key.Get() == PreferredInteractableObject.GetValue())
+			CurrentInteractableObject.GetValue().Object == PreferredInteractableObject.GetValue())
 		{
 			return;
 		}
+		
 		const EBHInteractionType InteractionType = DetermineInteractionType(PreferredInteractableObject.GetValue());
-		CurrentInteractableObject = MakeTuple(TWeakObjectPtr(PreferredInteractableObject.GetValue()), InteractionType);
+		CurrentInteractableObject.Emplace(FBHInteractableObject(PreferredInteractableObject.GetValue(), InteractionType));
+		
 		OnNewInteractableObjectFound.Broadcast(PreferredInteractableObject.GetValue(), InteractionType);
 
 		UE_LOG(LogBHInteractionComponent, Verbose, TEXT("Found new interactable object: [%s] [Class: %s, Type: %s]"),
@@ -91,6 +97,28 @@ void UBHPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Ti
 				*PreferredInteractableObject.GetValue()->GetClass()->GetName(),
 				*UEnum::GetValueAsString(InteractionType));
 	}
+}
+
+bool UBHPlayerInteractionComponent::IsCharacterInteracting() const
+{
+	const ABHPlayerController* Controller = Cast<ABHPlayerController>(GetOwner());
+	if (!IsValid(Controller))
+	{
+		return false;
+	}
+
+	const ABHPlayerCharacter* Character = Controller->GetControlledCharacter();
+	if (!IsValid(Character))
+	{
+		UE_LOG(LogBHInteractionComponent, Warning,
+			TEXT("IsCharacterInteracting: Controller [%s] is currently not controlling a character."),
+			*Controller->GetName());
+		return false;
+	}
+	
+	return Character->GetGrabComponent()->IsHoldingObject() ||
+		   Character->GetDragComponent()->IsHoldingObject() ||
+		   Character->GetUseComponent()->IsUsingObject();
 }
 
 TArray<TPair<UObject*, FVector>> UBHPlayerInteractionComponent::TraceForInteractableObjects(const FVector& Location,
@@ -268,5 +296,6 @@ FVector UBHPlayerInteractionComponent::GetNearestPointOnMesh(const FHitResult& H
 	}
 	return TargetLocation;
 }
+
 
 

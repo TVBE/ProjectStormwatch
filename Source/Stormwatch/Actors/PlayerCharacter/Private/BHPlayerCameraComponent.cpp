@@ -81,15 +81,9 @@ void UBHPlayerCameraComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	}
 }
 
-const FBHCameraQuery& UBHPlayerCameraComponent::GetCameraQuery() const
-{
-	return CameraQuery;
-}
-
 void UBHPlayerCameraComponent::UpdateFOV(const float DeltaTime)
 {
 	const ABHPlayerCharacter* Character = GetPlayerCharacter();
-	UBHPlayerCameraComponent* Camera = Character->GetCamera();
 
 	float TargetFOV = DefaultFOV;
 	const FVector WorldVelocity = Character->GetMovementComponent()->Velocity;
@@ -102,13 +96,11 @@ void UBHPlayerCameraComponent::UpdateFOV(const float DeltaTime)
 			FVector2D(DefaultFOV, SprintFOV), LocalVelocity.X);
 	}
 
-	Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, 2.f);
+	FieldOfView = FMath::FInterpTo(FieldOfView, TargetFOV, DeltaTime, 2.f);
 }
 
 void UBHPlayerCameraComponent::UpdateVignette(const float DeltaTime)
 {
-	
-	
 	if (GetPlayerCharacter()->GetPlayerMovementComponent())
 	{
 		const float Speed = GetPlayerCharacter()->GetSpeed();
@@ -126,8 +118,6 @@ void UBHPlayerCameraComponent::UpdateVignette(const float DeltaTime)
 
 void UBHPlayerCameraComponent::UpdateDOF(const float DeltaTime)
 {
-	UBHPlayerCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
-
 	float FocalDistance = GetFocalDistance();
 	FocalDistance = FMath::Clamp(FocalDistance, MinimumFocalDistance, MaximumFocalDistance);
 	
@@ -139,14 +129,19 @@ void UBHPlayerCameraComponent::UpdateDOF(const float DeltaTime)
 	(FVector2D(MinimumFocalDistance, MaximumFocalDistance),
 	 FVector2D(MacroBlurAmount, LongShotBlurAmount), FocalDistance));
 
-	Camera->PostProcessSettings.DepthOfFieldFocalDistance =
-		FMath::FInterpTo(Camera->PostProcessSettings.DepthOfFieldFocalDistance, FocalDistance, DeltaTime, DynamicDofSpeed);
+	PostProcessSettings.DepthOfFieldFocalDistance =
+		FMath::FInterpTo(PostProcessSettings.DepthOfFieldFocalDistance, FocalDistance, DeltaTime, DynamicDofSpeed);
 	
-	Camera->PostProcessSettings.DepthOfFieldDepthBlurAmount =
-		FMath::FInterpTo(Camera->PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, DynamicDofSpeed);
+	PostProcessSettings.DepthOfFieldDepthBlurAmount =
+		FMath::FInterpTo(PostProcessSettings.DepthOfFieldDepthBlurAmount, BlurFocus, DeltaTime, DynamicDofSpeed);
 	
-	Camera->PostProcessSettings.DepthOfFieldDepthBlurRadius =
-		FMath::FInterpTo(Camera->PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, DynamicDofSpeed);
+	PostProcessSettings.DepthOfFieldDepthBlurRadius =
+		FMath::FInterpTo(PostProcessSettings.DepthOfFieldDepthBlurRadius, BlurAmount, DeltaTime, DynamicDofSpeed);
+}
+
+const FBHCameraQuery& UBHPlayerCameraComponent::GetCameraQuery() const
+{
+	return CameraQuery;
 }
 
 float UBHPlayerCameraComponent::GetFocalDistance() const
