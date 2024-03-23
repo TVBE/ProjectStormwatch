@@ -22,6 +22,12 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintGetter)
+	class UBHPlayerInteractionComponent* GetInteractionComponent() const;
+
+	UFUNCTION(BlueprintPure, Category = "ABHPlayerController")
+	class ABHPlayerCharacter* GetControlledCharacter() const;
+
 	/** Returns whether the PlayerController has any movement input or not. */
 	UFUNCTION(BlueprintPure, Category = "Input", Meta = (DisplayName = "Has Any Movement Input"))
 	bool GetHasMovementInput() const;
@@ -36,48 +42,29 @@ public:
 	/** Sets CanProcessRotationInput. This function can only be called by a PlayerSubsystem. */
 	void SetCanProcessRotationInput(bool bValue);
 	
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	bool SetPlayerMovementInputLock(bool bValue);
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerController")
+	bool SetMovementInputLock(bool bValue);
 	
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	bool SetPlayerRotationInputLock(bool bValue);
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerController")
+	bool SetRotationInputLock(bool bValue);
 	
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Fade From Black"))
 	void FadePlayerCameraFromBlack(float Duration);
 
-	/** Returns whether the player controller can process movement input. */
+	UFUNCTION(BlueprintPure, Category = "BHPlayerController")
+	bool CanProcessMovementInput() const;
+
+	UFUNCTION(BlueprintGetter, Category = "BHPlayerController")
+	bool CanProcessRotationInput() const;
+
 	UFUNCTION(BlueprintGetter)
-	bool GetCanProcessMovementInput() const { return bProcessMovementInput; }
-
-	/** Returns whether the player controller can process rotation input. */
-	UFUNCTION(BlueprintGetter)
-	bool GetCanProcessRotationInput() const { return bProcessRotationInput; }
-
-	/** Returns the player control rotation. */
-	UFUNCTION(BlueprintGetter)
-	FRotator GetPlayerControlRotation() const { return PlayerControlRotation; }
-
-	/** Delegate for when the player controller should start or stop processing player movement input. */
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
-	FPlayerMovementInputLockDelegate OnMovementInputLockChanged;
-
-	/** Delegate for when the player controller should start or stop processing player rotation input. */
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
-	FPlayerRotationInputLockDelegate OnRotationInputLockChanged;
+	FRotator GetPlayerControlRotation() const;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void OnPossess(APawn* InPawn) override;
-	
-	/** If true, the player is currently pressing the sprint button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	bool bSprintPending = false;
-
-	/** If true, the player is currently pressing the crouch button. */
-	UPROPERTY(BlueprintReadOnly, Category = "Input")
-	bool bCrouchPending = false;
 
 private:
 	/** Updates the player control rotation. */
@@ -95,11 +82,7 @@ private:
 	/** Checks if the player can continue with any actions they are currently performing. */
 	UFUNCTION()
 	void UpdateCurrentActions();
-
-	/** Tries to find an InteractionComponent in the player character. */
-	UFUNCTION()
-	class UBHPlayerInteractionComponent* SearchForPlayerInteractionComponent();
-
+	
 	void CalculateRotationMultiplier(const FVector2D InputDirection);
 
 	/** Adjusts the character's horizontal orientation using a gamepad or mouse. */
@@ -122,80 +105,21 @@ private:
 	UFUNCTION()
 	void HandleZoomDirectionInput(float Value);
 
-	/** Handles the callback for when the player has pressed the Jump button */
-	UFUNCTION()
-	void HandleJumpActionPressed();
-
-	/** Handles the callback for when the player has pressed the Sprint button. */
-	UFUNCTION()
-	void HandleSprintActionPressed();
-
-	/** Handles the callback for when the player has released the Sprint button. */
-	UFUNCTION()
-	void HandleSprintActionReleased();
-
-	/** Handles the callback for when the player has pressed the Crouch button. */
-	UFUNCTION()
-	void HandleCrouchActionPressed();
-
-	/** Handles the callback for when the player has released the Crouch button. */
-	UFUNCTION()
-	void HandleCrouchActionReleased();
-
-	/** Handles the callback for when the player has pressed the ToggleFlashlight button. */
-	UFUNCTION()
-	void HandleFlashlightActionPressed();
-
-	/** Handles the callback for when the player has pressed the PrimaryAction button. */
-	UFUNCTION()
-	void HandlePrimaryActionPressed();
-
-	/** Handles the callback for when the player has released the PrimaryAction button. */
-	UFUNCTION()
-	void HandlePrimaryActionReleased();
-
-	/** Handles the callback for when the player has pressed the SecondaryAction button. */
-	UFUNCTION()
-	void HandleSecondaryActionPressed();
-
-	/** Handles the callback for when the player has released the SecondaryAction button. */
-	UFUNCTION()
-	void HandleSecondaryActionReleased();
-
-	/** Handles the callback for when the player has pressed the RotateObject button. */
-	UFUNCTION()
-	void HandleTertiaryActionPressed();
-
-	/** Handles the callback for when the player has released the RotateObject button. */
-	UFUNCTION()
-	void HandleTertiaryActionReleased();
-
-	/** Handles the callback for when the player has pressed the InventoryAction button. */
-	UFUNCTION()
-	void HandleInventoryActionPressed();
-
-	/** Handles the callback for when the player has released the InventoryAction button. */
-	UFUNCTION()
-	void HandleInventoryActionReleased();
-
-	/** Pointer to the interaction component of the player character. */
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInteractionComponent, Category = "Components")
 	UBHPlayerInteractionComponent* InteractionComponent;
 
-	/** Integer value that is incremented or decremented when another object calls SetPlayerMovementInputLock.
+	/** Integer value that is incremented or decremented when another object calls SetMovementInputLock.
 	 *	If the value is zero, CanProcessMovementInput will be set to true for the player controller.*/
 	uint8 MovementInputLockCount = 1;
 
-	/** Integer value that is incremented or decremented when another object calls SetPlayerRotationInputLock.
+	/** Integer value that is incremented or decremented when another object calls SetRotationInputLock.
 	 *	If the value is zero, CanProcessRotationInput will be set to true for the player controller.*/
 	uint8 RotationInputLockCount = 1;
 
-	/** When true, the player can receive user input for movement. */
-	UPROPERTY(BlueprintGetter = GetCanProcessMovementInput)
+	UPROPERTY()
 	bool bProcessMovementInput = false;
 
-	/** When true, the player can receive user input for camera rotation. */
-	UPROPERTY(BlueprintGetter = GetCanProcessRotationInput)
+	UPROPERTY()
 	bool bProcessRotationInput = false;
 
 	/** Smoothed control rotation. */
