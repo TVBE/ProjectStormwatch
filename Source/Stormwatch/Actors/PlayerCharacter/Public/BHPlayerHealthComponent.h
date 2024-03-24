@@ -6,7 +6,7 @@
 #include "BHPlayerAttributeComponent.h"
 #include "BHPlayerHealthComponent.generated.h"
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "Barrelhouse", Meta = (BlueprintSpawnableComponent))
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 class STORMWATCH_API UBHPlayerHealthComponent : public UBHPlayerAttributeComponent
 {
 	GENERATED_BODY()

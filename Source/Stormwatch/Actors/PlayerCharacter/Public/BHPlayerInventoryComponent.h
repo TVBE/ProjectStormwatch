@@ -7,8 +7,8 @@
 
 class UBHPlayerControllerInteractionComponent;
 
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerInventoryComponent : public UBHPlayerCharacterComponent_Deprecated
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
+class STORMWATCH_API UBHPlayerInventoryComponent : public UActorComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 

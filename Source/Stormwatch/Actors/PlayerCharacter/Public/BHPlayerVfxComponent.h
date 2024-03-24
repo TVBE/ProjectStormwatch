@@ -9,7 +9,7 @@ class UNiagaraComponent;
 class ABHPlayerCharacter;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API UBHPlayerVfxComponent : public UBHPlayerCharacterComponent_Deprecated
+class STORMWATCH_API UBHPlayerVfxComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

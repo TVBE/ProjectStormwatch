@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "BHPlayerCharacterComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "BHPlayerBodyCollisionComponent.generated.h"
+#include "BHPlayerBodyComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse")
-class STORMWATCH_API UBHPlayerBodyCollisionComponent : public UCapsuleComponent, public FBHPlayerCharacterComponent
+class STORMWATCH_API UBHPlayerBodyComponent : public UCapsuleComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
 public:
-	UBHPlayerBodyCollisionComponent();
+	UBHPlayerBodyComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

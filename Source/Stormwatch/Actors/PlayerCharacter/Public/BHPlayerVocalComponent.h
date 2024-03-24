@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "BHPlayerCharacterComponent.h"
+#include "Components/AudioComponent.h"
 #include "BHPlayerVocalComponent.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
-class STORMWATCH_API UBHPlayerCharacterVocalComponent : public UBHPlayerCharacterComponent_Deprecated
+class STORMWATCH_API UBHPlayerCharacterVocalComponent : public UAudioComponent
 {
 	GENERATED_BODY()
 

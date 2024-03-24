@@ -2,13 +2,13 @@
 
 #include "BHPlayerCharacter.h"
 
-#include "BHPlayerBodyCollisionComponent.h"
+#include "BHPlayerBodyComponent.h"
 #include "BHPlayerCameraComponent.h"
 #include "BHPlayerCameraSocketComponent.h"
 #include "BHPlayerSkeletalMeshComponent.h"
 #include "BHPlayerController.h"
 #include "BHPlayerDragComponent.h"
-#include "BHPlayerFootCollisionComponent.h"
+#include "BHPlayerFootComponent.h"
 #include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
 #include "BHPlayerInventoryComponent.h"
@@ -29,47 +29,82 @@ ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializ
 )
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.TickGroup = TG_PrePhysics;
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	
 	CameraSocketComponent = CreateDefaultSubobject<UBHPlayerCameraSocketComponent>(TEXT("CameraSocketComponent"));
-	CameraSocketComponent->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
-	CameraSocketComponent->bEditableWhenInherited = true;
+	if(CameraSocketComponent)
+	{
+		CameraSocketComponent->SetRelativeLocation(FVector(22.0, 0.0, 75.0));
+		CameraSocketComponent->bEditableWhenInherited = true;
+		CameraSocketComponent->PrimaryComponentTick.TickGroup = TG_DuringPhysics;
+	}
 
 	Camera = CreateDefaultSubobject<UBHPlayerCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(this->CameraSocketComponent);
-	Camera->FieldOfView = 90.0;
-	Camera->bUsePawnControlRotation = false;
-
-	InteractionComponent = CreateDefaultSubobject<UBHPlayerInteractionComponent>(TEXT("InteractionComponent"));
-	InteractionComponent->bEditableWhenInherited = true;
-
+	if (Camera)
+	{
+		Camera->SetupAttachment(this->CameraSocketComponent);
+		Camera->FieldOfView = 90.0;
+		Camera->bUsePawnControlRotation = false;
+		Camera->PrimaryComponentTick.TickGroup = TG_PostPhysics;
+	}
+	
 	UseComponent = CreateDefaultSubobject<UBHPlayerUseComponent>(TEXT("UseComponent"));
-	UseComponent->bEditableWhenInherited = true;
+	if (UseComponent)
+	{
+		UseComponent->bEditableWhenInherited = true;
+		UseComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 
 	GrabComponent = CreateDefaultSubobject<UBHPlayerGrabComponent>(TEXT("GrabComponent"));
-	GrabComponent->bEditableWhenInherited = true;
+	if (GrabComponent)
+	{
+		GrabComponent->bEditableWhenInherited = true;
+		GrabComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 
 	DragComponent = CreateDefaultSubobject<UBHPlayerDragComponent>(TEXT("DragComponent"));
-	DragComponent->bEditableWhenInherited = true;
+	if (DragComponent)
+	{
+		DragComponent->bEditableWhenInherited = true;
+		DragComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 
 	InventoryComponent = CreateDefaultSubobject<UBHPlayerInventoryComponent>(TEXT("InventoryComponent"));
-	InventoryComponent->bEditableWhenInherited = true;
+	if (InventoryComponent)
+	{
+		InventoryComponent->bEditableWhenInherited = true;
+	}
 
-	BodyCollision = CreateDefaultSubobject<UBHPlayerBodyCollisionComponent>(TEXT("BodyCollision"));
-	BodyCollision->SetupAttachment(GetMesh());
-	BodyCollision->SetRelativeLocation(FVector(0, 0, 100));
-	BodyCollision->SetCapsuleHalfHeight(72);
-	BodyCollision->SetCapsuleRadius(34);
+	BodyCollision = CreateDefaultSubobject<UBHPlayerBodyComponent>(TEXT("BodyCollision"));
+	if (BodyCollision)
+	{
+		BodyCollision->SetupAttachment(GetMesh());
+		BodyCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		BodyCollision->SetCapsuleHalfHeight(72.0f);
+		BodyCollision->SetCapsuleRadius(34.0f);
+		BodyCollision->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 
-	LeftFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("LeftFootCollision"));
-	LeftFootCollision->SetupAttachment(GetMesh(), FName("foot_l_socket"));
-	LeftFootCollision->bEditableWhenInherited = true;
+	LeftFootComponent = CreateDefaultSubobject<UBHPlayerFootComponent>(TEXT("LeftFootComponent"));
+	if (LeftFootComponent)
+	{
+		LeftFootComponent->SetupAttachment(GetMesh(), FName("foot_l_socket"));
+		LeftFootComponent->bEditableWhenInherited = true;
+		LeftFootComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 
-	RightFootCollision = CreateDefaultSubobject<UBHPlayerFootCollisionComponent>(TEXT("RightFootCollision"));
-	RightFootCollision->SetupAttachment(GetMesh(), FName("foot_r_socket"));
-	RightFootCollision->bEditableWhenInherited = true;
+	RightFootComponent = CreateDefaultSubobject<UBHPlayerFootComponent>(TEXT("RightFootComponent"));
+	if (RightFootComponent)
+	{
+		RightFootComponent->SetupAttachment(GetMesh(), FName("foot_r_socket"));
+		RightFootComponent->bEditableWhenInherited = true;
+		RightFootComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	}
 }
 
 void ABHPlayerCharacter::PostLoad()
@@ -320,33 +355,4 @@ void ABHPlayerCharacter::HandleLandingEnd()
 		PlayerController->SetMovementInputLock(false);
 		PlayerController->SetRotationInputLock(false);
 	}
-}
-
-bool ABHPlayerCharacter::CanPerformJump() const
-{
-	constexpr float RequiredClearance = 60;
-	const float Clearance = GetClearanceAbovePawn();
-	return ((Clearance > RequiredClearance || Clearance == -1.f) && bJumpingEnabled && !GetMovementComponent()->bIsFalling());
-}
-
-bool ABHPlayerCharacter::CanCrouch() const
-{
-	return Super::CanCrouch() && bCrouchingEnabled;
-}
-
-bool ABHPlayerCharacter::CanStandUp() const
-{
-	constexpr float RequiredClearance = 100;
-	const float Clearance = GetClearanceAbovePawn();
-	return (Clearance > RequiredClearance || Clearance == -1.f && GetMovementComponent()->bIsCrouching());
-}
-
-void ABHPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (UBHStormwatchWorldSubsystem * Subsystem = GetWorld()->GetSubsystem<UBHStormwatchWorldSubsystem>())
-	{
-		Subsystem->Unregister(this);
-	}
-
-	Super::EndPlay(EndPlayReason);
 }

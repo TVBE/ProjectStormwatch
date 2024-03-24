@@ -14,6 +14,7 @@ UBHPlayerAudioComponent::UBHPlayerAudioComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 
 	MainAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MainAudioComponent"));
+
 	MainAudioComponent->bAutoActivate = false;
 	MainAudioComponent->bEditableWhenInherited = true;
 }

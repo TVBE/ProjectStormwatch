@@ -39,7 +39,7 @@ struct FBHPlayerCharacterMovementSetup
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "General",
 	Meta = (ForceUnits = "cm/s", ClampMin = "0", ClampMax = "400", UIMin = "0", UIMax = "400"))
-	float WalkSpeed = 300.f;
+	float WalkSpeed = 300.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "General",
 	Meta = (Units = "Centimeters", ClampMin = "0", ClampMax = "50", UIMin = "0", UIMax = "50"))
@@ -50,7 +50,7 @@ struct FBHPlayerCharacterMovementSetup
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
 	Meta = (EditCondition = "bJumpingEnabled", ClampMin = "0", UIMin = "0"))
-	float JumpVelocity = 440.f;
+	float JumpVelocity = 440.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jumping",
 	Meta = (EditCondition = "bJumpingEnabled", InlineEditConditionToggle))
@@ -68,7 +68,7 @@ struct FBHPlayerCharacterMovementSetup
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sprinting",
 	Meta = (ForceUnits = "cm/s", EditCondition = "bSprintingEnabled", ClampMin = "400", ClampMax = "800",
 			UIMin = "400", UIMax = "800"))
-	float SprintSpeed = 600.f;
+	float SprintSpeed = 600.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching", Meta = (Displayname = "Enable Crouching"))
 	bool bCrouchingEnabled = true;
@@ -76,7 +76,12 @@ struct FBHPlayerCharacterMovementSetup
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
 	Meta = (EditCondition = "bCrouchingEnabled", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "300",
 			UIMin = "0", UIMax = "300"))
-	float CrouchSpeed = 200.f;
+	float CrouchSpeed = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
+	Meta = (EditCondition = "bCrouchingEnabled", Units = "Centimeters", ClampMin = "0", ClampMax = "300",
+		UIMin = "0", UIMax = "300"))
+	float UncrouchClearance = 150.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
 	Meta = (EditCondition = "bCrouchingEnabled", AdvancedDisplay = "true"))
@@ -89,11 +94,11 @@ struct FBHPlayerCharacterMovementSetup
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Crouching",
 	Meta = (EditCondition = "bCrouchSprintingEnabled", ForceUnits = "cm/s", ClampMin = "0", ClampMax = "300",
 		UIMin = "0", UIMax = "300"))
-	float CrouchSprintSpeed = 250.f;
+	float CrouchSprintSpeed = 250.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera",
 	Meta = (Displayname = "Gamepad Rotation Rate"))
-	float RotationRate = 150.f; // TODO (TV): Deprecate this. It is causing more troubles than it's worth.
+	float RotationRate = 150.0f; // TODO (TV): Deprecate this. It is causing more troubles than it's worth.
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rotation Smoothing",
 	Meta = (DisplayName = "Enable Rotation Smoothing"))

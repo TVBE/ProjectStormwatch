@@ -7,7 +7,7 @@
 
 // Manages all player character audio. Owns the PlayerCharacters main audio components.
 // Any audio specific logic for the player character should be implemented in a class derived from this.
-UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter", Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 class STORMWATCH_API UBHPlayerAudioComponent : public UActorComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()

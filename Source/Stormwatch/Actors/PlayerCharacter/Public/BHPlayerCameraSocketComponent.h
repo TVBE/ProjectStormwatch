@@ -14,7 +14,7 @@ class ABHPlayerController;
 // camera sway and Centripetal Roll. Does not apply any image effects to the camera itself.
 // Movement effects are applied directly to this component, which is propagated to anything attached to this component.
 // This means that it is unsafe to manually set the transform of this component during runtime.
-UCLASS(Blueprintable, BlueprintType, ClassGroup = "Barrelhouse")
+UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse")
 	class STORMWATCH_API UBHPlayerCameraSocketComponent : public USceneComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
@@ -63,7 +63,7 @@ private:
 
 	// The intensity of camera shake effects when moving.
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Sway",
-	Meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0", EditCondition = "bCameraSwayEnabled"))
+	Meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "bCameraSwayEnabled"))
 	float CameraSwayIntensity = 0.22f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Sway",
@@ -75,16 +75,16 @@ private:
 	
 	// The influence of each axis of the camera's socket rotation on the camera sway.
 	UPROPERTY(EditDefaultsOnly, Category = "Socket Sway",
-	Meta = (ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0", EditCondition = "bSocketSwayEnabled"))
+	Meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2", EditCondition = "bSocketSwayEnabled"))
 	FVector SocketSwayIntensity {1.0f, 1.5f, 0.0f};
 
 	// The influence of each axis of the camera's socket rotation on the camera sway while crouched.
 	UPROPERTY(EditDefaultsOnly, Category = "Socket Sway",
-	Meta = (ClampMin = "0.0", ClampMax = "2.0", UIMin = "0.0", UIMax = "2.0", EditCondition = "bSocketSwayEnabled"))
+	Meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2", EditCondition = "bSocketSwayEnabled"))
 	FVector CrouchedSocketSwayIntensity {1.0f, 1.5f, 0.0f};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",
-	Meta = (ClampMin = "1.0", UIMin = "1.0f", EditCondition = "bCentripetalRollEnabled"))
+	Meta = (ClampMin = "1", UIMin = "1", EditCondition = "bCentripetalRollEnabled"))
 	float SocketSwaySpeed = 4.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Socket Sway",
@@ -104,22 +104,22 @@ private:
 
 	// The maximum allowed Centripetal Roll.
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",
-	Meta = (Units = "Degrees", ClampMin = "0.0", ClampMax = "45.0", UIMin = "0.0", UIMax = "45.0",
+	Meta = (Units = "Degrees", ClampMin = "0", ClampMax = "45", UIMin = "0", UIMax = "45",
 			EditCondition = "bCentripetalRollEnabled"))
 	float MaxCentripetalRoll = 14.f;
 
 	// Intensity of the centripetal roll when the player is rotating their camera..
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",
-	Meta = (ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "bCentripetalRollEnabled"))
+	Meta = (ClampMin = "0", ClampMax = "4", UIMin = "0", UIMax = "4", EditCondition = "bCentripetalRollEnabled"))
 	float RotationDrivenCentripetalRollIntensity = 2.f;
 
 	// Intensity of the centripetal roll caused by lateral velocity of the player.
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",
-	Meta = (ClampMin = "0.0", ClampMax = "4.0", UIMin = "0.0", UIMax = "4.0", EditCondition = "bCentripetalRollEnabled"))
+	Meta = (ClampMin = "0", ClampMax = "4", UIMin = "0", UIMax = "4", EditCondition = "bCentripetalRollEnabled"))
 	float MovementDrivenCentripetalRollIntensity = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",
-	Meta = (ClampMin = "1.0", UIMin = "1.0f", EditCondition = "bCentripetalRollEnabled"))
+	Meta = (ClampMin = "1", UIMin = "1", EditCondition = "bCentripetalRollEnabled"))
 	float CentripetalRollSpeed = 4.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Centripetal Roll",

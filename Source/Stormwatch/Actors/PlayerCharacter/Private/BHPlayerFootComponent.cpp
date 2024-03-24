@@ -1,16 +1,16 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHPlayerFootCollisionComponent.h"
+#include "BHPlayerFootComponent.h"
 #include "Components/SphereComponent.h"
 #include "BHPlayerCharacter.h"
 #include "GameFramework/Character.h"
 
-UBHPlayerFootCollisionComponent::UBHPlayerFootCollisionComponent()
+UBHPlayerFootComponent::UBHPlayerFootComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UBHPlayerFootCollisionComponent::BeginPlay()
+void UBHPlayerFootComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -27,13 +27,13 @@ void UBHPlayerFootCollisionComponent::BeginPlay()
 		CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap);
 
-		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &UBHPlayerFootCollisionComponent::OnOverlapBegin);
+		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &UBHPlayerFootComponent::OnOverlapBegin);
 
 		CollisionSphere->RegisterComponent();
 	}
 }
 
-void UBHPlayerFootCollisionComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void UBHPlayerFootComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	FVector ImpulseDirection = (OtherComp->GetComponentLocation() - GetComponentLocation()).GetSafeNormal();
 

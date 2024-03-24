@@ -1,19 +1,19 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHPlayerBodyCollisionComponent.h"
+#include "BHPlayerBodyComponent.h"
 
-UBHPlayerBodyCollisionComponent::UBHPlayerBodyCollisionComponent()
+UBHPlayerBodyComponent::UBHPlayerBodyComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-void UBHPlayerBodyCollisionComponent::BeginPlay()
+void UBHPlayerBodyComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UBHPlayerBodyCollisionComponent::OnRegister()
+void UBHPlayerBodyComponent::OnRegister()
 {
 	Super::OnRegister();
 
@@ -22,7 +22,7 @@ void UBHPlayerBodyCollisionComponent::OnRegister()
 	SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Block);
 }
 
-void UBHPlayerBodyCollisionComponent::OnUnregister()
+void UBHPlayerBodyComponent::OnUnregister()
 {
 	Super::OnRegister();
 
@@ -30,7 +30,7 @@ void UBHPlayerBodyCollisionComponent::OnUnregister()
 	SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
-void UBHPlayerBodyCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHPlayerBodyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "BHPlayerFootCollisionComponent.generated.h"
+#include "BHPlayerFootComponent.generated.h"
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
-class STORMWATCH_API UBHPlayerFootCollisionComponent : public USceneComponent
+class STORMWATCH_API UBHPlayerFootComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
-	UBHPlayerFootCollisionComponent();
+	UBHPlayerFootComponent();
 
 protected:
 	virtual void BeginPlay() override;

@@ -53,7 +53,6 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -62,7 +61,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCamera, Category = "Components")
 	UBHPlayerCameraComponent* Camera;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraController, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCameraSocketComponent, Category = "Components")
 	UBHPlayerCameraSocketComponent* CameraSocketComponent;
 
 	UPROPERTY(BlueprintGetter = GetPlayerMesh, Category = "Components")
@@ -87,13 +86,13 @@ protected:
 	UBHPlayerInventoryComponent* InventoryComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	class UBHPlayerBodyCollisionComponent* BodyCollision;
+	class UBHPlayerBodyComponent* BodyCollision;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	class UBHPlayerFootCollisionComponent* LeftFootCollision;
+	class UBHPlayerFootComponent* LeftFootComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	UBHPlayerFootCollisionComponent* RightFootCollision;
+	UBHPlayerFootComponent* RightFootComponent;
 
 private:
 	float YawDelta = 0.f;

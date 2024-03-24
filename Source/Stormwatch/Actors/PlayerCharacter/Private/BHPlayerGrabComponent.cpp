@@ -1,8 +1,12 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "BHPlayerGrabComponent.h"
+
+#include "BHGrabbableObjectInterface.h"
 #include "BHPhysicsInteractableComponent.h"
+#include "BHPlayerCameraComponent.h"
 #include "BHPlayerCharacter.h"
+#include "BHPlayerMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
 #include "DrawDebugHelpers.h"
@@ -14,7 +18,7 @@
 #include "Chaos/PBDJointConstraintData.h"
 #include "ChaosCheck.h"
 
-DEFINE_LOG_CATEGORY_CLASS(UBHPlayerGrabComponent, LogGrabComponent)
+DEFINE_LOG_CATEGORY_STATIC(LogBHPlayerGrabComponent, Log, All)
 
 UBHPlayerGrabComponent::UBHPlayerGrabComponent()
 {
@@ -30,17 +34,26 @@ void UBHPlayerGrabComponent::BeginPlay()
 
 void UBHPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (!IsHoldingObject())
+	{
+		SetComponentTickEnabled(false);
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Tick: No object is currently being held. Tick is disabled."))
+		return;
+	}
+	
+	UpdateHeldObjectTargetTransform(DeltaTime);
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	// START DEPRECATED
 	if (GrabbedComponent)
 	{
-		UpdateTargetLocationWithRotation(DeltaTime);
+		UpdateHeldObjectTargetTransform(DeltaTime);
 
-		if (CurrentZoomLevel != PreviousZoomLevel)
+		if (TargetDistanceFromView != ObjectLastDistanceFromView)
 		{
 			UpdatePhysicsHandle();
 		}
-		PreviousZoomLevel = CurrentZoomLevel;
+		ObjectLastDistanceFromView = TargetDistanceFromView;
 
 		if (!bPrimingThrow)
 		{
@@ -57,10 +70,168 @@ void UBHPlayerGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
+void UBHPlayerGrabComponent::Grab(UObject* Object)
+{
+	if(!ensureAlwaysMsgf(!IsHoldingObject(), TEXT("Grab: An object is already being grabbed.")))
+	{
+		return;
+	}
+	if (!IsValid(Object))
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Grab: No valid object provided."))
+		return;
+	}
+	if (!Object->Implements<UBHGrabbableObject>())
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Grab: Object [%s] does not implement IBHGrabbableObject."),
+		*Object->GetName());
+		return;
+	}
+	
+	UPrimitiveComponent* GrabbableComponent = nullptr;
+	if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Object);
+		PrimitiveComponent->IsSimulatingPhysics())
+	{
+		GrabbableComponent = PrimitiveComponent;
+	}
+
+	// If we lack a grabbable component at this point, due to the object possibly being an Actor or Actor Component,
+	// we'll seek the first grabbable Primitive Component within the Actor.
+	if (!GrabbableComponent)
+	{
+		AActor* Actor = Cast<AActor>(Object);
+		if (!Actor)
+		{
+			if (const UActorComponent* Component = Cast<UActorComponent>(Object))
+			{
+				Actor = Component->GetOwner();
+			}
+		}
+		if (Actor)
+		{
+			if (bAllowRootOnly)
+			{
+				UPrimitiveComponent* Root = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
+				if (Root->IsSimulatingPhysics())
+				{
+					GrabbableComponent = Root;
+				}
+			}
+			else
+			{
+				TArray<UPrimitiveComponent*> Components;
+				Actor->GetComponents<UPrimitiveComponent>(Components);
+				GrabbableComponent = *Algo::FindByPredicate(Components,
+					[](const UPrimitiveComponent* Component)
+					{
+						return IsValid(Component) && Component->IsSimulatingPhysics();
+					}
+				);
+			}
+		}
+	}
+
+	if (!GrabbableComponent)
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Grab: Object [%s] is not a grabbable object type."),
+		*Object->GetName());
+		return;
+	}
+
+	// Check if grabbable component is within reach and in front of the player to avoid snapping issues.
+	// We don't expect large deviations here, so we exit if this is the case.
+	if (!IsWithinGrabbableRange(GrabbableComponent))
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Grab: Component [%s] is not within grabbable reach."),
+		*Object->GetName());
+		return;
+	}
+
+	// Grab the object if the object lets us.
+	// Calling this commits us; we can't abort after due to unknown object behavior.
+	const bool bGrabbed = IBHGrabbableObject::Execute_Grab(Object, GetOwner());
+	if (!bGrabbed)
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Grab: Object [%s] returned false for IBHGrabbableObject::Grab."),
+			*Object->GetName());
+		return;
+	}
+	
+	const UBHPlayerCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
+	ObjectRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
+	
+	FBox BoundingBox = GrabbedComponent->Bounds.GetBox();
+	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
+	
+	GrabComponentAtLocationWithRotation(GrabbableComponent, NAME_None,GrabbableComponent->GetCenterOfMass(),
+		GrabbableComponent->GetComponentRotation());
+	OnObjectGrabbed.Broadcast(Object, GrabbableComponent);
+	SetComponentTickEnabled(true);
+
+	UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Grab: Grabbed Object [%s], component [%s]."),
+		*Object->GetName(), *GrabbableComponent->GetName());
+}
+
+void UBHPlayerGrabComponent::Release()
+{
+	if (!IsHoldingObject())
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Release: No object is being held."));
+		return;
+	}
+	
+	IBHGrabbableObject::Execute_Release(GrabbedObject, GetOwner());
+	
+	const UPrimitiveComponent* ReleasedComponent = GetGrabbedComponent();
+	const UObject* ReleasedObject = GrabbedObject;
+	ReleaseComponent();
+	ObjectRelativeRotation.Reset();
+	
+	OnObjectReleased.Broadcast(ReleasedObject, ReleasedComponent);
+	SetComponentTickEnabled(false);
+
+	UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Grab: Released Object [%s], component [%s]."),
+	*ReleasedObject->GetName(), *ReleasedComponent->GetName());
+}
+
+void UBHPlayerGrabComponent::Equip(UObject* Object)
+{
+	if (!IsValid(Object))
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Equip: No valid object provided."));
+		return;
+	}
+	if (IsHoldingObject() && GrabbedObject != Object)
+	{
+		UE_LOG(LogBHPlayerGrabComponent, Warning, TEXT("Equip: Object [%s] is not the object currently being held."),
+			*Object->GetName());
+		return;
+	}
+	// If we haven't grabbed the object, we will try to grab it now.
+	if (!IsHoldingObject())
+	{
+		Grab(Object);
+		if (!IsHoldingObject())
+		{
+			return;
+		}
+	}
+
+	IBHGrabbableObject::Execute_Equip(Object, GetOwner());
+	OnObjectEquipped.Broadcast(Object, GrabbedComponent);
+
+	UE_LOG(LogBHPlayerGrabComponent, Verbose, TEXT("Equip: Equipped Object [%s], component [%s]."),
+		*Object->GetName(), *GrabbedComponent->GetName());
+}
+
+void UBHPlayerGrabComponent::Unequip()
+{
+}
+
 void UBHPlayerGrabComponent::UpdatePhysicsHandle()
 {
 	const float Alpha {static_cast<float>(FMath::GetMappedRangeValueClamped
-	(FVector2D(MinZoomLevel, MaxZoomLevel), FVector2D(0,1), CurrentZoomLevel))};
+	(FVector2D(MinZoomLevel, MaxZoomLevel), FVector2D(0,1), TargetDistanceFromView))};
 
 	LinearDamping = FMath::Lerp(MinZoomLinearDamping, MaxZoomLinearDamping, Alpha);
 	LinearStiffness = FMath::Lerp(MinZoomLinearStiffness, MaxZoomLinearStiffness, Alpha);
@@ -98,7 +269,7 @@ void UBHPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector
 	RotatedHandOffset =CameraRotation.RotateVector(RelativeHoldingHandLocation + ThrowingVector);
 
 	const float HandOffsetScalar {static_cast<float>(FMath::Clamp((((BeginHandOffsetDistance)
-		- CurrentZoomLevel) / (BeginHandOffsetDistance + BeginHandOffsetDistance * GrabbedComponentSize)), 0.0, 1000.0))};
+		- TargetDistanceFromView) / (BeginHandOffsetDistance + BeginHandOffsetDistance * GrabbedComponentSize)), 0.0, 1000.0))};
 
 	FVector NormalizedRotatedHandOffset = RotatedHandOffset.GetSafeNormal();
 
@@ -109,30 +280,38 @@ void UBHPlayerGrabComponent::UpdateRotatedHandOffset(FRotator& Rotation, FVector
 	RotatedHandOffset = Camera->GetComponentLocation() + RotatedScaledHandOffset;
 }
 
-/** The looping function that updates the target location and rotation of the currently grabbed object*/
-void UBHPlayerGrabComponent::UpdateTargetLocationWithRotation(float DeltaTime)
+bool UBHPlayerGrabComponent::IsWithinGrabbableRange(const UPrimitiveComponent* Component) const
 {
-	if (!GrabbedComponent) { return; }
+	return true;
+}
 
-	UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
-	UBHPlayerMovementComponent* MovementComponent = GetPlayerCharacter()->GetPlayerMovement();
-	
-	if (MovementComponent && MovementComponent->GetIsSprinting())
+/** The looping function that updates the target location and rotation of the currently grabbed object*/
+void UBHPlayerGrabComponent::UpdateHeldObjectTargetTransform(float DeltaTime)
+{
+	const ABHPlayerCharacter* Character = GetPlayerCharacter();
+	if (!IsValid(Character))
 	{
-		CurrentZoomLevel = CurrentZoomLevel - ReturnZoomSpeed * DeltaTime;
+		return;
+	}
+
+	TargetDistanceFromView = 
+	
+	if (Character->GetPlayerMovementComponent()->IsSprinting())
+	{
+		TargetDistanceFromView = TargetDistanceFromView - ReturnZoomSpeed * DeltaTime;
 	}
 	else
 	{
-		CurrentZoomLevel = CurrentZoomLevel + CurrentZoomAxisValue * ZoomSpeed * DeltaTime;
+		TargetDistanceFromView = TargetDistanceFromView + ControlZoomValue * ZoomSpeed * DeltaTime;
 	}
 		
-	CurrentZoomLevel = FMath::Clamp(CurrentZoomLevel, MinZoomLevel, MaxZoomLevel);
+	TargetDistanceFromView = FMath::Clamp(TargetDistanceFromView, MinZoomLevel, MaxZoomLevel);
 	
 	UpdateRotatedHandOffset(CameraRotation, RotatedHandOffset);
-	TargetLocation = RotatedHandOffset + (CurrentZoomLevel * Camera->GetForwardVector());
+	TargetLocation = RotatedHandOffset + (TargetDistanceFromView * Camera->GetForwardVector());
 
-	FRotator TargetRotation = FRotator(CameraQuat * CameraRelativeRotation);
-	if (CurrentZoomLevel > BeginHandOffsetDistance)
+	FRotator TargetRotation = FRotator(CameraQuat * ObjectRelativeRotation);
+	if (TargetDistanceFromView > BeginHandOffsetDistance)
 	{
 		//TODO; Slerp the rotation to a surface.
 	}
@@ -149,13 +328,39 @@ void UBHPlayerGrabComponent::UpdateMouseInputRotation(FVector2d MouseInputDelta)
 		FQuat DeltaRotation = MouseInputQuatX * MouseInPutQuatY * MouseInPutQuatZ;
 		
 		/**Normalize this rotation and apply it to the relative rotation of the object.*/
-		CameraRelativeRotation = DeltaRotation.GetNormalized() * CameraRelativeRotation;
+		ObjectRelativeRotation = DeltaRotation.GetNormalized() * ObjectRelativeRotation;
 	}
+}
+
+bool UBHPlayerGrabComponent::IsHoldingObject() const
+{
+	return IsValid(GrabbedComponent);
+}
+
+AActor* UBHPlayerGrabComponent::GetGrabbedActor() const
+{
+	const UPrimitiveComponent* PrimitiveComponent = GetGrabbedComponent();
+	return PrimitiveComponent ? PrimitiveComponent->GetOwner() : nullptr;
+}
+
+UObject* UBHPlayerGrabComponent::GetGrabbedObject() const
+{
+	return GrabbedObject;
+}
+
+bool UBHPlayerGrabComponent::IsPrimingThrow() const
+{
+	return bPrimingThrow;
+}
+
+bool UBHPlayerGrabComponent::WillThrowOnRelease() const
+{
+	return bThrowOnRelease; 
 }
 
 void UBHPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 {
-	PerformThrow(1);
+	Throw(1);
 
 	if (PrePrimingThrowTimer <= PrimeDelay)
 	{
@@ -165,9 +370,9 @@ void UBHPlayerGrabComponent::UpdateThrowTimer(float DeltaTime)
 	{
 		bThrowOnRelease = true;
 			
-		if (CurrentZoomLevel != ThrowingZoomLevel)
+		if (TargetDistanceFromView != ThrowingZoomLevel)
 		{
-			CurrentZoomLevel += ToThrowingZoomSpeed * (ThrowingZoomLevel - CurrentZoomLevel) *0.001;
+			TargetDistanceFromView += ToThrowingZoomSpeed * (ThrowingZoomLevel - TargetDistanceFromView) *0.001;
 		}
 			
 		if (PrePrimingThrowTimer <= 1.0)
@@ -182,7 +387,7 @@ void UBHPlayerGrabComponent::UpdateZoomAxisValue(float ZoomAxis)
 {
 	if(!bRotatingActor)
 	{
-		CurrentZoomAxisValue = FMath::Clamp(((CurrentZoomAxisValue + 0.1 * ZoomAxis) * 0.9),-2.0,2.0);
+		ControlZoomValue = FMath::Clamp(((ControlZoomValue + 0.1 * ZoomAxis) * 0.9),-2.0,2.0);
 	}
 	else
 	{
@@ -203,12 +408,12 @@ void UBHPlayerGrabComponent::GrabActor(AActor* ActorToGrab)
 	}
 
 	UCameraComponent* Camera = GetPlayerCharacter()->GetCamera();
-
-	CurrentZoomLevel = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
+	TargetDistanceFromView = FVector::Distance(Camera->GetComponentLocation(), StaticMeshComponent->GetCenterOfMass());
 	GrabComponentAtLocationWithRotation(StaticMeshComponent, NAME_None,StaticMeshComponent->GetCenterOfMass(),StaticMeshComponent->GetComponentRotation());
-
-		
-	CameraRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
+	ObjectRelativeRotation = Camera->GetComponentQuat().Inverse() * GrabbedComponent->GetComponentQuat();
+	FBox BoundingBox = GrabbedComponent->Bounds.GetBox();
+	GrabbedComponentSize = FVector::Distance(BoundingBox.Min, BoundingBox.Max)/2;
+	SetComponentTickEnabled(true);
 	
 	/** Check if the actor already has a kinetic component. If this is the case, call HandleOnOwnerGrabbed on the component.
 	 *	If not, add the component to the grabbed actor. */
@@ -270,7 +475,7 @@ void UBHPlayerGrabComponent::StopPrimingThrow()
 }
 
 /** Execute a throw if the throw is priming*/
-void UBHPlayerGrabComponent::PerformThrow(bool bOnlyPreviewTrajectory)
+void UBHPlayerGrabComponent::Throw(bool bOnlyPreviewTrajectory)
 {
 	if (!bThrowOnRelease) { return; }
 	
