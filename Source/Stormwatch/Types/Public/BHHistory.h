@@ -1,4 +1,4 @@
-// Copyright Notice
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #pragma once
 
@@ -21,8 +21,8 @@ public:
 	void Set(const T& Value);
 	bool IsSet(uint32 Index = 0) const;
 	void SetLength(uint32 NewLength);
+	void Reset();
+	bool IsEmpty() const;
 
 	TBHHistory<T>& operator=(const T& Value);
 };
-
-

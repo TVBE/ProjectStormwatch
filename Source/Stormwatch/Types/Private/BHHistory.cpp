@@ -1,4 +1,4 @@
-// Copyright Notice
+// Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
 #include "Stormwatch/Types/Public/BHHistory.h"
 
@@ -56,6 +56,18 @@ void TBHHistory<T>::SetLength(uint32 NewLength)
 	{
 		History.SetNum(Length);
 	}
+}
+
+template <typename T>
+void TBHHistory<T>::Reset()
+{
+	History.Empty();
+}
+
+template <typename T>
+bool TBHHistory<T>::IsEmpty() const
+{
+	return History.IsEmpty();
 }
 
 template <typename T>
