@@ -10,13 +10,14 @@ const TCHAR* LLOCTEXT_NAMESPACE = TEXT("ReacousticEditor");
  * This is a function library for various static in editor functions. 
  */
 
-class ReacousticEditorFunctionLibrary : UBlueprintFunctionLibrary
+UCLASS()
+class UReacousticEditorFunctionLibrary : public UBlueprintFunctionLibrary
 {
 public:
 
 	/**Helper function that enabled the in editor time addition of reacoustic sounds to actors.*/
 	UFUNCTION(BlueprintCallable, Category = "Category", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static UReacousticComponent* ReacousticEditorFunctionLibrary::AddReacousticComponentInEditor(AActor* ActorToAddTo, TSubclassOf<UActorComponent> NewComponentClass, UReacousticSoundAsset* SoundAssetIn)
+	static UReacousticComponent* AddReacousticComponentInEditor(AActor* ActorToAddTo, TSubclassOf<UActorComponent> NewComponentClass, UReacousticSoundAsset* SoundAssetIn)
 	{
 		if (!ActorToAddTo || !NewComponentClass || !SoundAssetIn) { UE_LOG(LogTemp, Error, TEXT("AddComponentInEditor: Failed to Add Component! ActorToAddTo or NewComponentClass undefined or Sound asset undefined!")); return NULL; }
 

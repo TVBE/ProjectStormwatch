@@ -6,7 +6,7 @@
 #include "Delegates/DelegateSignatureImpl.inl"
 #include "UnrealEd.h"
 #include "UObject/UObjectGlobals.h"
-#include "ReacousticEditorFunctionLibrary.h"
+#include "..\Public\ReacousticEditorFunctionLibrary.h"
 
 
 /**
@@ -64,7 +64,7 @@ void UReacousticSoundAssociationSetterFactory::TryApplyToActor(UObject* Object, 
 			if(UReacousticSoundAsset* SoundAsset = {StaticCast<UReacousticSoundAsset*>(Object)})
 			{
 				/**Helper function that enabled the in editor time addition of reacoustic sounds to actors.*/
-				NewComp = ReacousticEditorFunctionLibrary::AddReacousticComponentInEditor(Actor,UReacousticComponent::StaticClass(),SoundAsset);
+				NewComp = UReacousticEditorFunctionLibrary::AddReacousticComponentInEditor(Actor,UReacousticComponent::StaticClass(),SoundAsset);
 				NewComp->ReacousticSoundAsset = {StaticCast<UReacousticSoundAsset*>(Object)};
 				UE_LOG(LogTemp, Warning, TEXT("UReacousticComponent registered."));
 			}
