@@ -28,6 +28,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Physics")
 	bool bAutoDeterminePhysicsAttributes = false;
 
+#if WITH_EDITOR
+	virtual void CheckForErrors() override;
+#endif
+
 private:
 	UPROPERTY(BlueprintGetter = GetStaticMeshComponent, Category = "Components")
 	UStaticMeshComponent* StaticMeshComponent;
