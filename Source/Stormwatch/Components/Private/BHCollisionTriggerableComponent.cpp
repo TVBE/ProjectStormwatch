@@ -2,6 +2,10 @@
 
 #include "BHCollisionTriggerableComponent.h"
 
+#include "Misc/UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "BHCollisionTriggerableComponent"
+
 DEFINE_LOG_CATEGORY_STATIC(LogBHCollisionTriggerableComponent, Log, All)
 
 UBHCollisionTriggerableComponent::UBHCollisionTriggerableComponent()
@@ -9,72 +13,113 @@ UBHCollisionTriggerableComponent::UBHCollisionTriggerableComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UBHCollisionTriggerableComponent::SetImpulseForceThreshold(float Value)
+void UBHCollisionTriggerableComponent::SetImpulseThreshold(float Value)
 {
-	ImpulseForceThreshold = Value;
+	ImpulseThreshold = Value;
 }
 
-void UBHCollisionTriggerableComponent::BeginPlay()
+void UBHCollisionTriggerableComponent::InitializeComponent()
 {
-	Super::BeginPlay();
+	Super::InitializeComponent();
 
-	if (UStaticMeshComponent* Component = Cast<UStaticMeshComponent>(GetAttachParent()))
+	UPrimitiveComponent* Target = GetTarget();
+	if (!Target)
 	{
-		Component->OnComponentHit.AddDynamic(this, &UBHCollisionTriggerableComponent::OnStaticMeshComponentHit);
-		Component->SetGenerateOverlapEvents(false);
-		Component->SetNotifyRigidBodyCollision(true);
-
-		MeshComponent = Component;
+		return;
 	}
+	Target->OnComponentHit.AddDynamic(this, &UBHCollisionTriggerableComponent::HandleOnComponentHit);
 }
 
-void UBHCollisionTriggerableComponent::OnStaticMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void UBHCollisionTriggerableComponent::UninitializeComponent()
+{
+	Super::UninitializeComponent();
+
+	UPrimitiveComponent* Target = GetTarget();
+	if (!Target)
+	{
+		return;
+	}
+	Target->OnComponentHit.RemoveDynamic(this, &UBHCollisionTriggerableComponent::HandleOnComponentHit);
+}
+
+void UBHCollisionTriggerableComponent::HandleOnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherComp->IsSimulatingPhysics())
 	{
 		return;
 	}
-
+	
 	const FVector HitDirection = Hit.ImpactNormal.GetSafeNormal();
 	const float Angle = static_cast<float>(FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(HitDirection, -GetComponentRotation().Vector()))));
-
-	const FVector OtherVelocity = OtherComp->GetComponentVelocity();
-	const FVector RelativeVelocity = OtherVelocity - MeshComponent->GetComponentVelocity();
-
-	if (NormalImpulse.Size() >= ImpulseForceThreshold && (!bRestrictCollisionAngle || Angle <= MaxAllowedAngle))
+	
+	if (NormalImpulse.Size() >= ImpulseThreshold && (!bRestrictCollisionAngle || Angle <= MaxAllowedAngle))
 	{
-		OnCollisionTrigger.Broadcast();
-		if (bEnableTriggerLimit)
-		{
-			Triggers++;
-			if (Triggers >= TriggerLimit)
-			{
-				OnCollisionTriggerLimitReached.Broadcast();
-				if (DestroyAfterTriggerLimitReached)
-				{
-					DestroyComponent();
-				}
-			}
-		}
+		OnCollisionTrigger.Broadcast(NormalImpulse);
 	}
 }
 
 UPrimitiveComponent* UBHCollisionTriggerableComponent::GetTarget() const
 {
-	if (IsValid(GetAttachParent()))
+	if (!IsValid(GetAttachParent()))
 	{
-		UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent()
-		if (!PrimitiveComponent)
-		{
-			UE_LOG(LogBHCollisionTriggerableComponent, Warning, TEXT("%s is attached to a %s instead of a UPrimitiveComponent")
-			TEXT("in %s. UCollisionTriggerableComponents only work when attached to UPrimitiveComponents."),
-			*GetName(), *GetAttachParent()->GetClass()->GetName(), *GetOwner()->GetName());
-		}
-		return PrimitiveComponent;
+		UE_LOG(LogBHCollisionTriggerableComponent, Warning,
+			TEXT("GetTarget: Component [%s] does not have a valid attach parent."),
+			*GetName());
+		return nullptr;
 	}
-	UE_LOG(LogBHCollisionTriggerableComponent, Warning, TEXT("%s is not attached to a valid component."), *GetName())
-	return nullptr;
+
+	UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent());
+	if (!PrimitiveComponent)
+	{
+		UE_LOG(LogBHCollisionTriggerableComponent, Warning,
+			TEXT("GetTarget: Component [%s] is attached to a %s instead of a UPrimitiveComponent")
+			TEXT("in Actor [%s]. UCollisionTriggerableComponents only work when attached to UPrimitiveComponents."),
+			*GetName(), *GetAttachParent()->GetClass()->GetName(), *GetOwner()->GetName());
+	}
+	return PrimitiveComponent;
 }
+
+#if WITH_EDITOR
+void UBHCollisionTriggerableComponent::CheckForErrors()
+{
+	Super::CheckForErrors();
+
+	const AActor* Owner = GetOwner();
+	if (!IsValid(Owner))
+	{
+		return;
+	}
+	
+	const UPrimitiveComponent* Target = GetTarget();
+	if (!IsValid(Target))
+	{
+		return;
+	}
+	if (Target->GetGenerateOverlapEvents())
+	{
+		FFormatNamedArguments Arguments;
+		Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+		Arguments.Add(TEXT("TargetName"), FText::FromString(Target->GetName()));
+		FMessageLog("MapCheck").Warning()
+			->AddToken(FUObjectToken::Create(Owner))
+			->AddToken(FTextToken::Create(FText::Format( LOCTEXT( "MapCheck_Message_GenerateOverlapEvents",
+				"{ComponentName}::{TargetName} has bGenerateOverlapEvents set to true. "
+				"This needs to be disabled for collision triggers to work correctly." ), Arguments )));
+	}
+	if (const FBodyInstance* BodyInstance = Target->GetBodyInstance(); !BodyInstance->bNotifyRigidBodyCollision)
+	{
+		FFormatNamedArguments Arguments;
+		Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+		Arguments.Add(TEXT("TargetName"), FText::FromString(Target->GetName()));
+		FMessageLog("MapCheck").Warning()
+			->AddToken(FUObjectToken::Create(Owner))
+			->AddToken(FTextToken::Create(FText::Format( LOCTEXT( "MapCheck_Message_NotifyRigidBodyCollision",
+				"{ComponentName}::{TargetName} has bNotifyRigidBodyCollision set to false. "
+				"This needs to be enabled for collision triggers to work correctly." ), Arguments )));
+	}
+}
+#endif
 
 
 

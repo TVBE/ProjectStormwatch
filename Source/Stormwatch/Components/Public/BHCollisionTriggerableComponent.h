@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "Components/ActorComponent.h"
+#include "Components/SceneComponent.h"
 #include "BHCollisionTriggerableComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCollisionTriggerDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCollisionTriggerSignature, FVector, Impulse);
 
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "Barrelhouse", Meta = (BlueprintSpawnableComponent))
 class UBHCollisionTriggerableComponent : public USceneComponent
@@ -16,10 +16,10 @@ public:
 	UBHCollisionTriggerableComponent();
 	
 	UFUNCTION(BlueprintCallable)
-	void SetImpulseForceThreshold(float Value);
+	void SetImpulseThreshold(float Value);
 	
-	UPROPERTY(BlueprintAssignable)
-	FOnCollisionTriggerDelegate OnCollisionTrigger;
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnCollisionTriggerSignature OnCollisionTrigger;
 
 protected:
 	virtual void InitializeComponent() override;
@@ -27,17 +27,21 @@ protected:
 	
 	UPrimitiveComponent* GetTarget() const;
 
+#if WITH_EDITOR
+	virtual void CheckForErrors() override;
+#endif
+
 private:
 	UFUNCTION()
-	void OnStaticMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	void HandleOnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		FVector NormalImpulse, const FHitResult& Hit);
 
 	// The impulse force threshold for the collision event to be triggered.
 	UPROPERTY(EditAnywhere, Category = "Collision", Meta = (Displayname = "Force Threshold", Units = "Newtons"))
-	float ImpulseForceThreshold = 100.0f;
+	float ImpulseThreshold = 100.0f;
 
 	// If true, We expect the collision to come from a certain direction.
-	UPROPERTY(Category = "Collision", Meta = (InlineEditConditionToggle))
+	UPROPERTY(Meta = (InlineEditConditionToggle))
 	bool bRestrictCollisionAngle = false;
 	
 	// The maximum allowed angle for the collision to be triggered.
