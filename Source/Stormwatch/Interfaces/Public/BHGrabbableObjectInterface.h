@@ -5,13 +5,6 @@
 #include "CoreMinimal.h"
 #include "BHGrabbableObjectInterface.generated.h"
 
-UENUM(BlueprintType)
-enum class EBHGrabType : uint8
-{
-	OneHanded			UMETA(DisplayName = "One Handed"),
-	TwoHanded			UMETA(DisplayName = "Two Handed"),
-};
-
 UINTERFACE(Blueprintable)
 class STORMWATCH_API UBHGrabbableObject : public UInterface
 {
@@ -23,12 +16,21 @@ class STORMWATCH_API IBHGrabbableObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
-	bool Grab(const AActor* Interactor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	bool Grab(const AActor* Instigator);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	void Release(const AActor* Instigator);
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
-	bool Release(const AActor* Interactor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	void Equip(const AActor* Instigator);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	void Unequip(const AActor* Instigator);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	const FTransform& GetEquipRelativeTransform();
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Grabbable Object")
-	EBHGrabType GetGrabType() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
+	void Throw(const AActor* Instigator);
 };
