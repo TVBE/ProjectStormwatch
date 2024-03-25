@@ -4,7 +4,7 @@
 
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
-#include "BHPlayerMovementComponent.h"
+#include "BHCharacterMovementComponent.h"
 
 #include "KismetAnimationLibrary.h"
 
@@ -18,7 +18,7 @@ void UBHPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	check(Character);
 	
 	const ABHPlayerController* Controller = Cast<ABHPlayerController>(Character->GetController());
-	const UBHPlayerMovementComponent* CharacterMovement = Character->GetPlayerMovementComponent();
+	const UBHCharacterMovementComponent* CharacterMovement = Character->GetPlayerMovementComponent();
 	if (Controller && CharacterMovement)
 	{
 		CheckMovementState(*Controller, *CharacterMovement);
@@ -87,7 +87,7 @@ void UBHPlayerAnimInstance::GetExtremityData(FBHStepData& StepData, const EBHBod
 }
 
 void UBHPlayerAnimInstance::CheckMovementState(const ABHPlayerController& Controller,
-	const UBHPlayerMovementComponent& CharacterMovement)
+	const UBHCharacterMovementComponent& CharacterMovement)
 {
 	bIsMovementPending = Controller.GetHasMovementInput();
 	bIsMoving = bIsMovementPending && (CharacterMovement.IsMovingOnGround() || CharacterMovement.IsFalling());
@@ -127,15 +127,6 @@ float UBHPlayerAnimInstance::GetDirection(const ABHPlayerCharacter& Character)
 
 	return FMath::GetMappedRangeValueClamped(
 		FVector2D(-171.5, 171.5), FVector2D(-180, 180), UnmappedDirection);
-}
-
-float UBHPlayerAnimInstance::GetSpeed(const ABHPlayerCharacter& Character, const UBHPlayerMovementComponent& CharacterMovement)
-{
-	if (!CharacterMovement.GetLastInputVector().IsNearlyZero())
-	{
-		return Character.GetVelocity().Size2D();
-	}
-	return 0.0f;
 }
 
 void UBHPlayerAnimInstance::UpdateFallTime(const float DeltaTime)

@@ -47,82 +47,85 @@ UObject* UBHPlayerInventoryComponent::FindInventoryObject(AActor* Actor) const
 
 bool UBHPlayerInventoryComponent::AddActorToInventory(AActor* Actor)
 {
-	if (!Actor) { return false; }
-	
-	/** Search for the first UObject that implements the IInventoryObject interface.
-	 *	This can be the actor itself, or a component registered to the actor. */
-	if (UObject* InventoryObject = FindInventoryObject(Actor))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("This Worked!"))
-		if (!IBHInventoryObject::Execute_CanAddToInventory(InventoryObject, GetOwner())) {return false; }
-		
-		/** If the current hotbar slot is already filled, iterate through the array to try and find an empty slot that can fit the actor. */
-		if (SelectedActor)
-		{
-			int32 EmptySlotIndex = -1;
-			for (int32 i = 0; i < Hotbar.Num(); ++i)
-			{
-				if (!Hotbar[i])
-				{
-					EmptySlotIndex = i;
-					Hotbar[i] = Actor;
-					break;
-				}
-			}
-			if (EmptySlotIndex >= 0)
-			{
-				Hotbar[EmptySlotIndex] = Actor;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			Hotbar[SelectedSlot] = Actor;
-		}
-		IBHInventoryObject::Execute_AddToInventory(InventoryObject, GetOwner());
-		return true;
-	}
 	return false;
+	// if (!Actor) { return false; }
+	//
+	// /** Search for the first UObject that implements the IInventoryObject interface.
+	//  *	This can be the actor itself, or a component registered to the actor. */
+	// if (UObject* InventoryObject = FindInventoryObject(Actor))
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("This Worked!"))
+	// 	if (!IBHInventoryObject::Execute_CanAddToInventory(InventoryObject, GetOwner())) {return false; }
+	// 	
+	// 	/** If the current hotbar slot is already filled, iterate through the array to try and find an empty slot that can fit the actor. */
+	// 	if (SelectedActor)
+	// 	{
+	// 		int32 EmptySlotIndex = -1;
+	// 		for (int32 i = 0; i < Hotbar.Num(); ++i)
+	// 		{
+	// 			if (!Hotbar[i])
+	// 			{
+	// 				EmptySlotIndex = i;
+	// 				Hotbar[i] = Actor;
+	// 				break;
+	// 			}
+	// 		}
+	// 		if (EmptySlotIndex >= 0)
+	// 		{
+	// 			Hotbar[EmptySlotIndex] = Actor;
+	// 		}
+	// 		else
+	// 		{
+	// 			return false;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		Hotbar[SelectedSlot] = Actor;
+	// 	}
+	// 	IBHInventoryObject::Execute_AddToInventory(InventoryObject, GetOwner());
+	// 	return true;
+	// }
+	// return false;
 }
 
 AActor* UBHPlayerInventoryComponent::TakeActorFromInventory()
 {
-	if(SelectedActor)
-	{
-		if (UObject* InventoryObject = FindInventoryObject(SelectedActor))
-		{
-			AActor* TakenActor = SelectedActor;
-			Hotbar[SelectedSlot] = nullptr;
-
-			//if (const AActor* Owner = GetOwner())
-			//{
-			//	const FVector ForwardVector = Owner->GetActorForwardVector();
-			//	TakenActor->SetActorLocation(FVector(ForwardVector.X * 80, ForwardVector.Y * 80, 0));
-			//}
-			
-			IBHInventoryObject::Execute_TakeFromInventory(InventoryObject, GetOwner());
-			return TakenActor;
-		}
-	}
 	return nullptr;
+	// if(SelectedActor)
+	// {
+	// 	if (UObject* InventoryObject = FindInventoryObject(SelectedActor))
+	// 	{
+	// 		AActor* TakenActor = SelectedActor;
+	// 		Hotbar[SelectedSlot] = nullptr;
+	//
+	// 		//if (const AActor* Owner = GetOwner())
+	// 		//{
+	// 		//	const FVector ForwardVector = Owner->GetActorForwardVector();
+	// 		//	TakenActor->SetActorLocation(FVector(ForwardVector.X * 80, ForwardVector.Y * 80, 0));
+	// 		//}
+	// 		
+	// 		IBHInventoryObject::Execute_TakeFromInventory(InventoryObject, GetOwner());
+	// 		return TakenActor;
+	// 	}
+	// }
+	// return nullptr;
 }
 
 UActorComponent* UBHPlayerInventoryComponent::FindInventoryComponent(const AActor* Actor) const
 {
-	if (!Actor) { return nullptr; }
-	TSet<UActorComponent*> Components {Actor->GetComponents()};
-	if (Components.IsEmpty()) { return nullptr; }
-	for (UActorComponent* Component : Components)
-	{
-		if (Component->GetClass()->ImplementsInterface(UBHInventoryObject::StaticClass()))
-		{
-			return Component;
-		}
-	}
 	return nullptr;
+	// if (!Actor) { return nullptr; }
+	// TSet<UActorComponent*> Components {Actor->GetComponents()};
+	// if (Components.IsEmpty()) { return nullptr; }
+	// for (UActorComponent* Component : Components)
+	// {
+	// 	if (Component->GetClass()->ImplementsInterface(UBHInventoryObject::StaticClass()))
+	// 	{
+	// 		return Component;
+	// 	}
+	// }
+	// return nullptr;
 }
 
 

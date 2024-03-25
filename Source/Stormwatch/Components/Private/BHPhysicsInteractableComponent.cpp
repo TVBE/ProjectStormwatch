@@ -3,8 +3,11 @@
 #include "BHPhysicsInteractableComponent.h"
 
 #include "BHInteractableComponent.h"
+#include "Misc/UObjectToken.h"
 
 #include "PhysicsEngine/BodyInstance.h"
+
+#define LOCTEXT_NAMESPACE "BHPhysicsInteractableComponent"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPhysicsInteractionComponent, Log, All);
 
@@ -26,15 +29,10 @@ void UBHPhysicsInteractableComponent::OnRegister()
 #endif
 }
 
-void UBHPhysicsInteractableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBHPhysicsInteractableComponent::BeginInteraction()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
+	Super::BeginInteraction();
 
-void UBHPhysicsInteractableComponent::HandleOnInteractionStart()
-{
-	bBeingInteractedWith = true;
-	
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	ensure(PrimitiveComponent->IsSimulatingPhysics());
 	
@@ -66,10 +64,10 @@ void UBHPhysicsInteractableComponent::HandleOnInteractionStart()
 	}
 }
 
-void UBHPhysicsInteractableComponent::HandleOnInteractionEnd()
+void UBHPhysicsInteractableComponent::EndInteraction()
 {
-	bBeingInteractedWith = false;
-	
+	Super::EndInteraction();
+
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	ensure(PrimitiveComponent->IsSimulatingPhysics());
 	if (PrimitiveComponent && !PrimitiveComponent->IsAnyRigidBodyAwake())
@@ -90,8 +88,11 @@ void UBHPhysicsInteractableComponent::HandleOnInteractionEnd()
 				&UBHPhysicsInteractableComponent::EnableRigidBodySleep, TimeToStayAwakeAfterRelease, false);
 		}
 	}
-	
-	bBeingInteractedWith = false;
+}
+
+void UBHPhysicsInteractableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void UBHPhysicsInteractableComponent::EnableNotifyRigidBodyCollisionOnAttachParent()
@@ -128,7 +129,7 @@ void UBHPhysicsInteractableComponent::HandleRigidBodySleep(UPrimitiveComponent* 
 {
 	UPrimitiveComponent* PrimitiveComponent = GetPrimitiveComponent();
 	
-	if (bBeingInteractedWith)
+	if (IsBeingInteractedWith())
 	{
 		PrimitiveComponent->WakeAllRigidBodies();
 		return;
@@ -151,19 +152,34 @@ void UBHPhysicsInteractableComponent::CheckForErrors()
 {
 	Super::CheckForErrors();
 
+	const AActor* Owner = GetOwner();
+	if (!IsValid(Owner))
+	{
+		return;
+	}
+
 	if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(GetAttachParent()))
 	{
 		if (!PrimitiveComponent->IsSimulatingPhysics())
 		{
-			UE_LOG(LogPhysicsInteractionComponent, Warning,
-				TEXT("%s is attached to a UPrimitiveComponent that is not simulating physics in actor: %s"),
-				*GetName(), *GetOwner()->GetName())
+			FFormatNamedArguments Arguments;
+			Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+			Arguments.Add(TEXT("OwnerName"), FText::FromString(Owner->GetName()));
+			FMessageLog("MapCheck").Warning()
+				->AddToken(FUObjectToken::Create(Owner))
+				->AddToken(FTextToken::Create(FText::Format(LOCTEXT("MapCheck_Message_NotSimulatingPhysics",
+					"{OwnerName}::{ComponentName} is attached to a UPrimitiveComponent that is not simulating physics."), Arguments)));
 		}
 	}
 	else
 	{
-		UE_LOG(LogPhysicsInteractionComponent, Error, TEXT("%s is not attached to a UPrimitiveComponent in actor: %s."),
-			*GetName(), *GetOwner()->GetName())
+		FFormatNamedArguments Arguments;
+		Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+		Arguments.Add(TEXT("OwnerName"), FText::FromString(Owner->GetName()));
+		FMessageLog("MapCheck").Error()
+			->AddToken(FUObjectToken::Create(Owner))
+			->AddToken(FTextToken::Create(FText::Format(LOCTEXT("MapCheck_Message_NotAttachedToUPrimitiveComponent",
+				"{OwnerName}::{ComponentName} is not attached to a UPrimitiveComponent."), Arguments)));
 	}
 }
 #endif

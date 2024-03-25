@@ -10,51 +10,53 @@ class UBHPlayerInteractionComponent;
 class UCameraComponent;
 class ABHPlayerCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectDraggedSignature, const UObject*, DraggedObject, const UPrimitiveComponent*, DraggedComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDraggedObjectReleasedSignature, const UObject*, ReleasedObject, const UPrimitiveComponent*, ReleasedComponent);
+
 UCLASS(NotBlueprintable, BlueprintType, ClassGroup = "BHPlayerCharacter")
 	class STORMWATCH_API UBHPlayerDragComponent : public UPhysicsHandleComponent, public FBHPlayerCharacterComponent
 {
 	GENERATED_BODY()
 
 public:
-	UBHPlayerDragComponent() {};
+	UBHPlayerDragComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Drag")
-	void DragActorAtLocation(AActor* ActorToDrag, const FVector& Location);
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerDragComponent")
+	void Drag(UObject* Object);
 
-	UFUNCTION(BlueprintCallable, Category = "Drag")
-	void ReleaseActor();
-
+	UFUNCTION(BlueprintCallable, Category = "BHPlayerGrabComponent")
+	void Release();
+	
 	UFUNCTION(BlueprintPure, Category = "BHPlayerDragComponent")
 	bool IsHoldingObject() const;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnObjectDraggedSignature OnObjectDragged;
 
-	UFUNCTION(BlueprintCallable, Category = "Player Physics Grab", Meta = (DisplayName = "Get Current Grabbed Actor"))
-	AActor* GetDraggedActor() const
-	{
-		if (const UPrimitiveComponent * Component = GetGrabbedComponent()) { return Component->GetOwner(); }
-		return nullptr;
-	}
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnDraggedObjectReleasedSignature OnObjectReleased;
 
-	FVector GetDragLocation() const;
+	// FVector GetDragLocation() const;
 
 	UPROPERTY()
 	float CameraRotationMultiplier = 1.0f;
 
-protected:
-	virtual void OnRegister() override;
-
-	virtual void BeginPlay() override;
-
 private:
-	void UpdateTargetLocation(float DeltaTime);
+	// Restrict dragging to only the Actor's root component. 
+	// This does not have to be the implementer of IBHDraggableObject.
+	UPROPERTY(EditDefaultsOnly, Category = "Dragging")
+	bool bAllowRootOnly = true;
+	
+	// void UpdateTargetLocation(float DeltaTime);
+	//
+	// void UpdateCameraRotationSpeed(float DeltaTime);
+	//
+	// void UpdateLocalConstraint();
 
-	void UpdateCameraRotationSpeed(float DeltaTime);
-
-	void UpdateLocalConstraint();
-
-	UFUNCTION()
-	void UpdatePhysicsHandle();
+	// UFUNCTION()
+	// void UpdatePhysicsHandle();
 
 	/** The distance at which point a dragged object will be automatically released. */
 	UPROPERTY(EditInstanceOnly, Category = "Grab Settings", 
@@ -86,10 +88,9 @@ private:
 
 	float DraggedComponentSize;
 
-	/** Locations used to set the target location of the physicshandle: handle.*/
 	FVector TargetLocation;
 
-	FVector GrabOffset = 0.0,0.0,0.0;
+	FVector GrabOffset {0.0,0.0,0.0};
 
 	float CurrentZoomLevel;
 

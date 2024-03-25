@@ -88,7 +88,7 @@ void UBHPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		}
 		
 		const EBHInteractionType InteractionType = DetermineInteractionType(PreferredInteractableObject.GetValue());
-		CurrentInteractableObject.Emplace(FBHInteractableObject(PreferredInteractableObject.GetValue(), InteractionType));
+		CurrentInteractableObject.Emplace(FBHInteractionObject(PreferredInteractableObject.GetValue(), InteractionType));
 		
 		OnNewInteractableObjectFound.Broadcast(PreferredInteractableObject.GetValue(), InteractionType);
 
@@ -191,9 +191,10 @@ TArray<TPair<UObject*, FVector>> UBHPlayerInteractionComponent::TraceForInteract
 		if (!OverlappingObjects.IsEmpty())
 		{
 			Algo::Sort(OverlappingObjects,
-				[this](const TTuple<UObject*, float, int32>& A, const TTuple<UObject*, float, int32>& B) {
-					if (!bUsePriorityDistanceThreshold || A.Get<1>() > PriorityDistanceThreshold || B.Get<1>() > PriorityDistanceThreshold) {// Priority is not considered or distance exceeds threshold for one or both objects
-						 return A.Get<1>() < B.Get<1>();
+				[this](const TTuple<UObject*, FVector, float, int32>& A, const TTuple<UObject*, FVector, float, int32>& B) {
+					if (!bUsePriorityDistanceThreshold || A.Get<2>() < PriorityDistanceThreshold || B.Get<2>() > PriorityDistanceThreshold)
+					{
+						return A.Get<2>() < B.Get<2>();
 					}
 					if (A.Get<3>() != B.Get<3>())
 					{

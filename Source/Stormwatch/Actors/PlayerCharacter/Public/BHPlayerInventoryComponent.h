@@ -19,7 +19,7 @@ private:
 
 	/** The actor in the hotbar at the index of the selected slot. */
 	UPROPERTY(BlueprintGetter = GetCurrentSelectedSlotActor)
-	AActor* SelectedActor;
+	AActor* SelectedActor = nullptr;
 
 	/** The amount of hotbar slots available for the inventory. */
 	UPROPERTY(BlueprintGetter = GetHotbarSize, EditDefaultsOnly, Category = "PlayerInventoryComponent",

@@ -15,7 +15,7 @@ enum class EBHInteractionType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FBHInteractableObject
+struct FBHInteractionObject
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -25,11 +25,11 @@ struct FBHInteractableObject
 	UPROPERTY(BlueprintReadOnly)
 	EBHInteractionType InteractionType = EBHInteractionType::None;
 
-	FBHInteractableObject()
+	FBHInteractionObject()
 	{
 	}
 
-	FBHInteractableObject(UObject* InObject, EBHInteractionType InInteractionType)
+	FBHInteractionObject(UObject* InObject, EBHInteractionType InInteractionType)
 		: Object(InObject)
 		, InteractionType(InInteractionType)
 	{
@@ -187,5 +187,5 @@ private:
 	bool bEnableDebugVisualisation = false;
 #endif
 	
-	TOptional<FBHInteractableObject> CurrentInteractableObject;
+	TOptional<FBHInteractionObject> CurrentInteractableObject;
 };

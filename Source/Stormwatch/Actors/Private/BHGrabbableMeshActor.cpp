@@ -2,12 +2,15 @@
 
 #include "Stormwatch/Actors/Public/BHGrabbableMeshActor.h"
 
-#include "BHGrabComponent.h"
+#include "BHGrabbableComponent.h"
 
 ABHGrabbableMeshActor::ABHGrabbableMeshActor()
 {
-	GrabComponent = CreateDefaultSubobject<UBHGrabComponent>(TEXT("GrabComponent"));
-	GrabComponent->SetupAttachment(GetStaticMeshComponent());
+	GrabbableComponent = CreateDefaultSubobject<UBHGrabbableComponent>(TEXT("GrabbableComponent"));
+	if(GrabbableComponent)
+	{
+		GrabbableComponent->SetupAttachment(GetStaticMeshComponent());
+	}
 }
 
 bool ABHGrabbableMeshActor::AddToInventory_Implementation()
@@ -30,9 +33,9 @@ void ABHGrabbableMeshActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-UBHGrabComponent* ABHGrabbableMeshActor::GetGrabComponent() const
+UBHGrabbableComponent* ABHGrabbableMeshActor::GetGrabComponent() const
 {
-	return GrabComponent;
+	return GrabbableComponent;
 }
 
 

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActorFunctionCaller.h"
 #include "BHProximitySensor.generated.h"
 
 class USphereComponent;

@@ -103,8 +103,8 @@ protected:
 private:
 	void UpdateFallTime(const float DeltaTime);
 
-	void CheckMovementState(const class ABHPlayerController& Controller, const class UBHPlayerMovementComponent& CharacterMovement);
-	void CheckTurnInplaceConditions(const ABHPlayerCharacter& Character);
+	void CheckMovementState(const class ABHPlayerController& Controller, const class UBHCharacterMovementComponent& CharacterMovement);
+	void CheckTurnInplaceConditions(const class ABHPlayerCharacter& Character);
 	
 	static float GetDirection(const ABHPlayerCharacter& Character);
 };

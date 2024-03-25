@@ -37,6 +37,11 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	const TArray<FBHSemanticGameplayTag>& GetSemanticTags() const;
+
+protected:
+#if WITH_EDITOR
+ virtual void CheckForErrors() override;
+#endif
 	
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetSemanticName, Category = "Semantics", Meta = (DisplayName = "Name"))

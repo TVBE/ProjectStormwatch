@@ -3,7 +3,7 @@
 #include "BHPlayerCameraComponent.h"
 
 #include "BHPlayerCharacter.h"
-#include "BHPlayerMovementComponent.h"
+#include "BHCharacterMovementComponent.h"
 
 UBHPlayerCameraComponent::UBHPlayerCameraComponent()
 {
@@ -91,7 +91,7 @@ void UBHPlayerCameraComponent::UpdateFOV(const float DeltaTime)
 
 	if (LocalVelocity.X > Character->GetPlayerMovementComponent()->GetMovementSetup().WalkSpeed * 1.1)
 	{
-		const FBHPlayerCharacterMovementSetup& Settings = Character->GetPlayerMovementComponent()->GetMovementSetup();
+		const FBHCharacterSetup& Settings = Character->GetPlayerMovementComponent()->GetMovementSetup();
 		TargetFOV = FMath::GetMappedRangeValueClamped(FVector2D(Settings.WalkSpeed * 1.1, Settings.SprintSpeed),
 			FVector2D(DefaultFOV, SprintFOV), LocalVelocity.X);
 	}

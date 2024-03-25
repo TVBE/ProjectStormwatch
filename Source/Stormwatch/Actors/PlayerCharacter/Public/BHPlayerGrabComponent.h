@@ -143,7 +143,7 @@ struct FPlayerGrabSetup
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectGrabbedSignature, const UObject*, GrabbedObject, const UPrimitiveComponent*, GrabbedComponent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectReleasedSignature, const UObject*, ReleasedObject, const UPrimitiveComponent*, ReleasedComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGrabbedObjectReleasedSignature, const UObject*, ReleasedObject, const UPrimitiveComponent*, ReleasedComponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectEquippedSignature, const UObject*, EquippedObject, const UPrimitiveComponent*, GrabbedComponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectUnequippedSignature, const UObject*, UnequippedObject, const UPrimitiveComponent*, GrabbedComponent);
 
@@ -194,7 +194,7 @@ public:
 	FOnObjectGrabbedSignature OnObjectGrabbed;
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Object Released"))
-	FOnObjectReleasedSignature OnObjectReleased;
+	FOnGrabbedObjectReleasedSignature OnObjectReleased;
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates", Meta = (DisplayName = "On Object Equipped"))
 	FOnObjectEquippedSignature OnObjectEquipped;

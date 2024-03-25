@@ -5,7 +5,7 @@
 #include "BHPlayerCameraComponent.h"
 #include "BHPlayerCharacter.h"
 #include "BHPlayerController.h"
-#include "BHPlayerMovementComponent.h"
+#include "BHCharacterMovementComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -97,8 +97,8 @@ FVector UBHPlayerCameraSocketComponent::CalculateTargetLocation() const
 
 void UBHPlayerCameraSocketComponent::UpdateRotation(const float DeltaTime)
 {
-	FRotator TargetRotation = FMath::Clamp(MinimumViewPitch, MaximumViewPitch,
-		GetPlayerCharacterController()->GetPlayerControlRotation());
+	FRotator TargetRotation = GetPlayerCharacterController()->GetPlayerControlRotation();
+	TargetRotation.Pitch = FMath::Clamp(MinimumViewPitch, MaximumViewPitch, TargetRotation.Pitch);
 	
 	if (bSocketSwayEnabled && !SocketName.IsNone() && !GetPlayerCharacter()->GetIsTurningInPlace())
 	{
@@ -141,7 +141,7 @@ float UBHPlayerCameraSocketComponent::GetCameraSwayIntensity() const
 
 void UBHPlayerCameraSocketComponent::AddCentripetalRoll(FRotator& Rotator, float DeltaTime)
 {
-	const UBHPlayerMovementComponent* CharacterMovement = GetPlayerCharacter()->GetPlayerMovementComponent();
+	const UBHCharacterMovementComponent* CharacterMovement = GetPlayerCharacter()->GetPlayerMovementComponent();
 	const float Speed = GetPlayerCharacter()->GetSpeed();
 
 	const float RotationScalar = RotationDrivenCentripetalRollIntensityCurve.GetRichCurve()->Eval(Speed);
@@ -169,11 +169,15 @@ void UBHPlayerCameraSocketComponent::AddSocketSway(FRotator& Rotator, const floa
 {	
 	const float Speed = GetPlayerCharacter()->GetSpeed();
 	
-	const float Scalar = SocketSwayIntensityCurve.GetRichCurve()->Eval(Speed);
-	Scalar *= GetPlayerCharacter()->GetPlayerMovementComponent()->IsCrouching() ? CrouchedSocketSwayIntensity : 1.0f;
+	FVector Scalars = GetPlayerCharacter()->GetPlayerMovementComponent()->IsCrouching() ?
+		CrouchedSocketSwayIntensity : SocketSwayIntensity;
+	Scalars *= SocketSwayIntensityCurve.GetRichCurve()->Eval(Speed);
 	
-	const FRotator TargetHeadSocketRotation {(GetPlayerCharacter()->GetMesh()->GetSocketTransform("head", RTS_Actor).GetRotation()
-		- RelativeTransform.GetRotation()) * Scalar};
+	FRotator TargetHeadSocketRotation = GetPlayerCharacter()->GetMesh()->GetSocketTransform("head", RTS_Actor).Rotator();
+	TargetHeadSocketRotation -= RelativeTransform.Rotator();
+	TargetHeadSocketRotation.Roll *= Scalars.X;
+	TargetHeadSocketRotation.Pitch *= Scalars.Y;
+	TargetHeadSocketRotation.Yaw *= Scalars.Z;
 	
 	InterpolatedHeadSocketRotation = FMath::RInterpTo(InterpolatedHeadSocketRotation, TargetHeadSocketRotation,
 		DeltaTime, SocketSwaySpeed);

@@ -23,21 +23,12 @@ class STORMWATCH_API IBHUsableObject
 	GENERATED_BODY()
 
 public:
-	/** Begins interaction with the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements an interaction.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object")
-	bool BeginUse(const AActor* Interactor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHUsableObject")
+	bool Use(const AActor* Instigator);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHUsableObject")
+	void Release(const AActor* Instigator);
 
-	/** Ends interaction with the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements an interaction.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object")
-	bool EndUse(const AActor* Interactor);
-
-	/** Returns whether the object has a single-press interaction, or a press-and-hold interaction. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Usable Object")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHUsableObject")
 	EBHUseType GetUseType() const;
 };

@@ -16,17 +16,9 @@ class STORMWATCH_API IBHDraggableObject
 	GENERATED_BODY()
 
 public:
-	/** Starts dragging the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements a special action on drag.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Draggable Object")
-	bool BeginDrag(const AActor* Interactor);
-
-	/** Stop dragging the object.
-	 *	@Param Instigator The actor that instigated the interaction.
-	 *	@Return Whether the object implements a special action on release.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Draggable Object")
-	bool EndDrag(const AActor* Interactor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHDraggableObject")
+	bool Drag(const AActor* Instigator);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHDraggableObject")
+	void Release(const AActor* Instigator);
 };

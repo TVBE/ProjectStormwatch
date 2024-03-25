@@ -12,7 +12,7 @@
 #include "BHPlayerGrabComponent.h"
 #include "BHPlayerInteractionComponent.h"
 #include "BHPlayerInventoryComponent.h"
-#include "BHPlayerMovementComponent.h"
+#include "BHCharacterMovementComponent.h"
 #include "BHPlayerUseComponent.h"
 #include "BHStormwatchGameMode.h"
 #include "..\..\..\Core\Public\BHStormwatchWorldSubystem.h"
@@ -24,7 +24,6 @@
 ABHPlayerCharacter::ABHPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 : Super(
 	ObjectInitializer
-	.SetDefaultSubobjectClass<UBHPlayerMovementComponent>(CharacterMovementComponentName)
 	.SetDefaultSubobjectClass<UBHPlayerSkeletalMeshComponent>(MeshComponentName)
 )
 {
@@ -111,10 +110,10 @@ void ABHPlayerCharacter::PostLoad()
 {
 	Super::PostLoad();
 	
-	if (ensureAlwaysMsgf(GetCharacterMovement()->IsA(UBHPlayerMovementComponent::StaticClass()),
+	if (ensureAlwaysMsgf(GetCharacterMovement()->IsA(UBHCharacterMovementComponent::StaticClass()),
 		TEXT("BHPlayerCharacter::PostLoad: CharacterMovement is not of class PlayerCharacterMovementComponent.")))
 	{
-		PlayerMovementComponent = Cast<UBHPlayerMovementComponent>(GetCharacterMovement());
+		PlayerMovementComponent = Cast<UBHCharacterMovementComponent>(GetCharacterMovement());
 	}
 	if (ensureAlwaysMsgf(GetMesh()->IsA(UBHPlayerSkeletalMeshComponent::StaticClass()),
 		TEXT("BHPlayerCharacter::PostLoad: Mesh is not of class PlayerCharacterMovementComponent.")))
@@ -139,14 +138,10 @@ void ABHPlayerCharacter::OnConstruction(const FTransform& Transform)
 void ABHPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PlayerMovementComponent->OnLanding.AddDynamic(this, &ABHPlayerCharacter::HandleLandingStart);
-
+	
 	ABHStormwatchGameMode* GameMode = Cast<ABHStormwatchGameMode>(GetWorld()->GetAuthGameMode());
 	check(GameMode);
 	GameMode->NotifyPlayerCharacterBeginPlay(this);
-
-	TargetSpeed = Settings.WalkSpeed;
 }
 
 void ABHPlayerCharacter::PossessedBy(AController* NewController)
@@ -213,42 +208,6 @@ float ABHPlayerCharacter::CalculateTurnInPlaceRotation(const float YawDelta, con
 	return Rotation;
 }
 
-void ABHPlayerCharacter::Crouch(bool bClientSimulation)
-{
-	Super::Crouch(bClientSimulation);
-}
-
-void ABHPlayerCharacter::UnCrouch(bool bClientSimulation)
-{
-	Super::UnCrouch(bClientSimulation);
-}
-
-void ABHPlayerCharacter::Jump()
-{
-	if (bJumpingEnabled)
-	{
-		Super::Jump();
-	}
-}
-
-void ABHPlayerCharacter::StartSprinting()
-{
-	if (PlayerMovementComponent && !PlayerMovementComponent->GetIsSprinting())
-	{
-		TargetSpeed = SprintSpeed;
-		PlayerMovementComponent->SetIsSprinting(true);
-	}
-}
-
-void ABHPlayerCharacter::StopSprinting()
-{
-	if (PlayerMovementComponent && PlayerMovementComponent->GetIsSprinting())
-	{
-		TargetSpeed = WalkSpeed;
-		PlayerMovementComponent->SetIsSprinting(false);
-	}
-}
-
 bool ABHPlayerCharacter::bIsSprinting() const
 {
 	if (PlayerMovementComponent)
@@ -276,7 +235,7 @@ UBHPlayerSkeletalMeshComponent* ABHPlayerCharacter::GetPlayerMesh() const
 	return PlayerMesh;
 }
 
-UBHPlayerMovementComponent* ABHPlayerCharacter::GetPlayerMovementComponent() const
+UBHCharacterMovementComponent* ABHPlayerCharacter::GetPlayerMovementComponent() const
 {
 	check(PlayerMovementComponent);
 	return PlayerMovementComponent;

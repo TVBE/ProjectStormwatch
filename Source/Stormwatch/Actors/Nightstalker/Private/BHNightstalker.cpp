@@ -2,7 +2,6 @@
 
 #include "BHNightstalker.h"
 
-#include "BHNightstalkerDirector.h"
 #include "BHNightstalkerMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -24,24 +23,24 @@ void ABHNightstalker::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (const UWorld* World = GetWorld())
-	{
-		if (UBHNightstalkerDirector* Director = World->GetSubsystem<UBHNightstalkerDirector>())
-		{
-			Director->RegisterNightstalker(this);
-		}
-	}
+	// if (const UWorld* World = GetWorld())
+	// {
+	// 	if (UBHNightstalkerDirector* Director = World->GetSubsystem<UBHNightstalkerDirector>())
+	// 	{
+	// 		Director->RegisterNightstalker(this);
+	// 	}
+	// }
 }
 
 void ABHNightstalker::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (const UWorld* World = GetWorld())
-	{
-		if (UBHNightstalkerDirector* Director = World->GetSubsystem<UBHNightstalkerDirector>())
-		{
-			Director->UnregisterNightstalker(this);
-		}
-	}
+	// if (const UWorld* World = GetWorld())
+	// {
+	// 	if (UBHNightstalkerDirector* Director = World->GetSubsystem<UBHNightstalkerDirector>())
+	// 	{
+	// 		Director->UnregisterNightstalker(this);
+	// 	}
+	// }
 	
 	Super::EndPlay(EndPlayReason);
 }

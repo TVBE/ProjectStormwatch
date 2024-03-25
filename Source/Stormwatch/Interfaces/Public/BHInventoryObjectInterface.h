@@ -16,12 +16,12 @@ class STORMWATCH_API IBHInventoryObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Object", Meta = (Displayname = "Can Be Added To Inventory"))
-	bool CanAddToInventory() const;
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Object")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInventoryObject")
 	bool AddToInventory();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Object", Meta = (Displayname = "Remove From Inventory"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInventoryObject")
 	bool RemoveFromInventory();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHInventoryObject")
+	bool CanAddToInventory() const;
 };

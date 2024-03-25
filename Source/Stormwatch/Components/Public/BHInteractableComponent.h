@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "Components/SceneComponent.h"
 #include "BHInteractableObjectInterface.h"
-#include "Misc/Timespan.h"
+
+#include "Components/SceneComponent.h"
+
 #include "BHInteractableComponent.generated.h"
 
 struct FBHInteractionEvent
@@ -24,7 +25,9 @@ class STORMWATCH_API UBHInteractableComponent : public USceneComponent, public I
 	
 public:
 	//~ Begin BHInteractableObject interface.
-	FVector GetInteractionWidgetLocation_Implementation() const override;
+	virtual bool CanBeInteractedWith_Implementation() const override;
+	virtual FVector GetInteractionLocation_Implementation() const override;
+	virtual int32 GetInteractionPriority_Implementation() const override;
 	//~ End BHInteractableObject interface.
 	
 	UFUNCTION(BlueprintPure, Category = "BHInteractionComponent")
@@ -51,8 +54,8 @@ public:
 protected:
 	void OnRegister() override;
 
-	virtual void OnBeginInteraction();
-	virtual void OnEndInteraction();
+	virtual void BeginInteraction();
+	virtual void EndInteraction();
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY(EditDefaultsOnly, Category = "Editor")

@@ -44,7 +44,7 @@ void ABHNightstalkerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	if (!InPawn) { return; }
-	Nightstalker = Cast<ANightstalker>(InPawn);
+	Nightstalker = Cast<ABHNightstalker>(InPawn);
 	UE_LOG(LogNightstalkerController, Log, TEXT("Nightstalker was succesfully possesed by controller: '%s'. "), *Nightstalker->GetName())
 }
 

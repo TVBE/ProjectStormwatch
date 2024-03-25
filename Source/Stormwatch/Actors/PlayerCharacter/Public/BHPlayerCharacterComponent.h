@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BHPlayerCharacterComponent.generated.h"
 
 class FBHPlayerCharacterComponent
 {

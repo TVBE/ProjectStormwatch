@@ -15,12 +15,12 @@ public:
 	ABHDraggableMeshActor();
 
 	UFUNCTION(BlueprintGetter)
-	class UBHDragComponent* GetDragComponent() const;
+	class UBHDraggableComponent* GetDragComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetDragComponent, Category = "Components")
-	UBHDragComponent* DragComponent;
+	UBHDraggableComponent* DragComponent;
 };

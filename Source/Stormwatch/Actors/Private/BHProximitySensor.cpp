@@ -44,10 +44,6 @@ void ABHProximitySensor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 	{
 		return;
 	}
-	if (OtherActor->IsA(ANightstalker::StaticClass()) && IgnoreParameters.Contains(EBHProximitySensorIgnoreParameter::Nightstalker))
-	{
-		return;
-	}
 	OverlappingActors.AddUnique(OtherActor);
 
 	Poll();
@@ -82,7 +78,10 @@ void ABHProximitySensor::Poll()
 {
 	IsActorDetected = false;
 
-	if (IsBroken) =  return; 
+	if (IsBroken)
+	{
+		return;
+	}
 	
 	if (!OverlappingActors.IsEmpty())
 	{

@@ -1,18 +1,18 @@
 // Copyright (c) 2022-present Barrelhouse. All rights reserved.
 
-#include "BHPlayerMovementComponent.h"
+#include "BHCharacterMovementComponent.h"
 
 #include "BHPlayerCharacter.h"
 #include "BHPlayerDragComponent.h"
 #include "BHPlayerGrabComponent.h"
 #include "GameFramework/PlayerController.h"
 
-UBHPlayerMovementComponent::UBHPlayerMovementComponent()
+UBHCharacterMovementComponent::UBHCharacterMovementComponent()
 {
 	NavAgentProps.bCanCrouch = true;
 }
 
-void UBHPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+void UBHCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -24,7 +24,7 @@ void UBHPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	UpdateWalkSpeed(DeltaTime);
 }
 
-void UBHPlayerMovementComponent::UpdateWalkSpeed(float DeltaTime)
+void UBHCharacterMovementComponent::UpdateWalkSpeed(float DeltaTime)
 {
 	WalkSpeedData.Multiplier = GetWalkSpeedMultiplier();
 	WalkSpeedData.ScaledSpeed = WalkSpeedData.BaseSpeed * WalkSpeedData.Multiplier;
@@ -32,7 +32,7 @@ void UBHPlayerMovementComponent::UpdateWalkSpeed(float DeltaTime)
 	MaxWalkSpeedCrouched = WalkSpeedData.ScaledSpeed;
 }
 
-float UBHPlayerMovementComponent::GetWalkSpeedMultiplier() const
+float UBHCharacterMovementComponent::GetWalkSpeedMultiplier() const
 {
 	const UBHPlayerGrabComponent* GrabComponent = GetPlayerCharacter()->GetGrabComponent();
 	const UBHPlayerDragComponent* DragComponent = GetPlayerCharacter()->GetDragComponent();
@@ -54,7 +54,7 @@ float UBHPlayerMovementComponent::GetWalkSpeedMultiplier() const
 										  InteractionSpeedFloor, 1.0);
 }
 
-void UBHPlayerMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
+void UBHCharacterMovementComponent::ProcessLanded(const FHitResult& Hit, float remainingTime, int32 Iterations)
 {
 	/*if (Velocity.Z < -800)
 	{
@@ -77,12 +77,12 @@ void UBHPlayerMovementComponent::ProcessLanded(const FHitResult& Hit, float rema
 	Super::ProcessLanded(Hit, remainingTime, Iterations);
 }
 
-ABHPlayerCharacter* UBHPlayerMovementComponent::GetPlayerCharacter() const
+ABHPlayerCharacter* UBHCharacterMovementComponent::GetPlayerCharacter() const
 {
 	return Cast<ABHPlayerCharacter>(GetCharacterOwner());
 }
 
-void UBHPlayerMovementComponent::Jump()
+void UBHCharacterMovementComponent::Jump()
 {
 	if (CanJump)
 	{
@@ -93,7 +93,7 @@ void UBHPlayerMovementComponent::Jump()
 	}
 }
 
-bool UBHPlayerMovementComponent::CanJump() const
+bool UBHCharacterMovementComponent::CanJump() const
 {
 	if (MovementSetup.bJumpingEnabled)
 	{
@@ -108,27 +108,27 @@ bool UBHPlayerMovementComponent::CanJump() const
 	return ((Clearance > RequiredClearance || Clearance == -1.f) && bJumpingEnabled && !GetMovementComponent()->bIsFalling());
 }
 
-void UBHPlayerMovementComponent::StartSprinting()
+void UBHCharacterMovementComponent::StartSprinting()
 {
 	WalksSpeedData.TargetBaseSpeed = MovementSetup.SprintSpeed;
 }
 
-void UBHPlayerMovementComponent::StopSprinting()
+void UBHCharacterMovementComponent::StopSprinting()
 {
 	WalksSpeedData.TargetBaseSpeed = MovementSetup.WalkSpeed;
 }
 
-bool UBHPlayerMovementComponent::IsSprinting() const
+bool UBHCharacterMovementComponent::IsSprinting() const
 {
 	return bSprinting && IsMovingOnWalks();
 }
 
-bool UBHPlayerMovementComponent::CanSprint() const
+bool UBHCharacterMovementComponent::CanSprint() const
 {
 	return false;
 }
 
-void UBHPlayerMovementComponent::StartCrouching()
+void UBHCharacterMovementComponent::StartCrouching()
 {
 	WalksSpeedData.TargetBaseSpeed = MovementSetup.CrouchSpeed;
 	GetPlayerCharacter()->Crouch(false);
@@ -136,24 +136,24 @@ void UBHPlayerMovementComponent::StartCrouching()
 	
 }
 
-void UBHPlayerMovementComponent::StopCrouching()
+void UBHCharacterMovementComponent::StopCrouching()
 {
 	WalksSpeedData.TargetBaseSpeed = MovementSetup.WalkSpeed;
 	GetPlayerCharacter()->UnCrouch(false);
 	bCrouching = false;
 }
 
-bool UBHPlayerMovementComponent::IsCrouching() const
+bool UBHCharacterMovementComponent::IsCrouching() const
 {
 	return bCrouching;
 }
 
-bool UBHPlayerMovementComponent::CanCrouch() const
+bool UBHCharacterMovementComponent::CanCrouch() const
 {
 	return !IsCrouching() && !IsFalling() && !IsJumping();
 }
 
-bool UBHPlayerMovementComponent::CanUncrouch() const
+bool UBHCharacterMovementComponent::CanUncrouch() const
 {
 	if (IsCrouching())
 	{

@@ -29,7 +29,7 @@ public:
 	void Unequip(const AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
-	const FTransform& GetEquipRelativeTransform();
+	FTransform GetEquipRelativeTransform();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "BHGrabbableObject")
 	void Throw(const AActor* Instigator);

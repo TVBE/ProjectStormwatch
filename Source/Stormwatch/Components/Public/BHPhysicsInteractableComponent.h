@@ -67,8 +67,9 @@ public:
 protected:
 	virtual void OnRegister() override;
 
-	void HandleOnInteractionStart();
-	void HandleOnInteractionEnd();
+	virtual void BeginInteraction() override;
+	virtual void EndInteraction() override;
+	
 #if WITH_EDITOR
 	virtual void CheckForErrors() override;
 #endif

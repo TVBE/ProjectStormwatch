@@ -2,6 +2,10 @@
 
 #include "BHSemanticComponent.h"
 
+#include "Misc/UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "BHPhysicsInteractableComponent"
+
 UBHSemanticComponent::UBHSemanticComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -31,5 +35,40 @@ const TArray<FBHSemanticGameplayTag>& UBHSemanticComponent::GetSemanticTags() co
 {
 	return SemanticTags;
 }
+
+#if WITH_EDITOR
+void UBHSemanticComponent::CheckForErrors()
+{
+	Super::CheckForErrors();
+	
+	const AActor* Owner = GetOwner();
+	if (!IsValid(Owner))
+	{
+		return;
+	}
+	if (SemanticName.IsEmpty())
+	{
+		FFormatNamedArguments Arguments;
+		Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+		Arguments.Add(TEXT("OwnerName"), FText::FromString(Owner->GetName()));
+		FMessageLog("MapCheck").Error()
+			->AddToken(FUObjectToken::Create(this))
+			->AddToken(FTextToken::Create(FText::Format(LOCTEXT("MapCheck_Message_NoSemanticName",
+				"{OwnerName}::{ComponentName} has no semantic name set."), Arguments)));
+	}
+
+	// TODO (TV): Enable this once thumbnails are implemented.
+	// if (!Thumbnail)
+	// {
+	// 	FFormatNamedArguments Arguments;
+	// 	Arguments.Add(TEXT("ComponentName"), FText::FromString(GetName()));
+	// 	Arguments.Add(TEXT("OwnerName"), FText::FromString(Owner->GetName()));
+	// 	FMessageLog("MapCheck").Error()
+	// 		->AddToken(FUObjectToken::Create(this))
+	// 		->AddToken(FTextToken::Create(FText::Format(LOCTEXT("MapCheck_Message_NoThumbnail",
+	// 			"{OwnerName}::{ComponentName} has no thumbnail set."), Arguments)));
+	// }
+}
+#endif
 
 

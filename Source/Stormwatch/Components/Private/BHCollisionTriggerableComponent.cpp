@@ -121,8 +121,4 @@ void UBHCollisionTriggerableComponent::CheckForErrors()
 }
 #endif
 
-
-
-
-
-
+#undef LOCTEXT_NAMESPACE

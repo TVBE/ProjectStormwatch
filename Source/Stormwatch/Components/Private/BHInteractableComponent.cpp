@@ -21,9 +21,19 @@ bool FBHInteractionEvent::HasFinished() const
 	return StartTime.IsSet() && EndTime.IsSet();
 }
 
-FVector UBHInteractableComponent::GetInteractionWidgetLocation_Implementation() const
+bool UBHInteractableComponent::CanBeInteractedWith_Implementation() const
+{
+	return true;
+}
+
+FVector UBHInteractableComponent::GetInteractionLocation_Implementation() const
 {
 	return GetComponentLocation();
+}
+
+int32 UBHInteractableComponent::GetInteractionPriority_Implementation() const
+{
+	return 0;
 }
 
 TOptional<FBHInteractionEvent> UBHInteractableComponent::GetCurrentInteraction() const
@@ -88,10 +98,15 @@ void UBHInteractableComponent::OnRegister()
 		{
 			const TSet<UActorComponent*>& Components = Owner->GetComponents();
 
-			const auto DuplicateComponent = Algo::Find(Components, [this](UActorComponent* Component) 
+			const UActorComponent* DuplicateComponent = nullptr;
+			for (const auto* Component : Components)
 			{
-				return Component != this && Component->GetClass() == this->GetClass();
-			});
+				if (Component != this && Component->GetClass() == this->GetClass())
+				{
+					DuplicateComponent = Component;
+					break;
+				}
+			}
 			
 			if (DuplicateComponent)
 			{
@@ -111,7 +126,7 @@ void UBHInteractableComponent::OnRegister()
 #endif
 }
 
-void UBHInteractableComponent::OnBeginInteraction()
+void UBHInteractableComponent::BeginInteraction()
 {
 	ensureAlways(!CurrentInteraction.IsSet());
 	
@@ -119,7 +134,7 @@ void UBHInteractableComponent::OnBeginInteraction()
 	CurrentInteraction.Emplace(FBHInteractionEvent());
 }
 
-void UBHInteractableComponent::OnEndInteraction()
+void UBHInteractableComponent::EndInteraction()
 {
 	if(!ensureAlways(CurrentInteraction.IsSet()))
 	{

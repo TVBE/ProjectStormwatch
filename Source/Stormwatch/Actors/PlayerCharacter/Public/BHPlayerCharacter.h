@@ -28,7 +28,7 @@ public:
 	class UBHPlayerSkeletalMeshComponent* GetPlayerMesh() const;
 
 	UFUNCTION(BlueprintGetter)
-	class UBHPlayerMovementComponent* GetPlayerMovementComponent() const;
+	class UBHCharacterMovementComponent* GetPlayerMovementComponent() const;
 
 	UFUNCTION(BlueprintGetter)
 	class UBHPlayerInteractionComponent* GetInteractionComponent() const;
@@ -68,7 +68,7 @@ protected:
 	UBHPlayerSkeletalMeshComponent* PlayerMesh;
 
 	UPROPERTY(BlueprintGetter = GetPlayerMovementComponent, Category = "Components")
-	UBHPlayerMovementComponent* PlayerMovementComponent;
+	UBHCharacterMovementComponent* PlayerMovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInteractionComponent, Category = "Components")
 	UBHPlayerInteractionComponent* InteractionComponent;

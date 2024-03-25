@@ -22,7 +22,7 @@ public:
 	// IBHInventoryObject implementation end
 	
 	UFUNCTION(BlueprintGetter)
-	class UBHGrabComponent* GetGrabComponent() const;
+	class UBHGrabbableComponent* GetGrabComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,5 +32,5 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetGrabComponent, Category = "Components")
-	UBHGrabComponent* GrabComponent;
+	UBHGrabbableComponent* GrabbableComponent;
 };

@@ -2,15 +2,18 @@
 
 #include "Stormwatch/Actors/Public/BHDraggableMeshActor.h"
 
-#include "BHDragComponent.h"
+#include "BHDraggableComponent.h"
 
 ABHDraggableMeshActor::ABHDraggableMeshActor()
 {
-	DragComponent = CreateDefaultSubobject<UBHDragComponent>(TEXT("DragComponent"));
-	DragComponent->SetupAttachment(GetStaticMeshComponent());
+	DragComponent = CreateDefaultSubobject<UBHDraggableComponent>(TEXT("DragComponent"));
+	if(DragComponent)
+	{
+		DragComponent->SetupAttachment(GetStaticMeshComponent());
+	}
 }
 
-UBHDragComponent* ABHDraggableMeshActor::GetDragComponent() const
+UBHDraggableComponent* ABHDraggableMeshActor::GetDragComponent() const
 {
 	return DragComponent;
 }
